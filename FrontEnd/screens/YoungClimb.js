@@ -6,7 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import InitailScreen from './InitailScreen';
+import InitialScreen from './InitialScreen';
 
 import MainScreen from './MainScreen';
 import LoginScreen from './LoginScreen';
@@ -34,7 +34,7 @@ export default function YoungClimb() {
   return (
     <>
       {loading ? (
-        <InitailScreen />
+        <InitialScreen />
       ) : (
         <NavigationContainer>
           {login ? (

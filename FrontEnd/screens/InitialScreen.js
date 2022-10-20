@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 
-function InitailScreen() {
+function InitialScreen() {
   return (
     <View>
       <Text>초기화면!</Text>
@@ -9,4 +9,4 @@ function InitailScreen() {
   );
 }
 
-export default InitailScreen;
+export default InitialScreen;
