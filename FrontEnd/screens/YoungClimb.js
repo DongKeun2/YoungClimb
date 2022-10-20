@@ -12,10 +12,11 @@ import MainScreen from './MainScreen';
 import LoginScreen from './LoginScreen';
 import SignupScreen from './SignupScreen';
 
+import SearchStack from '../stack/SearchStack';
+
 import StoreScreen from './StoreScreen';
 import RandomScreen from './RandomScreen';
 import HomeScreen from './HomeScreen';
-import SearchScreen from './SearchScreen';
 import ProfileScreen from './ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -42,7 +43,11 @@ export default function YoungClimb() {
               <Tab.Screen name="지점" component={StoreScreen} />
               <Tab.Screen name="릴스" component={RandomScreen} />
               <Tab.Screen name="홈" component={HomeScreen} />
-              <Tab.Screen name="검색" component={SearchScreen} />
+              <Tab.Screen
+                name="검색"
+                component={SearchStack}
+                options={{headerShown: false}}
+              />
               <Tab.Screen name="프로필" component={ProfileScreen} />
             </Tab.Navigator>
           ) : (
