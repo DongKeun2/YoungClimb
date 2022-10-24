@@ -13,12 +13,14 @@ function MainScreen({navigation}) {
 
         <Image source={title} style={styles.title} />
       </View>
-      <View style={styles.btnGroup}>
+      <View style={styles.button}>
         <CustomButton
           buttonColor="#EF3F8F"
           title="로그인"
           onPress={() => navigation.navigate('로그인')}
         />
+      </View>
+      <View style={styles.button}>
         <CustomButton
           buttonColor="#F34D7F"
           title="회원가입"
@@ -46,12 +48,11 @@ const styles = StyleSheet.create({
   logo: {},
   title: {
     width: '100%',
-
     resizeMode: 'contain',
   },
-  btnGroup: {
+  button: {
     width: '80%',
-    height: '20%',
+    height: '10%',
   },
 });
 
