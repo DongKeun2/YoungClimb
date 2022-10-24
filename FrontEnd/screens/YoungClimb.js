@@ -82,9 +82,12 @@ export default function YoungClimb() {
             <Tab.Navigator
               initialRouteName="홈"
               screenOptions={{
-                // headerMode: 'screen',
+                headerMode: 'screen',
                 // headerTintColor: 'white',
-                headerStyle: {backgroundColor: 'tomato', height: 50},
+                headerStyle: {
+                  // backgroundColor: 'tomato',
+                  height: 50,
+                },
               }}>
               <Tab.Screen name="지점" component={StoreScreen} />
               <Tab.Screen name="릴스" component={RandomScreen} />
