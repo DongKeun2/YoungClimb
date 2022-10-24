@@ -8,7 +8,7 @@ export default class CustomButton extends Component {
     title: 'untitled',
     buttonColor: '#000',
     width: '100%',
-    height: 50,
+    height: 40,
     titleColor: '#fff',
     onPress: () => null,
   };

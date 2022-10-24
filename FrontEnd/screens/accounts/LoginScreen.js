@@ -43,7 +43,7 @@ function LoginScreen({navigation}) {
       <Image source={title} style={styles.title} />
       <Input
         style={styles.input}
-        placeholder="이메일 주소"
+        placeholder="이메일"
         placeholderTextColor={'#ddd'}
         value={loginForm.email.value}
         type={loginForm.email.type}
@@ -54,7 +54,7 @@ function LoginScreen({navigation}) {
         value={loginForm.password.value}
         type={loginForm.password.type}
         secureTextEntry={true}
-        placeholder="비밀번호를 입력하세요."
+        placeholder="비밀번호"
         placeholderTextColor={'#ddd'}
         onChangeText={value => updateInput('password', value)}
       />

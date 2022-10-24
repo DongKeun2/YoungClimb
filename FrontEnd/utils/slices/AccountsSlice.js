@@ -2,16 +2,56 @@ import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
   loginState: false,
-  signupInfo: {
-    nickname: '',
-    email: '',
-    password: '',
-    confiomPwd: '',
-    gender: '',
-    height: '',
-    shoeSize: '',
-    wingSpan: '',
+  signupForm: {
+    email: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    nickname: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    password: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    confirmPwd: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    gender: {
+      value: 'M',
+      type: 'radio',
+    },
+    height: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    shoeSize: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    wingSpan: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
   },
+  isCheckNickname: false,
+  isCheckEmail: false,
   isCheckTerms: false,
 };
 
@@ -25,10 +65,15 @@ export const AccountsSlice = createSlice({
     onCheckTerms: (state, action) => {
       state.isCheckTerms = action.payload;
     },
+    changeSignupForm: (state, action) => {
+      state.signupForm[action.payload.name].value = action.payload.value;
+      console.log(state.signupForm);
+    },
   },
   extraReducers: {},
 });
 
-export const {testLogin, onCheckTerms} = AccountsSlice.actions;
+export const {testLogin, onCheckTerms, changeSignupForm} =
+  AccountsSlice.actions;
 
 export default AccountsSlice.reducer;
