@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
@@ -78,8 +79,9 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보 추가 또는 수정
     @Override
-    public void addUserInfo(String email, MultipartFile file) throws Exception {
-        Member member = memberRepository.findByEmail(email);
+    public void addUserInfo(MemberInfo memberInfo, MultipartFile file) throws Exception {
+        Member member = memberRepository.findByEmail(memberInfo.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 
         // 프로필 사진 저장
         if(file == null) {
@@ -135,6 +137,11 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public String login(LoginMember member) {
-        return null;
+        Member loginMember = memberRepository.findByEmail(member.getEmail())
+                .orElseThrow(()->new ResourceNotFoundException("Member", "memberEmail", member.getEmail()));
+        if(!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
+            throw  new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+        return jwtTokenProvider.createAccessToken(member.getEmail());
     }
 }
