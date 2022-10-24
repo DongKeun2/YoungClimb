@@ -60,7 +60,17 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'contain',
   },
-  input: {},
+  inputBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+  input: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   button: {
     width: '80%',
     height: '10%',
@@ -114,51 +124,56 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
   return (
     <View style={styles.container}>
       <Image source={signup} style={styles.title} />
-      <Input
-        style={styles.input}
-        placeholder="닉네임"
-        placeholderTextColor={'#ddd'}
-        value={signupForm.nickname.value}
-        type={signupForm.nickname.type}
-        onChangeText={value => updateInput('nickname', value)}
-      />
-      <CheckButton
-        type="nickname"
-        onPress={checkNickname}
-        buttonColor={isCheckNickname ? '#EF3F8F' : 'white'}
-        borderColor={!isCheckNickname && '#EF3F8F'}
-        title={
-          isCheckNickname ? (
-            <Image source={checkIcon} />
-          ) : (
-            <Text style={styles.checkTitle}>확인</Text>
-          )
-        }
-      />
+      <View style={styles.inputBox}>
+        <Input
+          style={styles.input}
+          placeholder="닉네임"
+          placeholderTextColor={'#ddd'}
+          width="78%"
+          value={signupForm.nickname.value}
+          type={signupForm.nickname.type}
+          onChangeText={value => updateInput('nickname', value)}
+        />
+        <CheckButton
+          type="nickname"
+          onPress={checkNickname}
+          buttonColor={isCheckNickname ? '#EF3F8F' : 'white'}
+          borderColor={!isCheckNickname && '#EF3F8F'}
+          title={
+            isCheckNickname ? (
+              <Image source={checkIcon} />
+            ) : (
+              <Text style={styles.checkTitle}>확인</Text>
+            )
+          }
+        />
+      </View>
+      <View style={styles.inputBox}>
+        <Input
+          style={styles.input}
+          placeholder="이메일"
+          placeholderTextColor={'#ddd'}
+          width="78%"
+          value={signupForm.email.value}
+          type={signupForm.email.type}
+          onChangeText={value => updateInput('email', value)}
+        />
 
-      <Input
-        style={styles.input}
-        placeholder="이메일"
-        placeholderTextColor={'#ddd'}
-        value={signupForm.email.value}
-        type={signupForm.email.type}
-        onChangeText={value => updateInput('email', value)}
-      />
-      <Image source={checkIcon} />
-      <CheckButton
-        type="email"
-        onPress={checkEmail}
-        buttonColor={isCheckEmail ? '#EF3F8F' : 'white'}
-        borderColor={!isCheckEmail && '#EF3F8F'}
-        borderWidth="3"
-        title={
-          isCheckEmail ? (
-            <Image source={checkIcon} />
-          ) : (
-            <Text style={styles.checkTitle}>확인</Text>
-          )
-        }
-      />
+        <CheckButton
+          type="email"
+          onPress={checkEmail}
+          buttonColor={isCheckEmail ? '#EF3F8F' : 'white'}
+          borderColor={!isCheckEmail && '#EF3F8F'}
+          borderWidth="3"
+          title={
+            isCheckEmail ? (
+              <Image source={checkIcon} />
+            ) : (
+              <Text style={styles.checkTitle}>확인</Text>
+            )
+          }
+        />
+      </View>
       <Input
         style={styles.input}
         value={signupForm.password.value}
