@@ -3,10 +3,16 @@ import {StyleSheet, View, Image, Text, TouchableOpacity} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import Input from '../../components/Input';
-import signup from '../../assets/image/main/signup.png';
-import {changeSignupForm} from '../../utils/slices/AccountsSlice';
+import {
+  changeSignupForm,
+  changeIsCheckEmail,
+  changeIsCheckNickname,
+} from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
+
+import signup from '../../assets/image/main/signup.png';
+import checkIcon from '../../assets/image/main/done.png';
 
 function SignupScreen({navigation}) {
   const dispatch = useDispatch();
@@ -74,11 +80,35 @@ const styles = StyleSheet.create({
   },
   next: {},
   before: {},
+  checkBtn: {
+    elevation: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    borderWidth: 1.5,
+    width: 60,
+    height: 40,
+  },
+  checkTitle: {
+    fontSize: 15,
+  },
 });
 
 const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
+  const dispatch = useDispatch();
+
+  const isCheckEmail = useSelector(state => state.accounts.isCheckEmail);
+  const isCheckNickname = useSelector(state => state.accounts.isCheckNickname);
+
   function goNextPage() {
     setPage(true);
+  }
+
+  function checkEmail() {
+    dispatch(changeIsCheckEmail(!isCheckEmail));
+  }
+  function checkNickname() {
+    dispatch(changeIsCheckNickname(!isCheckNickname));
   }
 
   return (
@@ -92,6 +122,20 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         type={signupForm.nickname.type}
         onChangeText={value => updateInput('nickname', value)}
       />
+      <CheckButton
+        type="nickname"
+        onPress={checkNickname}
+        buttonColor={isCheckNickname ? '#EF3F8F' : 'white'}
+        borderColor={!isCheckNickname && '#EF3F8F'}
+        title={
+          isCheckNickname ? (
+            <Image source={checkIcon} />
+          ) : (
+            <Text style={styles.checkTitle}>확인</Text>
+          )
+        }
+      />
+
       <Input
         style={styles.input}
         placeholder="이메일"
@@ -99,6 +143,21 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         value={signupForm.email.value}
         type={signupForm.email.type}
         onChangeText={value => updateInput('email', value)}
+      />
+      <Image source={checkIcon} />
+      <CheckButton
+        type="email"
+        onPress={checkEmail}
+        buttonColor={isCheckEmail ? '#EF3F8F' : 'white'}
+        borderColor={!isCheckEmail && '#EF3F8F'}
+        borderWidth="3"
+        title={
+          isCheckEmail ? (
+            <Image source={checkIcon} />
+          ) : (
+            <Text style={styles.checkTitle}>확인</Text>
+          )
+        }
       />
       <Input
         style={styles.input}
@@ -192,5 +251,21 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
     </View>
   );
 };
+
+function CheckButton({onPress, buttonColor, borderColor, title}) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.checkBtn,
+        {
+          backgroundColor: buttonColor,
+          borderColor,
+        },
+      ]}>
+      {title}
+    </TouchableOpacity>
+  );
+}
 
 export default SignupScreen;
