@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useRef, useState, useEffect} from 'react';
-import {ImageBackground, Animated, View} from 'react-native';
+import {Image, Animated, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -13,14 +13,12 @@ import MainScreen from './MainScreen';
 import LoginScreen from './LoginScreen';
 import SignupScreen from './SignupScreen';
 
+import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
 
 import StoreScreen from './StoreScreen';
 import RandomScreen from './RandomScreen';
-import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
-
-import background from '../assets/image/initial/background.png';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -80,7 +78,7 @@ export default function YoungClimb() {
         <NavigationContainer>
           {login ? (
             <Tab.Navigator
-              initialRouteName="홈"
+              initialRouteName="홈탭"
               screenOptions={{
                 headerMode: 'screen',
                 // headerTintColor: 'white',
@@ -91,7 +89,11 @@ export default function YoungClimb() {
               }}>
               <Tab.Screen name="지점" component={StoreScreen} />
               <Tab.Screen name="릴스" component={RandomScreen} />
-              <Tab.Screen name="홈" component={HomeScreen} />
+              <Tab.Screen
+                name="홈탭"
+                component={HomeStack}
+                options={{headerShown: false}}
+              />
               <Tab.Screen
                 name="검색탭"
                 component={SearchStack}
