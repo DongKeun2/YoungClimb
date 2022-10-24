@@ -1,12 +1,12 @@
 import React from 'react';
 import {View, Text} from 'react-native';
 
-function SignupScreen() {
+function WingSpanScreen() {
   return (
     <View>
-      <Text>회원가입 화면!</Text>
+      <Text>윙스팬 측정 화면</Text>
     </View>
   );
 }
 
-export default SignupScreen;
+export default WingSpanScreen;

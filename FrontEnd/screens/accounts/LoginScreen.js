@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {View, Image, StyleSheet, TextInput} from 'react-native';
-import {testLogin} from '../utils/slices/AccountsSlice';
+import {View, Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {testLogin} from '../../utils/slices/AccountsSlice';
 
-import Input from '../components/Input';
-import CustomButton from '../components/CustomBtn';
-import title from '../assets/image/main/title.png';
+import Input from '../../components/Input';
+import CustomButton from '../../components/CustomBtn';
+import title from '../../assets/image/main/title.png';
 
-function LoginScreen() {
+function LoginScreen({navigation}) {
   const dispatch = useDispatch();
 
   const [loginForm, setForm] = useState({
@@ -65,6 +65,10 @@ function LoginScreen() {
           onPress={handleLogin}
         />
       </View>
+      <Text>회원이 아니신가요?</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>
+        <Text style={styles.link}>회원가입</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -86,6 +90,9 @@ const styles = StyleSheet.create({
   button: {
     width: '80%',
     height: '10%',
+  },
+  link: {
+    color: '#F34D7F',
   },
 });
 
