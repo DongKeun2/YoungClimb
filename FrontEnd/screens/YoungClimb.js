@@ -101,7 +101,11 @@ export default function YoungClimb() {
             </Tab.Navigator>
           ) : (
             <Stack.Navigator initialRouteName="메인">
-              <Stack.Screen name="메인" component={MainScreen} />
+              <Stack.Screen
+                name="메인"
+                component={MainScreen}
+                options={{headerShown: false}}
+              />
               <Stack.Screen name="로그인" component={LoginScreen} />
               <Stack.Screen name="회원가입" component={SignupScreen} />
             </Stack.Navigator>
