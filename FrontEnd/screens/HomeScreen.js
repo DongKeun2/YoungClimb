@@ -1,11 +1,17 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {ScrollView, Text, Button} from 'react-native';
 
-function HomeScreen() {
+function HomeScreen({navigation}) {
   return (
-    <>
-      <Text>Home!</Text>
-    </>
+    <ScrollView showsVerticalScrollIndicator={false}>
+      <Text style={{fontSize: 120}}>Home!</Text>
+      <Text style={{fontSize: 120}}>Home!</Text>
+      <Text style={{fontSize: 120}}>Home!</Text>
+      <Text style={{fontSize: 120}}>Home!</Text>
+      <Text style={{fontSize: 120}}>Home!</Text>
+      <Text style={{fontSize: 120}}>Home!</Text>
+      <Button title="홈" onPress={() => navigation.navigate('댓글')} />
+    </ScrollView>
   );
 }
 
