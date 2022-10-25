@@ -16,6 +16,9 @@ def wingspan(request):
     model_name = "yolov7" # 사물을 인식할 모델 이름
 
     result = cv.detect_common_objects(image, confidence=conf, model=model_name)
+    
+    if not result:
+        return Response({'사람이 감지되지 않았습니다.'})
 
     y_min = result[0][0][1]
     y_max = result[0][0][3]
