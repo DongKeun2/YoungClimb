@@ -21,7 +21,7 @@ public interface MemberService {
     // 비밀번호 수정
     public String changePassword(String userId, String password);
     // 회원 탈퇴
-    public String deleteMember(String email);
+    public void deleteMember(String email);
     // 로그인
     public String login(LoginMember member);
 

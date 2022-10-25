@@ -49,6 +49,9 @@ public class SecurityConfig {
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
+        http.logout()
+                .logoutUrl("/api/user/logout");
+
 //		http
 //			.oauth2Login()
 //			.userInfoEndpoint()

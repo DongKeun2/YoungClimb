@@ -20,32 +20,42 @@ public class Member {
 
     // 회원번호
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="member_id")
-    private Long id;
+    private Long memberId;
     // 이메일
+    @Column(name = "member_email")
     private String email;
     // 비밀번호
+    @Column(name = "member_pw")
     private String pw;
     // 닉네임
+    @Column(name = "member_nickname")
     private String nickname;
     // 성별
+    @Column(name = "gender")
     private String gender;
-    // 생년월일
-    private LocalDate birthday;
     // 신장
+    @Column(name = "member_height")
     private Integer height;
     // 윙스팬
+    @Column(name = "member_wingspan")
     private Integer wingspan;
     // 신발사이즈
-    private Integer shoesize;
+    @Column(name = "member_shoe_size")
+    private Integer shoeSize;
     // 자기소개
+    @Column(name = "member_profile_content")
     private String profileContent;
     // 가입일자
+    @Column(name = "member_join_date")
     private LocalDate joinDate;
     // 회원 등급 (User Role)
     @Enumerated(EnumType.STRING)
+    @Column(name = "member_admin")
     private UserRole role;
     // 프로필 이미지
+    @Column(name = "member_profile_img")
     private String memberProfileImg;
 
     // 프로필 이미지
