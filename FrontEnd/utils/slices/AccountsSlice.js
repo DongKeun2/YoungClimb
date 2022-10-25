@@ -106,9 +106,6 @@ export const AccountsSlice = createSlice({
     testLogin: (state, action) => {
       state.loginState = action.payload;
     },
-    onCheckTerms: (state, action) => {
-      state.isCheckTerms = action.payload;
-    },
     changeSignupForm: (state, action) => {
       state.signupForm[action.payload.name].value = action.payload.value;
       console.log(state.signupForm);
@@ -118,6 +115,9 @@ export const AccountsSlice = createSlice({
     },
     changeIsCheckEmail: (state, action) => {
       state.isCheckEmail = action.payload;
+    },
+    changeIsCheckTerms: (state, action) => {
+      state.isCheckTerms = action.payload;
     },
   },
   extraReducers: {
@@ -134,10 +134,10 @@ export {login};
 
 export const {
   testLogin,
-  onCheckTerms,
   changeSignupForm,
   changeIsCheckNickname,
   changeIsCheckEmail,
+  changeIsCheckTerms,
 } = AccountsSlice.actions;
 
 export default AccountsSlice.reducer;

@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useRef, useState, useEffect} from 'react';
-import {ImageBackground, Animated, View} from 'react-native';
+// import {ImageBackground, Animated, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -11,7 +11,7 @@ import InitialScreen from './InitialScreen';
 
 import MainScreen from './MainScreen';
 import LoginScreen from './accounts/LoginScreen';
-import SignupScreen from './accounts/SignupScreen';
+import SignupStack from '../stack/SignupStack';
 
 import SearchStack from '../stack/SearchStack';
 
@@ -20,8 +20,7 @@ import RandomScreen from './RandomScreen';
 import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
 
-import background from '../assets/image/initial/background.png';
-import SignupStack from '../stack/SignupStack';
+// import background from '../assets/image/initial/background.png';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

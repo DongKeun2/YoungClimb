@@ -11,9 +11,9 @@ const Stack = createStackNavigator();
 function SignupStack() {
   return (
     <Stack.Navigator
-      initialRouteName="회원가입페이지"
+      initialRouteName="정보입력"
       screenOptions={{headerShown: false}}>
-      <Stack.Screen name="회원가입페이지" component={SignupScreen} />
+      <Stack.Screen name="정보입력" component={SignupScreen} />
       <Stack.Screen name="약관" component={TermsScreen} />
       <Stack.Screen name="윙스팬" component={WingSpanScreen} />
     </Stack.Navigator>

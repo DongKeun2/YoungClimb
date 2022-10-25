@@ -7,12 +7,15 @@ import {
   changeSignupForm,
   changeIsCheckEmail,
   changeIsCheckNickname,
+  changeIsCheckTerms,
 } from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
 
 import signup from '../../assets/image/main/signup.png';
 import checkIcon from '../../assets/image/main/done.png';
+import checked from '../../assets/image/main/checked.png';
+import unChecked from '../../assets/image/main/unchecked.png';
 
 function SignupScreen({navigation}) {
   const dispatch = useDispatch();
@@ -47,68 +50,12 @@ function SignupScreen({navigation}) {
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: 'white',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  title: {
-    marginTop: '5%',
-    width: '100%',
-    resizeMode: 'contain',
-  },
-  inputBox: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-between',
-    width: '80%',
-  },
-  input: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  button: {
-    width: '80%',
-    height: '10%',
-  },
-  genderGroup: {
-    width: '80%',
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-  },
-  gender: {
-    width: '45%',
-  },
-  link: {
-    color: '#F34D7F',
-  },
-  next: {},
-  before: {},
-  checkBtn: {
-    elevation: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    borderWidth: 1.5,
-    width: 60,
-    height: 40,
-  },
-  checkTitle: {
-    fontSize: 15,
-  },
-});
-
 const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
   const dispatch = useDispatch();
 
   const isCheckEmail = useSelector(state => state.accounts.isCheckEmail);
   const isCheckNickname = useSelector(state => state.accounts.isCheckNickname);
+  const isCheckTerms = useSelector(state => state.accounts.isCheckTerms);
 
   function goNextPage() {
     setPage(true);
@@ -215,12 +162,29 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
           />
         </View>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate('약관')}>
-        <Text style={styles.link}>약관</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={goNextPage}>
-        <Text style={styles.next}>다음</Text>
-      </TouchableOpacity>
+      <View style={styles.termsGroup}>
+        {isCheckTerms ? (
+          <TouchableOpacity onPress={() => dispatch(changeIsCheckTerms(false))}>
+            <Image source={checked} style={styles.checkBox} alt="checkBox" />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => navigation.navigate('약관')}>
+            <Image source={unChecked} style={styles.checkBox} alt="checkBox" />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity onPress={() => navigation.navigate('약관')}>
+          <Text style={styles.link}>&nbsp; 약관</Text>
+        </TouchableOpacity>
+        <Text>&nbsp; 동의</Text>
+      </View>
+      <View style={styles.linkGroup}>
+        <TouchableOpacity onPress={() => navigation.navigate('로그인')}>
+          <Text style={styles.link}>로그인</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={goNextPage}>
+          <Text style={styles.next}>다음</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -282,5 +246,76 @@ function CheckButton({onPress, buttonColor, borderColor, title}) {
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: 'white',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  title: {
+    marginTop: '5%',
+    width: '100%',
+    resizeMode: 'contain',
+  },
+  inputBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+  input: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    width: '80%',
+    height: '10%',
+  },
+  genderGroup: {
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  gender: {
+    width: '45%',
+  },
+  termsGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  checkBox: {
+    width: 20,
+    height: 20,
+  },
+  linkGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+  },
+  link: {
+    color: '#F34D7F',
+  },
+  next: {},
+  before: {},
+  checkBtn: {
+    elevation: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    borderWidth: 1.5,
+    width: 60,
+    height: 40,
+  },
+  checkTitle: {
+    fontSize: 15,
+  },
+});
 
 export default SignupScreen;
