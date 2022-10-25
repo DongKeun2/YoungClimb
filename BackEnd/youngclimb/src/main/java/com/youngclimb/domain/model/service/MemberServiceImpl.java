@@ -10,6 +10,7 @@ import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
 import com.youngclimb.domain.model.entity.Member;
+import com.youngclimb.domain.model.entity.UserRole;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,13 +41,13 @@ public class MemberServiceImpl implements MemberService {
     // 이메일 중복 체크
     @Override
     public boolean checkEmailDuplicate(String email) {
-        return memberRepository.existsByEmail(email);
+        return !memberRepository.existsByEmail(email);
     }
 
     // 닉네임 중복 체크
     @Override
     public boolean checkNicknameDuplicate(String nickname) {
-        return memberRepository.existsByNickname(nickname);
+        return !memberRepository.existsByNickname(nickname);
     }
 
     // 회원 등록
@@ -67,9 +68,11 @@ public class MemberServiceImpl implements MemberService {
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
                 .gender(joinMember.getGender())
+                .joinDate(joinMember.getJoinDate())
                 .height(joinMember.getHeight())
                 .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
+                .role(UserRole.GUEST)
                 .build();
         memberRepository.save(member);
 
@@ -145,4 +148,11 @@ public class MemberServiceImpl implements MemberService {
         }
         return jwtTokenProvider.createAccessToken(member.getEmail());
     }
+
+    // 로그아웃
+    @Override
+    public void logout(String email, String accessToken) {
+        jwtTokenProvider.logout(email, accessToken);
+    }
+
 }

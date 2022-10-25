@@ -33,7 +33,7 @@ public class Member {
     @Column(name = "member_nickname")
     private String nickname;
     // 성별
-    @Column(name = "gender")
+    @Column(name = "member_gender")
     private String gender;
     // 신장
     @Column(name = "member_height")

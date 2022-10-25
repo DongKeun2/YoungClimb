@@ -18,7 +18,7 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.OAS_30)
                 .useDefaultResponseMessages(false)
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.youngclimb.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.youngclimb.domain.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }

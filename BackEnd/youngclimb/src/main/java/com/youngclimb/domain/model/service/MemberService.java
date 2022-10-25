@@ -24,5 +24,6 @@ public interface MemberService {
     public void deleteMember(String email);
     // 로그인
     public String login(LoginMember member);
-
+    // 로그아웃
+    void logout(String email, String accessToken);
 }
