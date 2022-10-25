@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
 import {View, Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {testLogin} from '../../utils/slices/AccountsSlice';
+import {login, testLogin} from '../../utils/slices/AccountsSlice';
 
 import Input from '../../components/Input';
 import CustomButton from '../../components/CustomBtn';
@@ -33,10 +33,15 @@ function LoginScreen({navigation}) {
     });
   }
 
-  function handleLogin() {
+  function onSubmitLogin() {
+    // 임시 로그인
     dispatch(testLogin(true));
-    console.log(loginForm.email.value);
-    console.log(loginForm.password.value);
+
+    // const data = {
+    //   email: loginForm.email.value,
+    //   password: loginForm.email.value,
+    // };
+    // dispatch(login(data));
   }
   return (
     <View style={styles.container}>
@@ -62,7 +67,7 @@ function LoginScreen({navigation}) {
         <CustomButton
           buttonColor="#EF3F8F"
           title="로그인하기"
-          onPress={handleLogin}
+          onPress={onSubmitLogin}
         />
       </View>
       <Text>회원이 아니신가요?</Text>
