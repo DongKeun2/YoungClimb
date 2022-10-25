@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useRef, useState, useEffect} from 'react';
-import {ImageBackground, Animated, View} from 'react-native';
+import {Image, Animated, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -10,17 +10,18 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import InitialScreen from './InitialScreen';
 
 import MainScreen from './MainScreen';
-import LoginScreen from './LoginScreen';
-import SignupScreen from './SignupScreen';
+import LoginScreen from './accounts/LoginScreen';
+import SignupScreen from './accounts/SignupScreen';
 
+import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
 
 import StoreScreen from './StoreScreen';
 import RandomScreen from './RandomScreen';
-import HomeScreen from './HomeScreen';
 import ProfileScreen from './ProfileScreen';
 
 import background from '../assets/image/initial/background.png';
+import SignupStack from '../stack/SignupStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -55,6 +56,18 @@ export default function YoungClimb() {
     }, 3000);
   });
 
+  // const getVisibility = (route, IndexList) => {
+  //   console.log(route.state.index);
+  //   if (!route.state) {
+  //     return true;
+  //   }
+  //   if (route.state.index in IndexList) {
+  //     console.log(route.state.index);
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
   // useEffect(() => {
   //   // fadeIn();
   //   setTimeout(() => {
@@ -81,30 +94,29 @@ export default function YoungClimb() {
         <NavigationContainer>
           {login ? (
             <Tab.Navigator
-              initialRouteName="홈"
+              initialRouteName="홈탭"
               screenOptions={{
-                headerMode: 'screen',
-                // headerTintColor: 'white',
-                headerStyle: {
-                  // backgroundColor: 'tomato',
-                  height: 50,
-                },
+                headerShown: false,
               }}>
               <Tab.Screen name="지점" component={StoreScreen} />
               <Tab.Screen name="릴스" component={RandomScreen} />
-              <Tab.Screen name="홈" component={HomeScreen} />
               <Tab.Screen
-                name="검색탭"
-                component={SearchStack}
-                options={{headerShown: false}}
+                name="홈탭"
+                component={HomeStack}
+                // options={({route}) => ({
+                //   tabBarVisible: getVisibility(route, [1]),
+                // })}
               />
+              <Tab.Screen name="검색탭" component={SearchStack} />
               <Tab.Screen name="프로필" component={ProfileScreen} />
             </Tab.Navigator>
           ) : (
-            <Stack.Navigator initialRouteName="메인">
+            <Stack.Navigator
+              initialRouteName="메인"
+              screenOptions={{headerShown: false}}>
               <Stack.Screen name="메인" component={MainScreen} />
               <Stack.Screen name="로그인" component={LoginScreen} />
-              <Stack.Screen name="회원가입" component={SignupScreen} />
+              <Stack.Screen name="회원가입" component={SignupStack} />
             </Stack.Navigator>
           )}
         </NavigationContainer>
