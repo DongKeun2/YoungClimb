@@ -9,7 +9,11 @@ const Stack = createStackNavigator();
 
 function SearchStack() {
   return (
-    <Stack.Navigator initialRouteName="검색">
+    <Stack.Navigator
+      initialRouteName="검색"
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Stack.Screen name="검색" component={SearchScreen} />
       <Stack.Screen name="검색 결과" component={SearchResultScreen} />
     </Stack.Navigator>
