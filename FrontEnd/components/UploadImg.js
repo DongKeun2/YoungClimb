@@ -1,16 +1,36 @@
+/* eslint-disable no-undef */ // for Platform.OS
 import React, {useState} from 'react';
-import {Pressable, Image, StyleSheet, TouchableOpacity} from 'react-native';
-import {launchImageLibrary} from 'react-native-image-picker';
+import {
+  Pressable,
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 
-function ImageUploadSample() {
+import wingspanExample from '../assets/image/main/wingspanExample.png';
+import gallery from '../assets/image/main/whiteGallery.png';
+import camera from '../assets/image/main/whiteCamera.png';
+
+const imagePickerOption = {
+  mediaType: 'photo',
+  maxWidth: 768,
+  maxHeight: 768,
+  includeBase64: Platform.OS === 'android',
+};
+
+function UploadImg() {
   const [response, setResponse] = useState(null);
-  const onSelectImage = () => {
+
+  const onGallery = () => {
     launchImageLibrary(
       {
         mediaType: 'photo',
         maxWidth: 512,
         maxHeight: 512,
-        // includeBase64: Platform.OS === 'android',
+        includeBase64: Platform.OS === 'android',
       },
       res => {
         console.log(res);
@@ -22,28 +42,69 @@ function ImageUploadSample() {
     );
   };
 
+  const onCamera = () => {
+    launchCamera(imagePickerOption).then(res => {
+      if (res.didCancel || !res) {
+        return;
+      }
+      setResponse(res);
+    });
+  };
+
   return (
     <>
       {response ? (
-        <TouchableOpacity onPress={onSelectImage}>
+        <TouchableOpacity>
           <Image
             style={styles.circle}
             source={{uri: response?.assets[0]?.uri}}
           />
         </TouchableOpacity>
       ) : (
-        <Pressable style={styles.circle} onPress={onSelectImage} />
+        <TouchableOpacity>
+          <Image style={styles.circle} source={wingspanExample} />
+        </TouchableOpacity>
       )}
+
+      <View style={styles.btnGroup}>
+        <TouchableOpacity onPress={onGallery} style={styles.cameraBtn}>
+          <Image source={gallery} />
+          <Text style={styles.btnText}>갤러리</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onCamera} style={styles.cameraBtn}>
+          <Image source={camera} />
+          <Text style={styles.btnText}>카메라</Text>
+        </TouchableOpacity>
+      </View>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   circle: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     backgroundColor: 'gray',
+  },
+  btnGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  cameraBtn: {
+    display: 'flex',
+    flexDirection: 'row',
+    elevation: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    borderRadius: 10,
+    width: '40%',
+    height: 40,
+    backgroundColor: '#EF3F8F',
+  },
+  btnText: {
+    color: 'white',
   },
 });
 
-export default ImageUploadSample;
+export default UploadImg;

@@ -220,9 +220,9 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
           placeholder="윙스팬(cm)"
           width="100%"
           placeholderTextColor={'#ddd'}
-          value={signupForm.wingSpan.value}
-          type={signupForm.wingSpan.type}
-          onChangeText={value => updateInput('wingSpan', value)}
+          value={signupForm.wingspan.value}
+          type={signupForm.wingspan.type}
+          onChangeText={value => updateInput('wingspan', value)}
         />
         <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
           <Image source={camera} style={styles.cameraIcon} />

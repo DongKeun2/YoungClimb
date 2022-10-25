@@ -1,32 +1,51 @@
 import React from 'react';
+import {useDispatch} from 'react-redux';
 import {StyleSheet, View, Text, Image} from 'react-native';
 
-import wingspan from '../../assets/image/main/wingspan.png';
+import logo from '../../assets/image/main/wingspan.png';
 import CustomButton from '../../components/CustomBtn';
 import UploadImg from '../../components/UploadImg';
+import {wingspan} from '../../utils/slices/AccountsSlice';
 
 function WingSpanScreen({navigation}) {
-  function onSubmitWingSpan() {
-    // navigation.goBack();
+  const dispatch = useDispatch();
+
+  function onBeforePage() {
+    navigation.goBack();
+  }
+
+  function onSubmitWingspan() {
+    const data = {
+      image: '',
+      height: '',
+    };
+    dispatch(wingspan(data));
   }
 
   return (
     <View style={styles.container}>
-      <Image source={wingspan} style={styles.title} />
-      <UploadImg />
+      <Image source={logo} style={styles.logo} />
+      <View style={styles.wingspanContainer}>
+        <Text style={styles.title}>윙스팬 측정</Text>
+        <Text style={styles.content}>
+          보다 정확한 측정을 위해{'\n'}
+          아래 사진과 같이 정면에서 촬영해주세요.
+        </Text>
+        <UploadImg />
+      </View>
       <View style={styles.btnGroup}>
         <CustomButton
           buttonColor="#F3F3F3"
           title="취소"
           titleColor="#7E7E7E"
           width="30%"
-          onPress={onSubmitWingSpan}
+          onPress={onBeforePage}
         />
         <CustomButton
           buttonColor="#EF3F8F"
           title="확인"
           width="30%"
-          onPress={onSubmitWingSpan}
+          onPress={onSubmitWingspan}
         />
       </View>
     </View>
@@ -41,10 +60,25 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  title: {
+  logo: {
     marginTop: '5%',
     width: '100%',
     resizeMode: 'contain',
+  },
+  wingspanContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    width: 350,
+    height: 350,
+    borderColor: 'black',
+    borderRadius: 10,
+  },
+  title: {
+    textAlign: 'center',
+  },
+  content: {
+    textAlign: 'center',
   },
   btnGroup: {
     display: 'flex',

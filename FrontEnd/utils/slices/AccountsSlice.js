@@ -44,6 +44,19 @@ const fetchProfile = createAsyncThunk(
   },
 );
 
+const wingspan = createAsyncThunk(
+  'wingspan',
+  async (payload, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(api.calculateWingspan(), payload, {});
+      console.log(res.data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   loginState: false,
   signupForm: {
@@ -87,7 +100,7 @@ const initialState = {
       rules: {},
       valid: false,
     },
-    wingSpan: {
+    wingspan: {
       value: '',
       type: 'textInput',
       rules: {},
@@ -127,10 +140,13 @@ export const AccountsSlice = createSlice({
     [login.rejected]: state => {
       state.loginState = false;
     },
+    [wingspan.fulfilled]: (state, action) => {
+      state.signupForm.wingspan = action.payload;
+    },
   },
 });
 
-export {login};
+export {login, wingspan};
 
 export const {
   testLogin,
