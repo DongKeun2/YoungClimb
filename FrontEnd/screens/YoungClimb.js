@@ -10,8 +10,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import InitialScreen from './InitialScreen';
 
 import MainScreen from './MainScreen';
-import LoginScreen from './LoginScreen';
-import SignupScreen from './SignupScreen';
+import LoginScreen from './accounts/LoginScreen';
+import SignupScreen from './accounts/SignupScreen';
 
 import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
@@ -19,6 +19,9 @@ import SearchStack from '../stack/SearchStack';
 import StoreScreen from './StoreScreen';
 import RandomScreen from './RandomScreen';
 import ProfileScreen from './ProfileScreen';
+
+import background from '../assets/image/initial/background.png';
+import SignupStack from '../stack/SignupStack';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -107,10 +110,12 @@ export default function YoungClimb() {
               <Tab.Screen name="프로필" component={ProfileScreen} />
             </Tab.Navigator>
           ) : (
-            <Stack.Navigator initialRouteName="메인">
+            <Stack.Navigator
+              initialRouteName="메인"
+              screenOptions={{headerShown: false}}>
               <Stack.Screen name="메인" component={MainScreen} />
               <Stack.Screen name="로그인" component={LoginScreen} />
-              <Stack.Screen name="회원가입" component={SignupScreen} />
+              <Stack.Screen name="회원가입" component={SignupStack} />
             </Stack.Navigator>
           )}
         </NavigationContainer>

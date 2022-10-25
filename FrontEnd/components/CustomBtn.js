@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import {TouchableOpacity, Text, StyleSheet} from 'react-native';
 
+TouchableOpacity.defaultProps = {activeOpacity: 0.8};
+
 export default class CustomButton extends Component {
   static defaultProps = {
     title: 'untitled',
     buttonColor: '#000',
     width: '100%',
+    height: 40,
     titleColor: '#fff',
     onPress: () => null,
   };
@@ -36,11 +39,11 @@ export default class CustomButton extends Component {
 
 const styles = StyleSheet.create({
   button: {
-    flex: 1,
+    elevation: 8,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,
-    borderRadius: 5,
+    borderRadius: 10,
   },
   title: {
     fontSize: 15,
