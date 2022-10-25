@@ -1,5 +1,5 @@
 import React from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {StyleSheet, View, Text, Image} from 'react-native';
 
 import logo from '../../assets/image/main/wingspan.png';
@@ -10,15 +10,19 @@ import {wingspan} from '../../utils/slices/AccountsSlice';
 function WingSpanScreen({navigation}) {
   const dispatch = useDispatch();
 
+  const image = useSelector(state => state.accounts.uploadImg);
+  const height = useSelector(state => state.accounts.signupForm.height.value);
+
   function onBeforePage() {
     navigation.goBack();
   }
 
   function onSubmitWingspan() {
     const data = {
-      image: '',
-      height: '',
+      image,
+      height,
     };
+    console.log(data);
     dispatch(wingspan(data));
   }
 

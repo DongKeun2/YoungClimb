@@ -1,14 +1,10 @@
 /* eslint-disable no-undef */ // for Platform.OS
-import React, {useState} from 'react';
-import {
-  Pressable,
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import React from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+
+import {changeUploadImg} from '../utils/slices/AccountsSlice';
 
 import wingspanExample from '../assets/image/main/wingspanExample.png';
 import gallery from '../assets/image/main/whiteGallery.png';
@@ -22,7 +18,9 @@ const imagePickerOption = {
 };
 
 function UploadImg() {
-  const [response, setResponse] = useState(null);
+  const dispatch = useDispatch();
+
+  const uploadImg = useSelector(state => state.accounts.uploadImg);
 
   const onGallery = () => {
     launchImageLibrary(
@@ -37,7 +35,7 @@ function UploadImg() {
         if (res.didCancel) {
           return;
         }
-        setResponse(res);
+        dispatch(changeUploadImg(res));
       },
     );
   };
@@ -47,17 +45,18 @@ function UploadImg() {
       if (res.didCancel || !res) {
         return;
       }
-      setResponse(res);
+      dispatch(changeUploadImg(res));
+      console.log(res);
     });
   };
 
   return (
     <>
-      {response ? (
+      {uploadImg ? (
         <TouchableOpacity>
           <Image
             style={styles.circle}
-            source={{uri: response?.assets[0]?.uri}}
+            source={{uri: uploadImg?.assets[0]?.uri}}
           />
         </TouchableOpacity>
       ) : (

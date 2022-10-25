@@ -26,7 +26,6 @@ function SignupScreen({navigation}) {
   const signupForm = useSelector(state => state.accounts.signupForm);
 
   function updateInput(name, value) {
-    console.log(name, value);
     dispatch(changeSignupForm({name, value}));
   }
 

@@ -48,10 +48,11 @@ const wingspan = createAsyncThunk(
   'wingspan',
   async (payload, {rejectWithValue}) => {
     try {
-      const res = await axios.post(api.calculateWingspan(), payload, {});
+      const res = await axios.post(api.wingspan(), payload, {});
       console.log(res.data);
       return res.data;
     } catch (err) {
+      console.log(err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -107,6 +108,7 @@ const initialState = {
       valid: false,
     },
   },
+  uploadImg: null,
   isCheckNickname: false,
   isCheckEmail: false,
   isCheckTerms: false,
@@ -132,6 +134,9 @@ export const AccountsSlice = createSlice({
     changeIsCheckTerms: (state, action) => {
       state.isCheckTerms = action.payload;
     },
+    changeUploadImg: (state, action) => {
+      state.uploadImg = action.payload;
+    },
   },
   extraReducers: {
     [login.fulfilled]: state => {
@@ -154,6 +159,7 @@ export const {
   changeIsCheckNickname,
   changeIsCheckEmail,
   changeIsCheckTerms,
+  changeUploadImg,
 } = AccountsSlice.actions;
 
 export default AccountsSlice.reducer;
