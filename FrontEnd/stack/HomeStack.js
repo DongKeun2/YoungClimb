@@ -9,13 +9,17 @@ const Stack = createStackNavigator();
 
 function HomeStack() {
   return (
-    <Stack.Navigator initialRouteName="홈">
+    <Stack.Navigator
+      initialRouteName="홈"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="홈" component={HomeScreen} />
       <Stack.Screen
-        name="홈"
-        component={HomeScreen}
-        options={{headerShown: false}}
+        name="댓글"
+        component={PostScreen}
+        options={{tabBarVisible: false}}
       />
-      <Stack.Screen name="댓글" component={PostScreen} />
     </Stack.Navigator>
   );
 }

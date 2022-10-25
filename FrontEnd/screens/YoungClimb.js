@@ -52,6 +52,18 @@ export default function YoungClimb() {
     }, 3000);
   });
 
+  // const getVisibility = (route, IndexList) => {
+  //   console.log(route.state.index);
+  //   if (!route.state) {
+  //     return true;
+  //   }
+  //   if (route.state.index in IndexList) {
+  //     console.log(route.state.index);
+  //     return false;
+  //   }
+  //   return true;
+  // };
+
   // useEffect(() => {
   //   // fadeIn();
   //   setTimeout(() => {
@@ -80,25 +92,18 @@ export default function YoungClimb() {
             <Tab.Navigator
               initialRouteName="홈탭"
               screenOptions={{
-                headerMode: 'screen',
-                // headerTintColor: 'white',
-                headerStyle: {
-                  // backgroundColor: 'tomato',
-                  height: 50,
-                },
+                headerShown: false,
               }}>
               <Tab.Screen name="지점" component={StoreScreen} />
               <Tab.Screen name="릴스" component={RandomScreen} />
               <Tab.Screen
                 name="홈탭"
                 component={HomeStack}
-                options={{headerShown: false}}
+                // options={({route}) => ({
+                //   tabBarVisible: getVisibility(route, [1]),
+                // })}
               />
-              <Tab.Screen
-                name="검색탭"
-                component={SearchStack}
-                options={{headerShown: false}}
-              />
+              <Tab.Screen name="검색탭" component={SearchStack} />
               <Tab.Screen name="프로필" component={ProfileScreen} />
             </Tab.Navigator>
           ) : (
