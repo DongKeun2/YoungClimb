@@ -3,15 +3,17 @@ import {StyleSheet, View, Text, Image} from 'react-native';
 
 import wingspan from '../../assets/image/main/wingspan.png';
 import CustomButton from '../../components/CustomBtn';
+import UploadImg from '../../components/UploadImg';
 
 function WingSpanScreen({navigation}) {
   function onSubmitWingSpan() {
-    navigation.goBack();
+    // navigation.goBack();
   }
 
   return (
     <View style={styles.container}>
       <Image source={wingspan} style={styles.title} />
+      <UploadImg />
       <View style={styles.btnGroup}>
         <CustomButton
           buttonColor="#F3F3F3"
