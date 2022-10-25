@@ -16,6 +16,7 @@ import signup from '../../assets/image/main/signup.png';
 import checkIcon from '../../assets/image/main/done.png';
 import checked from '../../assets/image/main/checked.png';
 import unChecked from '../../assets/image/main/unchecked.png';
+import camera from '../../assets/image/main/camera.png';
 
 function SignupScreen({navigation}) {
   const dispatch = useDispatch();
@@ -213,17 +214,20 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
         type={signupForm.shoeSize.type}
         onChangeText={value => updateInput('shoeSize', value)}
       />
-      <Input
-        style={styles.input}
-        placeholder="윙스팬(cm)"
-        placeholderTextColor={'#ddd'}
-        value={signupForm.wingSpan.value}
-        type={signupForm.wingSpan.type}
-        onChangeText={value => updateInput('wingSpan', value)}
-      />
-      <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
-        <Text style={styles.link}>윙스팬 측정</Text>
-      </TouchableOpacity>
+      <View style={styles.inputBox}>
+        <Input
+          style={styles.input}
+          placeholder="윙스팬(cm)"
+          width="100%"
+          placeholderTextColor={'#ddd'}
+          value={signupForm.wingSpan.value}
+          type={signupForm.wingSpan.type}
+          onChangeText={value => updateInput('wingSpan', value)}
+        />
+        <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
+          <Image source={camera} style={styles.cameraIcon} />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity onPress={goBeforePage}>
         <Text style={styles.before}>이전</Text>
       </TouchableOpacity>
@@ -303,7 +307,6 @@ const styles = StyleSheet.create({
     color: '#F34D7F',
   },
   next: {},
-  before: {},
   checkBtn: {
     elevation: 8,
     alignItems: 'center',
@@ -316,6 +319,12 @@ const styles = StyleSheet.create({
   checkTitle: {
     fontSize: 15,
   },
+  cameraIcon: {
+    position: 'absolute',
+    right: 0,
+    top: -30,
+  },
+  before: {},
 });
 
 export default SignupScreen;
