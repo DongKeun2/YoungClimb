@@ -1,11 +1,20 @@
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {View, Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {login, testLogin} from '../../utils/slices/AccountsSlice';
 
 import Input from '../../components/Input';
 import CustomButton from '../../components/CustomBtn';
 import title from '../../assets/image/main/title.png';
+
+const windowHeight = Dimensions.get('window').height;
 
 function LoginScreen({navigation}) {
   const dispatch = useDispatch();
@@ -45,35 +54,41 @@ function LoginScreen({navigation}) {
   }
   return (
     <View style={styles.container}>
-      <Image source={title} style={styles.title} />
-      <Input
-        style={styles.input}
-        placeholder="이메일"
-        placeholderTextColor={'#ddd'}
-        value={loginForm.email.value}
-        type={loginForm.email.type}
-        onChangeText={value => updateInput('email', value)}
-      />
-      <Input
-        style={styles.input}
-        value={loginForm.password.value}
-        type={loginForm.password.type}
-        secureTextEntry={true}
-        placeholder="비밀번호"
-        placeholderTextColor={'#ddd'}
-        onChangeText={value => updateInput('password', value)}
-      />
+      <View stlye={styles.header}>
+        <Image source={title} style={styles.logo} />
+      </View>
+      <View style={styles.inputGroup}>
+        <Input
+          style={styles.input}
+          placeholder="이메일"
+          placeholderTextColor={'#ddd'}
+          value={loginForm.email.value}
+          type={loginForm.email.type}
+          onChangeText={value => updateInput('email', value)}
+        />
+        <Input
+          style={styles.input}
+          value={loginForm.password.value}
+          type={loginForm.password.type}
+          secureTextEntry={true}
+          placeholder="비밀번호"
+          placeholderTextColor={'#ddd'}
+          onChangeText={value => updateInput('password', value)}
+        />
+      </View>
       <View style={styles.button}>
         <CustomButton
           buttonColor="#EF3F8F"
-          title="로그인하기"
+          title="로그인"
           onPress={onSubmitLogin}
         />
       </View>
-      <Text>회원이 아니신가요?</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>
-        <Text style={styles.link}>회원가입</Text>
-      </TouchableOpacity>
+      <View style={styles.linkGroup}>
+        <Text>회원이 아니신가요? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>
+          <Text style={styles.link}>회원가입</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -86,15 +101,32 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  title: {
-    marginTop: '5%',
+  header: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
+    height: '50%',
+  },
+  logo: {
+    marginTop: windowHeight / 10,
     resizeMode: 'contain',
+  },
+  inputGroup: {
+    marginBottom: '10%',
+    width: '100%',
+    height: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   input: {},
   button: {
     width: '80%',
-    height: '10%',
+  },
+  linkGroup: {
+    marginTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
   },
   link: {
     color: '#F34D7F',

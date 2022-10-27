@@ -32,6 +32,36 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   }
 });
 
+const signup = createAsyncThunk(
+  'signup',
+  async (payload, {rejectWithValue}) => {
+    console.log('회원가입 정보', payload);
+    try {
+      const res = await axios.post(api.signup(), payload, {});
+      setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const profileCreate = createAsyncThunk(
+  'profileCreate',
+  async (formdata, {rejectWithValue}) => {
+    console.log('회원가입 후 프로필, 자기소개 입력', formdata);
+    try {
+      const res = await axios.post(api.profile(), formdata, getConfig());
+      setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const fetchProfile = createAsyncThunk(
   'fetchProfile',
   async (nickname, {rejectWithValue}) => {
@@ -39,6 +69,32 @@ const fetchProfile = createAsyncThunk(
       const res = await axios.get(api.fetchProfile(nickname), getConfig());
       return res.data;
     } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const wingspan = createAsyncThunk(
+  'wingspan',
+  async (formData, {rejectWithValue}) => {
+    console.log('측정 요청 감');
+    const header = {
+      'Content-Type': 'multipart/form-data',
+    };
+    try {
+      const res = await axios({
+        method: 'post',
+        url: api.wingspan(),
+        data: formData,
+        headers: header,
+      });
+      // const res = await axios.post(api.wingspan(), payload, {
+      //   headers,
+      // });
+      console.log('결과', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('에러...', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -87,13 +143,14 @@ const initialState = {
       rules: {},
       valid: false,
     },
-    wingSpan: {
+    wingspan: {
       value: '',
       type: 'textInput',
       rules: {},
       valid: false,
     },
   },
+  uploadImg: null,
   isCheckNickname: false,
   isCheckEmail: false,
   isCheckTerms: false,
@@ -106,9 +163,6 @@ export const AccountsSlice = createSlice({
     testLogin: (state, action) => {
       state.loginState = action.payload;
     },
-    onCheckTerms: (state, action) => {
-      state.isCheckTerms = action.payload;
-    },
     changeSignupForm: (state, action) => {
       state.signupForm[action.payload.name].value = action.payload.value;
       console.log(state.signupForm);
@@ -119,6 +173,12 @@ export const AccountsSlice = createSlice({
     changeIsCheckEmail: (state, action) => {
       state.isCheckEmail = action.payload;
     },
+    changeIsCheckTerms: (state, action) => {
+      state.isCheckTerms = action.payload;
+    },
+    changeUploadImg: (state, action) => {
+      state.uploadImg = action.payload;
+    },
   },
   extraReducers: {
     [login.fulfilled]: state => {
@@ -127,17 +187,22 @@ export const AccountsSlice = createSlice({
     [login.rejected]: state => {
       state.loginState = false;
     },
+    [wingspan.fulfilled]: (state, action) => {
+      state.signupForm.wingspan = action.payload;
+    },
+    [signup.fulfilled]: (state, action) => {},
   },
 });
 
-export {login};
+export {login, wingspan, signup, profileCreate};
 
 export const {
   testLogin,
-  onCheckTerms,
   changeSignupForm,
   changeIsCheckNickname,
   changeIsCheckEmail,
+  changeIsCheckTerms,
+  changeUploadImg,
 } = AccountsSlice.actions;
 
 export default AccountsSlice.reducer;

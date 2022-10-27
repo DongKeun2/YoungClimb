@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, View, Image} from 'react-native';
 import {useDispatch} from 'react-redux';
 
-import {onCheckTerms} from '../../utils/slices/AccountsSlice';
+import {changeIsCheckTerms} from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
 
@@ -12,7 +12,7 @@ function TermsScreen({navigation}) {
   const dispatch = useDispatch();
 
   function onSubmitTerms() {
-    dispatch(onCheckTerms(true));
+    dispatch(changeIsCheckTerms(true));
     navigation.goBack();
   }
   return (
