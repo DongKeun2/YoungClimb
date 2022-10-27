@@ -12,11 +12,15 @@ function CustomMainHeader(props) {
       <Image style={styles.logoImg} source={mainLogo} />
       <View style={styles.iconGroup}>
         <TouchableOpacity
-          onPress={() => (props.navigation ? props.navigation.navigate('게시글 생성') : null)}>
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('게시글 생성') : null
+          }>
           <PostAddIcon style={{marginRight: 10}} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => (props.navigation ? props.navigation.navigate('알림') : null)}>
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('알림') : null
+          }>
           <NoticeIcon style={{marginRight: 10}} />
         </TouchableOpacity>
       </View>
@@ -26,7 +30,9 @@ function CustomMainHeader(props) {
       <Text style={styles.headerTitle}>{props.type}</Text>
       <View style={styles.iconGroup}>
         <TouchableOpacity
-          onPress={() => (props.navigation ? props.navigation.goBack() : null)}>
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('게시글 생성') : null
+          }>
           <PostAddIcon style={{marginRight: 10}} />
         </TouchableOpacity>
         <TouchableOpacity
