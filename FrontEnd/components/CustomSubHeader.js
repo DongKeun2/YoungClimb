@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
-import backicon from '../assets/image/header/backicon.png';
+import Backicon from '../assets/image/header/backIcon.svg';
 
 export default class CustomSubHeader extends Component {
   static defaultProps = {
@@ -16,7 +16,7 @@ export default class CustomSubHeader extends Component {
     return (
       <View style={styles.container}>
         <TouchableOpacity onPress={this.props.onPress}>
-          <Image style={{marginLeft: 5, marginRight: 5}} source={backicon} />
+          <Backicon style={{marginLeft: 5, marginRight: 5}}/>
         </TouchableOpacity>
         <Text style={{fontSize: 16}}>{this.props.title}</Text>
       </View>
