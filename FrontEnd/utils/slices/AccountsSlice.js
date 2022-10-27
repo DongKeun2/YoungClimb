@@ -38,6 +38,23 @@ const signup = createAsyncThunk(
     console.log('회원가입 정보', payload);
     try {
       const res = await axios.post(api.signup(), payload, {});
+      setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const profileCreate = createAsyncThunk(
+  'profileCreate',
+  async (formdata, {rejectWithValue}) => {
+    console.log('회원가입 후 프로필, 자기소개 입력', formdata);
+    try {
+      const res = await axios.post(api.profile(), formdata, getConfig());
+      setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -173,10 +190,11 @@ export const AccountsSlice = createSlice({
     [wingspan.fulfilled]: (state, action) => {
       state.signupForm.wingspan = action.payload;
     },
+    [signup.fulfilled]: (state, action) => {},
   },
 });
 
-export {login, wingspan, signup};
+export {login, wingspan, signup, profileCreate};
 
 export const {
   testLogin,

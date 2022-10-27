@@ -12,15 +12,19 @@ import {useDispatch} from 'react-redux';
 import {CommonActions} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
+import {profileCreate, testLogin} from '../../utils/slices/AccountsSlice';
 import CustomButton from '../../components/CustomBtn';
 import UserAvatar from '../../components/UserAvatar';
+
+import avatar from '../../assets/image/profile/avatar.png';
 
 function SuccessScreen({navigation}) {
   const dispatch = useDispatch();
 
-  const [ImageUri, setImageUri] = useState(undefined);
+  const [imageUri, setImageUri] = useState(undefined);
+  const [intro, setIntro] = useState('');
 
-  const onGallery = () => {
+  const SelectProfile = () => {
     launchImageLibrary(
       {
         mediaType: 'photo',
@@ -37,20 +41,39 @@ function SuccessScreen({navigation}) {
         // dispatch(changeUploadImg(res));
       },
     );
+    console.log('프로필 사진 변경');
   };
 
-  function SelectProfile() {
-    onGallery();
-    console.log('프로필 사진 변경');
+  function onSubmitProfile(isSkip) {
+    const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.filename ?? '');
+    const type = match ? `image/${match[1]}` : 'image';
+
+    const formdata = new FormData();
+    formdata.append('image', {
+      uri: imageUri?.assets[0]?.uri,
+      name: imageUri?.assets[0]?.filename,
+      type,
+    });
+    formdata.append('data', JSON.stringify({intro}));
+    if (isSkip) {
+      dispatch(profileCreate(formdata));
+    }
+    dispatch(testLogin(true));
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>회원가입 성공</Text>
+      <Text style={styles.title}>회원가입 성공!</Text>
       <Text style={styles.text}>
         프로필을 꾸미고 회원님의 클라이밍을 뽐내보세요!
       </Text>
-      <UserAvatar source={{uri: ImageUri?.assets[0]?.uri}} size={120} />
+      {imageUri ? (
+        <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={120} />
+      ) : (
+        <TouchableOpacity onPress={SelectProfile}>
+          <Image source={avatar} />
+        </TouchableOpacity>
+      )}
       <TouchableOpacity onPress={SelectProfile}>
         <Text style={styles.link}>프로필 사진 선택</Text>
       </TouchableOpacity>
@@ -59,6 +82,8 @@ function SuccessScreen({navigation}) {
         placeholder="소개를 작성해주세요 :)"
         placeholderTextColor={'#ddd'}
         multiline={true}
+        textAlignVertical="top"
+        onChangeText={value => setIntro(value)}
       />
       <View style={styles.btnGroup}>
         <View style={styles.button}>
@@ -66,16 +91,14 @@ function SuccessScreen({navigation}) {
             titleColor="#7E7E7E"
             buttonColor="#F3F3F3"
             title="건너뛰기"
-            onPress={() =>
-              navigation.dispatch(CommonActions.navigate('로그인'))
-            }
+            onPress={onSubmitProfile}
           />
         </View>
         <View style={styles.button}>
           <CustomButton
             buttonColor="#EF3F8F"
             title="완료"
-            onPress={() => navigation.navigate('로그인')}
+            onPress={onSubmitProfile}
           />
         </View>
       </View>
@@ -91,14 +114,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  title: {
+    fontSize: 20,
+    color: '#F34D7F',
+  },
   input: {
     width: '80%',
     borderWidth: 1,
-    borderColor: '#464646',
+    borderColor: '#ADADAD',
     fontSize: 17,
     padding: 5,
     marginTop: 30,
-    height: '15%',
+    height: 74,
   },
   btnGroup: {
     width: '80%',

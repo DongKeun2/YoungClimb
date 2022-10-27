@@ -34,7 +34,6 @@ function WingSpanScreen({navigation}) {
     const formdata = new FormData();
     formdata.append('image', {
       uri: imageUri,
-      // uri: '../../assets/image/main/wingspan.png',
       name: imageName,
       type,
     });
