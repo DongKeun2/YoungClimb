@@ -16,7 +16,7 @@ import SignupScreen from './accounts/SignupScreen';
 import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
 
-import StoreScreen from './StoreScreen';
+import StoreScreen from './stores/StoreScreen';
 import RandomScreen from './RandomScreen';
 import ProfileScreen from './ProfileScreen';
 

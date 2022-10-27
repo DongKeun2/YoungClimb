@@ -1,14 +1,14 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react'
 import {View, Text, Button, Animated, Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
-import BottomSheet from '../components/BottomSheet';
+import BottomSheet from '../../components/BottomSheet';
 import NaverMapView, {Circle, Marker, Align} from "react-native-nmap";
 import Geolocation from 'react-native-geolocation-service';
 
-import MyLocationImg from '../assets/image/map/MyLocation.png'
-import MarkerImg from '../assets/image/map/Marker.png'
+import MyLocationImg from '../../assets/image/map/MyLocation.png'
+import MarkerImg from '../../assets/image/map/Marker.png'
 
-function StoreScreen() {
+export default function StoreScreen({navigation}) {
   const [currentLocation, setCurrentLocation] = useState({latitude: 37.587336576003295, longitude: 127.0575764763725});
   const [modalVisible, setModalVisible] = useState(false)
   const [mapView, setMapView] = useState('55%')
@@ -16,7 +16,19 @@ function StoreScreen() {
     console.log(JSON.stringify(e))
     setCurrentLocation(e);
   }
-  const climbingLocations = [{"latitude": 37.49622174266254, "longitude": 127.03029194140458}, {"latitude": 37.49552290450269, "longitude": 127.0282506964424}]
+  const [climbingLocations, setClimbingLocations] = useState([
+    {id:'A125098234',
+    name: '더클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '300m',
+    latitude: 37.49622174266254, longitude: 127.03029194140458
+    }, 
+    {id:'A125098234',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    }])
 
   useEffect(()=>{
     Geolocation.getCurrentPosition(
@@ -53,16 +65,16 @@ function StoreScreen() {
             {/* 
             받은 정보 map        
             <Marker coordinate={P0} onClick={() => console.warn('onClick! p0')}/> */}
-            {climbingLocations.map((pos, idx)=>{
+            {climbingLocations.map((center, idx)=>{
               return(
-                <Marker coordinate={pos} key={idx} caption={{text:'더클라임 강남', align:Align.Top}}/>
+                <Marker coordinate={{latitude:center.latitude, longitude:center.longitude}} key={center.id} caption={{text:center.name, align:Align.Top}}/>
               )
             })}
             <Marker coordinate={currentLocation} image={MyLocationImg}/>
-            {/* <Marker coordinate={currentLocation} caption={{text:'dd', align:Align.Top}}/> */}
         </NaverMapView>
       </Animated.View> 
         <BottomSheet
+        navigation = {navigation}
         style={{...styles.bottomView,zIndex:10}}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
@@ -119,6 +131,6 @@ const styles = StyleSheet.create({
   }
 })
 
-export default StoreScreen;
+
 
 
