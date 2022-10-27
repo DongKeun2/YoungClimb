@@ -8,11 +8,12 @@ import {
   changeIsCheckEmail,
   changeIsCheckNickname,
   changeIsCheckTerms,
+  signup,
 } from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
 
-import signup from '../../assets/image/main/signup.png';
+import logo from '../../assets/image/main/signup.png';
 import checkIcon from '../../assets/image/main/done.png';
 import checked from '../../assets/image/main/checked.png';
 import unChecked from '../../assets/image/main/unchecked.png';
@@ -70,7 +71,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
 
   return (
     <View style={styles.container}>
-      <Image source={signup} style={styles.title} />
+      <Image source={logo} style={styles.title} />
       <View style={styles.inputBox}>
         <Input
           style={styles.input}
@@ -190,13 +191,39 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
 };
 
 const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
+  const dispatch = useDispatch();
+
   function goBeforePage() {
     setPage(false);
   }
 
+  function onSubmitSignup(isSkip) {
+    const data = {
+      email: signupForm.email.value,
+      nickname: signupForm.nickname.value,
+      password: signupForm.password.value,
+      gender: signupForm.gender.value,
+    };
+
+    if (isSkip) {
+      dispatch(signup(data)).then(() => {
+        navigation.navigate('완료');
+      });
+    } else {
+      data.height = signupForm.height.value;
+      data.shoeSize = signupForm.shoeSize.value;
+      data.wingspan = signupForm.shoeSize.value;
+
+      dispatch(signup(data)).then(() => {
+        navigation.navigate('완료');
+      });
+      console.log('확인');
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <Image source={signup} style={styles.title} />
+      <Image source={logo} style={styles.title} />
       <Input
         style={styles.input}
         placeholder="키(cm)"
@@ -226,6 +253,23 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
         <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
           <Image source={camera} style={styles.cameraIcon} />
         </TouchableOpacity>
+      </View>
+      <View style={styles.btnGroup}>
+        <View style={styles.button}>
+          <CustomButton
+            titleColor="#7E7E7E"
+            buttonColor="#F3F3F3"
+            title="건너뛰기"
+            onPress={() => onSubmitSignup(true)}
+          />
+        </View>
+        <View style={styles.button}>
+          <CustomButton
+            buttonColor="#EF3F8F"
+            title="완료"
+            onPress={() => onSubmitSignup(false)}
+          />
+        </View>
       </View>
       <TouchableOpacity onPress={goBeforePage}>
         <Text style={styles.before}>이전</Text>
@@ -275,7 +319,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    width: '80%',
+    width: '45%',
     height: '10%',
   },
   genderGroup: {
@@ -323,6 +367,14 @@ const styles = StyleSheet.create({
     right: 0,
     top: -30,
   },
+  btnGroup: {
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
   before: {},
 });
 

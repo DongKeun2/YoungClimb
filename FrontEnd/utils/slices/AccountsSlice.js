@@ -32,6 +32,19 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   }
 });
 
+const signup = createAsyncThunk(
+  'signup',
+  async (payload, {rejectWithValue}) => {
+    console.log('회원가입 정보', payload);
+    try {
+      const res = await axios.post(api.signup(), payload, {});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const fetchProfile = createAsyncThunk(
   'fetchProfile',
   async (nickname, {rejectWithValue}) => {
@@ -46,13 +59,25 @@ const fetchProfile = createAsyncThunk(
 
 const wingspan = createAsyncThunk(
   'wingspan',
-  async (payload, {rejectWithValue}) => {
+  async (formData, {rejectWithValue}) => {
+    console.log('측정 요청 감');
+    const header = {
+      'Content-Type': 'multipart/form-data',
+    };
     try {
-      const res = await axios.post(api.wingspan(), payload, {});
-      console.log(res.data);
+      const res = await axios({
+        method: 'post',
+        url: api.wingspan(),
+        data: formData,
+        headers: header,
+      });
+      // const res = await axios.post(api.wingspan(), payload, {
+      //   headers,
+      // });
+      console.log('결과', res.data);
       return res.data;
     } catch (err) {
-      console.log(err);
+      console.log('에러...', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -151,7 +176,7 @@ export const AccountsSlice = createSlice({
   },
 });
 
-export {login, wingspan};
+export {login, wingspan, signup};
 
 export const {
   testLogin,

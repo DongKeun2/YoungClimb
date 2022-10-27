@@ -7,10 +7,18 @@ import CustomButton from '../../components/CustomBtn';
 import UploadImg from '../../components/UploadImg';
 import {wingspan} from '../../utils/slices/AccountsSlice';
 
+import test from '../../assets/image/main/wingspan.png';
+
 function WingSpanScreen({navigation}) {
   const dispatch = useDispatch();
 
-  const image = useSelector(state => state.accounts.uploadImg);
+  const imageUri = useSelector(
+    state => state.accounts.uploadImg?.assets[0].uri,
+  );
+  const imageName = useSelector(
+    state => state.accounts.uploadImg?.assets[0].fileName,
+  );
+
   const height = useSelector(state => state.accounts.signupForm.height.value);
 
   function onBeforePage() {
@@ -18,12 +26,32 @@ function WingSpanScreen({navigation}) {
   }
 
   function onSubmitWingspan() {
+    console.log('버튼 눌림');
+    const match = /\.(\w+)$/.exec(imageName ?? '');
+    const type = match ? `image/${match[1]}` : 'image';
+    console.log(test);
+    console.log(imageUri);
+    const formdata = new FormData();
+    formdata.append('image', {
+      uri: imageUri,
+      // uri: '../../assets/image/main/wingspan.png',
+      name: imageName,
+      type,
+    });
     const data = {
-      image,
       height,
     };
-    console.log(data);
-    dispatch(wingspan(data));
+    formdata.append('data', JSON.stringify(data));
+    // formdata.append('height', `${height}`);
+    // formdata.append('enctype', 'multipart/form-data');
+    // const data = {
+    //   image: formdata,
+    //   height,
+    // };
+    // console.log(data);
+    // console.log(formdata._parts[0][1]);
+    // console.log(formdata);
+    dispatch(wingspan(formdata));
   }
 
   return (

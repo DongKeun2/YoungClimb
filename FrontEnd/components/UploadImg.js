@@ -11,6 +11,10 @@ import gallery from '../assets/image/main/whiteGallery.png';
 import camera from '../assets/image/main/whiteCamera.png';
 
 const imagePickerOption = {
+  storageOptions: {
+    skipBackup: true,
+    path: 'images',
+  },
   mediaType: 'photo',
   maxWidth: 768,
   maxHeight: 768,
@@ -35,6 +39,7 @@ function UploadImg() {
         if (res.didCancel) {
           return;
         }
+        console.log(res);
         dispatch(changeUploadImg(res));
       },
     );
@@ -46,7 +51,6 @@ function UploadImg() {
         return;
       }
       dispatch(changeUploadImg(res));
-      console.log(res);
     });
   };
 
