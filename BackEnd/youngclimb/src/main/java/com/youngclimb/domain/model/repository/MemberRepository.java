@@ -1,0 +1,14 @@
+package com.youngclimb.domain.model.repository;
+
+import com.youngclimb.domain.model.entity.Member;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface MemberRepository extends JpaRepository<Member, Integer> {
+
+    boolean existsByNickname(String nickname);
+    boolean existsByEmail(String email);
+
+    Member findByEmail(String email);
+}
