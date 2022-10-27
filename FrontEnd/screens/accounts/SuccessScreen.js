@@ -73,7 +73,11 @@ function SuccessScreen({navigation}) {
         </Text>
       </View>
       {imageUri ? (
-        <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
+        <UserAvatar
+          source={{uri: imageUri?.assets[0]?.uri}}
+          size={100}
+          rank={1}
+        />
       ) : (
         <TouchableOpacity onPress={SelectProfile}>
           <Image source={avatar} />

@@ -3,8 +3,10 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
-import HomeScreen from '../screens/homes/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
+import FollowScreen from '../screens/profile/FollowScreen';
+import DetailScreen from '../screens/profile/DetailScreen';
 
 import PostAddStack from './PostAddStack';
 
@@ -27,6 +29,9 @@ function ProfileStack({navigation, route}) {
         headerShown: false,
       }}>
       <Stack.Screen name="프로필" component={ProfileScreen} />
+      <Stack.Screen name="프로필 설정" component={ProfileEditScreen} />
+      <Stack.Screen name="팔로우" component={FollowScreen} />
+      <Stack.Screen name="게시글 상세" component={DetailScreen} />
       <Stack.Screen name="게시글 생성" component={PostAddStack} />
     </Stack.Navigator>
   );
