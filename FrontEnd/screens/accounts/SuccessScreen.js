@@ -1,11 +1,19 @@
 /* eslint-disable no-undef */
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, Image, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {CommonActions} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import CustomButton from '../../components/CustomBtn';
+import UserAvatar from '../../components/UserAvatar';
 
 function SuccessScreen({navigation}) {
   const dispatch = useDispatch();
@@ -42,12 +50,16 @@ function SuccessScreen({navigation}) {
       <Text style={styles.text}>
         프로필을 꾸미고 회원님의 클라이밍을 뽐내보세요!
       </Text>
-      <TouchableOpacity>
-        <Image style={styles.circle} source={{uri: ImageUri?.assets[0]?.uri}} />
-      </TouchableOpacity>
+      <UserAvatar source={{uri: ImageUri?.assets[0]?.uri}} size={120} />
       <TouchableOpacity onPress={SelectProfile}>
         <Text style={styles.link}>프로필 사진 선택</Text>
       </TouchableOpacity>
+      <TextInput
+        style={styles.input}
+        placeholder="소개를 작성해주세요 :)"
+        placeholderTextColor={'#ddd'}
+        multiline={true}
+      />
       <View style={styles.btnGroup}>
         <View style={styles.button}>
           <CustomButton
@@ -79,9 +91,14 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  circle: {
-    width: 200,
-    height: 200,
+  input: {
+    width: '80%',
+    borderWidth: 1,
+    borderColor: '#464646',
+    fontSize: 17,
+    padding: 5,
+    marginTop: 30,
+    height: '15%',
   },
   btnGroup: {
     width: '80%',
