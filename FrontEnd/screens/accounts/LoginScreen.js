@@ -45,35 +45,41 @@ function LoginScreen({navigation}) {
   }
   return (
     <View style={styles.container}>
-      <Image source={title} style={styles.title} />
-      <Input
-        style={styles.input}
-        placeholder="이메일"
-        placeholderTextColor={'#ddd'}
-        value={loginForm.email.value}
-        type={loginForm.email.type}
-        onChangeText={value => updateInput('email', value)}
-      />
-      <Input
-        style={styles.input}
-        value={loginForm.password.value}
-        type={loginForm.password.type}
-        secureTextEntry={true}
-        placeholder="비밀번호"
-        placeholderTextColor={'#ddd'}
-        onChangeText={value => updateInput('password', value)}
-      />
+      <View stlye={styles.header}>
+        <Image source={title} style={styles.logo} />
+      </View>
+      <View style={styles.inputGroup}>
+        <Input
+          style={styles.input}
+          placeholder="이메일"
+          placeholderTextColor={'#ddd'}
+          value={loginForm.email.value}
+          type={loginForm.email.type}
+          onChangeText={value => updateInput('email', value)}
+        />
+        <Input
+          style={styles.input}
+          value={loginForm.password.value}
+          type={loginForm.password.type}
+          secureTextEntry={true}
+          placeholder="비밀번호"
+          placeholderTextColor={'#ddd'}
+          onChangeText={value => updateInput('password', value)}
+        />
+      </View>
       <View style={styles.button}>
         <CustomButton
           buttonColor="#EF3F8F"
-          title="로그인하기"
+          title="로그인"
           onPress={onSubmitLogin}
         />
       </View>
-      <Text>회원이 아니신가요?</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>
-        <Text style={styles.link}>회원가입</Text>
-      </TouchableOpacity>
+      <View style={styles.linkGroup}>
+        <Text>회원이 아니신가요? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>
+          <Text style={styles.link}>회원가입</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -83,18 +89,30 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  title: {
-    marginTop: '5%',
+  header: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     width: '100%',
-    resizeMode: 'contain',
+    height: '50%',
+  },
+  logo: {},
+  inputGroup: {
+    height: '30%',
+    marginBottom: '10%',
+    width: '100%',
+    alignItems: 'center',
   },
   input: {},
   button: {
     width: '80%',
-    height: '10%',
+  },
+  linkGroup: {
+    marginTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
   },
   link: {
     color: '#F34D7F',
