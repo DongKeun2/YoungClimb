@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class MemberInfo {
+    public String email;
     public String nickname;
     public String intro;
     public String image;
