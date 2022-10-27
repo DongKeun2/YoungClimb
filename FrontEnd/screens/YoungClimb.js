@@ -15,13 +15,23 @@ import SignupScreen from './accounts/SignupScreen';
 
 import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
+import SignupStack from '../stack/SignupStack';
 
 import StoreScreen from './StoreScreen';
 import RandomScreen from './RandomScreen';
 import ProfileScreen from './ProfileScreen';
 
 import background from '../assets/image/initial/background.png';
-import SignupStack from '../stack/SignupStack';
+import MapIcon from '../assets/image/tab/map.svg';
+import ReelsIcon from '../assets/image/tab/reels.svg';
+import HomeIcon from '../assets/image/tab/home.svg';
+import SearchIcon from '../assets/image/tab/search.svg';
+import ProfileIcon from '../assets/image/tab/profile.svg';
+import ActiveMapIcon from '../assets/image/tab/activeMap.svg';
+import ActiveReelsIcon from '../assets/image/tab/activeReels.svg';
+import ActiveHomeIcon from '../assets/image/tab/activeHome.svg';
+import ActiveSearchIcon from '../assets/image/tab/activeSearch.svg';
+import ActiveProfileIcon from '../assets/image/tab/activeProfile.svg';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -83,13 +93,50 @@ export default function YoungClimb() {
             <Tab.Navigator
               initialRouteName="홈탭"
               screenOptions={{
+                tabBarShowLabel: false,
+                tabBarActiveTintColor: 'black',
                 headerShown: false,
               }}>
-              <Tab.Screen name="지점" component={StoreScreen} />
-              <Tab.Screen name="릴스" component={RandomScreen} />
-              <Tab.Screen name="홈탭" component={HomeStack} />
-              <Tab.Screen name="검색탭" component={SearchStack} />
-              <Tab.Screen name="프로필" component={ProfileScreen} />
+              <Tab.Screen
+                name="지점"
+                component={StoreScreen}
+                options={{
+                  tabBarIcon: ({focused}) =>
+                    focused ? <ActiveMapIcon /> : <MapIcon />,
+                }}
+              />
+              <Tab.Screen
+                name="릴스"
+                component={RandomScreen}
+                options={{
+                  tabBarIcon: ({focused}) =>
+                    focused ? <ActiveReelsIcon /> : <ReelsIcon />,
+                }}
+              />
+              <Tab.Screen
+                name="홈탭"
+                component={HomeStack}
+                options={{
+                  tabBarIcon: ({focused}) =>
+                    focused ? <ActiveHomeIcon /> : <HomeIcon />,
+                }}
+              />
+              <Tab.Screen
+                name="검색탭"
+                component={SearchStack}
+                options={{
+                  tabBarIcon: ({focused}) =>
+                    focused ? <ActiveSearchIcon /> : <SearchIcon />,
+                }}
+              />
+              <Tab.Screen
+                name="프로필"
+                component={ProfileScreen}
+                options={{
+                  tabBarIcon: ({focused}) =>
+                    focused ? <ActiveProfileIcon /> : <ProfileIcon />,
+                }}
+              />
             </Tab.Navigator>
           ) : (
             <Stack.Navigator

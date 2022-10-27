@@ -4,9 +4,9 @@ import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
 // import { useNavigation } from '@react-navigation/native';
 
 import mainLogo from '../assets/image/main/logo.png';
-import postAddIcon from '../assets/image/header/postAddIcon.png';
-import noticeIcon from '../assets/image/header/noticeIcon.png';
-import settingIcon from '../assets/image/header/settingIcon.png';
+import PostAddIcon from '../assets/image/header/postAddIcon.svg';
+import NoticeIcon from '../assets/image/header/noticeIcon.svg';
+import SettingIcon from '../assets/image/header/settingIcon.svg';
 
 export default class CustomMainHeader extends Component {
   static defaultProps = {
@@ -20,18 +20,20 @@ export default class CustomMainHeader extends Component {
   render() {
     return this.props.type === '홈' ? (
       <View style={styles.container}>
-        <Image source={mainLogo} />
+        <TouchableOpacity onPress={() => null}>
+          <Image style={styles.logoImg} source={mainLogo} />
+        </TouchableOpacity>
         <View style={styles.iconGroup}>
-          <Image style={{marginRight: 10}} source={postAddIcon} />
-          <Image style={{marginRight: 10}} source={noticeIcon} />
+          <PostAddIcon style={{marginRight: 10}} />
+          <NoticeIcon style={{marginRight: 10}} />
         </View>
       </View>
     ) : this.props.type === '프로필' ? (
       <View style={styles.container}>
         <Text style={styles.headerTitle}>{this.props.type}</Text>
         <View style={styles.iconGroup}>
-          <Image style={{marginRight: 10}} source={postAddIcon} />
-          <Image style={{marginRight: 10}} source={settingIcon} />
+          <PostAddIcon style={{marginRight: 10}} />
+          <SettingIcon style={{marginRight: 10}} />
         </View>
       </View>
     ) : (
@@ -59,6 +61,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     marginLeft: 12,
+  },
+  logoImg: {
+    height: 32,
+    resizeMode: 'contain',
   },
   iconGroup: {
     display: 'flex',
