@@ -1,27 +1,21 @@
-import React, {Component} from 'react';
-import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
+import React from 'react';
+import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import Backicon from '../assets/image/header/backIcon.svg';
 
-export default class CustomSubHeader extends Component {
-  static defaultProps = {
-    title: 'untitled',
-    onPress: () => null,
-  };
+const CustomSubHeader = props => {
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={props.onPress}>
+        <Backicon style={{marginLeft: 5, marginRight: 5}} />
+      </TouchableOpacity>
+      <Text style={{fontSize: 16}}>{props.title}</Text>
+    </View>
+  );
+};
 
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity onPress={this.props.onPress}>
-          <Backicon style={{marginLeft: 5, marginRight: 5}}/>
-        </TouchableOpacity>
-        <Text style={{fontSize: 16}}>{this.props.title}</Text>
-      </View>
-    );
-  }
+CustomSubHeader.defaultProps = {
+  title: 'untitled',
+  onPress: () => null,
 }
 
 const styles = StyleSheet.create({
@@ -34,3 +28,5 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
 });
+
+export default CustomSubHeader;
