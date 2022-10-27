@@ -2,21 +2,22 @@ import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import Backicon from '../assets/image/header/backIcon.svg';
 
-const CustomSubHeader = props => {
+function CustomSubHeader(props) {
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={props.onPress}>
+      <TouchableOpacity
+        onPress={() => (props.navigation ? props.navigation.goBack() : null)}>
         <Backicon style={{marginLeft: 5, marginRight: 5}} />
       </TouchableOpacity>
       <Text style={{fontSize: 16}}>{props.title}</Text>
     </View>
   );
-};
+}
 
 CustomSubHeader.defaultProps = {
   title: 'untitled',
-  onPress: () => null,
-}
+  navigation: null,
+};
 
 const styles = StyleSheet.create({
   container: {
