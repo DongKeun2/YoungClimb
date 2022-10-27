@@ -18,7 +18,7 @@ import SearchStack from '../stack/SearchStack';
 
 import StoreScreen from './stores/StoreScreen';
 import RandomScreen from './RandomScreen';
-import ProfileScreen from './ProfileScreen';
+import ProfileStack from '../stack/ProfileStack';
 
 import background from '../assets/image/initial/background.png';
 import MapIcon from '../assets/image/tab/map.svg';
@@ -130,8 +130,8 @@ export default function YoungClimb() {
                 }}
               />
               <Tab.Screen
-                name="프로필"
-                component={ProfileScreen}
+                name="프로필탭"
+                component={ProfileStack}
                 options={{
                   tabBarIcon: ({focused}) =>
                     focused ? <ActiveProfileIcon /> : <ProfileIcon />,
