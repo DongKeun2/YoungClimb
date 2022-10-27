@@ -16,7 +16,7 @@ import SignupStack from '../stack/SignupStack';
 import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
 
-import StoreScreen from './StoreScreen';
+import StoreScreen from './stores/StoreScreen';
 import RandomScreen from './RandomScreen';
 import ProfileScreen from './ProfileScreen';
 
@@ -37,7 +37,8 @@ const Stack = createStackNavigator();
 
 export default function YoungClimb() {
   const [loading, setIsLoading] = useState(true);
-  const login = useSelector(state => state.accounts.loginState);
+  // const login = useSelector(state => state.accounts.loginState);
+  const login = true
 
   // const fadeAnim = useRef(new Animated.Value(1)).current;
 
