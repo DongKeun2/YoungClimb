@@ -7,6 +7,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Dimensions,
 } from 'react-native';
 import {useDispatch} from 'react-redux';
 import {CommonActions} from '@react-navigation/native';
@@ -17,6 +18,8 @@ import CustomButton from '../../components/CustomBtn';
 import UserAvatar from '../../components/UserAvatar';
 
 import avatar from '../../assets/image/profile/avatar.png';
+
+const windowHeight = Dimensions.get('window').height;
 
 function SuccessScreen({navigation}) {
   const dispatch = useDispatch();
@@ -63,12 +66,14 @@ function SuccessScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>회원가입 성공!</Text>
-      <Text style={styles.text}>
-        프로필을 꾸미고 회원님의 클라이밍을 뽐내보세요!
-      </Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>회원가입 성공!</Text>
+        <Text style={styles.text}>
+          프로필을 꾸미고 회원님의 클라이밍을 뽐내보세요!
+        </Text>
+      </View>
       {imageUri ? (
-        <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={120} />
+        <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
       ) : (
         <TouchableOpacity onPress={SelectProfile}>
           <Image source={avatar} />
@@ -96,7 +101,7 @@ function SuccessScreen({navigation}) {
         </View>
         <View style={styles.button}>
           <CustomButton
-            buttonColor="#EF3F8F"
+            buttonColor="#F34D7F"
             title="완료"
             onPress={onSubmitProfile}
           />
@@ -114,6 +119,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  header: {
+    marginTop: windowHeight / 15,
+    alignItems: 'center',
+    width: '100%',
+    height: '10%',
+  },
   title: {
     fontSize: 20,
     color: '#F34D7F',
@@ -124,7 +135,7 @@ const styles = StyleSheet.create({
     borderColor: '#ADADAD',
     fontSize: 17,
     padding: 5,
-    marginTop: 30,
+    marginVertical: '3%',
     height: 74,
   },
   btnGroup: {

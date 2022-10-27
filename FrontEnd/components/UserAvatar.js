@@ -5,7 +5,7 @@ import rankIcon from '../assets/image/profile/holdIcon.png';
 
 function UserAvatar({source, rank, size}) {
   return (
-    <View>
+    <View style={styles.imgBox}>
       {rank && (
         <Image
           source={rankIcon}
@@ -32,6 +32,11 @@ function UserAvatar({source, rank, size}) {
 }
 
 const styles = StyleSheet.create({
+  imgBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   image: {},
   rank: {
     position: 'absolute',

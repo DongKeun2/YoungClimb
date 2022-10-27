@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Image, Text, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
 import Input from '../../components/Input';
@@ -18,6 +25,8 @@ import checkIcon from '../../assets/image/main/done.png';
 import checked from '../../assets/image/main/checked.png';
 import unChecked from '../../assets/image/main/unchecked.png';
 import camera from '../../assets/image/main/camera.png';
+
+const windowHeight = Dimensions.get('window').height;
 
 function SignupScreen({navigation}) {
   const dispatch = useDispatch();
@@ -71,7 +80,9 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
 
   return (
     <View style={styles.container}>
-      <Image source={logo} style={styles.title} />
+      <View style={styles.header}>
+        <Image source={logo} style={styles.title} />
+      </View>
       <View style={styles.inputBox}>
         <Input
           style={styles.input}
@@ -85,8 +96,8 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         <CheckButton
           type="nickname"
           onPress={checkNickname}
-          buttonColor={isCheckNickname ? '#EF3F8F' : 'white'}
-          borderColor={!isCheckNickname && '#EF3F8F'}
+          buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
+          borderColor={!isCheckNickname && '#F34D7F'}
           title={
             isCheckNickname ? (
               <Image source={checkIcon} />
@@ -110,8 +121,8 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         <CheckButton
           type="email"
           onPress={checkEmail}
-          buttonColor={isCheckEmail ? '#EF3F8F' : 'white'}
-          borderColor={!isCheckEmail && '#EF3F8F'}
+          buttonColor={isCheckEmail ? '#F34D7F' : 'white'}
+          borderColor={!isCheckEmail && '#F34D7F'}
           borderWidth="3"
           title={
             isCheckEmail ? (
@@ -144,7 +155,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         <View style={styles.gender}>
           <CustomButton
             buttonColor={
-              signupForm.gender.value === 'M' ? '#EF3F8F' : '#F3F3F3'
+              signupForm.gender.value === 'M' ? '#F34D7F' : '#F3F3F3'
             }
             titleColor={signupForm.gender.value === 'M' ? 'white' : '#7E7E7E'}
             title="남성"
@@ -155,7 +166,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         <View style={styles.gender}>
           <CustomButton
             buttonColor={
-              signupForm.gender.value === 'F' ? '#EF3F8F' : '#F3F3F3'
+              signupForm.gender.value === 'F' ? '#F34D7F' : '#F3F3F3'
             }
             titleColor={signupForm.gender.value === 'F' ? 'white' : '#7E7E7E'}
             title="여성"
@@ -223,7 +234,17 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
 
   return (
     <View style={styles.container}>
-      <Image source={logo} style={styles.title} />
+      <View style={styles.header}>
+        <Image source={logo} style={styles.title} />
+      </View>
+      <View style={styles.comment}>
+        <Text style={styles.comment}>
+          더 즐거운 클라이밍 생활을 위해 상세 정보를 입력해주세요 :)
+        </Text>
+        <Text style={styles.comment}>
+          회원님과 비슷한 유저를 파악하고 정보를 얻을 수 있어요
+        </Text>
+      </View>
       <Input
         style={styles.input}
         placeholder="키(cm)"
@@ -265,13 +286,13 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
         </View>
         <View style={styles.button}>
           <CustomButton
-            buttonColor="#EF3F8F"
+            buttonColor="#F34D7F"
             title="완료"
             onPress={() => onSubmitSignup(false)}
           />
         </View>
       </View>
-      <TouchableOpacity onPress={goBeforePage}>
+      <TouchableOpacity onPress={goBeforePage} style={styles.before}>
         <Text style={styles.before}>이전</Text>
       </TouchableOpacity>
     </View>
@@ -302,10 +323,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
+  header: {
+    marginTop: windowHeight / 10,
+    alignItems: 'center',
+    width: '100%',
+    height: '15%',
+  },
   title: {
-    marginTop: '5%',
     width: '100%',
     resizeMode: 'contain',
+  },
+  comment: {
+    textAlign: 'center',
   },
   inputBox: {
     display: 'flex',
@@ -325,9 +354,10 @@ const styles = StyleSheet.create({
   genderGroup: {
     width: '80%',
     display: 'flex',
+    marginTop: 25,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
   gender: {
     width: '45%',
@@ -335,6 +365,7 @@ const styles = StyleSheet.create({
   termsGroup: {
     display: 'flex',
     flexDirection: 'row',
+    margin: 15,
   },
   checkBox: {
     width: 20,
@@ -375,7 +406,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 
-  before: {},
+  before: {
+    width: '80%',
+    marginTop: 20,
+  },
 });
 
 export default SignupScreen;

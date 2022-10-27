@@ -59,13 +59,13 @@ function UploadImg() {
       {uploadImg ? (
         <TouchableOpacity>
           <Image
-            style={styles.circle}
+            style={styles.image}
             source={{uri: uploadImg?.assets[0]?.uri}}
           />
         </TouchableOpacity>
       ) : (
         <TouchableOpacity>
-          <Image style={styles.circle} source={wingspanExample} />
+          <Image style={styles.image} source={wingspanExample} />
         </TouchableOpacity>
       )}
 
@@ -84,7 +84,7 @@ function UploadImg() {
 }
 
 const styles = StyleSheet.create({
-  circle: {
+  image: {
     width: 200,
     height: 200,
     backgroundColor: 'gray',
@@ -99,11 +99,12 @@ const styles = StyleSheet.create({
     elevation: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
     borderRadius: 10,
     width: '40%',
     height: 40,
     backgroundColor: '#EF3F8F',
+    margin: 5,
+    marginVertical: 15,
   },
   btnText: {
     color: 'white',

@@ -1,11 +1,20 @@
 import React, {useState} from 'react';
 import {useDispatch} from 'react-redux';
-import {View, Image, StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import {login, testLogin} from '../../utils/slices/AccountsSlice';
 
 import Input from '../../components/Input';
 import CustomButton from '../../components/CustomBtn';
 import title from '../../assets/image/main/title.png';
+
+const windowHeight = Dimensions.get('window').height;
 
 function LoginScreen({navigation}) {
   const dispatch = useDispatch();
@@ -89,20 +98,25 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   header: {
-    justifyContent: 'flex-start',
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
     height: '50%',
   },
-  logo: {},
+  logo: {
+    marginTop: windowHeight / 10,
+    resizeMode: 'contain',
+  },
   inputGroup: {
-    height: '30%',
     marginBottom: '10%',
     width: '100%',
+    height: '30%',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   input: {},

@@ -55,7 +55,9 @@ function WingSpanScreen({navigation}) {
 
   return (
     <View style={styles.container}>
-      <Image source={logo} style={styles.logo} />
+      <View style={styles.header}>
+        <Image source={logo} style={styles.logo} />
+      </View>
       <View style={styles.wingspanContainer}>
         <Text style={styles.title}>윙스팬 측정</Text>
         <Text style={styles.content}>
@@ -69,13 +71,13 @@ function WingSpanScreen({navigation}) {
           buttonColor="#F3F3F3"
           title="취소"
           titleColor="#7E7E7E"
-          width="30%"
+          width="40%"
           onPress={onBeforePage}
         />
         <CustomButton
-          buttonColor="#EF3F8F"
+          buttonColor="#F34D7F"
           title="확인"
-          width="30%"
+          width="40%"
           onPress={onSubmitWingspan}
         />
       </View>
@@ -88,18 +90,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    width: '100%',
+    height: '15%',
+  },
   logo: {
-    marginTop: '5%',
     width: '100%',
     resizeMode: 'contain',
   },
   wingspanContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
+    borderWidth: 1,
     width: 350,
     height: 350,
     borderColor: 'black',
@@ -107,6 +114,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    padding: 10,
   },
   content: {
     textAlign: 'center',
@@ -114,12 +122,9 @@ const styles = StyleSheet.create({
   btnGroup: {
     display: 'flex',
     flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'center',
-  },
-  button: {
-    width: '90%',
-    height: '8%',
+    width: '80%',
+    justifyContent: 'space-between',
+    marginVertical: 20,
   },
 });
 
