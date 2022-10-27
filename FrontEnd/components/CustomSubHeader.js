@@ -3,7 +3,11 @@ import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import Backicon from '../assets/image/header/backIcon.svg';
 
 function CustomSubHeader(props) {
-  return (
+  return props.isVideo ? (
+    <View style={styles.container}></View>
+  ) : props.isPhoto ? (
+    <View style={styles.container}></View>
+  ) : (
     <View style={styles.container}>
       <TouchableOpacity
         onPress={() => (props.navigation ? props.navigation.goBack() : null)}>
@@ -17,6 +21,9 @@ function CustomSubHeader(props) {
 CustomSubHeader.defaultProps = {
   title: 'untitled',
   navigation: null,
+  isVideo: false,
+  isPhoto: false,
+  rightContent: null,
 };
 
 const styles = StyleSheet.create({
