@@ -13,7 +13,7 @@ public interface MemberService {
     // 직접 회원 가입
     public String insertUser(JoinMember joinMember) throws Exception;
     // 회원 정보 추가
-    public void addUserInfo(String email,  MultipartFile file) throws Exception;
+    public void addUserInfo(MemberInfo memberInfo,  MultipartFile file) throws Exception;
     // 사용자 정보 조회
     public MemberInfo getUserInfoByUserId(String userId);
     // 사용자 비밀번호 검증
@@ -21,8 +21,9 @@ public interface MemberService {
     // 비밀번호 수정
     public String changePassword(String userId, String password);
     // 회원 탈퇴
-    public String deleteMember(String email);
+    public void deleteMember(String email);
     // 로그인
     public String login(LoginMember member);
-
+    // 로그아웃
+    void logout(String email, String accessToken);
 }

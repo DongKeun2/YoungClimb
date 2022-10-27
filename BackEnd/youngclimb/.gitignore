@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 계정 ###
+application-aws.properties
+application-db.properties

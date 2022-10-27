@@ -1,14 +1,16 @@
 package com.youngclimb.domain.model.service;
 
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
 import com.youngclimb.domain.model.entity.Member;
+import com.youngclimb.domain.model.entity.UserRole;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,19 +35,19 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
-    private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 amazonS3;
 
 
     // 이메일 중복 체크
     @Override
     public boolean checkEmailDuplicate(String email) {
-        return memberRepository.existsByEmail(email);
+        return !memberRepository.existsByEmail(email);
     }
 
     // 닉네임 중복 체크
     @Override
     public boolean checkNicknameDuplicate(String nickname) {
-        return memberRepository.existsByNickname(nickname);
+        return !memberRepository.existsByNickname(nickname);
     }
 
     // 회원 등록
@@ -66,9 +68,11 @@ public class MemberServiceImpl implements MemberService {
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
                 .gender(joinMember.getGender())
+                .joinDate(joinMember.getJoinDate())
                 .height(joinMember.getHeight())
-                .shoesize(joinMember.getShoeSize())
+                .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
+                .role(UserRole.GUEST)
                 .build();
         memberRepository.save(member);
 
@@ -78,8 +82,9 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원정보 추가 또는 수정
     @Override
-    public void addUserInfo(String email, MultipartFile file) throws Exception {
-        Member member = memberRepository.findByEmail(email);
+    public void addUserInfo(MemberInfo memberInfo, MultipartFile file) throws Exception {
+        Member member = memberRepository.findByEmail(memberInfo.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 
         // 프로필 사진 저장
         if(file == null) {
@@ -92,7 +97,7 @@ public class MemberServiceImpl implements MemberService {
             objectMetadata.setContentType(file.getContentType());
 
             try(InputStream inputStream = file.getInputStream()) {
-                amazonS3Client.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
                         .withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
@@ -129,12 +134,25 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String deleteMember(String email) {
-        return null;
+    public void deleteMember(String email) {
+
+
     }
 
     @Override
     public String login(LoginMember member) {
-        return null;
+        Member loginMember = memberRepository.findByEmail(member.getEmail())
+                .orElseThrow(()->new ResourceNotFoundException("Member", "memberEmail", member.getEmail()));
+        if(!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
+            throw  new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+        return jwtTokenProvider.createAccessToken(member.getEmail());
     }
+
+    // 로그아웃
+    @Override
+    public void logout(String email, String accessToken) {
+        jwtTokenProvider.logout(email, accessToken);
+    }
+
 }

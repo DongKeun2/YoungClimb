@@ -33,26 +33,26 @@ public class JwtTokenProvider {
 
 
     // access token 생성
-    public String createAccessToken(String memberAddress) {
+    public String createAccessToken(String email) {
         Long tokenValidTime = 1000L * 60 * 3; // 3분
-        return this.createToken(memberAddress, tokenValidTime);
+        return this.createToken(email, tokenValidTime);
     }
 
     // refresh token 생성
-    public String createRefreshToken(String memberAddress) {
+    public String createRefreshToken(String email) {
         Long tokenValidTime = 1000L * 60 * 60 * 25; // 하루
 
-        String refreshToken = this.createToken(memberAddress, tokenValidTime);
-        redisService.setValues(memberAddress, refreshToken, Duration.ofMillis(tokenValidTime));
+        String refreshToken = this.createToken(email, tokenValidTime);
+        redisService.setValues(email, refreshToken, Duration.ofMillis(tokenValidTime));
         return refreshToken;
     }
 
     // 토큰 생성
-    public String createToken(String memberAddress, Long tokenValidTime) {
+    public String createToken(String email, Long tokenValidTime) {
 
         Date now = new Date();
         Claims claims = Jwts.claims()
-                .setSubject(memberAddress)
+                .setSubject(email)
                 .setIssuedAt(now) //생성일 설정
                 .setExpiration(new Date(now.getTime() + tokenValidTime)); //만료일 설정
 
@@ -117,16 +117,16 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
-    public void checkRefreshToken(String memberAddress, String refreshToken) {
-        String redisRT = redisService.getValues(memberAddress);
+    public void checkRefreshToken(String email, String refreshToken) {
+        String redisRT = redisService.getValues(email);
         if (!refreshToken.equals(redisRT)) {
             throw new BadRequestException("토큰이 만료되었습니다!");
         }
     }
 
-    public void logout(String memberAddress, String accessToken) {
+    public void logout(String email, String accessToken) {
         Long expiredAccessTokenTime = getJwtContents(accessToken).getExpiration().getTime() - new Date().getTime();
-        redisService.setValues(blackListATPrefix + accessToken, memberAddress, Duration.ofMillis(expiredAccessTokenTime));
-        redisService.deleteValues(memberAddress);
+        redisService.setValues(blackListATPrefix + accessToken, email, Duration.ofMillis(expiredAccessTokenTime));
+        redisService.deleteValues(email);
     }
 }
