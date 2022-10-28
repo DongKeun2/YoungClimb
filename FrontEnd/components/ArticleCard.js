@@ -17,10 +17,7 @@ function ArticleCard({article, navigation}) {
           <Text>{article.wallName}</Text>
         </View>
         <View style={styles.cardInfo}>
-          <LevelLabel
-            name={article.centerLevelName}
-            color={article.centerLevelColor}
-          />
+          <LevelLabel color={article.centerLevelColor} />
           <HoldLabel color={article.holdColor} />
         </View>
       </View>
