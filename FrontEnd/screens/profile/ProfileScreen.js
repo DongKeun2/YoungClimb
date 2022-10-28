@@ -12,8 +12,8 @@ import {useSelector} from 'react-redux';
 import CustomMainHeader from '../../components/CustomMainHeader';
 import UserAvatar from '../../components/UserAvatar';
 import ArticleCard from '../../components/ArticleCard';
+import FollowBtn from '../../components/FollowBtn';
 
-import followIcon from '../../assets/image/profile/followIcon.png';
 import rankIcon from '../../assets/image/profile/holdIcon.png';
 import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
@@ -22,14 +22,11 @@ import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
 
 function ProfileScreen({navigation}) {
   const userInfo = useSelector(state => state.profile.profileInfo.user);
+  const isFollow = useSelector(state => state.profile.profileInfo.isFollow);
 
   const [type, setType] = useState('board');
   const boards = useSelector(state => state.profile.boards);
   const scraps = useSelector(state => state.profile.scraps);
-
-  function onClickFollow() {
-    console.log('팔로우 버튼 클릭');
-  }
 
   return (
     <ScrollView style={styles.container}>
@@ -45,9 +42,7 @@ function ProfileScreen({navigation}) {
             </Text>
           </View>
         </View>
-        <TouchableOpacity onPress={onClickFollow} style={styles.followBtn}>
-          <Image source={followIcon} style={styles.followIcon} />
-        </TouchableOpacity>
+        <FollowBtn isFollow={isFollow} nickname={userInfo.nickname} />
       </View>
 
       <View style={styles.introBox}>
@@ -153,14 +148,6 @@ const styles = StyleSheet.create({
   },
   profileText: {
     paddingLeft: 10,
-  },
-  followBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 5,
-    width: 65,
-    height: 30,
-    backgroundColor: '#F34D7F',
   },
   introBox: {
     width: '100%',

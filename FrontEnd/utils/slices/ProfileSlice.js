@@ -48,7 +48,7 @@ const fetchFollowList = createAsyncThunk(
 const initialState = {
   profileInfo: {
     isMine: 'F',
-    isFollow: 'F',
+    isFollow: true,
     user: {
       image: sampleImg,
       nickname: '닉네임입니다',
