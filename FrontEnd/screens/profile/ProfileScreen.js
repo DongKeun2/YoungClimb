@@ -35,8 +35,8 @@ function ProfileScreen({navigation}) {
         <View style={styles.profileBox}>
           <UserAvatar source={userInfo.image} size={70} />
           <View style={styles.profileText}>
-            <Text>{userInfo.nickname}</Text>
-            <Text>
+            <Text style={styles.profileNickname}>{userInfo.nickname}</Text>
+            <Text style={styles.profileSize}>
               {userInfo.gender} {userInfo.height}cm {userInfo.shoeSize}mm{' '}
               {userInfo.wingspan}cm
             </Text>
@@ -60,14 +60,22 @@ function ProfileScreen({navigation}) {
           <Text>게시글</Text>
           <Text>{userInfo.boardNum}</Text>
         </View>
-        <View style={styles.InfoBox}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('팔로우');
+          }}
+          style={styles.InfoBox}>
           <Text>팔로잉</Text>
           <Text>{userInfo.followingNum}</Text>
-        </View>
-        <View style={styles.InfoBox}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('팔로우');
+          }}
+          style={styles.InfoBox}>
           <Text>팔로워</Text>
           <Text>{userInfo.followerNum}</Text>
-        </View>
+        </TouchableOpacity>
       </View>
 
       {type === 'board' ? (
@@ -102,9 +110,9 @@ function ProfileScreen({navigation}) {
       <View style={styles.horizonLine} />
 
       {type === 'board' ? (
-        <CardList title="ㅎㅎ" articles={boards} />
+        <CardList articles={boards} />
       ) : (
-        <CardList title="ㅋㅋ" articles={scraps} />
+        <CardList articles={scraps} />
       )}
     </ScrollView>
   );
@@ -114,13 +122,9 @@ function CardList({articles}) {
   return (
     <>
       <View style={styles.articleContainer}>
-        {articles.map((article, idx) => {
+        {articles.map((article, i) => {
           console.log(article);
-          return (
-            <>
-              <ArticleCard key={idx} article={article} />
-            </>
-          );
+          return <ArticleCard key={i} article={article} />;
         })}
       </View>
     </>
@@ -131,10 +135,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    // justifyContent: 'flex-start',
     // alignItems: 'center',
+    // justifyContent: 'flex-start',
   },
   header: {
+    alignSelf: 'center',
     width: '90%',
     display: 'flex',
     flexDirection: 'row',
@@ -147,10 +152,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileText: {
+    alignItems: 'flex-start',
     paddingLeft: 10,
+  },
+  profileNickname: {
+    // paddingVertical: 5,
+  },
+  profileSize: {
+    paddingVertical: 5,
   },
   introBox: {
     width: '100%',
+    paddingLeft: 10,
     alignSelf: 'flex-start',
     margin: 10,
   },
@@ -162,12 +175,13 @@ const styles = StyleSheet.create({
   },
   InfoContainer: {
     width: '100%',
+    paddingVertical: 10,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    marginVertical: 3,
   },
   InfoBox: {
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between',
   },

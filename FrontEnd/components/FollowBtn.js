@@ -1,11 +1,17 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {useDispatch} from 'react-redux';
+
+import {follow} from '../utils/slices/ProfileSlice';
 
 import followAddIcon from '../assets/image/profile/followA.png';
 import followDeleteIcon from '../assets/image/profile/followD.png';
 
 function FollowBtn({isFollow, nickname}) {
+  const dispatch = useDispatch();
+
   function onClickFollow() {
+    dispatch(follow(nickname));
     console.log(nickname, '팔로우 버튼 클릭');
   }
   return (

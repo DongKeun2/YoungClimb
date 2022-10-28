@@ -255,12 +255,15 @@ export const ProfileSlice = createSlice({
       state.loginState = true;
     },
     [follow.fulfilled]: (state, action) => {
-      state.isFollow = action.payload;
+      state.profileInfo.isFollow = action.payload;
+    },
+    [fetchFollowList.fulfilled]: (state, action) => {
+      state.followInfo = action.payload;
     },
   },
 });
 
-export {fetchProfile, follow};
+export {fetchProfile, follow, fetchFollowList};
 
 export const {} = ProfileSlice.actions;
 
