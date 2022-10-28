@@ -36,7 +36,9 @@ function CustomMainHeader(props) {
           <PostAddIcon style={{marginRight: 10}} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => (props.navigation ? props.navigation.goBack() : null)}>
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('프로필 설정') : null
+          }>
           <SettingIcon style={{marginRight: 10}} />
         </TouchableOpacity>
       </View>
