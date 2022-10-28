@@ -20,10 +20,10 @@ function CustomSubHeader({
           onPress={() => (navigation ? navigation.goBack() : null)}>
           <CloseIcon style={{marginLeft: 5, marginRight: 5}} />
         </TouchableOpacity>
-        <Text style={{fontSize: 16}}>{title}</Text>
+        <Text style={styles.textStyle}>{title}</Text>
       </View>
       <View style={styles.container}>
-        <Text style={{fontSize: 16}}>{rightTitle}</Text>
+        <Text style={styles.textStyle}>{rightTitle}</Text>
         <TouchableOpacity
           onPress={() =>
             navigation ? navigation.navigate('정보 입력') : null
@@ -43,11 +43,13 @@ function CustomSubHeader({
             <BackIcon style={{marginLeft: 5, marginRight: 5}} />
           )}
         </TouchableOpacity>
-        <Text style={{fontSize: 16}}>{title}</Text>
+        <Text style={styles.textStyle}>{title}</Text>
       </View>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => (request ? request : null)}>
-          <Text style={{fontSize: 16, color: '#F34D7F', marginRight: 5}}>{rightTitle}</Text>
+          <Text style={{...styles.textStyle, color: '#F34D7F', marginRight: 5}}>
+            {rightTitle}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -57,7 +59,7 @@ function CustomSubHeader({
         onPress={() => (navigation ? navigation.goBack() : null)}>
         <BackIcon style={{marginLeft: 5, marginRight: 5}} />
       </TouchableOpacity>
-      <Text style={{fontSize: 16}}>{title}</Text>
+      <Text style={styles.textStyle}>{title}</Text>
     </View>
   );
 }
@@ -93,6 +95,11 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  textStyle: {
+    color: 'black',
+    fontSize: 16,
+    marginBottom: 4,
   },
 });
 
