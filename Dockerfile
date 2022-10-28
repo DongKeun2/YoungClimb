@@ -1,4 +1,4 @@
-FROM python3
+FROM python3.8
 RUN pip3 install django
 WORKDIR /usr/src/app
 COPY . .
