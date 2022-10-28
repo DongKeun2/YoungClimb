@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 
-function HoldLabel({name, color}) {
+function HoldLabel({color}) {
   return (
     <View style={styles.labelContainer}>
       <View
@@ -10,7 +10,7 @@ function HoldLabel({name, color}) {
           {backgroundColor: levelItem[color].backgroundColor},
         ]}>
         <Text style={[styles.font, {color: levelItem[color].fontColor}]}>
-          {name}
+          {levelItem[color].name}
         </Text>
       </View>
     </View>
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   label: {
-    borderRadius: 2,
+    borderRadius: 3,
   },
   font: {
     marginVertical: 1,
@@ -35,11 +35,17 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HoldLabel;
-
 const levelItem = {
   red: {
+    name: '빨강 홀드',
     backgroundColor: '#F05D5D',
     fontColor: 'white',
   },
+  blue: {
+    name: '파랑 홀드',
+    backgroundColor: '#3B4BA0',
+    fontColor: 'white',
+  },
 };
+
+export default HoldLabel;

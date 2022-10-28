@@ -8,12 +8,16 @@ function ArticleCard({article}) {
     <View style={styles.cardContainer}>
       <Image source={article.mediaId} />
       <View style={styles.InfoBox}>
-        <View style={styles.Info}>
-          <Text>위치 정보</Text>
+        <View style={styles.cardInfo}>
+          <Text>{article.centerName}</Text>
+          <Text>{article.wallName}</Text>
         </View>
         <View style={styles.cardInfo}>
-          <LevelLabel name="파랑Lv" color="blue" />
-          <HoldLabel name="빨강 홀드" color="red" />
+          <LevelLabel
+            name={article.centerLevelName}
+            color={article.centerLevelColor}
+          />
+          <HoldLabel color={article.holdColor} />
         </View>
       </View>
     </View>

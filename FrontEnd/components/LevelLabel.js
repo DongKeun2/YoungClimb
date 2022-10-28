@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 
-function LevelLabel({name, color}) {
+function LevelLabel({color}) {
   return (
     <View style={styles.labelContainer}>
       <View
@@ -10,7 +10,7 @@ function LevelLabel({name, color}) {
           {backgroundColor: levelItem[color].backgroundColor},
         ]}>
         <Text style={[styles.font, {color: levelItem[color].fontColor}]}>
-          {name}
+          {levelItem[color].name}
         </Text>
       </View>
     </View>
@@ -22,9 +22,10 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 5,
   },
   label: {
-    borderRadius: 2,
+    borderRadius: 3,
   },
   font: {
     marginVertical: 1,
@@ -39,7 +40,13 @@ export default LevelLabel;
 
 const levelItem = {
   blue: {
+    name: '파랑 Lv',
     backgroundColor: '#6A74A4',
+    fontColor: 'white',
+  },
+  red: {
+    name: '빨강 Lv',
+    backgroundColor: '#EB4256',
     fontColor: 'white',
   },
 };
