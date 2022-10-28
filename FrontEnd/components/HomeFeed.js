@@ -13,27 +13,7 @@ import EmptyScrap from '../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
 
-function HomeFeed({navigation}) {
-  const feed = {
-    id: 1,
-    createUser: 'climb_june',
-    createdAt: '2시간 전',
-    centerName: '더 클라임 양재점',
-    centerLevelColor: '파랑 Lv.',
-    mediaId: null,
-    wallName: 'A구역',
-    difficulty: 'V3',
-    holdColor: '파랑 홀드',
-    solvedDate: '2022.10.21',
-    content: '대통령이 궐위되거나 사고로 인하여 직무를 수행할 수 없을 때에는 국무총리, 법률이 정한 국무위원의 순서로 그 권한을 대행한다. 모든 국민은 소급입법에 의하여 참정권의 제한을 받거나 재산권을 박탈당하지 아니한다. 모든 국민은 능력에 따라 균등하게 교육을 받을 권리를 가진다. 타인의 범죄행위로 인하여 생명·신체에 대한 피해를 받은 국민은 법률이 정하는 바에 의하여 국가로부터 구조를 받을 수 있다.',
-    like: 96,
-    view: 316,
-    isFollow: true,
-    isLiked: true,
-    isScrap: false,
-    commentNum: 2753,
-    commentPreview: {nickname: '아그작냠냠', comment: '개쩌네... 어떻게 했냐'},
-  };
+function HomeFeed({feed, navigation}) {
   return (
     <View style={styles.container}>
       {/* 피드 상단 헤더 */}
