@@ -1,11 +1,15 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import HoldLabel from './HoldLabel';
 import LevelLabel from './LevelLabel';
 
-function ArticleCard({article}) {
+function ArticleCard({article, navigation}) {
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('게시글');
+      }}
+      style={styles.cardContainer}>
       <Image source={article.mediaId} />
       <View style={styles.InfoBox}>
         <View style={styles.cardInfo}>
@@ -20,7 +24,7 @@ function ArticleCard({article}) {
           <HoldLabel color={article.holdColor} />
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
