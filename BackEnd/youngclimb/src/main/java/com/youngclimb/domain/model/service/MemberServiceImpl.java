@@ -9,6 +9,7 @@ import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
+import com.youngclimb.domain.model.dto.member.MemberProfile;
 import com.youngclimb.domain.model.entity.Member;
 import com.youngclimb.domain.model.entity.UserRole;
 import com.youngclimb.domain.model.repository.MemberRepository;
@@ -80,29 +81,68 @@ public class MemberServiceImpl implements MemberService {
         return jwtTokenProvider.createAccessToken(member.getEmail());
     }
 
-    // 회원정보 추가 또는 수정
-    @Override
-    public void addUserInfo(MemberInfo memberInfo, MultipartFile file) throws Exception {
-        Member member = memberRepository.findByEmail(memberInfo.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
+    // 신체정보 추가 또는 수정
+//    @Override
+//    public void addBodyInfo(MemberInfo memberInfo) throws Exception {
+//        Member member = memberRepository.findByEmail(memberInfo.getEmail())
+//                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
+//        member.addBodyInfo(memberInfo);
+//        memberRepository.save(member);
+//    }
 
-        // 프로필 사진 저장
+    // 프로필 추가
+    @Override
+    public void addProfile(MemberProfile memberProfile, MultipartFile file) throws Exception {
+        Member member = memberRepository.findByEmail(memberProfile.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
+
+        // 프로필 사진 s3 저장
         if(file == null) {
             System.out.println("사진이 없습니다.");
         } else {
-
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
-
+            System.out.println(fileName);
             try(InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
-                        .withCannedAcl(CannedAccessControlList.PublicRead));
+//                amazonS3.putObject(bucket+"/userProfile", fileName, inputStream, objectMetadata);
+                amazonS3.putObject(new PutObjectRequest(bucket+"/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+                memberProfile.setImage(amazonS3.getUrl(bucket+"/userProfile", fileName).toString());
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
         }
+
+        // 프로필 수정
+        member.updateMemberImg(memberProfile);
+        memberRepository.save(member);
+    }
+
+    // 프로필 수정
+    @Override
+    public void editProfile(MemberInfo memberInfo, MultipartFile file) throws Exception {
+        Member member = memberRepository.findByEmail(memberInfo.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
+
+        // 프로필 사진 s3 저장
+        if(file == null) {
+            System.out.println("사진이 없습니다.");
+        } else {
+            String fileName = createFileName(file.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(file.getSize());
+            objectMetadata.setContentType(file.getContentType());
+            System.out.println(fileName);
+            try(InputStream inputStream = file.getInputStream()) {
+                amazonS3.putObject(new PutObjectRequest(bucket+"/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+                memberInfo.setImage(amazonS3.getUrl(bucket+"/userProfile", fileName).toString());
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+            }
+        }
+        member.updateProfile(memberInfo);
+        memberRepository.save(member);
     }
 
     private String createFileName(String fileName) {

@@ -1,6 +1,7 @@
 package com.youngclimb.domain.model.entity;
 
-import com.youngclimb.domain.model.dto.member.ProfileInfo;
+import com.youngclimb.domain.model.dto.member.MemberInfo;
+import com.youngclimb.domain.model.dto.member.MemberProfile;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,14 +15,14 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="tb_member")
+@Table(name = "tb_member")
 @Entity
 public class Member {
 
     // 회원번호
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="member_id")
+    @Column(name = "member_id")
     private Long memberId;
     // 이메일
     @Column(name = "member_email")
@@ -81,7 +82,7 @@ public class Member {
     // 닉네임 변경
     public Member updateProfile(String nickname) {
         this.nickname = nickname;
-        return  this;
+        return this;
     }
 
     // 역할확인
@@ -89,17 +90,27 @@ public class Member {
         return this.role.getKey();
     }
 
-    // 추가정보 입력
-    public Member addMemberInfo(ProfileInfo profileInfo) {
+    // 프로필 수정
+    public Member updateProfile(MemberInfo memberInfo) {
 
-        this.memberProfileImg = profileInfo.Image;
+        if (memberInfo.getNickname() != null) this.nickname = memberInfo.getNickname();
+        if (memberInfo.getHeight() != null) this.height = memberInfo.getHeight();
+        if (memberInfo.getWingspan() != null) this.wingspan = memberInfo.getWingspan();
+        if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
+        if (memberInfo.getIntro() != null) this.profileContent = memberInfo.getIntro();
+        if (memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
+
 
         return this;
     }
 
     // 프로필 사진 넣기
-    public void updateMemberImg(String memberProfileImg) {
-        this.memberProfileImg = memberProfileImg;
+    public Member updateMemberImg(MemberProfile memberProfile) {
+
+        if (memberProfile.getIntro() != null) this.profileContent = memberProfile.intro;
+        if (memberProfile.getImage() != null) this.memberProfileImg = memberProfile.image;
+
+        return this;
     }
 
 }

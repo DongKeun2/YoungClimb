@@ -30,7 +30,7 @@ public class Board {
     private String content;
     // 작성날짜
     @Column(name = "board_created_datetime")
-    private LocalDateTime createdDateTime = LocalDateTime.now();;
+    private LocalDateTime createdDateTime = LocalDateTime.now();
     // 문제 푼 날짜
     @Column(name = "board_solved_date")
     private LocalDate solvedDate;

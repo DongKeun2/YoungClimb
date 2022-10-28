@@ -2,12 +2,15 @@ package com.youngclimb.domain.controller;
 
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
+import com.youngclimb.domain.model.dto.member.MemberInfo;
+import com.youngclimb.domain.model.dto.member.MemberProfile;
 import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +24,7 @@ public class MemberController {
 
     // 이메일 중복 확인
     @ApiOperation(value = "checkEmail: 이메일 중복 확인")
-    @GetMapping("/dupl/email")
+    @GetMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestParam String email) {
         try {
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
@@ -32,7 +35,7 @@ public class MemberController {
 
     // 닉네임 중복 확인
     @ApiOperation(value = "checkNickname: 닉네임 중복 확인")
-    @GetMapping("/dupl/nickname")
+    @GetMapping("/nickname")
     public ResponseEntity<?> checkNickname(@RequestParam String nickname) {
         try {
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
@@ -65,6 +68,43 @@ public class MemberController {
         }
     }
 
+    // 신체 정보 입력
+//    @ApiOperation(value = "addBodyInfo: 추가정보 입력")
+//    @PostMapping("/addBody")
+//    public ResponseEntity<?> addBodyInfo(@RequestBody MemberInfo memberInfo) throws Exception {
+//        try {
+//            memberService.addBodyInfo(memberInfo);
+//            return new ResponseEntity<String>("추가 정보가 입력되었습니다.", HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<String>("오류가 발생했습니다.", HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+    // 프로필 정보 입력
+    @ApiOperation(value = "addProfile: 프로필 정보 입력")
+    @PostMapping("/profile")
+    public ResponseEntity<?> addProfile(@RequestPart MemberProfile memberProfile, @RequestPart(required = false) MultipartFile file) throws Exception {
+        try {
+            memberService.addProfile(memberProfile, file);
+            return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("오류가 발생했습니다", HttpStatus.BAD_REQUEST);
+        }
+    }
+    // 프로필 변경
+    @ApiOperation(value = "addProfile: 프로필 정보 입력")
+    @PostMapping("/profile/edit")
+    public ResponseEntity<?> editProfile(@RequestPart MemberInfo memberInfo, @RequestPart(required = false) MultipartFile file) throws Exception {
+        try {
+            memberService.editProfile(memberInfo, file);
+            return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<String>("오류가 발생했습니다", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
     // 로그아웃
     @ApiOperation(value = "logout: 로그아웃")
     @GetMapping("/logout")
@@ -74,7 +114,6 @@ public class MemberController {
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
     }
 
-    // 프로필 변경
 
     // 예외처리
     private ResponseEntity<String> exceptionHandling(Exception e) {
