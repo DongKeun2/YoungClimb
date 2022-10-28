@@ -64,9 +64,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   headerTitle: {
+    color: 'black',
     fontSize: 20,
     fontWeight: '600',
     marginLeft: 12,
+    marginBottom: 5,
   },
   logoImg: {
     height: 32,
