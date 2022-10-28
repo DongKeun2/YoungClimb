@@ -8,6 +8,7 @@ import example1 from '../../assets/image/profile/example1.png';
 import example2 from '../../assets/image/profile/example2.png';
 import example3 from '../../assets/image/profile/example3.png';
 import example4 from '../../assets/image/profile/example4.png';
+import avatar from '../../assets/image/profile/avatar.png';
 
 const fetchProfile = createAsyncThunk(
   'fetchProfile',
@@ -256,17 +257,71 @@ const initialState = {
   followInfo: {
     followings: [
       {
-        image: '',
-        nickname: '',
+        image: avatar,
+        nickname: '나의 팔로워1',
         height: 180,
         shoeSize: 260,
         wingspan: 190,
         rank: 2,
         gender: 'M',
       },
-      ,
+      {
+        image: avatar,
+        nickname: '나의 팔로워2',
+        height: 180,
+        shoeSize: 260,
+        wingspan: 190,
+        rank: 2,
+        gender: 'M',
+      },
+      {
+        image: avatar,
+        nickname: '나의 팔로워3',
+        height: 180,
+        shoeSize: 260,
+        wingspan: 190,
+        rank: 2,
+        gender: 'M',
+      },
+      {
+        image: avatar,
+        nickname: '나의 팔로워4',
+        height: 180,
+        shoeSize: 260,
+        wingspan: 190,
+        rank: 2,
+        gender: 'M',
+      },
+      {
+        image: avatar,
+        nickname: '나의 팔로워5',
+        height: 180,
+        shoeSize: 260,
+        wingspan: 190,
+        rank: 2,
+        gender: 'M',
+      },
     ],
-    followers: [],
+    followers: [
+      {
+        image: avatar,
+        nickname: '팔로우해주세요',
+        height: 180,
+        shoeSize: 260,
+        wingspan: 190,
+        rank: 2,
+        gender: 'M',
+      },
+      {
+        image: avatar,
+        nickname: '제발요',
+        height: 180,
+        shoeSize: 260,
+        wingspan: 190,
+        rank: 2,
+        gender: 'M',
+      },
+    ],
   },
 };
 

@@ -109,11 +109,7 @@ function ProfileScreen({navigation}) {
       )}
       <View style={styles.horizonLine} />
 
-      {type === 'board' ? (
-        <CardList articles={boards} />
-      ) : (
-        <CardList articles={scraps} />
-      )}
+      <CardList articles={type === 'board' ? boards : scraps} />
     </ScrollView>
   );
 }
@@ -196,14 +192,14 @@ const styles = StyleSheet.create({
   },
   tabBtn: {
     width: '50%',
-    height: 50,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
   },
   activeTab: {
     width: '50%',
-    height: 50,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F0F0F0',
