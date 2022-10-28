@@ -7,7 +7,7 @@ import {follow} from '../utils/slices/ProfileSlice';
 import followAddIcon from '../assets/image/profile/followA.png';
 import followDeleteIcon from '../assets/image/profile/followD.png';
 
-function FollowBtn({isFollow, nickname}) {
+function FollowBtn({isFollow, isMine, nickname}) {
   const dispatch = useDispatch();
 
   function onClickFollow() {
@@ -16,7 +16,7 @@ function FollowBtn({isFollow, nickname}) {
   }
   return (
     <>
-      {isFollow ? (
+      {isMine ? null : isFollow ? (
         <TouchableOpacity onPress={onClickFollow} style={styles.unfollowBtn}>
           <Image source={followDeleteIcon} style={styles.followIcon} />
         </TouchableOpacity>

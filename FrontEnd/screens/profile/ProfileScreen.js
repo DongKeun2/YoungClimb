@@ -23,6 +23,7 @@ import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
 function ProfileScreen({navigation}) {
   const userInfo = useSelector(state => state.profile.profileInfo.user);
   const isFollow = useSelector(state => state.profile.profileInfo.isFollow);
+  const isMine = useSelector(state => state.profile.profileInfo.isMine);
 
   const [type, setType] = useState('board');
   const boards = useSelector(state => state.profile.boards);
@@ -42,7 +43,11 @@ function ProfileScreen({navigation}) {
             </Text>
           </View>
         </View>
-        <FollowBtn isFollow={isFollow} nickname={userInfo.nickname} />
+        <FollowBtn
+          isFollow={isFollow}
+          isMine={isMine}
+          nickname={userInfo.nickname}
+        />
       </View>
 
       <View style={styles.introBox}>
@@ -109,18 +114,23 @@ function ProfileScreen({navigation}) {
       )}
       <View style={styles.horizonLine} />
 
-      <CardList articles={type === 'board' ? boards : scraps} />
+      <CardList
+        navigation={navigation}
+        articles={type === 'board' ? boards : scraps}
+      />
     </ScrollView>
   );
 }
 
-function CardList({articles}) {
+function CardList({articles, navigation}) {
   return (
     <>
       <View style={styles.articleContainer}>
         {articles.map((article, i) => {
           console.log(article);
-          return <ArticleCard key={i} article={article} />;
+          return (
+            <ArticleCard key={i} article={article} navigation={navigation} />
+          );
         })}
       </View>
     </>
