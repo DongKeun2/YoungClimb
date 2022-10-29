@@ -3,13 +3,10 @@ import {
 	View,
 	StyleSheet,
 	Text,
-	Modal,
 	Animated,
-	TouchableWithoutFeedback,
-	ScrollView,
 	Dimensions,
 	PanResponder,
-	SafeAreaView,
+	FlatList,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -23,7 +20,7 @@ const BottomSheet = (props) => {
 		inputRange: [-1, 0, 1],
 		outputRange: [-0.5, 0, 1],
 	});
-	useEffect(()=>{console.log(modalStat)},[modalStat])
+	useEffect(()=>{console.log(climbingLocations)},[])
 
 
 	const fullBottomSheet = Animated.timing(panY, {
@@ -46,7 +43,7 @@ const BottomSheet = (props) => {
 
 
 	const panResponders = useRef(PanResponder.create({
-		onMoveShouldSetPanResponder:()=> true,
+		onMoveShouldSetPanResponder:()=> false,
 		onStartShouldSetPanResponder:()=> false,
 		onPanResponderMove: (event, gestureState) => {
 				panY.setValue(gestureState.y0+gestureState.dy);
@@ -91,17 +88,22 @@ const BottomSheet = (props) => {
     setMapView('100%')
 	}
 
-	const renderItem = (item) =>{
-		<TouchableOpacity 
-			style={styles.renderItemContainer}
-			onPress={()=> navigation.navigate('지점 상세', {Id:item.id})}
-			>
-			<Text style={styles.renderItemName}>{item.name}</Text>
-			<View style={styles.detailContainer}>
-				<Text style={styles.renderItemDetail}>{item.address}</Text>
-				<Text style={styles.renderItemDetail}>{item.distance}</Text>
-			</View>
-		</TouchableOpacity>
+	const renderItem = ({item}) =>{
+		return(
+			<TouchableOpacity 
+				onStartShouldSetResponderCapture={() => true}
+				onMoveShouldSetResponderCapture={() => true}
+				style={styles.renderItemContainer}
+				onPress={()=> navigation.navigate('지점상세', {Id:item.id})}
+				>
+				<Text style={styles.renderItemName}>{item.name}</Text>
+				<View style={styles.detailContainer}>
+					<Text style={styles.renderItemDetail}>{item.address}</Text>
+					<Text style={styles.renderItemDetail}>{item.distance}</Text>
+				</View>
+			</TouchableOpacity>
+
+		)
 	}
 
 
@@ -114,37 +116,24 @@ const BottomSheet = (props) => {
           }}
 					{...panResponders.panHandlers}
 				>
-					<View> 
+					<View style={styles.upper}> 
 						<Text>상단</Text> 
 					</View>
-					<Animated.View style={{width:'100%'}}>
-						<ScrollView
-							onStartShouldSetResponderCapture={() => true}
-							onMoveShouldSetResponderCapture={() => true}
-							style={{...styles.scrollContainer, height:modalStat==='full' ? '100%' : '50%'}}
-						>
-						<Text style={{fontSize:50}}>1하하</Text>
-						<Text style={{fontSize:50}}>2하하</Text>
-						<Text style={{fontSize:50}}>3하하</Text>
-						<Text style={{fontSize:50}}>4하하</Text>
-						<Text style={{fontSize:50}}>5하하</Text>
-						<Text style={{fontSize:50}}>6하하</Text>
-						<Text style={{fontSize:50}}>7하하</Text>
-						<Text style={{fontSize:50}}>8하하</Text>
-						<Text style={{fontSize:50}}>9하하</Text>
-						<Text style={{fontSize:50}}>10하하</Text>
-						<Text style={{fontSize:50}}>11하하</Text>
-						<Text style={{fontSize:50}}>12하하</Text>
-						<Text style={{fontSize:50}}>13하하</Text>
-						<Text style={{fontSize:50}}>14하하</Text>
-						<Text style={{fontSize:50}}>15하하</Text>
-						<Text style={{fontSize:50}}>16하하</Text>
-						<Text style={{fontSize:50}}>17하하</Text>
-						<Text style={{fontSize:50}}>18하하</Text>
-						<View style={{height:100, width:'100%'}}></View>
-						</ScrollView>
+					<TouchableOpacity 
+						activeOpacity={1}
+						disabled={true} 
+						style={{height:modalStat==='full' ? '100%' : '50%', width:'100%'}}>
 
-					</Animated.View>
+							<FlatList
+								nestedScrollEnabled
+								onStartShouldSetResponderCapture={() => true}
+								onMoveShouldSetResponderCapture={() => true}
+								data={climbingLocations}
+								renderItem={renderItem}
+								keyExtractor={(item)=>item.id}
+							/>
+
+					</TouchableOpacity>
 				</Animated.View>
         :
       <></>}
@@ -159,26 +148,31 @@ const BottomSheet = (props) => {
 const styles = StyleSheet.create({
 	renderItemContainer:{
 		width:'100%',
-		padding: 5,
+		padding: 15,
 	},
 	renderItemName:{
 		fontWeight:'bold',
 		fontSize: 16,
+		color:'black',
+		marginBottom:5
 	},
 	renderItemDetail:{
 		fontWeight:'400',
-		fontSize:14
+		fontSize:14,
+		color:'black'
 	},
 	detailContainer:{
 		flex:1,
 		flexDirection:'row',
-		justifyContent:'space-between'
+		justifyContent:'space-between',
+		color:'black'
 	},
 	scrollContainer:{
 		width:'100%',
 	},
 	upper: {
-
+		width:'100%',
+		height:30
 	},
 	overlay: {
     // height:'50%',

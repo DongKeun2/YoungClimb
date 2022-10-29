@@ -23,12 +23,55 @@ export default function StoreScreen({navigation}) {
     distance: '300m',
     latitude: 37.49622174266254, longitude: 127.03029194140458
     }, 
-    {id:'A125098234',
+    {id:'A125098235',
     name: '손상원클라임 강남',
     address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
     distance: '700m',
     latitude: 37.49552290450269, longitude: 127.0282506964424
-    }])
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },])
+    
 
   useEffect(()=>{
     Geolocation.getCurrentPosition(

@@ -16,7 +16,7 @@ import SignupStack from '../stack/SignupStack';
 import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
 
-import StoreScreen from './stores/StoreScreen';
+import StoreStack from '../stack/StoreStack';
 import RandomScreen from './RandomScreen';
 import ProfileScreen from './ProfileScreen';
 
@@ -99,7 +99,7 @@ export default function YoungClimb() {
               }}>
               <Tab.Screen
                 name="지점"
-                component={StoreScreen}
+                component={StoreStack}
                 options={{
                   tabBarIcon: ({focused}) =>
                     focused ? <ActiveMapIcon /> : <MapIcon />,

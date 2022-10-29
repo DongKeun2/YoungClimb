@@ -10,11 +10,11 @@ const Stack = createStackNavigator();
 export default function StoreStack() {
   return(
 		<Stack.Navigator
-		initialRouteName="지점 메인"
+		initialRouteName="지점메인"
 		screenOptions={{headerShown: false}}>
-			<Stack.Screen name="지점 메인" component={StoreScreen} />
-			<Stack.Screen name="지점 상세" component={StoreDetail} />
-			<Stack.Screen name="3D 벽" component={Store3DWall} />
+			<Stack.Screen name="지점메인" component={StoreScreen} />
+			<Stack.Screen name="지점상세" component={StoreDetail} />
+			<Stack.Screen name="3D벽" component={Store3DWall} />
 		</Stack.Navigator>
 
 
