@@ -18,7 +18,7 @@ import SearchStack from '../stack/SearchStack';
 
 import StoreStack from '../stack/StoreStack';
 import RandomScreen from './RandomScreen';
-import ProfileScreen from './ProfileScreen';
+import ProfileStack from '../stack/ProfileStack';
 
 import background from '../assets/image/initial/background.png';
 import MapIcon from '../assets/image/tab/map.svg';
@@ -37,8 +37,8 @@ const Stack = createStackNavigator();
 
 export default function YoungClimb() {
   const [loading, setIsLoading] = useState(true);
-  // const login = useSelector(state => state.accounts.loginState);
-  const login = true
+
+  const login = useSelector(state => state.accounts.loginState);
 
   // const fadeAnim = useRef(new Animated.Value(1)).current;
 
@@ -130,8 +130,8 @@ export default function YoungClimb() {
                 }}
               />
               <Tab.Screen
-                name="프로필"
-                component={ProfileScreen}
+                name="프로필탭"
+                component={ProfileStack}
                 options={{
                   tabBarIcon: ({focused}) =>
                     focused ? <ActiveProfileIcon /> : <ProfileIcon />,

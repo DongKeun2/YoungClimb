@@ -5,7 +5,14 @@ import rankIcon from '../assets/image/profile/holdIcon.png';
 
 function UserAvatar({source, rank, size}) {
   return (
-    <View style={styles.imgBox}>
+    <View style={[styles.imgBox, {width: size, height: size}]}>
+      <Image
+        style={[
+          styles.image,
+          {width: size, height: size, borderRadius: size / 2},
+        ]}
+        source={source}
+      />
       {rank && (
         <Image
           source={rankIcon}
@@ -20,13 +27,6 @@ function UserAvatar({source, rank, size}) {
           ]}
         />
       )}
-      <Image
-        style={[
-          styles.image,
-          {width: size, height: size, borderRadius: size / 2},
-        ]}
-        source={source}
-      />
     </View>
   );
 }
