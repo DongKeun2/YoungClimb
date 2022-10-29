@@ -160,9 +160,10 @@ const BottomSheet = (props) => {
 const styles = StyleSheet.create({
 	renderItemContainer:{
 		width:'100%',
-		padding: 12,
 		borderBottomColor: '#929292',
     borderBottomWidth: 0.2,
+		paddingHorizontal:18,
+		paddingVertical: 13
 	},
 	renderItemName:{
 		fontWeight:'bold',

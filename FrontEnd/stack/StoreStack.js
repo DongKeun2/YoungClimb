@@ -1,5 +1,6 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
+import { useRoute } from '@react-navigation/native';
 
 import StoreScreen from '../screens/stores/StoreScreen'
 import StoreDetail from '../screens/stores/StoreDetail'

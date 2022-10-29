@@ -1,6 +1,7 @@
 import React from 'react';
-import { useState, useEffect, useRef } from 'react'
-import {View, Text, Button, Animated, Dimensions, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
+import { useState, useEffect } from 'react'
+import {View, Text, Animated, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
 import NaverMapView, {Circle, Marker, Align} from "react-native-nmap";
 import Geolocation from 'react-native-geolocation-service';
@@ -8,7 +9,7 @@ import Geolocation from 'react-native-geolocation-service';
 import MyLocationImg from '../../assets/image/map/MyLocation.png'
 import MarkerImg from '../../assets/image/map/Marker.png'
 
-export default function StoreScreen({navigation}) {
+export default function StoreScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState({latitude: 37.587336576003295, longitude: 127.0575764763725});
   const [modalVisible, setModalVisible] = useState(false)
   const [mapView, setMapView] = useState('55%')
@@ -91,7 +92,7 @@ export default function StoreScreen({navigation}) {
     },])
     
 
-  useEffect(()=>{
+  useFocusEffect(()=>{
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
@@ -99,24 +100,26 @@ export default function StoreScreen({navigation}) {
       },
       error => {
         setCurrentLocation({latitude: 37.587336576003295, longitude: 127.0575764763725})
-        console.error(error.code, error.message);
+        // console.error(error.code, error.message);
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-    }
-  ,[])
+    })
 
-  useEffect(()=>{
-    console.log(currentLocation)
-  },[currentLocation])
-
-  BackHandler.addEventListener('hardwareBackPress', ()=>{
-    if (modalVisible) {
-      setModalVisible(false)
-      return true
-    }
-    return false
-  })
+  // useEffect(()=>{
+  //   console.log(currentLocation)
+  // },[currentLocation])
+  useFocusEffect(
+    ()=>{
+      BackHandler.addEventListener('hardwareBackPress', ()=>{
+        if (modalVisible) {
+          setModalVisible(false)
+          return true
+        }
+        return true
+      }
+      )
+      })
 
   return (
     // <View>
@@ -128,8 +131,8 @@ export default function StoreScreen({navigation}) {
           onMapClick={e => locationHandler(e)}
           center={{...currentLocation, zoom: 14}}
           zoomControl ={true}
-          showsMyLocationButton={true}
-          onCameraChange={e => console.warn('onCameraChange', JSON.stringify(e))}
+          // showsMyLocationButton={true}
+          // onCameraChange={e => console.warn('onCameraChange', JSON.stringify(e))}
           >
             {/* 
             받은 정보 map        
