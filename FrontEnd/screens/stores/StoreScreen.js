@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect, useRef } from 'react'
-import {View, Text, Button, Animated, Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, Button, Animated, Dimensions, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
 import BottomSheet from '../../components/BottomSheet';
 import NaverMapView, {Circle, Marker, Align} from "react-native-nmap";
 import Geolocation from 'react-native-geolocation-service';
@@ -66,7 +66,25 @@ export default function StoreScreen({navigation}) {
     latitude: 37.49552290450269, longitude: 127.0282506964424
     },
     {id:'A125098235',
-    name: '손상원클라임 강남',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
     address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
     distance: '700m',
     latitude: 37.49552290450269, longitude: 127.0282506964424
@@ -91,6 +109,14 @@ export default function StoreScreen({navigation}) {
   useEffect(()=>{
     console.log(currentLocation)
   },[currentLocation])
+
+  BackHandler.addEventListener('hardwareBackPress', ()=>{
+    if (modalVisible) {
+      setModalVisible(false)
+      return true
+    }
+    return false
+  })
 
   return (
     // <View>
@@ -127,7 +153,9 @@ export default function StoreScreen({navigation}) {
       {modalVisible?
       <></>
       :
-        <TouchableOpacity style={{...styles.button, position:'absolute', bottom:5, left:'50%', transform:[{ translateX: -50 }]}} onPress={()=>{setModalVisible(true)}}>
+        <TouchableOpacity 
+          activeOpacity={1}
+          style={{...styles.button, position:'absolute', bottom:15, left:'50%', transform:[{ translateX: -55 }]}} onPress={()=>{setModalVisible(true)}}>
           <Text style={styles.text}>지점 리스트</Text>
         </TouchableOpacity>
 
@@ -147,7 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F34D7F',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100,
+    width: 110,
     height: 30,
     borderRadius: 15,
     // transform:'translate(-50%, -50%)',
@@ -171,6 +199,7 @@ const styles = StyleSheet.create({
       fontSize: 15,
       textAlign: 'center',
       color: 'white',
+      fontWeight:'bold'
   }
 })
 
