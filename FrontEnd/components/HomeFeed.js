@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 import UserAvatar from './UserAvatar';
@@ -16,6 +16,18 @@ import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
 
 function HomeFeed({feed, navigation}) {
+  const [contentHeight, setHeight] = useState(0);
+  const [isFullContent, setIsFullContent] = useState(false);
+
+  const onLayout = e => {
+    const {height} = e.nativeEvent.layout;
+    setHeight(height);
+  };
+
+  const viewFullContent = () => {
+    setIsFullContent(true);
+  };
+
   return (
     <View style={styles.container}>
       {/* 피드 상단 헤더 */}
@@ -104,26 +116,51 @@ function HomeFeed({feed, navigation}) {
           </Text>
         </View>
       </View>
-      {/* 본문 */}
+      {/* 본문, 댓글 미리보기, 댓글 수 */}
       <View style={styles.contentSummary}>
-        <Text style={styles.contentPreview}>{feed.content}</Text>
+        <View
+          onLayout={onLayout}
+          style={{position: 'absolute', top: 0, opacity: 0}}>
+          <Text style={styles.contentPreview}>{feed.content}</Text>
+        </View>
+        {!isFullContent && contentHeight > 32 ? (
+          <TouchableOpacity
+            style={styles.viewFullContent}
+            onPress={viewFullContent}>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="clip"
+              style={styles.contentPreview}>
+              {feed.content}
+            </Text>
+            <Text style={{color: '#a7a7a7', fontSize: 13}}>... 더 보기</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() =>
+              navigation ? navigation.navigate('댓글', {board: feed}) : null
+            }>
+            <Text style={styles.contentPreview}>{feed.content}</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      {/* 댓글 미리보기, 댓글 수 */}
       <TouchableOpacity
         style={styles.commentSummary}
         onPress={() =>
-          navigation ? navigation.navigate('댓글', {id: feed.id}) : null
+          navigation ? navigation.navigate('댓글', {board: feed}) : null
         }>
         <View style={styles.commentPreview}>
           <Text
             style={{
               ...styles.feedTextStyle,
-              fontWeight: '700',
-              marginRight: 10,
+              fontWeight: '600',
+              marginRight: 8,
             }}>
             {feed.commentPreview.nickname}
           </Text>
-          <Text style={styles.feedTextStyle}>
+          <Text
+            numberOfLines={1}
+            style={{...styles.feedTextStyle, width: '60%', overflow: 'hidden'}}>
             {feed.commentPreview.comment}
           </Text>
         </View>
@@ -196,7 +233,10 @@ const styles = StyleSheet.create({
   contentPreview: {
     color: 'black',
     fontSize: 14,
-    overflow: 'hidden',
+    lineHeight: 16,
+  },
+  viewFullContent: {
+    padding: 1,
   },
   commentSummary: {
     marginVertical: 5,
