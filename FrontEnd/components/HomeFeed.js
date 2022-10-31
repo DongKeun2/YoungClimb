@@ -105,10 +105,6 @@ function HomeFeed({feed, navigation}) {
   );
 }
 
-HomeFeed.defaultProps = {
-  navigation: null,
-};
-
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
