@@ -36,7 +36,12 @@ function HomeFeed({feed, navigation}) {
           <View style={styles.iconText}>
             <UserAvatar source={avatar} rank={1} size={36} />
             <View style={styles.headerTextGroup}>
-              <Text style={{...styles.feedTextStyle, fontSize: 16}}>
+              <Text
+                style={{
+                  ...styles.feedTextStyle,
+                  fontSize: 16,
+                  fontWeight: '600',
+                }}>
                 {feed.createUser}
               </Text>
               <Text style={{...styles.feedTextStyle, fontSize: 12}}>
@@ -153,8 +158,8 @@ function HomeFeed({feed, navigation}) {
           <Text
             style={{
               ...styles.feedTextStyle,
-              fontWeight: '700',
-              marginRight: 10,
+              fontWeight: '600',
+              marginRight: 8,
             }}>
             {feed.commentPreview.nickname}
           </Text>
