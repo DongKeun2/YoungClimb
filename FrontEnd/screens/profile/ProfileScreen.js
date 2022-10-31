@@ -52,23 +52,21 @@ function ProfileScreen({navigation, route}) {
         />
       )}
 
+      {route.params.initial && isOpen && (
+        <View style={isOpen ? [styles.menu, styles.active] : styles.menu}>
+          <TouchableOpacity
+            onPress={() => {
+              // dispatch(logout());
+              dispatch(testLogin(false));
+            }}>
+            <Text style={styles.text}>로그아웃</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate('프로필 설정')}>
+            <Text style={styles.text}>정보 수정</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       <ScrollView style={styles.container}>
-        {route.params.initial && isOpen && (
-          <View style={isOpen ? [styles.menu, styles.active] : styles.menu}>
-            <TouchableOpacity
-              onPress={() => {
-                // dispatch(logout());
-                dispatch(testLogin(false));
-              }}>
-              <Text>로그아웃</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('프로필 설정')}>
-              <Text>정보 수정</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
         <View style={styles.header}>
           <View style={styles.profileBox}>
             <UserAvatar source={userInfo.image} size={70} />
@@ -268,10 +266,11 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   menu: {
-    backgroundColor: 'black',
+    backgroundColor: '#fff',
     borderRadius: 8,
     position: 'absolute',
-    top: 0,
+    top: 50,
+    zIndex: 1,
     right: 0,
     width: 100,
     alignItems: 'center',
@@ -282,7 +281,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    elevation: 5,
+    elevation: 10,
     opacity: 0,
     visibility: 'none',
     transform: [{translateY: -20}],
