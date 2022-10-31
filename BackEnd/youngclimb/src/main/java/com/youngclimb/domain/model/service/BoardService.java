@@ -1,14 +1,25 @@
 package com.youngclimb.domain.model.service;
 
+import com.youngclimb.common.security.UserPrincipal;
+import com.youngclimb.domain.model.dto.FeedDto;
+import com.youngclimb.domain.model.dto.board.BoardCreate;
+import com.youngclimb.domain.model.dto.board.BoardDetailDto;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+// userid 혹은 email을 받는 친구들은 모두 @currentUser로 바꿀 예정
+// 일단 login 될 때까지만 임시로 사용
 public interface BoardService {
     // 전체 게시글 조회
-//    public List<ReadFeedResponseDto> readAllBoard(String userId, Pageable pageable, UserPrincipal currUser);
+    public List<FeedDto> readAllBoard(String userId, Pageable pageable, UserPrincipal currUser);
     // 게시물 작성
-//    public void writeBoard(CreateBoardRequestDto createBoardRequestDto, List<MultipartFile> files);
+    public void writeBoard(BoardCreate boardCreate, List<MultipartFile> files);
     // 게시글 좋아요
-//    public void upBoardLike(Long boardId, String userId);
+    public void upBoardLike(Long boardId, String email);
     // 게시글 댓글 조회
-
+    public BoardDetailDto readAllComments(Long boardId, String memberId);
     // 게시글 신고
 
     // 댓글 작성

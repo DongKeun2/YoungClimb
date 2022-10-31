@@ -1,5 +1,7 @@
 package com.youngclimb.domain.model.entity;
 
+import com.youngclimb.domain.model.dto.board.CommentDto;
+import com.youngclimb.domain.model.dto.member.MemberPic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -7,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -40,6 +44,30 @@ public class Comment {
     @Column(name = "comment_is_deleted")
     private Boolean isDeleted;
 
+    public CommentDto toCommentDto() {
+
+        String timeText = "";
+        Long minus = ChronoUnit.MINUTES.between(LocalDateTime.now(), createdDatetime);
+
+        if (minus <= 10L) {
+            timeText = "방금 전";
+        } else if (minus <= 60L) {
+            timeText = minus + "분 전";
+        } else if (minus <= 1440L) {
+            timeText = ChronoUnit.HOURS.between(LocalDateTime.now(), createdDatetime) + "시간 전";
+        } else if (ChronoUnit.YEARS.between(LocalDateTime.now(), createdDatetime) > 1) {
+            timeText = createdDatetime.getMonth() + "월 " + createdDatetime.getDayOfMonth() + "일";
+        } else {
+            timeText = createdDatetime.getYear() + "년 " + createdDatetime.getMonth() + "월 " + createdDatetime.getDayOfMonth() + "일";
+        }
+
+        return CommentDto.builder()
+                .id(id)
+                .user(new MemberPic(member.getNickname(), member.getMemberProfileImg(), null))
+                .content(content)
+                .createdAt(createdDatetime)
+                .build();
+    }
 
 
 }
