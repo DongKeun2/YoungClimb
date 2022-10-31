@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 import UserAvatar from './UserAvatar';
@@ -16,6 +16,18 @@ import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
 
 function HomeFeed({feed, navigation}) {
+  const [contentHeight, setHeight] = useState(0);
+  const [isFullContent, setIsFullContent] = useState(false);
+
+  const onLayout = e => {
+    const {height} = e.nativeEvent.layout;
+    setHeight(height);
+  };
+
+  const viewFullContent = () => {
+    setIsFullContent(true);
+  };
+
   return (
     <View style={styles.container}>
       {/* 피드 상단 헤더 */}
@@ -24,16 +36,31 @@ function HomeFeed({feed, navigation}) {
           <View style={styles.iconText}>
             <UserAvatar source={avatar} rank={1} size={36} />
             <View style={styles.headerTextGroup}>
-              <Text style={{...styles.feedTextStyle, fontSize: 16}}>{feed.createUser}</Text>
-              <Text style={{...styles.feedTextStyle, fontSize: 12}}>{feed.createdAt}</Text>
+              <Text
+                style={{
+                  ...styles.feedTextStyle,
+                  fontSize: 16,
+                  fontWeight: '600',
+                }}>
+                {feed.createUser}
+              </Text>
+              <Text style={{...styles.feedTextStyle, fontSize: 12}}>
+                {feed.createdAt}
+              </Text>
             </View>
           </View>
           <MenuIcon width={16} height={16} />
         </View>
         <View style={styles.wallInfo}>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.centerName}</Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.wallName}</Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 3}}>{feed.difficulty}</Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+            {feed.centerName}
+          </Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+            {feed.wallName}
+          </Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 3}}>
+            {feed.difficulty}
+          </Text>
           <LevelLabel color={feed.centerLevelColor} />
           <HoldLabel color={feed.holdColor} />
         </View>
@@ -54,7 +81,10 @@ function HomeFeed({feed, navigation}) {
         </Text>
         <View style={styles.solvedDate}>
           <CameraIcon />
-          <Text style={{color: 'white', fontSize: 12, marginLeft: 3, marginTop: 1}}>{feed.solvedDate}</Text>
+          <Text
+            style={{color: 'white', fontSize: 12, marginLeft: 3, marginTop: 1}}>
+            {feed.solvedDate}
+          </Text>
         </View>
       </View>
       {/* 좋아요, 스크랩, 조회수 */}
@@ -70,7 +100,9 @@ function HomeFeed({feed, navigation}) {
                 <EmptyHeart style={{marginRight: 5}} />
               </TouchableOpacity>
             )}
-            <Text style={styles.feedTextStyle}>{feed.like} 명이 좋아합니다.</Text>
+            <Text style={styles.feedTextStyle}>
+              {feed.like} 명이 좋아합니다.
+            </Text>
           </View>
           {feed.isScrap ? (
             <TouchableOpacity onPress={() => null}>
@@ -84,22 +116,62 @@ function HomeFeed({feed, navigation}) {
         </View>
         <View style={styles.iconText}>
           <EyeIcon style={{marginRight: 5}} />
-          <Text style={styles.feedTextStyle}>{feed.view} 명이 감상했습니다.</Text>
+          <Text style={styles.feedTextStyle}>
+            {feed.view} 명이 감상했습니다.
+          </Text>
         </View>
       </View>
-      {/* 본문 */}
+      {/* 본문, 댓글 미리보기, 댓글 수 */}
       <View style={styles.contentSummary}>
-        <Text style={styles.contentPreview}>{feed.content}</Text>
+        <View
+          onLayout={onLayout}
+          style={{position: 'absolute', top: 0, opacity: 0}}>
+          <Text style={styles.contentPreview}>{feed.content}</Text>
+        </View>
+        {!isFullContent && contentHeight > 32 ? (
+          <TouchableOpacity
+            style={styles.viewFullContent}
+            onPress={viewFullContent}>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="clip"
+              style={styles.contentPreview}>
+              {feed.content}
+            </Text>
+            <Text style={{color: '#a7a7a7', fontSize: 13}}>... 더 보기</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() =>
+              navigation ? navigation.navigate('댓글', {board: feed}) : null
+            }>
+            <Text style={styles.contentPreview}>{feed.content}</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      {/* 댓글 미리보기, 댓글 수 */}
       <TouchableOpacity
         style={styles.commentSummary}
-        onPress={() => (navigation ? navigation.navigate('댓글', {id: feed.id}) : null)}>
+        onPress={() =>
+          navigation ? navigation.navigate('댓글', {board: feed}) : null
+        }>
         <View style={styles.commentPreview}>
-          <Text style={{...styles.feedTextStyle, fontWeight: '700', marginRight: 10}}>{feed.commentPreview.nickname}</Text>
-          <Text style={styles.feedTextStyle}>{feed.commentPreview.comment}</Text>
+          <Text
+            style={{
+              ...styles.feedTextStyle,
+              fontWeight: '600',
+              marginRight: 8,
+            }}>
+            {feed.commentPreview.nickname}
+          </Text>
+          <Text
+            numberOfLines={1}
+            style={{...styles.feedTextStyle, width: '60%', overflow: 'hidden'}}>
+            {feed.commentPreview.comment}
+          </Text>
         </View>
-        <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>댓글 {feed.commentNum}개 모두 보기</Text>
+        <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
+          댓글 {feed.commentNum}개 모두 보기
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -166,7 +238,10 @@ const styles = StyleSheet.create({
   contentPreview: {
     color: 'black',
     fontSize: 14,
-    overflow: 'hidden',
+    lineHeight: 16,
+  },
+  viewFullContent: {
+    padding: 1,
   },
   commentSummary: {
     marginVertical: 5,
