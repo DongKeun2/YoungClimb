@@ -3,6 +3,8 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 import UserAvatar from './UserAvatar';
+import HoldLabel from './HoldLabel';
+import LevelLabel from './LevelLabel';
 
 import avatar from '../assets/image/initial/background.png';
 import MenuIcon from '../assets/image/feed/menuIcon.svg';
@@ -31,9 +33,9 @@ function HomeFeed({feed, navigation}) {
         <View style={styles.wallInfo}>
           <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.centerName}</Text>
           <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.wallName}</Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.difficulty}</Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.centerLevelColor}</Text>
-          <Text style={styles.feedTextStyle}>{feed.holdColor}</Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 3}}>{feed.difficulty}</Text>
+          <LevelLabel color={feed.centerLevelColor} />
+          <HoldLabel color={feed.holdColor} />
         </View>
       </View>
       {/* 동영상 */}
@@ -102,10 +104,6 @@ function HomeFeed({feed, navigation}) {
     </View>
   );
 }
-
-HomeFeed.defaultProps = {
-  navigation: null,
-};
 
 const styles = StyleSheet.create({
   container: {
