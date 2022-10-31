@@ -12,7 +12,10 @@ export const levelColorDict = {
     핑크:'#EF6790',
     회색:'#A4A4A4',
     하늘:'#ACD4F1',
-
+    예시: {
+        backgroundColor: '#3B4BA0',
+        fontColor: 'white',
+      }
 
 }
 

@@ -4,7 +4,7 @@ import {
 	Text,
 	TouchableOpacity,
 	BackHandler,
-	Animated,
+	FlatList,
 	StyleSheet,
 	Image,
 	Linking
@@ -14,6 +14,7 @@ import CustomSubHeader from '../../components/CustomSubHeader';
 import ImgRollPic from '../../assets/image/map/ImgRollPic.svg'
 import ExpandDown from '../../assets/image/map/ExpandDown.svg'
 import ExpandUp from '../../assets/image/map/ExpandUp.svg'
+import { levelColorDict, holdColorDict } from '../../assets/info/ColorInfo';
 
 
 export default function StoreDetail({route, navigation}){
@@ -24,6 +25,7 @@ export default function StoreDetail({route, navigation}){
 	address: '',
 	centerNumber: 0,
 	imageURL:'',
+	levels:[],
 	event: [{
 		date: '', 
 		content: '' 
@@ -69,6 +71,7 @@ export default function StoreDetail({route, navigation}){
 				address: '서울특별시 강남구 테헤란로8길 21 화인강남빌딩 B1층',
 				centerNumber: 0,
 				imageURL:'https://blog.kakaocdn.net/dn/bRo0BE/btrIftkCXTX/WtPj5QCrrf9V8hSkdIRql0/img.png',
+				levels:['빨강','주황','노랑','초록','파랑','남색','보라'],
 				event: [{
 					date: '', 
 					content: '' 
@@ -280,11 +283,20 @@ export default function StoreDetail({route, navigation}){
 
 						</View>
 						{/* 난이도 grid */}
+						<Text style={{...styles.subTitle, marginTop:10, marginBottom:5}}>난이도</Text>
+						<FlatList
+							key = {detailInfo.levels}
+							data={detailInfo.levels}
+							numColumns = {detailInfo.levels.length}
+							renderItem = {
+								({item}) =>
+								<View style={{marginHorizontal:'0.1%',height:25, width:`${100/detailInfo.levels.length - 0.2}%`, backgroundColor:levelColorDict[item]}}></View>
+							}
+						/>
 						{/* 구분선 */}
+						<View style={{height:15, borderBottomColor:'#929292',borderBottomWidth:0.2}}></View>
 						{/* 주소 */}
 						{/* 지도 */}
-
-						<Text>{Id}</Text>
 					</View>
 					<View style={{height:50, width:'100%'}}></View>
 
@@ -345,7 +357,7 @@ const styles = StyleSheet.create({
 	},
 	infoFlex: {
 		flexDirection:'row',
-		marginBottom: 5,
+		marginBottom: 7,
 	},
 	detailfont: {
 		color:'#323232'
