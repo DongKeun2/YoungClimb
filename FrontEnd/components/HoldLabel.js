@@ -46,6 +46,21 @@ const levelItem = {
     backgroundColor: '#3B4BA0',
     fontColor: 'white',
   },
+  yellow: {
+    name: '노랑 홀드',
+    backgroundColor: '#F3F352',
+    fontColor: '#535353',
+  },
+  black: {
+    name: '검정 홀드',
+    backgroundColor: 'black',
+    fontColor: 'white',
+  },
+  pink: {
+    name: '분홍 홀드',
+    backgroundColor: '#EC33B8',
+    fontColor: 'white',
+  },
 };
 
 export default HoldLabel;

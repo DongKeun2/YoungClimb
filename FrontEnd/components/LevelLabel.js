@@ -49,4 +49,9 @@ const levelItem = {
     backgroundColor: '#EB4256',
     fontColor: 'white',
   },
+  green: {
+    name: '초록 Lv',
+    backgroundColor: '#77F263',
+    fontColor: 'white',
+  },
 };

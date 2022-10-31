@@ -10,17 +10,14 @@ function ArticleCard({article, navigation}) {
         navigation.navigate('게시글');
       }}
       style={styles.cardContainer}>
-      <Image source={article.mediaId} />
+      <Image source={article.mediaId} style={styles.image} />
       <View style={styles.InfoBox}>
         <View style={styles.cardInfo}>
           <Text>{article.centerName}</Text>
           <Text>{article.wallName}</Text>
         </View>
         <View style={styles.cardInfo}>
-          <LevelLabel
-            name={article.centerLevelName}
-            color={article.centerLevelColor}
-          />
+          <LevelLabel color={article.centerLevelColor} />
           <HoldLabel color={article.holdColor} />
         </View>
       </View>
@@ -29,7 +26,11 @@ function ArticleCard({article, navigation}) {
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {padding: 10},
+  cardContainer: {padding: 10, width: '49%'},
+  image: {
+    width: '100%',
+    resizeMode: 'contain',
+  },
   InfoBox: {alignItems: 'flex-start', justifyContent: 'center', padding: 1},
   cardInfo: {
     display: 'flex',
