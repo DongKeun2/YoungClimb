@@ -35,9 +35,9 @@ function ProfileScreen({navigation}) {
       <View style={styles.header}>
         <View style={styles.profileBox}>
           <UserAvatar source={userInfo.image} size={70} />
-          <View style={styles.profileText}>
+          <View style={styles.profileTextBox}>
             <Text style={styles.profileNickname}>{userInfo.nickname}</Text>
-            <Text style={styles.profileSize}>
+            <Text style={[styles.text, styles.profileSize]}>
               {userInfo.gender} {userInfo.height}cm {userInfo.shoeSize}mm{' '}
               {userInfo.wingspan}cm
             </Text>
@@ -51,35 +51,35 @@ function ProfileScreen({navigation}) {
       </View>
 
       <View style={styles.introBox}>
-        <Text style>{userInfo.intro}</Text>
+        <Text style={styles.intro}>{userInfo.intro}</Text>
       </View>
 
       <View style={styles.horizonLine} />
 
       <View style={styles.InfoContainer}>
         <View style={styles.InfoBox}>
-          <Text>등급</Text>
+          <Text style={styles.text}>등급</Text>
           <Image style={styles.rankImg} source={rankIcon} />
         </View>
         <View style={styles.InfoBox}>
-          <Text>게시글</Text>
-          <Text>{userInfo.boardNum}</Text>
+          <Text style={styles.text}>게시글</Text>
+          <Text style={styles.text}>{userInfo.boardNum}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('팔로우');
           }}
           style={styles.InfoBox}>
-          <Text>팔로잉</Text>
-          <Text>{userInfo.followingNum}</Text>
+          <Text style={styles.text}>팔로잉</Text>
+          <Text style={styles.text}>{userInfo.followingNum}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
             navigation.navigate('팔로우');
           }}
           style={styles.InfoBox}>
-          <Text>팔로워</Text>
-          <Text>{userInfo.followerNum}</Text>
+          <Text style={styles.text}>팔로워</Text>
+          <Text style={styles.text}>{userInfo.followerNum}</Text>
         </TouchableOpacity>
       </View>
 
@@ -155,11 +155,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  profileText: {
+  profileTextBox: {
     alignItems: 'flex-start',
     paddingLeft: 10,
   },
   profileNickname: {
+    color: 'black',
     // paddingVertical: 5,
   },
   profileSize: {
@@ -219,6 +220,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  text: {
+    color: 'black',
+  },
+  intro: {
+    color: 'black',
   },
 });
 

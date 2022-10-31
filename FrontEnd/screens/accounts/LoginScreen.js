@@ -55,7 +55,7 @@ function LoginScreen({navigation}) {
   return (
     <View style={styles.container}>
       <View stlye={styles.header}>
-        <Image source={title} style={styles.logo} />
+        <Image source={title} style={styles.title} />
       </View>
       <View style={styles.inputGroup}>
         <Input
@@ -84,7 +84,7 @@ function LoginScreen({navigation}) {
         />
       </View>
       <View style={styles.linkGroup}>
-        <Text>회원이 아니신가요? </Text>
+        <Text style={styles.text}>회원이 아니신가요? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>
           <Text style={styles.link}>회원가입</Text>
         </TouchableOpacity>
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   header: {
@@ -109,7 +109,9 @@ const styles = StyleSheet.create({
     height: '50%',
   },
   logo: {
-    marginTop: windowHeight / 10,
+    margin: 30,
+  },
+  title: {
     resizeMode: 'contain',
   },
   inputGroup: {
@@ -127,6 +129,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     display: 'flex',
     flexDirection: 'row',
+  },
+  text: {
+    color: 'black',
   },
   link: {
     color: '#F34D7F',

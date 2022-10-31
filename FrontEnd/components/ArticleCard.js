@@ -3,22 +3,25 @@ import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import HoldLabel from './HoldLabel';
 import LevelLabel from './LevelLabel';
 
-function ArticleCard({article, navigation}) {
+function ArticleCard({article, navigation, type}) {
   return (
     <TouchableOpacity
       onPress={() => {
         navigation.navigate('게시글');
       }}
       style={styles.cardContainer}>
-      <Image source={article.mediaId} style={styles.image} />
-      <View style={styles.InfoBox}>
-        <View style={styles.cardInfo}>
-          <Text>{article.centerName}</Text>
-          <Text>{article.wallName}</Text>
-        </View>
-        <View style={styles.cardInfo}>
-          <LevelLabel color={article.centerLevelColor} />
-          <HoldLabel color={article.holdColor} />
+      <View style={styles.cardBox}>
+        <Image source={article.mediaId} style={styles.image} />
+        <View style={styles.InfoBox}>
+          <View style={styles.cardInfo}>
+            <Text style={styles.text}>{article.centerName}</Text>
+            <Text style={styles.text}>{article.wallName}</Text>
+          </View>
+          <View style={styles.cardInfo}>
+            <Text style={styles.text}>[{article.difficulty}]</Text>
+            <LevelLabel color={article.centerLevelColor} />
+            <HoldLabel color={article.holdColor} />
+          </View>
         </View>
       </View>
     </TouchableOpacity>
@@ -26,7 +29,19 @@ function ArticleCard({article, navigation}) {
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {padding: 10, width: '49%'},
+  cardContainer: {
+    display: 'flex',
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%',
+  },
+  cardBox: {
+    width: '100%',
+    padding: 5,
+    borderRadius: 5,
+    backgroundColor: '#F8F8F8',
+  },
   image: {
     width: '100%',
     resizeMode: 'contain',
@@ -36,6 +51,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     padding: 1,
+  },
+  text: {
+    color: 'black',
   },
 });
 

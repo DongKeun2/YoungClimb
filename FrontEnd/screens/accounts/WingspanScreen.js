@@ -7,8 +7,6 @@ import CustomButton from '../../components/CustomBtn';
 import UploadImg from '../../components/UploadImg';
 import {wingspan} from '../../utils/slices/AccountsSlice';
 
-import test from '../../assets/image/main/wingspan.png';
-
 function WingSpanScreen({navigation}) {
   const dispatch = useDispatch();
 
@@ -29,7 +27,6 @@ function WingSpanScreen({navigation}) {
     console.log('버튼 눌림');
     const match = /\.(\w+)$/.exec(imageName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
-    console.log(test);
     console.log(imageUri);
     const formdata = new FormData();
     formdata.append('image', {
@@ -115,9 +112,11 @@ const styles = StyleSheet.create({
   title: {
     textAlign: 'center',
     padding: 10,
+    color: 'black',
   },
   content: {
     textAlign: 'center',
+    color: 'black',
   },
   btnGroup: {
     display: 'flex',
