@@ -10,20 +10,24 @@ import {
 import {useSelector, useDispatch} from 'react-redux';
 
 import CustomMainHeader from '../../components/CustomMainHeader';
+import CustomSubHeader from '../../components/CustomSubHeader';
 import UserAvatar from '../../components/UserAvatar';
 import ArticleCard from '../../components/ArticleCard';
 import FollowBtn from '../../components/FollowBtn';
+
+import {profile, setIsClose} from '../../utils/slices/ProfileSlice';
+import {logout, testLogin} from '../../utils/slices/AccountsSlice';
 
 import rankIcon from '../../assets/image/profile/holdIcon.png';
 import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
-import CustomSubHeader from '../../components/CustomSubHeader';
-import {profile} from '../../utils/slices/ProfileSlice';
 
 function ProfileScreen({navigation, route}) {
   const dispatch = useDispatch();
+
+  const isOpen = useSelector(state => state.profile.isOpen);
 
   const userInfo = useSelector(state => state.profile.profileInfo.user);
   const isFollow = useSelector(state => state.profile.profileInfo.isFollow);
@@ -35,7 +39,6 @@ function ProfileScreen({navigation, route}) {
 
   useEffect(() => {
     dispatch(profile(route.params.nickname));
-    console.log(route.params.nickname);
   });
 
   return (
@@ -50,6 +53,22 @@ function ProfileScreen({navigation, route}) {
       )}
 
       <ScrollView style={styles.container}>
+        {route.params.initial && isOpen && (
+          <View style={isOpen ? [styles.menu, styles.active] : styles.menu}>
+            <TouchableOpacity
+              onPress={() => {
+                // dispatch(logout());
+                dispatch(testLogin(false));
+              }}>
+              <Text>로그아웃</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('프로필 설정')}>
+              <Text>정보 수정</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         <View style={styles.header}>
           <View style={styles.profileBox}>
             <UserAvatar source={userInfo.image} size={70} />
@@ -61,11 +80,13 @@ function ProfileScreen({navigation, route}) {
               </Text>
             </View>
           </View>
-          <FollowBtn
-            isFollow={isFollow}
-            isMine={isMine}
-            nickname={userInfo.nickname}
-          />
+          {!isOpen && (
+            <FollowBtn
+              isFollow={isFollow}
+              isMine={isMine}
+              nickname={userInfo.nickname}
+            />
+          )}
         </View>
 
         <View style={styles.introBox}>
@@ -245,6 +266,33 @@ const styles = StyleSheet.create({
   },
   intro: {
     color: 'black',
+  },
+  menu: {
+    backgroundColor: 'black',
+    borderRadius: 8,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 100,
+    alignItems: 'center',
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    opacity: 0,
+    visibility: 'none',
+    transform: [{translateY: -20}],
+    // transition: ['opacity 0.4s' 'ease', transform 0.4s ease, visibility 0.4s],
+    padding: 10,
+  },
+  active: {
+    opacity: 1,
+    visibility: 'visible',
+    transform: [{translateY: 0}],
   },
 });
 

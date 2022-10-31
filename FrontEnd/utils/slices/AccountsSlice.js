@@ -184,7 +184,7 @@ export const AccountsSlice = createSlice({
   },
 });
 
-export {login, wingspan, signup, profileCreate};
+export {login, logout, wingspan, signup, profileCreate};
 
 export const {
   testLogin,

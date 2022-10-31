@@ -24,16 +24,26 @@ function HomeFeed({feed, navigation}) {
           <View style={styles.iconText}>
             <UserAvatar source={avatar} rank={1} size={36} />
             <View style={styles.headerTextGroup}>
-              <Text style={{...styles.feedTextStyle, fontSize: 16}}>{feed.createUser}</Text>
-              <Text style={{...styles.feedTextStyle, fontSize: 12}}>{feed.createdAt}</Text>
+              <Text style={{...styles.feedTextStyle, fontSize: 16}}>
+                {feed.createUser}
+              </Text>
+              <Text style={{...styles.feedTextStyle, fontSize: 12}}>
+                {feed.createdAt}
+              </Text>
             </View>
           </View>
           <MenuIcon width={16} height={16} />
         </View>
         <View style={styles.wallInfo}>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.centerName}</Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>{feed.wallName}</Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 3}}>{feed.difficulty}</Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+            {feed.centerName}
+          </Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+            {feed.wallName}
+          </Text>
+          <Text style={{...styles.feedTextStyle, marginRight: 3}}>
+            {feed.difficulty}
+          </Text>
           <LevelLabel color={feed.centerLevelColor} />
           <HoldLabel color={feed.holdColor} />
         </View>
@@ -54,7 +64,10 @@ function HomeFeed({feed, navigation}) {
         </Text>
         <View style={styles.solvedDate}>
           <CameraIcon />
-          <Text style={{color: 'white', fontSize: 12, marginLeft: 3, marginTop: 1}}>{feed.solvedDate}</Text>
+          <Text
+            style={{color: 'white', fontSize: 12, marginLeft: 3, marginTop: 1}}>
+            {feed.solvedDate}
+          </Text>
         </View>
       </View>
       {/* 좋아요, 스크랩, 조회수 */}
@@ -70,7 +83,9 @@ function HomeFeed({feed, navigation}) {
                 <EmptyHeart style={{marginRight: 5}} />
               </TouchableOpacity>
             )}
-            <Text style={styles.feedTextStyle}>{feed.like} 명이 좋아합니다.</Text>
+            <Text style={styles.feedTextStyle}>
+              {feed.like} 명이 좋아합니다.
+            </Text>
           </View>
           {feed.isScrap ? (
             <TouchableOpacity onPress={() => null}>
@@ -84,7 +99,9 @@ function HomeFeed({feed, navigation}) {
         </View>
         <View style={styles.iconText}>
           <EyeIcon style={{marginRight: 5}} />
-          <Text style={styles.feedTextStyle}>{feed.view} 명이 감상했습니다.</Text>
+          <Text style={styles.feedTextStyle}>
+            {feed.view} 명이 감상했습니다.
+          </Text>
         </View>
       </View>
       {/* 본문 */}
@@ -94,12 +111,25 @@ function HomeFeed({feed, navigation}) {
       {/* 댓글 미리보기, 댓글 수 */}
       <TouchableOpacity
         style={styles.commentSummary}
-        onPress={() => (navigation ? navigation.navigate('댓글', {id: feed.id}) : null)}>
+        onPress={() =>
+          navigation ? navigation.navigate('댓글', {id: feed.id}) : null
+        }>
         <View style={styles.commentPreview}>
-          <Text style={{...styles.feedTextStyle, fontWeight: '700', marginRight: 10}}>{feed.commentPreview.nickname}</Text>
-          <Text style={styles.feedTextStyle}>{feed.commentPreview.comment}</Text>
+          <Text
+            style={{
+              ...styles.feedTextStyle,
+              fontWeight: '700',
+              marginRight: 10,
+            }}>
+            {feed.commentPreview.nickname}
+          </Text>
+          <Text style={styles.feedTextStyle}>
+            {feed.commentPreview.comment}
+          </Text>
         </View>
-        <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>댓글 {feed.commentNum}개 모두 보기</Text>
+        <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
+          댓글 {feed.commentNum}개 모두 보기
+        </Text>
       </TouchableOpacity>
     </View>
   );

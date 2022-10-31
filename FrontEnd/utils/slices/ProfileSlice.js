@@ -324,12 +324,20 @@ const initialState = {
       },
     ],
   },
+  isOpen: false,
 };
 
 export const ProfileSlice = createSlice({
   name: 'profile',
   initialState,
-  reducers: {},
+  reducers: {
+    setIsOpen: state => {
+      state.isOpen = !state.isOpen;
+    },
+    setIsClose: state => {
+      state.isOpen = false;
+    },
+  },
   extraReducers: {
     [profile.fulfilled]: (state, action) => {
       state.profileInfo = action.payload;
@@ -345,6 +353,6 @@ export const ProfileSlice = createSlice({
 
 export {profile, follow, fetchFollowList};
 
-export const {} = ProfileSlice.actions;
+export const {setIsOpen, setIsClose} = ProfileSlice.actions;
 
 export default ProfileSlice.reducer;
