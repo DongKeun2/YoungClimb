@@ -37,6 +37,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final BoardScrapRepository boardScrapRepository;
     private final CommentRepository commentRepository;
 
     private final AmazonS3 amazonS3;
@@ -55,6 +56,13 @@ public class BoardServiceImpl implements BoardService {
             BoardDto boardDto = BoardDto.builder()
                     .id(board.getBoardId())
                     .createUser(member.getNickname())
+                    .solvedDate(board.getSolvedDate())
+                    .content(board.getContent())
+                    .like(boardLikeRepository.countByBoard(board))
+                    .view(boardScrapRepository.countByBoard(board))
+                    .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
+                    .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
+//                    .commentNum(commentRepository)
                     .build();
 
             // 게시글 DTO 세팅
