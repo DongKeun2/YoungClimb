@@ -32,7 +32,6 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url("$rootDir/../node_modules/react-native/android")
@@ -48,7 +47,8 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
-        mavenCentral()
+        google()
+        // jcenter()
         maven {
             url 'https://naver.jfrog.io/artifactory/maven/'
         }

@@ -18,6 +18,8 @@ import searchIcon from '../../assets/image/profile/searchIcon.png';
 function FollowScreen({navigation}) {
   const [type, setType] = useState('following');
 
+  const [keyword, setKeyword] = useState('');
+
   const followings = useSelector(state => state.profile.followInfo.followings);
   const followers = useSelector(state => state.profile.followInfo.followers);
 
@@ -62,19 +64,28 @@ function FollowScreen({navigation}) {
         <TextInput
           style={styles.searchInput}
           placeholder="닉네임을 검색하세요."
+          value={keyword}
+          onChangeText={value => setKeyword(value)}
         />
         <Image style={styles.searchIcon} source={searchIcon} />
       </View>
 
-      <FollowList follows={type === 'following' ? followings : followers} />
+      <FollowList
+        follows={type === 'following' ? followings : followers}
+        keyword={keyword}
+      />
     </ScrollView>
   );
 }
 
-function FollowList({follows}) {
+function FollowList({follows, keyword}) {
+  const searchResult = follows.filter(follow =>
+    follow.nickname.includes(keyword),
+  );
+
   return (
     <View style={styles.followContainer}>
-      {follows.map((item, i) => {
+      {searchResult.map((item, i) => {
         return <FollowItem key={i} item={item} />;
       })}
     </View>

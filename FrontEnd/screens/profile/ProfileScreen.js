@@ -91,7 +91,6 @@ function ProfileScreen({navigation}) {
           <TouchableOpacity
             onPress={() => {
               setType('scrap');
-              console.log(scraps);
             }}
             style={styles.tabBtn}>
             <Image source={bookmarkIcon} style={styles.tabIcon} />
@@ -102,7 +101,6 @@ function ProfileScreen({navigation}) {
           <TouchableOpacity
             onPress={() => {
               setType('board');
-              console.log(boards);
             }}
             style={styles.tabBtn}>
             <Image source={boardIcon} style={styles.tabIcon} />
