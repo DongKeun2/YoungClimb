@@ -124,19 +124,17 @@ function HomeFeed({feed, navigation}) {
           <Text style={styles.contentPreview}>{feed.content}</Text>
         </View>
         {!fullContent && contentHeight > 32 ? (
-          <>
+          <TouchableOpacity
+            style={styles.viewFullContent}
+            onPress={viewFullContent}>
             <Text
               numberOfLines={2}
               ellipsizeMode="clip"
               style={styles.contentPreview}>
               {feed.content}
             </Text>
-            <TouchableOpacity
-              hitSlop={{top: 8, bottom: 8, left: 8, right: 8}}
-              onPress={viewFullContent}>
-              <Text style={{color: '#a7a7a7', fontSize: 13}}>... 더 보기</Text>
-            </TouchableOpacity>
-          </>
+            <Text style={{color: '#a7a7a7', fontSize: 13}}>... 더 보기</Text>
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={() =>
@@ -236,6 +234,9 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 14,
     lineHeight: 16,
+  },
+  viewFullContent: {
+    padding: 1,
   },
   commentSummary: {
     marginVertical: 5,
