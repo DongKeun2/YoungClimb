@@ -161,9 +161,10 @@ const styles = StyleSheet.create({
 	renderItemContainer:{
 		width:'100%',
 		borderBottomColor: '#929292',
-    borderBottomWidth: 0.2,
+    	borderBottomWidth: 0.2,
 		paddingHorizontal:18,
-		paddingVertical: 13
+		paddingVertical: 13,
+		color:'black'
 	},
 	renderItemName:{
 		fontWeight:'bold',

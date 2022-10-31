@@ -1,18 +1,46 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
 	View,
 	Text,
 	TouchableOpacity,
 	BackHandler,
 	Animated,
-	StyleSheet
+	StyleSheet,
+	Image,
+	Linking
 } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler';
 import CustomSubHeader from '../../components/CustomSubHeader';
+import ImgRollPic from '../../assets/image/map/ImgRollPic.svg'
+
 
 export default function StoreDetail({route, navigation}){
 	const {Id} = route.params;
-	const scrollA = useRef(new Animated.Value(0)).current;
+	const [detailInfo, setDetailInfo] = useState({
+		name: '',
+		phone:'',
+	address: '',
+	centerNumber: 0,
+	imageURL:'',
+	event: [{
+		date: '', 
+		content: '' 
+}],
+	time: [{
+		day: '', 
+		startTime: '', 
+		endTime:'' 
+}],
+	price: [{
+		name: '', 
+		price: ''
+}],
+	latitude:0,
+	longitude:0,
+	})
+	const [isTimeToggleOpen, setIsTimeToggleOpen] = useState(false)
+	const [isPriceToggleOpen, setIsPriceToggleOpen] = useState(false)
+
 
 	useEffect(
 		()=>{
@@ -20,6 +48,66 @@ export default function StoreDetail({route, navigation}){
 				navigation.goBack()
 				return true
 			})
+
+			setDetailInfo({
+				phone:'02-576-8821',
+				name: '더클라임 클라이밍 짐앤샵 강남점',
+				address: '서울특별시 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+				centerNumber: 0,
+				imageURL:'https://blog.kakaocdn.net/dn/bRo0BE/btrIftkCXTX/WtPj5QCrrf9V8hSkdIRql0/img.png',
+				event: [{
+					date: '', 
+					content: '' 
+			}],
+				time: [{
+					day: '월', 
+					startTime: '10:00', 
+					endTime:'23:00' 
+			},
+			{
+				day: '화', 
+				startTime: '10:00', 
+				endTime:'23:00' 
+			},
+			{
+				day: '수', 
+				startTime: '10:00', 
+				endTime:'23:00' 
+			},
+			{
+				day: '목', 
+				startTime: '10:00', 
+				endTime:'23:00' 
+			}, 
+			{
+				day: '금', 
+				startTime: '10:00', 
+				endTime:'23:00' 
+			},
+			{
+				day: '토', 
+				startTime: '10:00', 
+				endTime:'20:00' 
+		},
+			{
+				day: '일', 
+				startTime: '10:00', 
+				endTime:'20:00' 
+		},
+		],
+				price: [{name: '스타터 패키지 2개월', price: 350000},
+				{name: '스타터 패키지 2개월', price: 220000},
+				{name: '일일 체험 강습', price: 30000},
+				{name: '일일 이용권', price: 22000},
+				{name: '평일 이용권(17시까지)', price: 110000},
+				{name: '주말 강습', price: 180000},
+				{name: '키즈 주말 강습', price: 160000},
+				{name: '정기권(3개월)', price: 330000}
+				],
+			latitude: 37.49622174266254, longitude: 127.03029194140458
+		})
+
+
 		return () => BackHandler.removeEventListener('hardwareBackPress')
 		},[]
 	)
@@ -30,9 +118,7 @@ export default function StoreDetail({route, navigation}){
 			  title={'상세 정보'} // 상단 헤더 제목 (헤더의 왼쪽에 위치)
 				navigation={navigation} // 헤더에서 이동 필요할 때 navigation={navigation} 작성해서 상속해주기
 			/>
-			<View
-				style={{width:'100%'}}	
-			>
+
 				<ScrollView
 					onScroll={()=>{Animated.event(
 						[{nativeEvent:{contentOffset: {y:scrollA}}}]
@@ -40,61 +126,112 @@ export default function StoreDetail({route, navigation}){
 					)}}
 					scrollEventThrottle={16}
 					showsVerticalScrollIndicator={false}
-					style={{width:'100%'}}
+					style={{width:'100%', backgroundColor:'white'}}
 
 				>
-					<View style={styles.bannerContainer}>
-						<Animated.Image style={styles.banner(scrollA)} 
-							source={ { 
-								uri:'https://t1.daumcdn.net/cfile/tistory/9942214E5B5E76930B',
-								}}/>
+					<Image 
+						style={styles.image}
+						source={ { 
+							uri:'https://blog.kakaocdn.net/dn/bRo0BE/btrIftkCXTX/WtPj5QCrrf9V8hSkdIRql0/img.png',
+							}}/>
+
+					<View
+						style={styles.mainContainer}
+					>
+						<View style={styles.headContainer}>
+							{/* 이름 */}
+							<Text style={styles.nameFont}>{detailInfo.name}</Text>
+							{/* 3d벽 버튼 */}
+							<TouchableOpacity 
+							style={{...styles.wallBtn, backgroundColor:'white'}}
+							onPress={()=> navigation.navigate('3D벽', {Id:detailInfo.centerNumber})}
+							>
+								<ImgRollPic style={{height:20}}/>
+								<Text style={{color: 'black', fontWeight:'bold'}}>3D</Text>
+							</TouchableOpacity>
+						</View>
+						{/* 연락처 */}
+						<View>
+							<Text style={styles.subTitle}>연락처</Text>
+							<Text>|</Text>
+							<TouchableOpacity 
+								onPress={()=>{Linking.openURL(`tel:${detailInfo.phone}`)}}>
+								<Text style={styles.phone}>
+									{detailInfo.phone}
+								</Text>
+								</TouchableOpacity>
+						</View>
+						{/* 운영시간 text */}
+						<Text style={styles.subTitle}>운영 시간</Text>
+						{/* 운영시간 toggle */}
+							{ isTimeToggleOpen ? <></> : <></>}
+						{/* 가격정보 text */}
+						<Text style={styles.subTitle}>가격 정보</Text>
+						{/* 가격정보 toggle */}
+							{ isPriceToggleOpen ? <></> : <></>}
+						{/* 난이도 grid */}
+						{/* 구분선 */}
+						{/* 주소 */}
+						{/* 지도 */}
+
+						<Text>{Id}</Text>
 					</View>
-					<Text>
-					What is Lorem Ipsum?
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+					<View style={{height:50, width:'100%'}}></View>
 
-Why do we use it?
-It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
-
-Where does it come from?
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
-
-The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.
-					</Text>
 				</ScrollView>
-
-				<Text>{Id}</Text>
-				<TouchableOpacity 
-				style={{height:30, width:'100%', backgroundColor:'blue'}}
-				onPress={()=> navigation.navigate('3D벽', {Id:123})}
-				></TouchableOpacity>
-			</View>
 		</>
 	)
 }
-const BannerH = 250
 
 const styles = StyleSheet.create({
-	bannerContainer:{
-		marginTop:-1000,
-		paddingTop:1000,
-		alignItems:'center',
+	image:{
+		width: '100%',
+		height: 250,
+		resizeMode: "cover",
 		overflow:'hidden',
-		width:'100%'
 	},
-	banner: (scrollA)=>({
-		height: BannerH,
-		width:'200%',
-		transform: [
-			{
-				translateY:scrollA
-			},
-			{
-				scale: scrollA.interpolate({
-					inputRange:[-BannerH, 0, BannerH, BannerH+1],
-					outputRange:[-BannerH/2, 0, BannerH*0.75, BannerH*0.75]
-				})
+	mainContainer:{
+		width:'100%',
+		padding:20
+	},
+	headContainer:{
+		flex:1,
+		flexDirection:'row',
+		justifyContent:'space-between',
+		alignItems:'center',
+		marginBottom:20
+	},
+	nameFont: {
+		fontSize:18,
+		fontWeight: 'bold',
+		color:'black'
+	},
+	wallBtn:{
+		fontSize: 16,
+		color: 'black',
+		height:30, 
+		width:60,
+		flexDirection:'row',
+		justifyContent:'space-around',
+		alignItems:'center',
+		borderRadius: 5,
+		borderColor:'#F34D7F',
+		borderWidth:1.2,
+		...Platform.select({
+			ios:{},
+			android:{
+				elevation:1,
 			}
-		]
-	})
+		})
+	},
+	subTitle:{
+		fontSize:14,
+		fontWeight:'600',
+		color:'black'
+	},
+	phone:{
+		textDecorationLine: 'underline',
+		color:'#525252'
+	}
+
 })

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import {View, Text, Animated, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
-import NaverMapView, {Circle, Marker, Align} from "react-native-nmap";
+import NaverMapView, {Marker, Align} from "react-native-nmap";
 import Geolocation from 'react-native-geolocation-service';
 
 import MyLocationImg from '../../assets/image/map/MyLocation.png'
@@ -19,7 +19,7 @@ export default function StoreScreen({navigation, route}) {
   }
   const [climbingLocations, setClimbingLocations] = useState([
     {id:'A125098234',
-    name: '더클라임 강남',
+    name: '더클라임 강남12',
     address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
     distance: '300m',
     latitude: 37.49622174266254, longitude: 127.03029194140458
