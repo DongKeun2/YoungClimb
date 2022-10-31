@@ -17,7 +17,7 @@ import EyeIcon from '../assets/image/feed/eye.svg';
 
 function HomeFeed({feed, navigation}) {
   const [contentHeight, setHeight] = useState(0);
-  const [fullContent, setFullContent] = useState(false);
+  const [isFullContent, setIsFullContent] = useState(false);
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
@@ -25,7 +25,7 @@ function HomeFeed({feed, navigation}) {
   };
 
   const viewFullContent = () => {
-    setFullContent(true);
+    setIsFullContent(true);
   };
 
   return (
@@ -128,7 +128,7 @@ function HomeFeed({feed, navigation}) {
           style={{position: 'absolute', top: 0, opacity: 0}}>
           <Text style={styles.contentPreview}>{feed.content}</Text>
         </View>
-        {!fullContent && contentHeight > 32 ? (
+        {!isFullContent && contentHeight > 32 ? (
           <TouchableOpacity
             style={styles.viewFullContent}
             onPress={viewFullContent}>

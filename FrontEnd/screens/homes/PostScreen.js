@@ -85,7 +85,7 @@ function PostScreen({navigation, route}) {
               image: null,
               rank: 1,
             },
-            content: '응 못 가~',
+            content: '나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다',
             createdAt: '2시간 전',
           },
         ],

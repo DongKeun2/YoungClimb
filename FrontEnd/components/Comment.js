@@ -1,14 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 
 import UserAvatar from './UserAvatar';
+import Recomment from './Recomment';
 
 import avatar from '../assets/image/initial/background.png';
 import EmptyHeart from '../assets/image/feed/emptyHeart.svg';
 import FillHeart from '../assets/image/feed/fillHeart.svg';
 
-function Comment({comment}) {
+function Comment({comment, navigation}) {
+  const [isViewRecomment, setIsViewRecomment] = useState(false);
+
+  const viewRecomment = () => {
+    setIsViewRecomment(true);
+  };
+
   return (
     <View style={styles.commentContainer}>
       <UserAvatar source={avatar} rank={comment.user.rank} size={32} />
@@ -30,8 +37,27 @@ function Comment({comment}) {
             {comment.createdAt}
           </Text>
           <Text style={{fontSize: 12, color: '#a7a7a7', marginLeft: 8}}>
-            답글 달기 {comment.reComment.length}
+            답글 달기
           </Text>
+        </View>
+        <View style={{marginTop: 3}}>
+          {!isViewRecomment && comment.reComment.length ? (
+            <Text
+              style={{fontSize: 12, color: '#525252'}}
+              onPress={viewRecomment}>
+              {comment.reComment.length}개 답글 보기
+            </Text>
+          ) : isViewRecomment && comment.reComment.length ? (
+            comment.reComment.map((recomment, idx) => {
+              return (
+                <Recomment
+                  key={idx}
+                  recomment={recomment}
+                  navigation={navigation}
+                />
+              );
+            })
+          ) : null}
         </View>
       </View>
       {comment.isLiked ? (
@@ -54,7 +80,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: 'white',
-    padding: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   commentInfo: {
     width: '80%',
