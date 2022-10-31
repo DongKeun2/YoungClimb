@@ -12,6 +12,8 @@ import {
 import { ScrollView } from 'react-native-gesture-handler';
 import CustomSubHeader from '../../components/CustomSubHeader';
 import ImgRollPic from '../../assets/image/map/ImgRollPic.svg'
+import ExpandDown from '../../assets/image/map/ExpandDown.svg'
+import ExpandUp from '../../assets/image/map/ExpandUp.svg'
 
 
 export default function StoreDetail({route, navigation}){
@@ -39,7 +41,19 @@ export default function StoreDetail({route, navigation}){
 	longitude:0,
 	})
 	const [isTimeToggleOpen, setIsTimeToggleOpen] = useState(false)
-	const [isPriceToggleOpen, setIsPriceToggleOpen] = useState(false)
+	const [isPriceToggleOpen, setIsPriceToggleOpen] = useState(true)
+	const [todayTimeInfo, setTodayTimeInfo] = useState('')
+	const date = new Date()
+	const day = date.getDay()
+	const dayDict= {
+		0:'일',
+		1:'월',
+		2:'화',
+		3:'수',
+		4:'목',
+		5:'금',
+		6:'토'
+	}
 
 
 	useEffect(
@@ -60,42 +74,44 @@ export default function StoreDetail({route, navigation}){
 					content: '' 
 			}],
 				time: [{
-					day: '월', 
+					day: 0, 
 					startTime: '10:00', 
 					endTime:'23:00' 
 			},
 			{
-				day: '화', 
+				day: 1, 
 				startTime: '10:00', 
 				endTime:'23:00' 
 			},
 			{
-				day: '수', 
+				day: 2, 
 				startTime: '10:00', 
 				endTime:'23:00' 
 			},
 			{
-				day: '목', 
+				day: 3, 
 				startTime: '10:00', 
 				endTime:'23:00' 
 			}, 
 			{
-				day: '금', 
+				day: 4, 
 				startTime: '10:00', 
 				endTime:'23:00' 
 			},
 			{
-				day: '토', 
+				day: 5, 
 				startTime: '10:00', 
 				endTime:'20:00' 
 		},
 			{
-				day: '일', 
+				day: 6, 
 				startTime: '10:00', 
 				endTime:'20:00' 
 		},
 		],
-				price: [{name: '스타터 패키지 2개월', price: 350000},
+				price:
+				[
+					{name: '스타터 패키지 2개월', price: 350000},
 				{name: '스타터 패키지 2개월', price: 220000},
 				{name: '일일 체험 강습', price: 30000},
 				{name: '일일 이용권', price: 22000},
@@ -111,6 +127,14 @@ export default function StoreDetail({route, navigation}){
 		return () => BackHandler.removeEventListener('hardwareBackPress')
 		},[]
 	)
+
+	useEffect(()=>{
+		const todayInfo = detailInfo.time.filter(info=>info.day === day)[0]
+		if (todayInfo){
+			setTodayTimeInfo(`${dayDict[day]}  ${todayInfo.startTime} - ${todayInfo.endTime}`)
+		}
+
+	},[detailInfo])
 	
   return(
 		<>
@@ -120,10 +144,10 @@ export default function StoreDetail({route, navigation}){
 			/>
 
 				<ScrollView
-					onScroll={()=>{Animated.event(
-						[{nativeEvent:{contentOffset: {y:scrollA}}}]
-						, {useNativeDriver:true}
-					)}}
+					// onScroll={()=>{Animated.event(
+					// 	[{nativeEvent:{contentOffset: {y:scrollA}}}]
+					// 	, {useNativeDriver:true}
+					// )}}
 					scrollEventThrottle={16}
 					showsVerticalScrollIndicator={false}
 					style={{width:'100%', backgroundColor:'white'}}
@@ -151,24 +175,110 @@ export default function StoreDetail({route, navigation}){
 							</TouchableOpacity>
 						</View>
 						{/* 연락처 */}
-						<View>
-							<Text style={styles.subTitle}>연락처</Text>
-							<Text>|</Text>
+						<View style={styles.infoFlex}>
+							<Text style={styles.subTitle}>전화번호</Text>
+							<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
 							<TouchableOpacity 
 								onPress={()=>{Linking.openURL(`tel:${detailInfo.phone}`)}}>
 								<Text style={styles.phone}>
 									{detailInfo.phone}
 								</Text>
-								</TouchableOpacity>
+							</TouchableOpacity>
 						</View>
 						{/* 운영시간 text */}
-						<Text style={styles.subTitle}>운영 시간</Text>
-						{/* 운영시간 toggle */}
-							{ isTimeToggleOpen ? <></> : <></>}
+						<View style={styles.infoFlex}>
+							<Text style={styles.subTitle}>운영시간</Text>
+							<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
+
+							{/* 운영시간 toggle */}
+							{detailInfo.time.length ?								
+								isTimeToggleOpen ? 
+								<>
+								<View>
+									{ detailInfo.time.map((info,idx)=>{
+										return (
+											<Text 
+												key={idx}
+												style={info.day===day ? styles.detailFocus:styles.detailfont}>
+												{dayDict[info.day]}  {info.startTime} - {info.endTime}
+											</Text>
+										)
+									})
+									}
+								</View> 
+								<TouchableOpacity 
+									hitSlop={{left: 32, right: 32}}
+									style={styles.toggleBtn}
+									onPress={()=>{setIsTimeToggleOpen(!isTimeToggleOpen)}}
+								>
+									<ExpandUp style={{marginTop:6}}/>
+								</TouchableOpacity>
+								</>
+									: 
+									<>
+									<TouchableOpacity
+										onPress={()=>{setIsTimeToggleOpen(!isTimeToggleOpen)}}
+									><Text style={styles.detailfont}>{todayTimeInfo? todayTimeInfo: '오늘의 운영 정보가 없습니다'}</Text></TouchableOpacity>
+									<TouchableOpacity 
+									hitSlop={{left: 32, right: 32}}
+									style={styles.toggleBtn}
+									onPress={()=>{setIsTimeToggleOpen(!isTimeToggleOpen)}}
+									>
+										<ExpandDown style={{marginTop:6}}/>
+									</TouchableOpacity>
+									</>
+								:
+								<Text>운영 정보가 존재하지 않습니다</Text>	
+									}
+						</View>
 						{/* 가격정보 text */}
-						<Text style={styles.subTitle}>가격 정보</Text>
-						{/* 가격정보 toggle */}
-							{ isPriceToggleOpen ? <></> : <></>}
+						<View style={styles.infoFlex}>
+							<Text style={styles.subTitle}>가격정보</Text>
+							<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
+							
+							{/* 가격정보 toggle */}
+							{detailInfo.price.length ? 
+								isPriceToggleOpen ? 
+								<>
+									<View>
+									{ detailInfo.price.map((info,idx)=>{
+										const p = Number(info.price)
+										const priceFormat = p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+										return (
+											<Text 
+												key={idx+'price'}
+												style={styles.detailfont}>
+												{info.name}  ꞏ  {priceFormat} 원
+											</Text>
+										)
+									})
+									}
+								</View> 
+								<TouchableOpacity 
+									hitSlop={{left: 32, right: 32}}
+									style={styles.toggleBtn}
+									onPress={()=>{setIsPriceToggleOpen(!isPriceToggleOpen)}}
+								>
+									<ExpandUp style={{marginTop:6}}/>
+								</TouchableOpacity>
+								</> 
+								: 
+								<>
+									<TouchableOpacity
+										onPress={()=>{setIsPriceToggleOpen(!isPriceToggleOpen)}}
+									><Text style={styles.detailfont}>{detailInfo.price[0].name} ꞏ {detailInfo.price[0].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} 원 </Text></TouchableOpacity>
+									<TouchableOpacity 
+									hitSlop={{left: 32, right: 32}}	
+									style={styles.toggleBtn}
+									onPress={()=>{setIsPriceToggleOpen(!isPriceToggleOpen)}}
+									>
+										<ExpandDown style={{marginTop:6}}/>
+									</TouchableOpacity>
+								</>
+							
+							: <Text>가격 정보가 존재하지 않습니다</Text>}
+
+						</View>
 						{/* 난이도 grid */}
 						{/* 구분선 */}
 						{/* 주소 */}
@@ -231,7 +341,21 @@ const styles = StyleSheet.create({
 	},
 	phone:{
 		textDecorationLine: 'underline',
-		color:'#525252'
+		color:'#323232'
+	},
+	infoFlex: {
+		flexDirection:'row',
+		marginBottom: 5,
+	},
+	detailfont: {
+		color:'#323232'
+	},
+	detailFocus: {
+		color:'black',
+		fontWeight:'600'
+	},
+	toggleBtn:{
+		height:16,
+		paddingLeft:15
 	}
-
 })
