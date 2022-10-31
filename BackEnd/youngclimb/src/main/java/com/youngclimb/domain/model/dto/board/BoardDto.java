@@ -1,7 +1,15 @@
 package com.youngclimb.domain.model.dto.board;
 
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BoardDto {
     Long id;
     String createUser;
