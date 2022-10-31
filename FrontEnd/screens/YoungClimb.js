@@ -38,8 +38,7 @@ const Stack = createStackNavigator();
 export default function YoungClimb() {
   const [loading, setIsLoading] = useState(true);
 
-  // const login = useSelector(state => state.accounts.loginState);
-  const login = true
+  const login = useSelector(state => state.accounts.loginState);
 
   // const fadeAnim = useRef(new Animated.Value(1)).current;
 
