@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, ScrollView, Text, StyleSheet} from 'react-native';
 import CustomSubHeader from '../../components/CustomSubHeader';
 
 import UserAvatar from '../../components/UserAvatar';
@@ -74,31 +74,41 @@ function PostScreen({navigation, route}) {
   return (
     <>
       <CustomSubHeader title="댓글" navigation={navigation} />
-      <View style={styles.container}>
-        {/* 피드 상단 헤더 */}
-        <View style={styles.feedHeader}>
-          <View style={styles.headerTop}>
-            <View style={styles.iconText}>
-              <UserAvatar source={avatar} rank={1} size={36} />
-              <View style={styles.headerTextGroup}>
-                <Text style={{...styles.feedTextStyle, fontSize: 16}}>{route.params.board.createUser}</Text>
-                <Text style={{...styles.feedTextStyle, fontSize: 12}}>{route.params.board.createdAt}</Text>
+      <ScrollView>
+        <View style={styles.container}>
+          {/* 피드 상단 헤더 */}
+          <View style={styles.feedHeader}>
+            <View style={styles.headerTop}>
+              <View style={styles.iconText}>
+                <UserAvatar source={avatar} rank={1} size={36} />
+                <View style={styles.headerTextGroup}>
+                  <Text style={{...styles.feedTextStyle, fontSize: 16}}>{route.params.board.createUser}</Text>
+                  <Text style={{...styles.feedTextStyle, fontSize: 12}}>{route.params.board.createdAt}</Text>
+                </View>
               </View>
             </View>
+            <View style={styles.wallInfo}>
+              <Text style={{...styles.feedTextStyle, marginRight: 8}}>{route.params.board.centerName}</Text>
+              <Text style={{...styles.feedTextStyle, marginRight: 8}}>{route.params.board.wallName}</Text>
+              <Text style={{...styles.feedTextStyle, marginRight: 3}}>{route.params.board.difficulty}</Text>
+              <LevelLabel color={route.params.board.centerLevelColor} />
+              <HoldLabel color={route.params.board.holdColor} />
+            </View>
           </View>
-          <View style={styles.wallInfo}>
-            <Text style={{...styles.feedTextStyle, marginRight: 8}}>{route.params.board.centerName}</Text>
-            <Text style={{...styles.feedTextStyle, marginRight: 8}}>{route.params.board.wallName}</Text>
-            <Text style={{...styles.feedTextStyle, marginRight: 3}}>{route.params.board.difficulty}</Text>
-            <LevelLabel color={route.params.board.centerLevelColor} />
-            <HoldLabel color={route.params.board.holdColor} />
+          {/* 본문 */}
+          <View style={styles.contentSummary}>
+            <Text style={styles.contentPreview}>{route.params.board.content}</Text>
           </View>
         </View>
-        {/* 본문 */}
-        <View style={styles.contentSummary}>
-          <Text style={styles.contentPreview}>{route.params.board.content}</Text>
-        </View>
-      </View>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+        <Text style={{color: 'black', fontSize: 80}}>댓글</Text>
+      </ScrollView>
     </>
   );
 }
