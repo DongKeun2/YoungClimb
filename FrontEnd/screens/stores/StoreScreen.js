@@ -1,14 +1,15 @@
 import React from 'react';
-import { useState, useEffect, useRef } from 'react'
-import {View, Text, Button, Animated, Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
+import { useState, useEffect } from 'react'
+import {View, Text, Animated, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
-import NaverMapView, {Circle, Marker, Align} from "react-native-nmap";
+import NaverMapView, {Marker, Align} from "react-native-nmap";
 import Geolocation from 'react-native-geolocation-service';
 
 import MyLocationImg from '../../assets/image/map/MyLocation.png'
 import MarkerImg from '../../assets/image/map/Marker.png'
 
-export default function StoreScreen({navigation}) {
+export default function StoreScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState({latitude: 37.587336576003295, longitude: 127.0575764763725});
   const [modalVisible, setModalVisible] = useState(false)
   const [mapView, setMapView] = useState('55%')
@@ -18,19 +19,80 @@ export default function StoreScreen({navigation}) {
   }
   const [climbingLocations, setClimbingLocations] = useState([
     {id:'A125098234',
-    name: '더클라임 강남',
+    name: '더클라임 강남12',
     address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
     distance: '300m',
     latitude: 37.49622174266254, longitude: 127.03029194140458
     }, 
-    {id:'A125098234',
+    {id:'A125098235',
     name: '손상원클라임 강남',
     address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
     distance: '700m',
     latitude: 37.49552290450269, longitude: 127.0282506964424
-    }])
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },
+    {id:'A125098235',
+    name: '1손상원클라임 강남',
+    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
+    distance: '700m',
+    latitude: 37.49552290450269, longitude: 127.0282506964424
+    },])
+    
 
-  useEffect(()=>{
+  useFocusEffect(()=>{
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
@@ -38,16 +100,26 @@ export default function StoreScreen({navigation}) {
       },
       error => {
         setCurrentLocation({latitude: 37.587336576003295, longitude: 127.0575764763725})
-        console.error(error.code, error.message);
+        // console.error(error.code, error.message);
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-    }
-  ,[])
+    })
 
-  useEffect(()=>{
-    console.log(currentLocation)
-  },[currentLocation])
+  // useEffect(()=>{
+  //   console.log(currentLocation)
+  // },[currentLocation])
+  useFocusEffect(
+    ()=>{
+      BackHandler.addEventListener('hardwareBackPress', ()=>{
+        if (modalVisible) {
+          setModalVisible(false)
+          return true
+        }
+        return true
+      }
+      )
+      })
 
   return (
     // <View>
@@ -59,8 +131,8 @@ export default function StoreScreen({navigation}) {
           onMapClick={e => locationHandler(e)}
           center={{...currentLocation, zoom: 14}}
           zoomControl ={true}
-          showsMyLocationButton={true}
-          onCameraChange={e => console.warn('onCameraChange', JSON.stringify(e))}
+          // showsMyLocationButton={true}
+          // onCameraChange={e => console.warn('onCameraChange', JSON.stringify(e))}
           >
             {/* 
             받은 정보 map        
@@ -84,7 +156,9 @@ export default function StoreScreen({navigation}) {
       {modalVisible?
       <></>
       :
-        <TouchableOpacity style={{...styles.button, position:'absolute', bottom:5, left:'50%', transform:[{ translateX: -50 }]}} onPress={()=>{setModalVisible(true)}}>
+        <TouchableOpacity 
+          activeOpacity={1}
+          style={{...styles.button, position:'absolute', bottom:15, left:'50%', transform:[{ translateX: -55 }]}} onPress={()=>{setModalVisible(true)}}>
           <Text style={styles.text}>지점 리스트</Text>
         </TouchableOpacity>
 
@@ -104,7 +178,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F34D7F',
     alignItems: 'center',
     justifyContent: 'center',
-    width: 100,
+    width: 110,
     height: 30,
     borderRadius: 15,
     // transform:'translate(-50%, -50%)',
@@ -128,6 +202,7 @@ const styles = StyleSheet.create({
       fontSize: 15,
       textAlign: 'center',
       color: 'white',
+      fontWeight:'bold'
   }
 })
 

@@ -3,13 +3,11 @@ import {
 	View,
 	StyleSheet,
 	Text,
-	Modal,
 	Animated,
-	TouchableWithoutFeedback,
-	ScrollView,
 	Dimensions,
 	PanResponder,
-	SafeAreaView,
+	FlatList,
+	Platform,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -17,13 +15,23 @@ const BottomSheet = (props) => {
 	const { modalVisible, setModalVisible, setMapView, navigation, climbingLocations } = props;
 	const [modalStat, setModalStat] = useState('half')
 	const screenHeight = Dimensions.get("screen").height;
+	const screenWidth = Dimensions.get("screen").width;
 	const windowHeight = Dimensions.get('window').height
+	const halfSize = windowHeight/2-110
+	const fullSize = windowHeight-110
 	const panY = useRef(new Animated.Value(screenHeight)).current;
 	const translateY = panY.interpolate({
 		inputRange: [-1, 0, 1],
 		outputRange: [-0.5, 0, 1],
 	});
-	useEffect(()=>{console.log(modalStat)},[modalStat])
+
+	useEffect(()=>{
+		if (!modalVisible){
+			setModalStat('closed')
+		} else{
+			setModalStat('half')
+		}
+	}, [modalVisible])
 
 
 	const fullBottomSheet = Animated.timing(panY, {
@@ -47,22 +55,22 @@ const BottomSheet = (props) => {
 
 	const panResponders = useRef(PanResponder.create({
 		onMoveShouldSetPanResponder:()=> true,
-		onStartShouldSetPanResponder:()=> false,
+		onStartShouldSetPanResponder:()=> true,
 		onPanResponderMove: (event, gestureState) => {
 				panY.setValue(gestureState.y0+gestureState.dy);
 		},
 		onPanResponderRelease: (event, gestureState) => {
-			if(modalStat==='half' && gestureState.dy > 0 && gestureState.dy > windowHeight/4 ) {
+			if(gestureState.y0 > windowHeight/2 && gestureState.dy > 0 && gestureState.dy > windowHeight/8 ) {
 				closeModal();
 			}
-			else if(modalStat==='full' && gestureState.dy > 0 && gestureState.dy > windowHeight/2 ){
+			else if(gestureState.y0 < windowHeight/2 && gestureState.dy > 0 && gestureState.dy > windowHeight/4 ){
 				closeModal()
 			}
-			else if(modalStat==='full' && gestureState.dy > 0 && gestureState.dy > windowHeight/4 ){
+			else if(modalStat==='full' && gestureState.dy > 0 && gestureState.dy > windowHeight/8 ){
 				resetBottomSheet.start()
 				setModalStat('half')
 			}
-			else if (modalStat==='half' && gestureState.dy < 0 && gestureState.dy < -windowHeight/4) {
+			else if (modalStat==='half' && gestureState.dy < 0 && gestureState.dy < -windowHeight/8) {
 				fullBottomSheet.start()
 				setModalStat('full')
 			}
@@ -91,17 +99,22 @@ const BottomSheet = (props) => {
     setMapView('100%')
 	}
 
-	const renderItem = (item) =>{
-		<TouchableOpacity 
-			style={styles.renderItemContainer}
-			onPress={()=> navigation.navigate('지점 상세', {Id:item.id})}
-			>
-			<Text style={styles.renderItemName}>{item.name}</Text>
-			<View style={styles.detailContainer}>
-				<Text style={styles.renderItemDetail}>{item.address}</Text>
-				<Text style={styles.renderItemDetail}>{item.distance}</Text>
-			</View>
-		</TouchableOpacity>
+	const renderItem = ({item}) =>{
+		return(
+			<TouchableOpacity 
+				onStartShouldSetResponderCapture={() => true}
+				onMoveShouldSetResponderCapture={() => true}
+				style={{...styles.renderItemContainer, width:screenWidth}}
+				onPress={()=> navigation.navigate('지점상세', {Id:item.id})}
+				>
+				<View style={{...styles.detailContainer}}>
+					<Text style={styles.renderItemName}>{item.name}</Text>	
+					<Text style={styles.renderItemDetail}>{item.distance}</Text>
+				</View>
+					<Text style={styles.renderItemDetail}>{item.address}</Text>
+			</TouchableOpacity>
+
+		)
 	}
 
 
@@ -112,39 +125,27 @@ const BottomSheet = (props) => {
 					style={{...styles.bottomSheetContainer, 
             transform: [{ translateY: translateY }]
           }}
-					{...panResponders.panHandlers}
+					
 				>
-					<View> 
-						<Text>상단</Text> 
-					</View>
-					<Animated.View style={{width:'100%'}}>
-						<ScrollView
-							onStartShouldSetResponderCapture={() => true}
-							onMoveShouldSetResponderCapture={() => true}
-							style={{...styles.scrollContainer, height:modalStat==='full' ? '100%' : '50%'}}
-						>
-						<Text style={{fontSize:50}}>1하하</Text>
-						<Text style={{fontSize:50}}>2하하</Text>
-						<Text style={{fontSize:50}}>3하하</Text>
-						<Text style={{fontSize:50}}>4하하</Text>
-						<Text style={{fontSize:50}}>5하하</Text>
-						<Text style={{fontSize:50}}>6하하</Text>
-						<Text style={{fontSize:50}}>7하하</Text>
-						<Text style={{fontSize:50}}>8하하</Text>
-						<Text style={{fontSize:50}}>9하하</Text>
-						<Text style={{fontSize:50}}>10하하</Text>
-						<Text style={{fontSize:50}}>11하하</Text>
-						<Text style={{fontSize:50}}>12하하</Text>
-						<Text style={{fontSize:50}}>13하하</Text>
-						<Text style={{fontSize:50}}>14하하</Text>
-						<Text style={{fontSize:50}}>15하하</Text>
-						<Text style={{fontSize:50}}>16하하</Text>
-						<Text style={{fontSize:50}}>17하하</Text>
-						<Text style={{fontSize:50}}>18하하</Text>
-						<View style={{height:100, width:'100%'}}></View>
-						</ScrollView>
-
+					<Animated.View style={styles.upper} {...panResponders.panHandlers}> 
+		  			<View style={{backgroundColor:'#525252', borderRadius:10,height:3,width:36, position:'absolute', top:20, left:'50%', transform:[{ translateX: -18}, {translateY: -1.5}]}}></View>
 					</Animated.View>
+					<TouchableOpacity 
+						activeOpacity={1}
+						disabled={true} 
+						style={{height:modalStat==='full' ? fullSize : halfSize, width:'100%',margin:0, padding:0}}>
+
+							<FlatList
+								style={{width:'100%'}}
+								onStartShouldSetResponderCapture={() => true}
+								onMoveShouldSetResponderCapture={() => true}
+								data={climbingLocations}
+								renderItem={renderItem}
+								keyExtractor={(item)=>item.id}
+								showsVerticalScrollIndicator={false}
+							/>
+
+					</TouchableOpacity>
 				</Animated.View>
         :
       <></>}
@@ -159,26 +160,44 @@ const BottomSheet = (props) => {
 const styles = StyleSheet.create({
 	renderItemContainer:{
 		width:'100%',
-		padding: 5,
+		borderBottomColor: '#929292',
+    	borderBottomWidth: 0.2,
+		paddingHorizontal:18,
+		paddingVertical: 13,
+		color:'black'
 	},
 	renderItemName:{
 		fontWeight:'bold',
 		fontSize: 16,
+		color:'black',
+		marginBottom:5
 	},
 	renderItemDetail:{
 		fontWeight:'400',
-		fontSize:14
+		fontSize:14,
+		color:'black'
 	},
 	detailContainer:{
 		flex:1,
 		flexDirection:'row',
-		justifyContent:'space-between'
-	},
-	scrollContainer:{
-		width:'100%',
+		justifyContent:'space-between',
+		alignItems:'center',
+		color:'black',
 	},
 	upper: {
-
+		width:'100%',
+		height:40,
+		borderTopLeftRadius: 10,
+		borderTopRightRadius: 10,
+		padding:0,
+		margin:0,
+		// backgroundColor:'yellow',
+		...Platform.select({
+			ios:{},
+			android:{
+				elevation:0.35,
+			}
+		})
 	},
 	overlay: {
     // height:'50%',
@@ -192,9 +211,9 @@ const styles = StyleSheet.create({
 	},
 	bottomSheetContainer: {
     position: 'absolute', //Here is the trick
-    // paddingBottom:'10%',
+    paddingBottom: 40,
     top: 0,
-    height: '110%',
+    height: '100%',
     width:'100%',
 		// justifyContent: "center",
 		alignItems: "center",
