@@ -94,7 +94,7 @@ function HomeFeed({feed, navigation}) {
       {/* 댓글 미리보기, 댓글 수 */}
       <TouchableOpacity
         style={styles.commentSummary}
-        onPress={() => (navigation ? navigation.navigate('댓글', {id: feed.id}) : null)}>
+        onPress={() => (navigation ? navigation.navigate('댓글', {board: feed}) : null)}>
         <View style={styles.commentPreview}>
           <Text style={{...styles.feedTextStyle, fontWeight: '700', marginRight: 10}}>{feed.commentPreview.nickname}</Text>
           <Text style={styles.feedTextStyle}>{feed.commentPreview.comment}</Text>
