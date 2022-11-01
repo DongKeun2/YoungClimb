@@ -1,6 +1,6 @@
 package com.youngclimb.domain.model.dto.board;
 
-import com.youngclimb.domain.model.dto.member.MemberPic;
+import com.youngclimb.domain.model.dto.member.CreateMember;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class CommentDto {
     Long id;
-    MemberPic user;
+    CreateMember user;
     String content;
     Boolean isLiked;
     LocalDateTime createdAt;

@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class MemberPic {
+public class CreateMember {
     String nickname;
     String image;
     String rank;
+    Boolean isFollow;
 }

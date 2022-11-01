@@ -24,7 +24,7 @@ public class MemberController {
 
     // 이메일 중복 확인
     @ApiOperation(value = "checkEmail: 이메일 중복 확인")
-    @GetMapping("/email")
+    @PostMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestParam String email) {
         try {
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
@@ -35,7 +35,7 @@ public class MemberController {
 
     // 닉네임 중복 확인
     @ApiOperation(value = "checkNickname: 닉네임 중복 확인")
-    @GetMapping("/nickname")
+    @PostMapping("/nickname")
     public ResponseEntity<?> checkNickname(@RequestParam String nickname) {
         try {
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
@@ -59,7 +59,7 @@ public class MemberController {
 
     // 회원가입
     @ApiOperation(value = "join: 회원가입")
-    @PostMapping("/join")
+    @PostMapping("/signup")
     public ResponseEntity<?> join(@RequestBody JoinMember member) throws Exception {
         try {
             return ResponseEntity.status(200).body(memberService.insertUser(member));
@@ -107,7 +107,7 @@ public class MemberController {
 
     // 로그아웃
     @ApiOperation(value = "logout: 로그아웃")
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(String email, HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7);
         memberService.logout(email, accessToken);

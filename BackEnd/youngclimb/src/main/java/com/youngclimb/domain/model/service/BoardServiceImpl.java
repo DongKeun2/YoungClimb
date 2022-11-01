@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.FeedDto;
 import com.youngclimb.domain.model.dto.board.*;
+import com.youngclimb.domain.model.dto.member.CreateMember;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -37,82 +38,99 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
+    private final BoardScrapRepository boardScrapRepository;
     private final CommentRepository commentRepository;
-
+    private final CategoryRepository categoryRepository;
+    private final CenterRepository centerRepository;
+    private final WallRepository wallRepository;
+    private final CenterLevelRepository centerLevelRepository;
+    private final FollowRepository followRepository;
+    private final RankRepository rankRepository;
+    private final MemberRankExpRepository memberRankExpRepository;
     private final AmazonS3 amazonS3;
 
     // 게시글 읽기
     @Override
-    public List<FeedDto> readAllBoard(String email, Pageable pageable, UserPrincipal currUser) {
+    public List<BoardDto> readAllBoard(String email, Pageable pageable, UserPrincipal currUser) {
+        List<BoardDto> boardDtos = new ArrayList<>();
         List<FeedDto> feedDtos = new ArrayList<>();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
         List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
 
         for (Board board : boards) {
-            FeedDto feedDto = new FeedDto();
-
-            BoardDto boardDto = BoardDto.builder()
-                    .id(board.getBoardId())
-                    .createUser(member.getNickname())
-                    .build();
 
             // 게시글 DTO 세팅
-            feedDto.setBoardDto(board.toBoardDto());
+            BoardDto boardDto = BoardDto.builder()
+                    .id(board.getBoardId())
+                    .solvedDate(board.getSolvedDate())
+                    .content(board.getContent())
+                    .like(boardLikeRepository.countByBoard(board))
+                    .view(boardScrapRepository.countByBoard(board))
+                    .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
+                    .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
+                    .commentNum(commentRepository.countByBoard(board))
+                    .build();
 
-            // 게시글 미디어 DTO 세팅
-            List<BoardMediaDto> boardMediaDtos = new ArrayList<>();
-            List<BoardMedia> boardMedias = boardMediaRepository.findByBoard(board);
-            for (BoardMedia boardMedia : boardMedias) {
-                boardMediaDtos.add(boardMedia.toMediaDto());
-            }
-            feedDto.setBoardMediaDtos(boardMediaDtos);
-
-            // 좋아요 여부 세팅
-            BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member).orElseThrow();
-            feedDto.setBoardLiked(true);
+            // 게시글 미디어 path 세팅
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+            boardDto.setMediaPath(boardMedia.getMediaPath());
 
             // 댓글 DTO 1개 세팅
-            Comment comment = commentRepository.findByBoard(board).orElseThrow();
-            feedDto.setCommentDto(comment.toCommentDto());
+            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
+            if (comments.get(0) != null) {
+                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                        .nickname(comments.get(0).getMember().getNickname())
+                        .comment(comments.get(0).getContent())
+                        .build();
+                boardDto.setCommentPreviewDto(commentPreviewDto);
+            }
 
             // List add
-            feedDtos.add(feedDto);
+            boardDtos.add(boardDto);
         }
 
-        return feedDtos;
+        return boardDtos;
     }
 
     // 게시글 작성
     @Override
-    public void writeBoard(BoardCreate boardCreate, List<MultipartFile> files) {
+    public void writeBoard(BoardCreate boardCreate, MultipartFile file) {
 
-        // 게시글 기본 entity
+        // 게시글 저장하기
         Board board = boardCreate.toBoard();
+        Member member = memberRepository.findById(boardCreate.getMemberId()).orElseThrow();
+        board.setMember(member);
         boardRepository.save(board);
-        // 작성자 연결하기
 
-        // 이미지 연결하기
-        for (MultipartFile file : files) {
-            if (file.isEmpty()) continue;
+        // 카테고리 저장하기
+        Category category = Category.builder()
+                .board(board)
+                .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
+                .wall(wallRepository.findById(boardCreate.getWallId()).orElseThrow())
+                .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
+                .holdColor(boardCreate.getHoldColor())
+                .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
+                .build();
+        categoryRepository.save(category);
 
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            System.out.println(fileName);
-            try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+        // 이미지 저장하기
+            if (!file.isEmpty()) {
+                String fileName = createFileName(file.getOriginalFilename());
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(file.getSize());
+                objectMetadata.setContentType(file.getContentType());
+                System.out.println(fileName);
+                try (InputStream inputStream = file.getInputStream()) {
+                    amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+                } catch (IOException e) {
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+                }
+                BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
+                        .build();
+                boardMediaRepository.save(boardMedia);
             }
-            BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
-                    .build();
-            boardMediaRepository.save(boardMedia);
-        }
-
-        // 태그 연결하기
-//        List<BoardTagDto> boardTagDtos =
     }
 
     private String createFileName(String fileName) {
@@ -129,7 +147,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 좋아요
     @Override
-    public void upBoardLike(Long boardId, String email) {
+    public Boolean boardLike(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
@@ -138,26 +156,125 @@ public class BoardServiceImpl implements BoardService {
                 .member(member)
                 .build();
         boardLikeRepository.save(boardLike);
+
+        return true;
     }
+
+    // 게시글 좋아요 취소
+    @Override
+    public Boolean BoardUnlike(Long boardId, String email) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        boardLikeRepository.deleteByBoardAndMember(board, member);
+        return false;
+    }
+
 
     // 게시글 - 댓글 상세보기
     @Override
-    public BoardDetailDto readAllComments(Long boardId, String memberId) {
+    public BoardDetailDto readAllComments(Long boardId, Long memberId) {
         BoardDetailDto boardDetailDto = new BoardDetailDto();
 
         // 게시글 DTO 세팅
         Board board = boardRepository.findById(boardId).orElseThrow();
-        boardDetailDto.setBoardDto(board.toBoardDto());
+        Member writer = board.getMember();
+        BoardDto boardDto = board.toBoardDto();
+        Category category = categoryRepository.findByBoard(board).orElseThrow();
+        BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+
+        CreateMember createUser = CreateMember.builder()
+                .nickname(writer.getNickname())
+                .image(writer.getMemberProfileImg())
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), memberId))
+                .build();
+
+        boardDto.setCreateUser(createUser);
+        boardDto.setCenterId(category.getCenter().getId());
+        boardDto.setCenterName(category.getCenter().getName());
+        boardDto.setCenterLevelId(category.getCenterlevel().getId());
+        boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
+        boardDto.setWallId(category.getWall().getId());
+        boardDto.setWallName(category.getWall().getName());
+        boardDto.setDifficulty(category.getDifficulty());
+        boardDto.setHoldColor(category.getHoldColor());
+        boardDto.setMediaPath(boardMedia.getMediaPath());
+        boardDetailDto.setBoardDto(boardDto);
 
         // 댓글 DTO 세팅
         List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<CommentDto> commentDtos = new ArrayList<>();
-        for(Comment comment : comments) {
+        for (Comment comment : comments) {
+
+            Member cWriter = comment.getMember();
+            CreateMember cCreateMember = CreateMember.builder()
+                    .nickname(cWriter.getNickname())
+                    .image(cWriter.getMemberProfileImg())
+                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
+                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), memberId))
+                    .build();
+
             CommentDto commentDto = comment.toCommentDto();
+            commentDto.setUser(cCreateMember);
             commentDtos.add(commentDto);
         }
         boardDetailDto.setCommentDtos(commentDtos);
 
         return boardDetailDto;
     }
+
+    // 댓글 좋아요
+    @Override
+    public Boolean commentLike(Long commentId, String email) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        CommentLike commentLike = CommentLike.builder()
+                .comment(comment)
+                .member(member)
+                .build();
+
+        commentLikeRepository.save(commentLike);
+        return true;
+    }
+
+    // 댓글 좋아요 취소
+    @Override
+    public Boolean commentUnlike(Long commentId, String email) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        commentLikeRepository.deleteByCommentAndMember(comment, member);
+        return false;
+    }
+
+    // 댓글 작성
+    @Override
+    public void writeComment(CommentCreate commentCreate) {
+
+        // 댓글 저장하기
+        Comment comment = commentCreate.toComment();
+        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
+
+        comment.setBoard(board);
+        comment.setMember(member);
+        commentRepository.save(comment);
+    }
+
+    // 대댓글 작성
+    @Override
+    public void writeRecomment(CommentCreate commentCreate) {
+        Comment comment = commentCreate.toComment();
+        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
+
+        comment.setBoard(board);
+        comment.setMember(member);
+        commentRepository.save(comment);
+
+    }
+
+
 }

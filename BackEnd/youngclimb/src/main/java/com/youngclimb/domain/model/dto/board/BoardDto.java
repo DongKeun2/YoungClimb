@@ -1,5 +1,6 @@
 package com.youngclimb.domain.model.dto.board;
 
+import com.youngclimb.domain.model.dto.member.CreateMember;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,14 +13,14 @@ import java.time.LocalDate;
 @Builder
 public class BoardDto {
     Long id;
-    String createUser;
+    CreateMember createUser;
     String createdAt;
-    Long centerId;
+    Integer centerId;
     String centerName;
-    Long centerLevelId;
+    Integer centerLevelId;
     String centerLevelColor;
-    Long mediaId;
-    Long wallId;
+    String mediaPath;
+    Integer wallId;
     String wallName;
     String difficulty;
     String holdColor;
