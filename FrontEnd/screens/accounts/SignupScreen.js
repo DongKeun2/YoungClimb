@@ -187,7 +187,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         <TouchableOpacity onPress={() => navigation.navigate('약관')}>
           <Text style={styles.link}>&nbsp; 약관</Text>
         </TouchableOpacity>
-        <Text>&nbsp; 동의</Text>
+        <Text style={styles.text}>&nbsp; 동의</Text>
       </View>
       <View style={styles.linkGroup}>
         <TouchableOpacity onPress={() => navigation.navigate('로그인')}>
@@ -217,17 +217,17 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
     };
 
     if (isSkip) {
-      dispatch(signup(data)).then(() => {
-        navigation.navigate('완료');
-      });
+      // dispatch(signup(data)).then(() => {
+      navigation.navigate('완료');
+      // });
     } else {
       data.height = signupForm.height.value;
       data.shoeSize = signupForm.shoeSize.value;
       data.wingspan = signupForm.shoeSize.value;
 
-      dispatch(signup(data)).then(() => {
-        navigation.navigate('완료');
-      });
+      // dispatch(signup(data)).then(() => {
+      navigation.navigate('완료');
+      // });
       console.log('확인');
     }
   }
@@ -245,35 +245,37 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
           회원님과 비슷한 유저를 파악하고 정보를 얻을 수 있어요
         </Text>
       </View>
-      <Input
-        style={styles.input}
-        placeholder="키(cm)"
-        placeholderTextColor={'#ddd'}
-        value={signupForm.height.value}
-        type={signupForm.height.type}
-        onChangeText={value => updateInput('height', value)}
-      />
-      <Input
-        style={styles.input}
-        placeholder="신발(mm)"
-        placeholderTextColor={'#ddd'}
-        value={signupForm.shoeSize.value}
-        type={signupForm.shoeSize.type}
-        onChangeText={value => updateInput('shoeSize', value)}
-      />
-      <View style={styles.inputBox}>
+      <View style={styles.inputContainer}>
         <Input
           style={styles.input}
-          placeholder="윙스팬(cm)"
-          width="100%"
+          placeholder="키(cm)"
           placeholderTextColor={'#ddd'}
-          value={signupForm.wingspan.value}
-          type={signupForm.wingspan.type}
-          onChangeText={value => updateInput('wingspan', value)}
+          value={signupForm.height.value}
+          type={signupForm.height.type}
+          onChangeText={value => updateInput('height', value)}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
-          <Image source={camera} style={styles.cameraIcon} />
-        </TouchableOpacity>
+        <Input
+          style={styles.input}
+          placeholder="신발(mm)"
+          placeholderTextColor={'#ddd'}
+          value={signupForm.shoeSize.value}
+          type={signupForm.shoeSize.type}
+          onChangeText={value => updateInput('shoeSize', value)}
+        />
+        <View style={styles.inputBox}>
+          <Input
+            style={styles.input}
+            placeholder="윙스팬(cm)"
+            width="100%"
+            placeholderTextColor={'#ddd'}
+            value={signupForm.wingspan.value}
+            type={signupForm.wingspan.type}
+            onChangeText={value => updateInput('wingspan', value)}
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
+            <Image source={camera} style={styles.cameraIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.btnGroup}>
         <View style={styles.button}>
@@ -335,6 +337,14 @@ const styles = StyleSheet.create({
   },
   comment: {
     textAlign: 'center',
+    color: 'black',
+  },
+  inputContainer: {
+    display: 'flex',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 30,
   },
   inputBox: {
     display: 'flex',
@@ -380,7 +390,9 @@ const styles = StyleSheet.create({
   link: {
     color: '#F34D7F',
   },
-  next: {},
+  next: {
+    color: 'black',
+  },
   checkBtn: {
     elevation: 8,
     alignItems: 'center',
@@ -392,6 +404,7 @@ const styles = StyleSheet.create({
   },
   checkTitle: {
     fontSize: 15,
+    color: 'black',
   },
   cameraIcon: {
     position: 'absolute',
@@ -404,11 +417,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginVertical: 30,
   },
-
+  text: {
+    color: 'black',
+  },
   before: {
     width: '80%',
     marginTop: 20,
+    color: 'black',
   },
 });
 

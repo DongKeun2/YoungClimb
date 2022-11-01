@@ -4,7 +4,8 @@ import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
 import mainLogo from '../assets/image/main/logo.png';
 import PostAddIcon from '../assets/image/header/postAddIcon.svg';
 import NoticeIcon from '../assets/image/header/noticeIcon.svg';
-import SettingIcon from '../assets/image/header/settingIcon.svg';
+
+import DropDown from './Dropdown';
 
 function CustomMainHeader(props) {
   return props.type === '홈' ? (
@@ -35,12 +36,7 @@ function CustomMainHeader(props) {
           }>
           <PostAddIcon style={{marginRight: 10}} />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            props.navigation ? props.navigation.navigate('프로필 설정') : null
-          }>
-          <SettingIcon style={{marginRight: 10}} />
-        </TouchableOpacity>
+        <DropDown navigation={props.navigation} />
       </View>
     </View>
   ) : (
