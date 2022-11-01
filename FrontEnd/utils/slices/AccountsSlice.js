@@ -209,17 +209,26 @@ export const AccountsSlice = createSlice({
       state.loginState = action.payload;
     },
     changeSignupForm: (state, action) => {
-      switch (action.payload.name) {
-        case 'email':
-          state.isCheckEmail = false;
-          break;
-        case 'nickname':
-          state.isCheckNickname = false;
-          break;
-        default:
-          break;
+      if (
+        action.payload.name === 'height' ||
+        action.payload.name === 'shoeSize' ||
+        action.payload.name === 'wingspan'
+      ) {
+        state.signupForm[action.payload.name].value =
+          action.payload.value.replace(/[^0-9]/g, '');
+      } else {
+        switch (action.payload.name) {
+          case 'email':
+            state.isCheckEmail = false;
+            break;
+          case 'nickname':
+            state.isCheckNickname = false;
+            break;
+          default:
+            break;
+        }
+        state.signupForm[action.payload.name].value = action.payload.value;
       }
-      state.signupForm[action.payload.name].value = action.payload.value;
     },
     changeEditForm: (state, action) => {
       state.editForm[action.payload.name].value = action.payload.value;

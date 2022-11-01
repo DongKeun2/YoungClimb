@@ -323,6 +323,7 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
           placeholder="키(cm)"
           placeholderTextColor={'#ddd'}
           value={signupForm.height.value}
+          maxLength={3}
           type={signupForm.height.type}
           onChangeText={value => updateInput('height', value)}
         />
@@ -330,6 +331,7 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
           style={styles.input}
           placeholder="신발(mm)"
           placeholderTextColor={'#ddd'}
+          maxLength={3}
           value={signupForm.shoeSize.value}
           type={signupForm.shoeSize.type}
           onChangeText={value => updateInput('shoeSize', value)}
@@ -340,6 +342,7 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
             placeholder="윙스팬(cm)"
             width="100%"
             placeholderTextColor={'#ddd'}
+            maxLength={3}
             value={signupForm.wingspan.value}
             type={signupForm.wingspan.type}
             onChangeText={value => updateInput('wingspan', value)}
