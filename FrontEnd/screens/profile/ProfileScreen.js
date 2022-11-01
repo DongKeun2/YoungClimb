@@ -97,7 +97,11 @@ function ProfileScreen({navigation, route}) {
 
         {isRank ? (
           // 랭크 정보 로그인 한 회원의 rank로 수정해야함.
-          <RankInfo setIsRank={setIsRank} rank={userInfo.rank} />
+          <RankInfo
+            setIsRank={setIsRank}
+            rank={userInfo.rank}
+            exp={userInfo.exp}
+          />
         ) : (
           <>
             <View style={styles.InfoContainer}>

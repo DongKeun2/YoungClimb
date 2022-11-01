@@ -59,7 +59,7 @@ const initialState = {
       shoeSize: 270,
       wingspan: 190,
       rank: 'Y4',
-      exp: 50,
+      exp: 70,
       boardNum: 12,
       followingNum: 33,
       followerNum: 35,

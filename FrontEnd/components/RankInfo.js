@@ -7,7 +7,7 @@ import RankItem from '../assets/info/RankItem';
 import Close from '../assets/image/profile/Close.svg';
 
 // rank가 V1 이런 식으로 들어오는 상태
-function RankInfo({setIsRank, rank}) {
+function RankInfo({setIsRank, exp, rank}) {
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -19,7 +19,9 @@ function RankInfo({setIsRank, rank}) {
       </TouchableOpacity>
       <Text style={styles.title}>현재 등급</Text>
       <Text style={styles.subTitle}>{rank}</Text>
-      <View style={styles.mainIcon}>{RankItem[parseInt(rank[1])].main}</View>
+      <View style={styles.mainIcon}>
+        {RankItem[parseInt(rank[1], 10)].main}
+      </View>
 
       <View style={styles.iconBox}>
         <View style={styles.subIcon}>
@@ -30,7 +32,17 @@ function RankInfo({setIsRank, rank}) {
       </View>
 
       <View style={styles.barBox}>
-        <Text>경험치 바</Text>
+        <View style={styles.barBG}>
+          <View
+            style={[
+              styles.bar,
+              {
+                width: `${exp}%`,
+                backgroundColor: `${RankItem[parseInt(rank[1], 10)].color}`,
+              },
+            ]}
+          />
+        </View>
       </View>
 
       <View style={styles.textBox}>
@@ -67,6 +79,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     color: 'black',
+    fontWeight: 'bold',
     fontSize: 14,
   },
   mainIcon: {},
@@ -77,8 +90,20 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
-  subIcon: {},
-  barBox: {},
+  subIcon: {marginHorizontal: 5},
+  barBox: {width: '100%', justifyContent: 'center', alignItems: 'center'},
+  barBG: {
+    width: '80%',
+    borderRadius: 5,
+    backgroundColor: '#D9D9D9',
+    height: 10,
+    marginVertical: 10,
+  },
+  bar: {
+    width: '40%',
+    borderRadius: 5,
+    height: 10,
+  },
   textBox: {},
   text: {
     textAlign: 'center',
