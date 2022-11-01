@@ -1,5 +1,6 @@
 package com.youngclimb.domain.model.entity;
 
+import com.youngclimb.domain.model.dto.board.BoardMediaDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,4 +27,13 @@ public class BoardMedia {
     // 영상 파일 이름
     @Column(name = "media_path")
     private String mediaPath;
+
+    public BoardMediaDto toMediaDto() {
+        return BoardMediaDto.builder()
+                .mediaId(id)
+                .mediaPath(mediaPath)
+                .build();
+    }
+
+
 }

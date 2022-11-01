@@ -12,13 +12,13 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "tb_board_like")
-public class BoardLike {
+@Table(name = "tb_board_scrap")
+public class BoardScrap {
     // id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "like_id")
-    private Long boardLikeId;
+    @Column(name = "scrap_id")
+    private Long boardScrapId;
     // 회원번호
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

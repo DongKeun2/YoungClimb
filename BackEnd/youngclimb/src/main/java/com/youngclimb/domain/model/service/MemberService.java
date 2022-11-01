@@ -3,6 +3,7 @@ package com.youngclimb.domain.model.service;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
+import com.youngclimb.domain.model.dto.member.MemberProfile;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
@@ -12,8 +13,12 @@ public interface MemberService {
     public boolean checkNicknameDuplicate(String nickname);
     // 직접 회원 가입
     public String insertUser(JoinMember joinMember) throws Exception;
-    // 회원 정보 추가
-    public void addUserInfo(MemberInfo memberInfo,  MultipartFile file) throws Exception;
+    // 신체 정보 추가
+//    public void addBodyInfo(MemberInfo memberInfo) throws Exception;
+    // 프로필 추가
+    public void addProfile(MemberProfile memberProfile, MultipartFile file) throws Exception;
+    // 프로필 변경
+    public void editProfile(MemberInfo memberInfo, MultipartFile file) throws Exception;
     // 사용자 정보 조회
     public MemberInfo getUserInfoByUserId(String userId);
     // 사용자 비밀번호 검증

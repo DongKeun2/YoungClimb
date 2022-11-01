@@ -20,7 +20,7 @@ public class Center {
     @Column(name = "center_id")
     private Integer id;
     // 클라이밍장 이름
-    @Column(name = "center+name")
+    @Column(name = "center_name")
     private  String name;
     // 클라이밍장 위치(위도)
     @Column(name = "center_lat")
