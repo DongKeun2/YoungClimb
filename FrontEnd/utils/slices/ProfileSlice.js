@@ -58,7 +58,7 @@ const initialState = {
       height: 177,
       shoeSize: 270,
       wingspan: 190,
-      rank: 2,
+      rank: 'Y4',
       exp: 50,
       boardNum: 12,
       followingNum: 33,
