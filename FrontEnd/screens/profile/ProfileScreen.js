@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,16 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 
 import CustomMainHeader from '../../components/CustomMainHeader';
+import CustomSubHeader from '../../components/CustomSubHeader';
 import UserAvatar from '../../components/UserAvatar';
 import ArticleCard from '../../components/ArticleCard';
 import FollowBtn from '../../components/FollowBtn';
+
+import {profile, setIsClose} from '../../utils/slices/ProfileSlice';
+import {logout, testLogin} from '../../utils/slices/AccountsSlice';
 
 import rankIcon from '../../assets/image/profile/holdIcon.png';
 import boardIcon from '../../assets/image/profile/board.png';
@@ -20,103 +24,137 @@ import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
 
-function ProfileScreen({navigation}) {
+function ProfileScreen({navigation, route}) {
+  const dispatch = useDispatch();
+
+  const isOpen = useSelector(state => state.profile.isOpen);
+
   const userInfo = useSelector(state => state.profile.profileInfo.user);
   const isFollow = useSelector(state => state.profile.profileInfo.isFollow);
   const isMine = useSelector(state => state.profile.profileInfo.isMine);
 
   const [type, setType] = useState('board');
-  const boards = useSelector(state => state.profile.boards);
-  const scraps = useSelector(state => state.profile.scraps);
+  const boards = useSelector(state => state.profile.profileInfo.boards);
+  const scraps = useSelector(state => state.profile.profileInfo.scraps);
+
+  useEffect(() => {
+    dispatch(profile(route.params.nickname));
+  });
 
   return (
-    <ScrollView style={styles.container}>
-      <CustomMainHeader type="프로필" navigation={navigation} />
-      <View style={styles.header}>
-        <View style={styles.profileBox}>
-          <UserAvatar source={userInfo.image} size={70} />
-          <View style={styles.profileText}>
-            <Text style={styles.profileNickname}>{userInfo.nickname}</Text>
-            <Text style={styles.profileSize}>
-              {userInfo.gender} {userInfo.height}cm {userInfo.shoeSize}mm{' '}
-              {userInfo.wingspan}cm
-            </Text>
-          </View>
-        </View>
-        <FollowBtn
-          isFollow={isFollow}
-          isMine={isMine}
-          nickname={userInfo.nickname}
-        />
-      </View>
-
-      <View style={styles.introBox}>
-        <Text style>{userInfo.intro}</Text>
-      </View>
-
-      <View style={styles.horizonLine} />
-
-      <View style={styles.InfoContainer}>
-        <View style={styles.InfoBox}>
-          <Text>등급</Text>
-          <Image style={styles.rankImg} source={rankIcon} />
-        </View>
-        <View style={styles.InfoBox}>
-          <Text>게시글</Text>
-          <Text>{userInfo.boardNum}</Text>
-        </View>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('팔로우');
-          }}
-          style={styles.InfoBox}>
-          <Text>팔로잉</Text>
-          <Text>{userInfo.followingNum}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('팔로우');
-          }}
-          style={styles.InfoBox}>
-          <Text>팔로워</Text>
-          <Text>{userInfo.followerNum}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {type === 'board' ? (
-        <View style={styles.tabBox}>
-          <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
-            <Image source={boardActiveIcon} style={styles.tabIcon} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setType('scrap');
-            }}
-            style={styles.tabBtn}>
-            <Image source={bookmarkIcon} style={styles.tabIcon} />
-          </TouchableOpacity>
-        </View>
+    <>
+      {route.params.initial ? (
+        <CustomMainHeader type="프로필" navigation={navigation} />
       ) : (
-        <View style={styles.tabBox}>
+        <CustomSubHeader
+          title={`${userInfo.nickname}`}
+          navigation={navigation}
+        />
+      )}
+
+      {route.params.initial && isOpen && (
+        <View style={isOpen ? [styles.menu, styles.active] : styles.menu}>
           <TouchableOpacity
             onPress={() => {
-              setType('board');
-            }}
-            style={styles.tabBtn}>
-            <Image source={boardIcon} style={styles.tabIcon} />
+              // dispatch(logout());
+              dispatch(testLogin(false));
+            }}>
+            <Text style={styles.text}>로그아웃</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
-            <Image source={bookmarkActiveIcon} style={styles.tabIcon} />
+          <TouchableOpacity onPress={() => navigation.navigate('프로필 설정')}>
+            <Text style={styles.text}>정보 수정</Text>
           </TouchableOpacity>
         </View>
       )}
-      <View style={styles.horizonLine} />
+      <ScrollView style={styles.container}>
+        <View style={styles.header}>
+          <View style={styles.profileBox}>
+            <UserAvatar source={userInfo.image} size={70} />
+            <View style={styles.profileTextBox}>
+              <Text style={styles.profileNickname}>{userInfo.nickname}</Text>
+              <Text style={[styles.text, styles.profileSize]}>
+                {userInfo.gender} {userInfo.height}cm {userInfo.shoeSize}mm{' '}
+                {userInfo.wingspan}cm
+              </Text>
+            </View>
+          </View>
+          {!isOpen && (
+            <FollowBtn
+              isFollow={isFollow}
+              isMine={isMine}
+              nickname={userInfo.nickname}
+            />
+          )}
+        </View>
 
-      <CardList
-        navigation={navigation}
-        articles={type === 'board' ? boards : scraps}
-      />
-    </ScrollView>
+        <View style={styles.introBox}>
+          <Text style={styles.intro}>{userInfo.intro}</Text>
+        </View>
+
+        <View style={styles.horizonLine} />
+
+        <View style={styles.InfoContainer}>
+          <View style={styles.InfoBox}>
+            <Text style={styles.text}>등급</Text>
+            <Image style={styles.rankImg} source={rankIcon} />
+          </View>
+          <View style={styles.InfoBox}>
+            <Text style={styles.text}>게시글</Text>
+            <Text style={styles.text}>{userInfo.boardNum}</Text>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('팔로우');
+            }}
+            style={styles.InfoBox}>
+            <Text style={styles.text}>팔로잉</Text>
+            <Text style={styles.text}>{userInfo.followingNum}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('팔로우');
+            }}
+            style={styles.InfoBox}>
+            <Text style={styles.text}>팔로워</Text>
+            <Text style={styles.text}>{userInfo.followerNum}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {type === 'board' ? (
+          <View style={styles.tabBox}>
+            <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
+              <Image source={boardActiveIcon} style={styles.tabIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setType('scrap');
+              }}
+              style={styles.tabBtn}>
+              <Image source={bookmarkIcon} style={styles.tabIcon} />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.tabBox}>
+            <TouchableOpacity
+              onPress={() => {
+                setType('board');
+              }}
+              style={styles.tabBtn}>
+              <Image source={boardIcon} style={styles.tabIcon} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
+              <Image source={bookmarkActiveIcon} style={styles.tabIcon} />
+            </TouchableOpacity>
+          </View>
+        )}
+        <View style={styles.horizonLine} />
+
+        <CardList
+          navigation={navigation}
+          articles={type === 'board' ? boards : scraps}
+        />
+      </ScrollView>
+    </>
   );
 }
 
@@ -155,11 +193,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  profileText: {
+  profileTextBox: {
     alignItems: 'flex-start',
     paddingLeft: 10,
   },
   profileNickname: {
+    color: 'black',
     // paddingVertical: 5,
   },
   profileSize: {
@@ -219,6 +258,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
+  },
+  text: {
+    color: 'black',
+  },
+  intro: {
+    color: 'black',
+  },
+  menu: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    position: 'absolute',
+    top: 50,
+    zIndex: 1,
+    right: 0,
+    width: 100,
+    alignItems: 'center',
+    shadowColor: 'rgba(0, 0, 0, 0.3)',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 10,
+    opacity: 0,
+    visibility: 'none',
+    transform: [{translateY: -20}],
+    // transition: ['opacity 0.4s' 'ease', transform 0.4s ease, visibility 0.4s],
+    padding: 10,
+  },
+  active: {
+    opacity: 1,
+    visibility: 'visible',
+    transform: [{translateY: 0}],
   },
 });
 

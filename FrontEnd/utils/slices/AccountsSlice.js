@@ -8,6 +8,8 @@ import {
   setRefreshToken,
   removeAccessToken,
   removeRefreshToken,
+  setCurrentUser,
+  removeCurrentUser,
 } from '../Token';
 
 const login = createAsyncThunk('login', async (payload, {rejectWithValue}) => {
@@ -15,6 +17,7 @@ const login = createAsyncThunk('login', async (payload, {rejectWithValue}) => {
     const res = await axios.post(api.login(), payload, {});
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
+    setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -26,6 +29,7 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
     const res = await axios.post(api.logout(), {}, getConfig());
     removeAccessToken();
     removeRefreshToken();
+    removeCurrentUser();
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -180,7 +184,7 @@ export const AccountsSlice = createSlice({
   },
 });
 
-export {login, wingspan, signup, profileCreate};
+export {login, logout, wingspan, signup, profileCreate};
 
 export const {
   testLogin,

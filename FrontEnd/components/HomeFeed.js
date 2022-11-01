@@ -36,12 +36,7 @@ function HomeFeed({feed, navigation}) {
           <View style={styles.iconText}>
             <UserAvatar source={avatar} rank={1} size={36} />
             <View style={styles.headerTextGroup}>
-              <Text
-                style={{
-                  ...styles.feedTextStyle,
-                  fontSize: 16,
-                  fontWeight: '600',
-                }}>
+              <Text style={{...styles.feedTextStyle, fontSize: 16}}>
                 {feed.createUser}
               </Text>
               <Text style={{...styles.feedTextStyle, fontSize: 12}}>

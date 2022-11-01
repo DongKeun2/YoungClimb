@@ -73,12 +73,13 @@ function FollowScreen({navigation}) {
       <FollowList
         follows={type === 'following' ? followings : followers}
         keyword={keyword}
+        navigation={navigation}
       />
     </ScrollView>
   );
 }
 
-function FollowList({follows, keyword}) {
+function FollowList({follows, keyword, navigation}) {
   const searchResult = follows.filter(follow =>
     follow.nickname.includes(keyword),
   );
@@ -86,25 +87,32 @@ function FollowList({follows, keyword}) {
   return (
     <View style={styles.followContainer}>
       {searchResult.map((item, i) => {
-        return <FollowItem key={i} item={item} />;
+        return <FollowItem key={i} item={item} navigation={navigation} />;
       })}
     </View>
   );
 }
 
-function FollowItem({item}) {
+function FollowItem({item, navigation}) {
   return (
     <>
       <View style={styles.followItem}>
-        <View style={styles.followItemInfo}>
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('서브프로필', {
+              initial: false,
+              nickname: item.nickname,
+            });
+          }}
+          style={styles.followItemInfo}>
           <UserAvatar source={item.image} size={45} rank={item.rank} />
           <View>
-            <Text>{item.nickname}</Text>
-            <Text>
+            <Text style={styles.nickname}>{item.nickname}</Text>
+            <Text style={styles.text}>
               {item.gender} {item.height}cm {item.shoeSize}mm {item.wingspan}cm
             </Text>
           </View>
-        </View>
+        </TouchableOpacity>
         <FollowBtn isFollow={true} />
       </View>
     </>
@@ -130,7 +138,7 @@ const styles = StyleSheet.create({
     height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: '#F4F4F4F4',
   },
   activeTab: {
     width: '50%',
@@ -153,6 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 5,
     paddingLeft: 40,
+    color: 'black',
   },
   searchIcon: {
     position: 'absolute',
@@ -181,6 +190,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'black',
   },
+  nickname: {color: 'black', fontSize: 14, fontWeight: 'bold'},
+  text: {color: 'black', fontSize: 12},
 });
 
 export default FollowScreen;
