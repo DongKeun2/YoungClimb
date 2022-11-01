@@ -7,7 +7,11 @@ function HomeScreen({navigation}) {
   const boards = [
     {
       id: 1,
-      createUser: 'climb_june',
+      createUser: {
+        nickname: 'climb_june',
+        image: null,
+        rank: 1,
+      },
       createdAt: '2시간 전',
       centerName: '더 클라임 양재점',
       centerLevelColor: 'blue',
@@ -27,7 +31,11 @@ function HomeScreen({navigation}) {
     },
     {
       id: 2,
-      createUser: '0_climb',
+      createUser: {
+        nickname: '0_climb',
+        image: null,
+        rank: 2,
+      },
       createdAt: '3시간 전',
       centerName: '더 클라임 강남점',
       centerLevelColor: 'green',
@@ -47,7 +55,11 @@ function HomeScreen({navigation}) {
     },
     {
       id: 3,
-      createUser: 'YoungClimb_YoungJunK',
+      createUser: {
+        nickname: 'YoungClimb_YoungJunK',
+        image: null,
+        rank: 3,
+      },
       createdAt: '5시간 전',
       centerName: '더 클라임 양재점',
       centerLevelColor: 'green',
@@ -67,7 +79,11 @@ function HomeScreen({navigation}) {
     },
     {
       id: 4,
-      createUser: '내 닉네임은 띄어쓰기가 가능하지',
+      createUser: {
+        nickname: '내 닉네임은 띄어쓰기가 가능하지',
+        image: null,
+        rank: 1,
+      },
       createdAt: '3월 16일',
       centerName: '더 클라임 신림점',
       centerLevelColor: 'red',
