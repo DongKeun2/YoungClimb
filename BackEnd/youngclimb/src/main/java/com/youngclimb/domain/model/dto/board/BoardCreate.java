@@ -1,32 +1,28 @@
 package com.youngclimb.domain.model.dto.board;
 
 import com.youngclimb.domain.model.entity.Board;
+import lombok.Builder;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@Data
+@Builder
 public class BoardCreate {
-    Long id;
-    String createUser;
+    String userEmail;
     LocalDateTime createdAt;
     Long centerId;
-    String centerName;
     Long centerLevelId;
-    String centerLevelColor;
     Long mediaId;
     Long wallId;
-    String wallName;
-    String difficulty;
+    String level;
     String holdColor;
     LocalDate solvedDate;
     String content;
-    Long like;
-    Long view;
-    Long commentNum;
 
     public Board toBoard() {
         return Board.builder()
-                .boardId(id)
                 .content(content)
                 .createdDateTime(createdAt)
                 .solvedDate(solvedDate)

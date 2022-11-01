@@ -1,8 +1,8 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.FeedDto;
 import com.youngclimb.domain.model.dto.board.BoardCreate;
 import com.youngclimb.domain.model.dto.board.BoardDetailDto;
+import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.service.BoardService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -29,9 +29,9 @@ public class BoardController {
     public ResponseEntity<?> readAllBoard(String email, @PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
 
         try {
-            List<FeedDto> feedDtos = boardService.readAllBoard(email, pageable, null);
-            if (feedDtos != null) {
-                return new ResponseEntity<List<FeedDto>>(feedDtos, HttpStatus.OK);
+            List<BoardDto> boardDtos = boardService.readAllBoard(email, pageable, null);
+            if (boardDtos != null) {
+                return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }

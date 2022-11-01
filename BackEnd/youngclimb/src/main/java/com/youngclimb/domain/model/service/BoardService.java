@@ -1,9 +1,9 @@
 package com.youngclimb.domain.model.service;
 
 import com.youngclimb.common.security.UserPrincipal;
-import com.youngclimb.domain.model.dto.FeedDto;
 import com.youngclimb.domain.model.dto.board.BoardCreate;
 import com.youngclimb.domain.model.dto.board.BoardDetailDto;
+import com.youngclimb.domain.model.dto.board.BoardDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +13,7 @@ import java.util.List;
 // 일단 login 될 때까지만 임시로 사용
 public interface BoardService {
     // 전체 게시글 조회
-    public List<FeedDto> readAllBoard(String userId, Pageable pageable, UserPrincipal currUser);
+    public List<BoardDto> readAllBoard(String userId, Pageable pageable, UserPrincipal currUser);
     // 게시물 작성
     public void writeBoard(BoardCreate boardCreate, List<MultipartFile> files);
     // 게시글 좋아요

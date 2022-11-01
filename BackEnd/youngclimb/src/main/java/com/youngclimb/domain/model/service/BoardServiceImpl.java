@@ -44,15 +44,16 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 읽기
     @Override
-    public List<FeedDto> readAllBoard(String email, Pageable pageable, UserPrincipal currUser) {
+    public List<BoardDto> readAllBoard(String email, Pageable pageable, UserPrincipal currUser) {
+        List<BoardDto> boardDtos = new ArrayList<>();
         List<FeedDto> feedDtos = new ArrayList<>();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
         List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
 
         for (Board board : boards) {
-            FeedDto feedDto = new FeedDto();
 
+            // 게시글 DTO 세팅
             BoardDto boardDto = BoardDto.builder()
                     .id(board.getBoardId())
                     .createUser(member.getNickname())
@@ -62,33 +63,28 @@ public class BoardServiceImpl implements BoardService {
                     .view(boardScrapRepository.countByBoard(board))
                     .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
                     .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
-//                    .commentNum(commentRepository)
+                    .commentNum(commentRepository.countByBoard(board))
                     .build();
 
-            // 게시글 DTO 세팅
-            feedDto.setBoardDto(board.toBoardDto());
-
-            // 게시글 미디어 DTO 세팅
-            List<BoardMediaDto> boardMediaDtos = new ArrayList<>();
-            List<BoardMedia> boardMedias = boardMediaRepository.findByBoard(board);
-            for (BoardMedia boardMedia : boardMedias) {
-                boardMediaDtos.add(boardMedia.toMediaDto());
-            }
-            feedDto.setBoardMediaDtos(boardMediaDtos);
-
-            // 좋아요 여부 세팅
-            BoardLike boardLike = boardLikeRepository.findByBoardAndMember(board, member).orElseThrow();
-            feedDto.setBoardLiked(true);
+            // 게시글 미디어 path 세팅
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+            boardDto.setMediaPath(boardMedia.getMediaPath());
 
             // 댓글 DTO 1개 세팅
-            Comment comment = commentRepository.findByBoard(board).orElseThrow();
-            feedDto.setCommentDto(comment.toCommentDto());
+            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
+            if (comments.get(0) != null) {
+                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                        .nickname(comments.get(0).getMember().getNickname())
+                        .comment(comments.get(0).getContent())
+                        .build();
+                boardDto.setCommentPreviewDto(commentPreviewDto);
+            }
 
             // List add
-            feedDtos.add(feedDto);
+            boardDtos.add(boardDto);
         }
 
-        return feedDtos;
+        return boardDtos;
     }
 
     // 게시글 작성
@@ -160,7 +156,7 @@ public class BoardServiceImpl implements BoardService {
         // 댓글 DTO 세팅
         List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<CommentDto> commentDtos = new ArrayList<>();
-        for(Comment comment : comments) {
+        for (Comment comment : comments) {
             CommentDto commentDto = comment.toCommentDto();
             commentDtos.add(commentDto);
         }
