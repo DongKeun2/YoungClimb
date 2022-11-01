@@ -78,9 +78,6 @@ const wingspan = createAsyncThunk(
         data: formData,
         headers: header,
       });
-      // const res = await axios.post(api.wingspan(), payload, {
-      //   headers,
-      // });
       console.log('결과', res.data);
       return res.data;
     } catch (err) {
@@ -140,6 +137,39 @@ const initialState = {
       valid: false,
     },
   },
+  editForm: {
+    nickname: {
+      value: '',
+      type: 'textInput',
+      valid: false,
+    },
+    password: {
+      value: '',
+      type: 'textInput',
+    },
+    intro: {
+      value: '',
+      type: 'textInput',
+    },
+    height: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    shoeSize: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    wingspan: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+  },
   uploadImg: null,
   isCheckNickname: false,
   isCheckEmail: false,
@@ -156,6 +186,9 @@ export const AccountsSlice = createSlice({
     changeSignupForm: (state, action) => {
       state.signupForm[action.payload.name].value = action.payload.value;
       console.log(state.signupForm);
+    },
+    changeEditForm: (state, action) => {
+      state.editForm[action.payload.name].value = action.payload.value;
     },
     changeIsCheckNickname: (state, action) => {
       state.isCheckNickname = action.payload;
@@ -177,9 +210,6 @@ export const AccountsSlice = createSlice({
     [login.rejected]: state => {
       state.loginState = false;
     },
-    [wingspan.fulfilled]: (state, action) => {
-      state.signupForm.wingspan = action.payload;
-    },
     [signup.fulfilled]: (state, action) => {},
   },
 });
@@ -193,6 +223,7 @@ export const {
   changeIsCheckEmail,
   changeIsCheckTerms,
   changeUploadImg,
+  changeEditForm,
 } = AccountsSlice.actions;
 
 export default AccountsSlice.reducer;
