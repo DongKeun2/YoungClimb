@@ -26,7 +26,7 @@ function Comment({comment, navigation}) {
             <Text
               style={{
                 ...styles.commentTextStyle,
-                fontWeight: '500',
+                fontWeight: 'normal',
               }}>
               {'  ' + comment.content}
             </Text>
