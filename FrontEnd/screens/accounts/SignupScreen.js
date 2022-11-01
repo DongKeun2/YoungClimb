@@ -272,7 +272,13 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
             type={signupForm.wingspan.type}
             onChangeText={value => updateInput('wingspan', value)}
           />
-          <TouchableOpacity onPress={() => navigation.navigate('윙스팬')}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('윙스팬', {
+                height: signupForm.height.value,
+                type: 'signup',
+              })
+            }>
             <Image source={camera} style={styles.cameraIcon} />
           </TouchableOpacity>
         </View>
