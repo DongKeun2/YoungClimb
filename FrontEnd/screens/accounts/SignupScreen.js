@@ -68,26 +68,66 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
   const isCheckEmail = useSelector(state => state.accounts.isCheckEmail);
   const isCheckNickname = useSelector(state => state.accounts.isCheckNickname);
   const isCheckTerms = useSelector(state => state.accounts.isCheckTerms);
+  const [passwordError, setPasswordError] = useState('비밀번호를 입력해주세요');
 
   // 정보 입력 완료 시 다음 페이지 이동
   function goNextPage() {
     if (
       false
       // !isCheckNickname ||
-      // !isCheckEmail ||
-      // signupForm.password.value !== signupForm.confirmPwd.value
+      // !isCheckEmail
     ) {
       // alert('정보를 입력하세요.');
     } else if (!isCheckTerms) {
       alert('약관에 동의해주세요.');
+    } else if (passwordError) {
+      alert(passwordError);
+    } else if (signupForm.password.value !== signupForm.confirmPwd.value) {
+      alert('비밀번호 확인이 일치하지 않습니다.');
     } else {
       setPage(true);
     }
   }
 
+  function chkPW() {
+    const pw = signupForm.password.value;
+    var num = pw.search(/[0-9]/g);
+    var eng = pw.search(/[a-z]/gi);
+    var spe = pw.search(/[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi);
+
+    if (pw.length < 8 || pw.length > 20) {
+      setPasswordError('비밀번호를 8자리 ~ 20자리 이내로 입력해주세요.');
+      return false;
+    } else if (pw.search(/\s/) !== -1) {
+      setPasswordError('비밀번호는 공백 없이 입력해주세요.');
+      return false;
+    } else if (num < 0 || eng < 0 || spe < 0) {
+      setPasswordError('비밀번호는 영문,숫자,특수문자를 포함해야 합니다.');
+      return false;
+    } else {
+      setPasswordError('');
+      return true;
+    }
+  }
+
+  function chkEmail(str) {
+    const reg_email =
+      /^([0-9a-zA-Z._-]+)@([0-9a-zA-Z_-]+)(\.[0-9a-zA-Z_-]+){1,2}$/;
+
+    if (!reg_email.test(str)) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   function onCheckEmail() {
     const data = {email: signupForm.email.value};
-    dispatch(checkEmail(data));
+    if (chkEmail(data.email)) {
+      dispatch(checkEmail(data));
+    } else {
+      alert('이메일 형식이 올바르지 않습니다.');
+    }
   }
   function onCheckNickname() {
     const data = {nickname: signupForm.nickname.value};
@@ -156,6 +196,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         secureTextEntry={true}
         placeholder="비밀번호"
         height={30}
+        onEndEditing={() => chkPW()}
         placeholderTextColor={'#ddd'}
         onChangeText={value => updateInput('password', value)}
       />
@@ -252,6 +293,17 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
     }
   }
 
+  function goWingspan() {
+    if (signupForm.height.value) {
+      navigation.navigate('윙스팬', {
+        height: signupForm.height.value,
+        type: 'signup',
+      });
+    } else {
+      alert('윙스팬 측정을 위해 키를 먼저 입력해주세요.');
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -292,13 +344,7 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
             type={signupForm.wingspan.type}
             onChangeText={value => updateInput('wingspan', value)}
           />
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('윙스팬', {
-                height: signupForm.height.value,
-                type: 'signup',
-              })
-            }>
+          <TouchableOpacity onPress={goWingspan}>
             <Image source={camera} style={styles.cameraIcon} />
           </TouchableOpacity>
         </View>

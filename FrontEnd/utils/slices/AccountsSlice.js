@@ -209,6 +209,16 @@ export const AccountsSlice = createSlice({
       state.loginState = action.payload;
     },
     changeSignupForm: (state, action) => {
+      switch (action.payload.name) {
+        case 'email':
+          state.isCheckEmail = false;
+          break;
+        case 'nickname':
+          state.isCheckNickname = false;
+          break;
+        default:
+          break;
+      }
       state.signupForm[action.payload.name].value = action.payload.value;
     },
     changeEditForm: (state, action) => {
@@ -239,14 +249,14 @@ export const AccountsSlice = createSlice({
       state.isCheckEmail = action.payload;
     },
     [checkEmail.rejected]: (state, action) => {
-      alert('사용 불가능한 이메일');
+      alert('사용 불가능한 이메일입니다.');
       console.log(action.payload);
     },
     [checkNickname.fulfilled]: (state, action) => {
       state.isCheckNickname = action.payload;
     },
     [checkNickname.rejected]: (state, action) => {
-      alert('사용 불가능한 닉네임');
+      alert('사용 불가능한 닉네임입니다.');
       console.log(action.payload);
     },
   },
