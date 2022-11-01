@@ -44,7 +44,7 @@ public class BoardController {
     @ApiOperation(value = "writeBoard : 글 작성하기")
     @PostMapping
     public ResponseEntity<?> writeBoard(
-            //			@RequestBody BoardCreate boardCreate
+//            			@RequestBody BoardCreate boardCreate
             @RequestPart BoardCreate boardCreate
             , @RequestPart(name = "file", required = false) MultipartFile file
 //			,@RequestParam(name = "file", required = false) MultipartFile file
@@ -79,7 +79,7 @@ public class BoardController {
     public ResponseEntity<?> upBoardLike(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
 
         try {
-            return new ResponseEntity<Boolean>(boardService.upBoardLike(boardId, userId), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.boardLike(boardId, userId), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);

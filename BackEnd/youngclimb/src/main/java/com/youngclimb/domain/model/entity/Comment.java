@@ -43,6 +43,17 @@ public class Comment {
     @Column(name = "comment_is_deleted")
     private Boolean isDeleted;
 
+    public Comment setMember(Member member) {
+        this.member = member;
+        return this;
+    }
+
+    public Comment setBoard(Board board) {
+        this.board = board;
+        return this;
+    }
+
+
     public CommentDto toCommentDto() {
 
         String timeText = "";

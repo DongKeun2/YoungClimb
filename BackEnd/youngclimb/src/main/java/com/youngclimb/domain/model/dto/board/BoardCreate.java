@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 public class BoardCreate {
     Long memberId;
-    Long centerId;
-    Long centerLevelId;
+    Integer centerId;
+    Integer centerLevelId;
     Long mediaId;
-    Long wallId;
+    Integer wallId;
     String level;
     String holdColor;
     LocalDate solvedDate;

@@ -13,4 +13,6 @@ public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
     Optional<BoardLike> findByBoardAndMember(Board board, Member member);
 
     Boolean existsByBoardAndMember(Board board, Member member);
+
+    void deleteByBoardAndMember(Board board, Member member);
 }

@@ -38,6 +38,7 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardMediaRepository boardMediaRepository;
     private final BoardLikeRepository boardLikeRepository;
+    private final CommentLikeRepository commentLikeRepository;
     private final BoardScrapRepository boardScrapRepository;
     private final CommentRepository commentRepository;
     private final CategoryRepository categoryRepository;
@@ -146,7 +147,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 좋아요
     @Override
-    public Boolean upBoardLike(Long boardId, String email) {
+    public Boolean boardLike(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
@@ -158,6 +159,17 @@ public class BoardServiceImpl implements BoardService {
 
         return true;
     }
+
+    // 게시글 좋아요 취소
+    @Override
+    public Boolean BoardUnlike(Long boardId, String email) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        boardLikeRepository.deleteByBoardAndMember(board, member);
+        return false;
+    }
+
 
     // 게시글 - 댓글 상세보기
     @Override
@@ -211,4 +223,58 @@ public class BoardServiceImpl implements BoardService {
 
         return boardDetailDto;
     }
+
+    // 댓글 좋아요
+    @Override
+    public Boolean commentLike(Long commentId, String email) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        CommentLike commentLike = CommentLike.builder()
+                .comment(comment)
+                .member(member)
+                .build();
+
+        commentLikeRepository.save(commentLike);
+        return true;
+    }
+
+    // 댓글 좋아요 취소
+    @Override
+    public Boolean commentUnlike(Long commentId, String email) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        commentLikeRepository.deleteByCommentAndMember(comment, member);
+        return false;
+    }
+
+    // 댓글 작성
+    @Override
+    public void writeComment(CommentCreate commentCreate) {
+
+        // 댓글 저장하기
+        Comment comment = commentCreate.toComment();
+        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
+
+        comment.setBoard(board);
+        comment.setMember(member);
+        commentRepository.save(comment);
+    }
+
+    // 대댓글 작성
+    @Override
+    public void writeRecomment(CommentCreate commentCreate) {
+        Comment comment = commentCreate.toComment();
+        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
+
+        comment.setBoard(board);
+        comment.setMember(member);
+        commentRepository.save(comment);
+
+    }
+
+
 }

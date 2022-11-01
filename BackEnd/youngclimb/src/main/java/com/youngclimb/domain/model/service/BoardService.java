@@ -4,6 +4,7 @@ import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.BoardCreate;
 import com.youngclimb.domain.model.dto.board.BoardDetailDto;
 import com.youngclimb.domain.model.dto.board.BoardDto;
+import com.youngclimb.domain.model.dto.board.CommentCreate;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,17 +18,21 @@ public interface BoardService {
     // 게시물 작성
     public void writeBoard(BoardCreate boardCreate, MultipartFile file);
     // 게시글 좋아요
-    public Boolean upBoardLike(Long boardId, String email);
+    public Boolean boardLike(Long boardId, String email);
+    // 게시글 좋아요 취소
+    public Boolean BoardUnlike(Long boardId, String email);
     // 게시글 댓글 조회
     public BoardDetailDto readAllComments(Long boardId, Long memberId);
+    // 댓글 좋아요
+    public Boolean commentLike(Long commentId, String email);
+    // 댓글 좋아요 취소
+    public Boolean commentUnlike(Long commentId, String email);
     // 게시글 신고
 
     // 댓글 작성
-
-    // 댓글 좋아요
-
+    public void writeComment(CommentCreate commentCreate);
     // 대댓글 작성
-
+    public void writeRecomment(CommentCreate commentCreate);
     // 게시글 스크랩
 
     // 게시글 검색
