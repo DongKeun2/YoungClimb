@@ -46,6 +46,7 @@ public class BoardServiceImpl implements BoardService {
     private final CenterLevelRepository centerLevelRepository;
     private final FollowRepository followRepository;
     private final RankRepository rankRepository;
+    private final MemberRankExpRepository memberRankExpRepository;
     private final AmazonS3 amazonS3;
 
     // 게시글 읽기
@@ -173,8 +174,8 @@ public class BoardServiceImpl implements BoardService {
         CreateMember createUser = CreateMember.builder()
                 .nickname(writer.getNickname())
                 .image(writer.getMemberProfileImg())
-                .rank(rankRepository.findByMember(writer).orElseThrow().getName())
-                .isFollow(followRepository.existsByMemberMemberIdAndMemberMemberId(writer.getMemberId(), memberId))
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), memberId))
                 .build();
 
         boardDto.setCreateUser(createUser);
@@ -198,8 +199,8 @@ public class BoardServiceImpl implements BoardService {
             CreateMember cCreateMember = CreateMember.builder()
                     .nickname(cWriter.getNickname())
                     .image(cWriter.getMemberProfileImg())
-                    .rank(rankRepository.findByMember(cWriter).orElseThrow().getName())
-                    .isFollow(followRepository.existsByMemberMemberIdAndMemberMemberId(cWriter.getMemberId(), memberId))
+                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
+                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), memberId))
                     .build();
 
             CommentDto commentDto = comment.toCommentDto();
