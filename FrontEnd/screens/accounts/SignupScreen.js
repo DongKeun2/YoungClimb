@@ -33,36 +33,22 @@ const windowHeight = Dimensions.get('window').height;
 function SignupScreen({navigation}) {
   const dispatch = useDispatch();
 
-  const [page, setPage] = useState(false);
-
   const signupForm = useSelector(state => state.accounts.signupForm);
 
   function updateInput(name, value) {
     dispatch(changeSignupForm({name, value}));
   }
 
-  if (page) {
-    return (
-      <SecondPage
-        navigation={navigation}
-        signupForm={signupForm}
-        setPage={setPage}
-        updateInput={updateInput}
-      />
-    );
-  } else {
-    return (
-      <FirstPage
-        navigation={navigation}
-        signupForm={signupForm}
-        setPage={setPage}
-        updateInput={updateInput}
-      />
-    );
-  }
+  return (
+    <FirstPage
+      navigation={navigation}
+      signupForm={signupForm}
+      updateInput={updateInput}
+    />
+  );
 }
 
-const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
+const FirstPage = ({navigation, signupForm, updateInput}) => {
   const dispatch = useDispatch();
 
   const isCheckEmail = useSelector(state => state.accounts.isCheckEmail);
@@ -85,7 +71,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
     } else if (signupForm.password.value !== signupForm.confirmPwd.value) {
       alert('비밀번호 확인이 일치하지 않습니다.');
     } else {
-      setPage(true);
+      navigation.push('추가정보');
     }
   }
 
