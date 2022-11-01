@@ -42,15 +42,15 @@ public class BoardController {
 
     // 게시물 작성
     @ApiOperation(value = "writeBoard : 글 작성하기")
-    @PostMapping("/write")
+    @PostMapping
     public ResponseEntity<?> writeBoard(
             //			@RequestBody BoardCreate boardCreate
             @RequestPart BoardCreate boardCreate
-            , @RequestPart(name = "files", required = false) List<MultipartFile> files
-//			,@RequestParam(name = "files", required = false) List<MultipartFile> files
+            , @RequestPart(name = "file", required = false) MultipartFile file
+//			,@RequestParam(name = "file", required = false) MultipartFile file
     ) throws Exception {
         try {
-            boardService.writeBoard(boardCreate, files);
+            boardService.writeBoard(boardCreate, file);
             return new ResponseEntity<Void>(HttpStatus.OK);
 
         } catch (Exception e) {
@@ -59,8 +59,8 @@ public class BoardController {
     }
     // 게시글 댓글 조회(본문 + 댓글 리스트)
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
-    @GetMapping("/board/{boardId}/{userId}")
-    public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
+    @GetMapping("/board/{boardId}")
+    public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, Long userId) throws Exception {
         try {
             BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, userId);
             if (boardDetailDto != null) {
@@ -79,13 +79,16 @@ public class BoardController {
     public ResponseEntity<?> upBoardLike(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
 
         try {
-            boardService.upBoardLike(boardId, userId);
-            return new ResponseEntity<Void>(HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.upBoardLike(boardId, userId), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
         }
     }
+
+    // 게시글 좋아요 취소
+
+
 
 
     // 게시글 신고

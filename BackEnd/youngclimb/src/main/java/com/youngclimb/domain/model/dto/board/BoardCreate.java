@@ -10,8 +10,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class BoardCreate {
-    String userEmail;
-    LocalDateTime createdAt;
+    Long memberId;
     Long centerId;
     Long centerLevelId;
     Long mediaId;
@@ -24,10 +23,8 @@ public class BoardCreate {
     public Board toBoard() {
         return Board.builder()
                 .content(content)
-                .createdDateTime(createdAt)
+                .createdDateTime(LocalDateTime.now())
                 .solvedDate(solvedDate)
-                .isDelete(false)
-                .boardView(0L)
                 .build();
     }
 }

@@ -43,6 +43,10 @@ public class Board {
     @Column(name = "board_view")
     private Long boardView;
 
+    public Board setMember(Member member) {
+        this.member = member;
+        return this;
+    }
 
     public BoardDto toBoardDto() {
 
@@ -65,7 +69,6 @@ public class Board {
 
         return BoardDto.builder()
                 .id(boardId)
-                .createUser(member.getNickname())
                 .content(content)
                 .createdAt(timeText)
                 .solvedDate(solvedDate)

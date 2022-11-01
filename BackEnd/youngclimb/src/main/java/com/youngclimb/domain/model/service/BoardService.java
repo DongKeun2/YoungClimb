@@ -15,11 +15,11 @@ public interface BoardService {
     // 전체 게시글 조회
     public List<BoardDto> readAllBoard(String userId, Pageable pageable, UserPrincipal currUser);
     // 게시물 작성
-    public void writeBoard(BoardCreate boardCreate, List<MultipartFile> files);
+    public void writeBoard(BoardCreate boardCreate, MultipartFile file);
     // 게시글 좋아요
-    public void upBoardLike(Long boardId, String email);
+    public Boolean upBoardLike(Long boardId, String email);
     // 게시글 댓글 조회
-    public BoardDetailDto readAllComments(Long boardId, String memberId);
+    public BoardDetailDto readAllComments(Long boardId, Long memberId);
     // 게시글 신고
 
     // 댓글 작성

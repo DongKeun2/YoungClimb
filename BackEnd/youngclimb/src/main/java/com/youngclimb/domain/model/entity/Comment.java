@@ -1,7 +1,6 @@
 package com.youngclimb.domain.model.entity;
 
 import com.youngclimb.domain.model.dto.board.CommentDto;
-import com.youngclimb.domain.model.dto.member.MemberPic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,7 +62,6 @@ public class Comment {
 
         return CommentDto.builder()
                 .id(id)
-                .user(new MemberPic(member.getNickname(), member.getMemberProfileImg(), null))
                 .content(content)
                 .createdAt(createdDatetime)
                 .build();
