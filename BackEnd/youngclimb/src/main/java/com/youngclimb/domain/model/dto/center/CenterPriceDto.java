@@ -1,8 +1,10 @@
 package com.youngclimb.domain.model.dto.center;
 
+import lombok.Data;
+
+@Data
 public class CenterPriceDto {
-    Long id;
-    Long centerId;
+    Integer id;
     String name;
     Integer price;
 }

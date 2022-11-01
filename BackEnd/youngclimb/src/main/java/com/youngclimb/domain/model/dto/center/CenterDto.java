@@ -1,9 +1,11 @@
 package com.youngclimb.domain.model.dto.center;
 
 
+import lombok.Data;
 
+@Data
 public class CenterDto {
-    Long id;
+    Integer id;
     String name;
     Float latitude;
     Float longitude;

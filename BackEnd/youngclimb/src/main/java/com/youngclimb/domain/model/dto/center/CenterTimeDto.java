@@ -1,10 +1,12 @@
 package com.youngclimb.domain.model.dto.center;
 
+import lombok.Data;
+
 import java.time.LocalTime;
 
+@Data
 public class CenterTimeDto {
-    Long id;
-    Long centerId;
+    Integer id;
     Integer day;
     LocalTime timeStart;
     LocalTime timeEnd;

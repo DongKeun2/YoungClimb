@@ -1,9 +1,12 @@
 package com.youngclimb.domain.model.dto.center;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class CenterDetailDto {
-    Long id;
+    Integer id;
     String name;
     Float latitude;
     Float longitude;
@@ -13,4 +16,5 @@ public class CenterDetailDto {
     List<CenterEventDto> centerEventList;
     List<CenterPriceDto> centerPriceList;
     List<CenterLevelDto> centerLevelList;
+    List<WallDto> wallList;
 }
