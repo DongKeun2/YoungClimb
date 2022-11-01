@@ -36,6 +36,31 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   }
 });
 
+const checkEmail = createAsyncThunk(
+  'checkEmail',
+  async (data, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(api.checkEmail(), data, getConfig());
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const checkNickname = createAsyncThunk(
+  'checkNickname',
+  async (data, {rejectWithValue}) => {
+    console.log('요청 데이터', data);
+    try {
+      const res = await axios.post(api.checkNickname(), data, {});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const signup = createAsyncThunk(
   'signup',
   async (payload, {rejectWithValue}) => {
@@ -185,16 +210,9 @@ export const AccountsSlice = createSlice({
     },
     changeSignupForm: (state, action) => {
       state.signupForm[action.payload.name].value = action.payload.value;
-      console.log(state.signupForm);
     },
     changeEditForm: (state, action) => {
       state.editForm[action.payload.name].value = action.payload.value;
-    },
-    changeIsCheckNickname: (state, action) => {
-      state.isCheckNickname = action.payload;
-    },
-    changeIsCheckEmail: (state, action) => {
-      state.isCheckEmail = action.payload;
     },
     changeIsCheckTerms: (state, action) => {
       state.isCheckTerms = action.payload;
@@ -210,17 +228,43 @@ export const AccountsSlice = createSlice({
     [login.rejected]: state => {
       state.loginState = false;
     },
-    [signup.fulfilled]: (state, action) => {},
+    [signup.fulfilled]: (state, action) => {
+      console.log('회원가입 성공');
+    },
+    [signup.rejected]: (state, action) => {
+      console.log('회원가입 실패');
+    },
+    [checkEmail.fulfilled]: (state, action) => {
+      console.log(action.payload);
+      state.isCheckEmail = action.payload;
+    },
+    [checkEmail.rejected]: (state, action) => {
+      alert('사용 불가능한 이메일');
+      console.log(action.payload);
+    },
+    [checkNickname.fulfilled]: (state, action) => {
+      state.isCheckNickname = action.payload;
+    },
+    [checkNickname.rejected]: (state, action) => {
+      alert('사용 불가능한 닉네임');
+      console.log(action.payload);
+    },
   },
 });
 
-export {login, logout, wingspan, signup, profileCreate};
+export {
+  login,
+  logout,
+  wingspan,
+  signup,
+  profileCreate,
+  checkEmail,
+  checkNickname,
+};
 
 export const {
   testLogin,
   changeSignupForm,
-  changeIsCheckNickname,
-  changeIsCheckEmail,
   changeIsCheckTerms,
   changeUploadImg,
   changeEditForm,

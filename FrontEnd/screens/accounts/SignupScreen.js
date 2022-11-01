@@ -12,8 +12,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import Input from '../../components/Input';
 import {
   changeSignupForm,
-  changeIsCheckEmail,
-  changeIsCheckNickname,
+  checkEmail,
+  checkNickname,
   changeIsCheckTerms,
   signup,
 } from '../../utils/slices/AccountsSlice';
@@ -25,6 +25,8 @@ import checkIcon from '../../assets/image/main/done.png';
 import checked from '../../assets/image/main/checked.png';
 import unChecked from '../../assets/image/main/unchecked.png';
 import camera from '../../assets/image/main/camera.png';
+import BackIcon from '../../assets/image/header/backIcon.svg';
+import NextIcon from '../../assets/image/header/nextIcon.svg';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -67,15 +69,29 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
   const isCheckNickname = useSelector(state => state.accounts.isCheckNickname);
   const isCheckTerms = useSelector(state => state.accounts.isCheckTerms);
 
+  // 정보 입력 완료 시 다음 페이지 이동
   function goNextPage() {
-    setPage(true);
+    if (
+      false
+      // !isCheckNickname ||
+      // !isCheckEmail ||
+      // signupForm.password.value !== signupForm.confirmPwd.value
+    ) {
+      // alert('정보를 입력하세요.');
+    } else if (!isCheckTerms) {
+      alert('약관에 동의해주세요.');
+    } else {
+      setPage(true);
+    }
   }
 
-  function checkEmail() {
-    dispatch(changeIsCheckEmail(!isCheckEmail));
+  function onCheckEmail() {
+    const data = {email: signupForm.email.value};
+    dispatch(checkEmail(data));
   }
-  function checkNickname() {
-    dispatch(changeIsCheckNickname(!isCheckNickname));
+  function onCheckNickname() {
+    const data = {nickname: signupForm.nickname.value};
+    dispatch(checkNickname(data));
   }
 
   return (
@@ -95,7 +111,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         />
         <CheckButton
           type="nickname"
-          onPress={checkNickname}
+          onPress={onCheckNickname}
           buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
           borderColor={!isCheckNickname && '#F34D7F'}
           title={
@@ -120,7 +136,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
 
         <CheckButton
           type="email"
-          onPress={checkEmail}
+          onPress={onCheckEmail}
           buttonColor={isCheckEmail ? '#F34D7F' : 'white'}
           borderColor={!isCheckEmail && '#F34D7F'}
           borderWidth="3"
@@ -139,6 +155,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         type={signupForm.password.type}
         secureTextEntry={true}
         placeholder="비밀번호"
+        height={30}
         placeholderTextColor={'#ddd'}
         onChangeText={value => updateInput('password', value)}
       />
@@ -148,6 +165,7 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         type={signupForm.confirmPwd.type}
         secureTextEntry={true}
         placeholder="비밀번호 확인"
+        height={30}
         placeholderTextColor={'#ddd'}
         onChangeText={value => updateInput('confirmPwd', value)}
       />
@@ -193,8 +211,9 @@ const FirstPage = ({navigation, signupForm, setPage, updateInput}) => {
         <TouchableOpacity onPress={() => navigation.navigate('로그인')}>
           <Text style={styles.link}>로그인</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={goNextPage}>
-          <Text style={styles.next}>다음</Text>
+        <TouchableOpacity style={styles.next} onPress={goNextPage}>
+          <Text style={styles.nextText}>다음</Text>
+          <NextIcon style={{marginLeft: 5, marginRight: 5}} />
         </TouchableOpacity>
       </View>
     </View>
@@ -216,18 +235,19 @@ const SecondPage = ({navigation, signupForm, setPage, updateInput}) => {
       gender: signupForm.gender.value,
     };
 
+    // 건너뛰기 클릭 시 추가정보 제외하고 회원가입 신청
     if (isSkip) {
-      // dispatch(signup(data)).then(() => {
-      navigation.navigate('완료');
-      // });
+      dispatch(signup(data)).then(() => {
+        navigation.navigate('완료');
+      });
     } else {
       data.height = signupForm.height.value;
       data.shoeSize = signupForm.shoeSize.value;
       data.wingspan = signupForm.shoeSize.value;
 
-      // dispatch(signup(data)).then(() => {
-      navigation.navigate('완료');
-      // });
+      dispatch(signup(data)).then(() => {
+        navigation.navigate('완료');
+      });
       console.log('확인');
     }
   }
@@ -358,6 +378,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
     width: '80%',
+    height: 60,
   },
   input: {
     alignItems: 'center',
@@ -365,7 +386,6 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
-    height: '10%',
   },
   genderGroup: {
     width: '80%',
@@ -381,7 +401,7 @@ const styles = StyleSheet.create({
   termsGroup: {
     display: 'flex',
     flexDirection: 'row',
-    margin: 15,
+    margin: 10,
   },
   checkBox: {
     width: 20,
@@ -397,7 +417,14 @@ const styles = StyleSheet.create({
     color: '#F34D7F',
   },
   next: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  nextText: {
     color: 'black',
+    fontSize: 16,
   },
   checkBtn: {
     elevation: 8,
