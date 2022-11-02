@@ -1,7 +1,7 @@
 package com.youngclimb.common.security;
 
-import com.youngclimb.common.model.entity.Member;
-import com.youngclimb.common.model.repository.MemberRepository;
+import com.youngclimb.domain.model.entity.Member;
+import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

@@ -1,6 +1,6 @@
 package com.youngclimb.common.security;
 
-import com.youngclimb.common.model.entity.Member;
+import com.youngclimb.domain.model.entity.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

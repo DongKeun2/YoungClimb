@@ -1,9 +1,9 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.common.model.dto.center.CenterDetailDto;
-import com.youngclimb.common.model.dto.center.CenterDto;
-import com.youngclimb.common.model.dto.center.CenterLocation;
-import com.youngclimb.common.model.service.CenterService;
+import com.youngclimb.domain.model.dto.center.CenterDetailDto;
+import com.youngclimb.domain.model.dto.center.CenterDto;
+import com.youngclimb.domain.model.dto.center.CenterLocation;
+import com.youngclimb.domain.model.service.CenterService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
