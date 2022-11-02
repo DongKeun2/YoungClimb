@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
+// import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
 import HoldLabel from './HoldLabel';
@@ -15,9 +22,19 @@ import EmptyScrap from '../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
 
-function HomeFeed({feed, navigation}) {
+// const Placeholder = () => {
+//   return (
+//     <View style={styles.item}>
+//       <ActivityIndicator size="large" color="white" />
+//     </View>
+//   );
+// };
+
+function HomeFeed({feed, navigation, isViewable}) {
   const [contentHeight, setHeight] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
+  // const urlPath = 'file://' + feed.mediaId;
+  // console.log(urlPath);
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
@@ -66,19 +83,43 @@ function HomeFeed({feed, navigation}) {
         </View>
       </View>
       {/* 동영상 */}
-      <View>
-        <Text
-          style={{
-            width: '100%',
-            height: 400,
-            backgroundColor: '#a7a7a7',
-            color: 'white',
-            fontSize: 28,
-            textAlign: 'center',
-            textAlignVertical: 'center',
-          }}>
-          비디오 자리
-        </Text>
+      <View style={styles.videoBox}>
+        {!isViewable ? (
+          <Text
+            style={{
+              width: '100%',
+              height: 400,
+              backgroundColor: '#a7a7a7',
+              color: 'white',
+              fontSize: 28,
+              textAlign: 'center',
+              textAlignVertical: 'center',
+            }}>
+            비디오 자리
+          </Text>
+        ) : (
+          <Text
+            style={{
+              width: '100%',
+              height: 400,
+              backgroundColor: 'black',
+              color: 'white',
+              fontSize: 28,
+              textAlign: 'center',
+              textAlignVertical: 'center',
+            }}>
+            비디오 재생중
+          </Text>
+          // <Video
+          //   source={{uri: urlPath}}
+          //   style={styles.backgroundVideo}
+          //   fullscreen={false}
+          //   resizeMode={'stretch'}
+          //   repeat={true}
+          //   controls={true}
+          //   muted={false}
+          // />
+        )}
         <View style={styles.solvedDate}>
           <CameraIcon />
           <Text
@@ -212,6 +253,19 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
   },
+  // videoBox: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  //   backgroundColor: 'blue',
+  // },
+  // backgroundVideo: {
+  //   position: 'absolute',
+  //   top: 0,
+  //   left: 0,
+  //   bottom: 0,
+  //   right: 0,
+  // },
   solvedDate: {
     display: 'flex',
     flexDirection: 'row',
