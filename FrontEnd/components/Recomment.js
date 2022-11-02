@@ -9,7 +9,7 @@ import avatar from '../assets/image/initial/background.png';
 function Recomment({recomment}) {
   return (
     <View style={styles.recommentContainer}>
-      <UserAvatar source={avatar} rank={recomment.user.rank} size={28} />
+      <UserAvatar source={avatar} rank={recomment.user.rank} size={32} />
       <View style={styles.recommentInfo}>
         <View style={styles.recommentMain}>
           <Text style={{...styles.recommentTextStyle, fontWeight: '600'}}>
@@ -17,7 +17,7 @@ function Recomment({recomment}) {
             <Text
               style={{
                 ...styles.recommentTextStyle,
-                fontWeight: '500',
+                fontWeight: 'normal',
               }}>
               {'  ' + recomment.content}
             </Text>
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
   },
   recommentInfo: {
-    width: '85%',
+    width: '95%',
     marginLeft: 8,
   },
   recommentMain: {
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   recommentTextStyle: {
     color: 'black',
-    fontSize: 13,
+    fontSize: 14,
   },
 });
 
