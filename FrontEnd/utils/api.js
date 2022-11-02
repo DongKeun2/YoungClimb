@@ -13,6 +13,8 @@ const NICKNAME_URL = '/nickname';
 const PROFILE_URL = '/profile';
 const FOLLOW_URL = '/follow';
 
+const CENTERS_URL = '/center'
+
 const api = {
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   logout: () => API_BASE_URL + USER_URL + LOGOUT_URL,
@@ -23,6 +25,9 @@ const api = {
   follow: nickname => API_BASE_URL + USER_URL + `${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,
+
+  centers: () => API_BASE_URL + CENTERS_URL,
+  center: centerId=>API_BASE_URL + CENTERS_URL+ `${centerId}`,
 };
 
 export default api;
