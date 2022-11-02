@@ -1,7 +1,7 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, BackHandler} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Picker, BackHandler} from '@react-native-picker/picker';
+import {Picker} from '@react-native-picker/picker';
 
 import CustomMainHeader from '../components/CustomMainHeader';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
@@ -44,11 +44,7 @@ function SearchScreen({navigation}) {
   }
 
   useEffect(()=>{
-    let isBackHandler = true
-    if (isBackHandler){
-      BackHandler.removeEventListener('hardwareBackPress')
-    }
-    return ()=>{ isBackHandler=false }
+    BackHandler.removeEventListener('hardwareBackPress')
   },[]
   )
   
