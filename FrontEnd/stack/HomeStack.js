@@ -1,7 +1,7 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { BackHandler } from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {getFocusedRouteNameFromRoute, useFocusEffect} from '@react-navigation/native';
 
 import HomeScreen from '../screens/homes/HomeScreen';
 import PostScreen from '../screens/homes/PostScreen';
@@ -12,6 +12,7 @@ import PostAddStack from './PostAddStack';
 const Stack = createStackNavigator();
 
 function HomeStack({navigation, route}) {
+
   React.useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (routeName === '댓글') {

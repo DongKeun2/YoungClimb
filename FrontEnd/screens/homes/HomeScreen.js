@@ -1,9 +1,57 @@
-import React from 'react';
-import {ScrollView} from 'react-native';
+import React, {useState, useRef, useCallback, useEffect} from 'react';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+
+import {ScrollView, BackHandler} from 'react-native';
 import CustomMainHeader from '../../components/CustomMainHeader';
 import HomeFeed from '../../components/HomeFeed';
 
+import {Toast} from '../../components/Toast';
+
+
 function HomeScreen({navigation}) {
+  const [exitAttempt, setExitAttempt] = useState(false)
+  const routeName = useRoute()
+  const toastRef = useRef(null);
+  const onPressExit = useCallback(()=>{
+      toastRef.current.show("앱을 종료하려면 뒤로가기를 한번 더 눌러주세요");
+  }, []);
+
+  const backAction = ()=>{ 
+    if (routeName.name !== '홈'){
+      navigation.goBack()
+      return true
+    } else{
+      if (!exitAttempt){
+        setExitAttempt(true)
+        setTimeout(()=>{setExitAttempt(false)}, 2000)
+        onPressExit()
+        return true
+      } else{
+        BackHandler.exitApp()
+        return true
+      }
+    }
+  }
+
+  useEffect(()=>{
+    let isBackHandler = true
+    if (isBackHandler){
+      BackHandler.removeEventListener('hardwareBackPress')
+    }
+    return ()=>{ isBackHandler=false }
+  },[]
+  )
+  
+  useFocusEffect(()=>{
+  const backHandler = BackHandler.addEventListener(
+    "hardwareBackPress",
+    backAction
+  );
+  return ()=> {
+    backHandler.remove()
+  }
+   })
+
   const boards = [
     {
       id: 1,
@@ -110,6 +158,7 @@ function HomeScreen({navigation}) {
           return <HomeFeed key={idx} feed={feed} navigation={navigation} />;
         })}
       </ScrollView>
+      <Toast ref={toastRef}></Toast>
     </>
   );
 }

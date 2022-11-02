@@ -1,7 +1,7 @@
 import React from 'react';
-import { useState, useEffect } from 'react'
-import {View, Text, Animated, StyleSheet, TouchableOpacity, BackHandler} from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useState, useEffect, useRef, useCallback } from 'react'
+import {View, Text, Animated, StyleSheet, TouchableOpacity, BackHandler, Alert} from 'react-native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
 import NaverMapView, {Marker, Align} from "react-native-nmap";
 import Geolocation from 'react-native-geolocation-service';
@@ -11,15 +11,43 @@ import MarkerImg from '../../assets/image/map/Marker.png'
 
 import axios from 'axios'
 import api from '../../utils/api'
+import { Toast } from '../../components/Toast';
 
 export default function StoreScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState({latitude: 37.0575, longitude: 127.0575});
   const [modalVisible, setModalVisible] = useState(false)
   const [mapView, setMapView] = useState('55%')
+  const [exitAttempt, setExitAttempt] = useState(false) 
   const locationHandler = (e) => {
     setCurrentLocation(e);
   }
   const [climbingLocations, setClimbingLocations] = useState([])
+  const routeName = useRoute()
+  const toastRef = useRef(null);
+  const onPressExit = useCallback(()=>{
+      toastRef.current.show("앱을 종료하려면 뒤로가기를 한번 더 눌러주세요");
+  }, []);
+  
+  const backAction = ()=>{
+    if (routeName.name === '지점메인') {
+      if (modalVisible){
+        setModalVisible(false)
+        return true
+      } 
+      else{
+        if (!exitAttempt){
+          setExitAttempt(true)
+          setTimeout(()=>{setExitAttempt(false)},2000)
+          onPressExit()
+          return true
+        } else{
+          BackHandler.exitApp()
+          return true
+      }}
+    }
+    return false
+  }
+
   useEffect(()=>{
     console.log(api.centers())
     Geolocation.getCurrentPosition(
@@ -33,31 +61,19 @@ export default function StoreScreen({navigation, route}) {
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-    axios.post(api.centers(), 
-      {'lat':currentLocation.latitude,'lon':currentLocation.longitude}
-    )
-    .then((res)=>{
-        console.log(res)
-        // setClimbingLocations(res)
-      })
-    .catch((err)=>{
-      console.log(err.message,'err')
-    // })
-  })
   }
   ,[])
 
   useFocusEffect(()=>{
-    BackHandler.addEventListener('hardwareBackPress', ()=>{
-      if (modalVisible) {
-        setModalVisible(false)
-        return true
-      }
-      return true
-    }
-    )
-    return BackHandler.removeEventListener('hardwareBackPress')
-    })
+  
+  const backHandler = BackHandler.addEventListener(
+    "hardwareBackPress",
+    backAction
+  );
+  return ()=> {
+    backHandler.remove()
+  }
+   })
 
   useEffect(()=>{
     axios.post(api.centers(), 
@@ -113,6 +129,7 @@ export default function StoreScreen({navigation, route}) {
         </TouchableOpacity>
 
       }
+      <Toast ref={toastRef}/>
     </View>
   );
 }
