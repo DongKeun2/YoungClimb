@@ -1,6 +1,6 @@
 package com.youngclimb.common.security;
 
-import com.youngclimb.domain.model.entity.Member;
+import com.youngclimb.common.model.entity.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,13 +14,17 @@ import java.util.Objects;
 public class UserPrincipal implements UserDetails {
     private Long memberId;
     private String memberEmail;
+    private String pw;
+    private String nickname;
     private String userAuth;
 
     public static UserPrincipal create(Member member) {
 
         return new UserPrincipal(
                 member.getMemberId(),
+                member.getNickname(),
                 member.getEmail(),
+                member.getPw(),
                 member.getRole().getKey()
         );
     }
@@ -32,12 +36,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return pw;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return nickname;
     }
 
     @Override

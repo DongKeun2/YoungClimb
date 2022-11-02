@@ -1,20 +1,14 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.board.BoardDto;
-import com.youngclimb.domain.model.dto.center.CenterDetailDto;
-import com.youngclimb.domain.model.dto.center.CenterDto;
-import com.youngclimb.domain.model.dto.center.CenterLocation;
-import com.youngclimb.domain.model.service.BoardService;
-import com.youngclimb.domain.model.service.CenterService;
+import com.youngclimb.common.model.dto.center.CenterDetailDto;
+import com.youngclimb.common.model.dto.center.CenterDto;
+import com.youngclimb.common.model.dto.center.CenterLocation;
+import com.youngclimb.common.model.service.CenterService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.board.BoardCreate;
-import com.youngclimb.domain.model.dto.board.BoardDetailDto;
-import com.youngclimb.domain.model.dto.board.BoardDto;
-import com.youngclimb.domain.model.dto.board.CommentCreate;
-import com.youngclimb.domain.model.service.BoardService;
+import com.youngclimb.common.model.dto.board.BoardCreate;
+import com.youngclimb.common.model.dto.board.BoardDetailDto;
+import com.youngclimb.common.model.dto.board.BoardDto;
+import com.youngclimb.common.model.dto.board.CommentCreate;
+import com.youngclimb.common.model.service.BoardService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

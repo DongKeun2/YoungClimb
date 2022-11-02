@@ -1,10 +1,10 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.member.JoinMember;
-import com.youngclimb.domain.model.dto.member.LoginMember;
-import com.youngclimb.domain.model.dto.member.MemberInfo;
-import com.youngclimb.domain.model.dto.member.MemberProfile;
-import com.youngclimb.domain.model.service.MemberService;
+import com.youngclimb.common.model.dto.member.JoinMember;
+import com.youngclimb.common.model.dto.member.LoginMember;
+import com.youngclimb.common.model.dto.member.MemberInfo;
+import com.youngclimb.common.model.dto.member.MemberProfile;
+import com.youngclimb.common.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
