@@ -13,8 +13,10 @@ import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
 import com.youngclimb.domain.model.dto.member.MemberProfile;
-import com.youngclimb.domain.model.entity.*;
-import com.youngclimb.domain.model.repository.BoardRepository;
+import com.youngclimb.domain.model.entity.Follow;
+import com.youngclimb.domain.model.entity.Member;
+import com.youngclimb.domain.model.entity.UserRole;
+import com.youngclimb.domain.model.repository.FollowRepository;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,7 +46,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
-    private final BoardRepository boardRepository;
+    private final FollowRepository followRepository;
     private final AmazonS3 amazonS3;
 
 
@@ -253,5 +255,33 @@ public class MemberServiceImpl implements MemberService {
     return "";
     }
 
+    // 팔로잉하기/취소하기
+    public Boolean AddCancelFollow(String followingNickname) {
+        long followerId = 1;
+        Member follower = memberRepository.findById(followerId).orElseThrow();
+        Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
+        System.out.println(follower.getEmail());
+        System.out.println(following.getEmail());
+
+        if (follower == following) {
+            return Boolean.FALSE;
+        }
+
+        Follow follow = followRepository.findByFollowerAndFollowing(follower, following).orElse(null);
+
+        if (follow == null) {
+            Follow followBulid = Follow.builder()
+                    .follower(follower)
+                    .following(following)
+                    .build();
+
+            followRepository.save(followBulid);
+
+            return Boolean.TRUE;
+        } else {
+            followRepository.delete(follow);
+            return Boolean.FALSE;
+        }
+    }
 
 }

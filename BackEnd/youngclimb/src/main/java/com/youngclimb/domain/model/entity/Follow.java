@@ -20,10 +20,10 @@ public class Follow {
     private Long id;
     // 팔로우 id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+    @JoinColumn(name = "follower_id", insertable = false, updatable = false)
     private Member follower;
     // 팔로잉 id
     @ManyToOne
-    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+    @JoinColumn(name = "following_id", insertable = false, updatable = false)
     private Member following;
 }

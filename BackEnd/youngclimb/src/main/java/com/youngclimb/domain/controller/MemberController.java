@@ -1,8 +1,10 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.board.BoardDetailDto;
-import com.youngclimb.domain.model.dto.member.*;
-import com.youngclimb.domain.model.service.BoardService;
+import com.youngclimb.domain.model.dto.center.CenterDetailDto;
+import com.youngclimb.domain.model.dto.member.JoinMember;
+import com.youngclimb.domain.model.dto.member.LoginMember;
+import com.youngclimb.domain.model.dto.member.MemberInfo;
+import com.youngclimb.domain.model.dto.member.MemberProfile;
 import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -114,14 +116,14 @@ public class MemberController {
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
     }
 
-    // 유저 정보 조회
-    @ApiOperation(value = "readProfile : 유저 정보 조회")
-    @GetMapping("/user/{nickname}")
-    public ResponseEntity<?> readProfile(@PathVariable String nickname) throws Exception {
+    // 팔로우 추가, 취소
+    @ApiOperation(value = "addCancelFollow")
+    @PostMapping("/{nickname}/follow")
+    public ResponseEntity<?> addCancelFollow(@PathVariable String nickname) {
         try {
-            MemberDto memberDto = boardService.getUserInfoByUserId(nickname);
-            if (memberDto != null) {
-                return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
+            Boolean addCancelFollow = memberService.AddCancelFollow(nickname);
+            if (addCancelFollow != null) {
+                return new ResponseEntity<Boolean>(addCancelFollow, HttpStatus.OK);
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }
