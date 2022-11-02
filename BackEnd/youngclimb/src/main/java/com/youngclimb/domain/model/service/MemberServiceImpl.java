@@ -18,6 +18,7 @@ import com.youngclimb.domain.model.entity.Member;
 import com.youngclimb.domain.model.entity.UserRole;
 import com.youngclimb.domain.model.repository.FollowRepository;
 import com.youngclimb.domain.model.repository.MemberRepository;
+import com.youngclimb.domain.model.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;

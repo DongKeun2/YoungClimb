@@ -4,7 +4,6 @@ import com.youngclimb.domain.model.dto.member.CreateMember;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -14,6 +13,6 @@ public class CommentDto {
     CreateMember user;
     String content;
     Boolean isLiked;
-    LocalDateTime createdAt;
-    List<CommentDto> reComments;
+    String createdAt;
+    List<CommentDto> reComment;
 }
