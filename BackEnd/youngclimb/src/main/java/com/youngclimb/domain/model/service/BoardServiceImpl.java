@@ -469,7 +469,7 @@ public class BoardServiceImpl implements BoardService {
                         .nickname(comments.get(0).getMember().getNickname())
                         .comment(comments.get(0).getContent())
                         .build();
-                boardDto.setCommentPreviewDto(commentPreviewDto);
+                boardDto.setCommentPreview(commentPreviewDto);
             }
             // List add
             boardDtos.add(boardDto);
