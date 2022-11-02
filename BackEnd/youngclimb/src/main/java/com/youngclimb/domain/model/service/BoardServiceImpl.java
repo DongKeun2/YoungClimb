@@ -381,7 +381,6 @@ public class BoardServiceImpl implements BoardService {
             boardDtos.add(boardDto);
         }
         memberDto.setBoards(boardDtos);
-
         return memberDto;
     }
 
