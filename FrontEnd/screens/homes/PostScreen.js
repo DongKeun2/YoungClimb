@@ -9,6 +9,9 @@ import LevelLabel from '../../components/LevelLabel';
 import Comment from '../../components/Comment';
 
 import avatar from '../../assets/image/initial/background.png';
+import HoldIcon from '../../assets/image/hold/hold.svg';
+
+import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
 function PostScreen({navigation, route}) {
   const data = {
@@ -42,7 +45,7 @@ function PostScreen({navigation, route}) {
         user: {
           nickname: '아그작냠냠',
           image: null,
-          rank: 1,
+          rank: 'Y7',
         },
         content: '와 대박... 나도 잘하고 싶다ㅠㅠ',
         isLiked: true,
@@ -52,7 +55,7 @@ function PostScreen({navigation, route}) {
             user: {
               nickname: 'climb_june',
               image: null,
-              rank: 2,
+              rank: 'Y3',
             },
             content: '너도 할 수 있어',
             createdAt: '1시간 전',
@@ -61,7 +64,7 @@ function PostScreen({navigation, route}) {
             user: {
               nickname: '0_climb',
               image: null,
-              rank: 3,
+              rank: 'Y2',
             },
             content: '내일 같이 가자',
             createdAt: '1시간 전',
@@ -73,9 +76,10 @@ function PostScreen({navigation, route}) {
         user: {
           nickname: 'climb_YoungJun',
           image: null,
-          rank: 1,
+          rank: 'Y4',
         },
-        content: '집 가고 싶다 집 가고 싶다 집 가고 싶다 집 가고 싶다 집 가고 싶다 집 가고 싶다',
+        content:
+          '집 가고 싶다 집 가고 싶다 집 가고 싶다 집 가고 싶다 집 가고 싶다 집 가고 싶다',
         isLiked: false,
         createdAt: '5시간 전',
         reComment: [
@@ -83,9 +87,10 @@ function PostScreen({navigation, route}) {
             user: {
               nickname: '0_climb',
               image: null,
-              rank: 1,
+              rank: 'Y6',
             },
-            content: '나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다',
+            content:
+              '나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다 나도 집 가고 싶다',
             createdAt: '2시간 전',
           },
         ],
@@ -95,7 +100,7 @@ function PostScreen({navigation, route}) {
         user: {
           nickname: '내 닉네임은 띄어쓰기가 가능하지',
           image: null,
-          rank: 1,
+          rank: 'Y5',
         },
         content: '내일 점심 뭐냐 너무 궁금하네 갑자기',
         isLiked: true,
@@ -107,9 +112,10 @@ function PostScreen({navigation, route}) {
         user: {
           nickname: 'abcdefghijklmnopqrstuvwxyz',
           image: null,
-          rank: 1,
+          rank: 'Y1',
         },
-        content: 'dgalghksjlblgasuhtpwtafiuhsdiufhsduifusdffsduifhsdicczfwefwefwef',
+        content:
+          'dgalghksjlblgasuhtpwtafiuhsdiufhsduifusdffsduifhsdicczfwefwefwef',
         isLiked: true,
         createdAt: '3월 16일',
         reComment: [
@@ -117,7 +123,7 @@ function PostScreen({navigation, route}) {
             user: {
               nickname: '아그작',
               image: null,
-              rank: 1,
+              rank: 'Y4',
             },
             content: '?',
             createdAt: '23시간 전',
@@ -135,20 +141,26 @@ function PostScreen({navigation, route}) {
           <View style={styles.feedHeader}>
             <View style={styles.headerTop}>
               <View style={styles.iconText}>
-                <UserAvatar
-                  source={avatar}
-                  rank={route.params.board.createUser.rank}
-                  size={36}
-                />
+                <UserAvatar source={avatar} size={36} />
                 <View style={styles.headerTextGroup}>
-                  <Text
-                    style={{
-                      ...styles.feedTextStyle,
-                      fontSize: 16,
-                      fontWeight: '600',
-                    }}>
-                    {route.params.board.createUser.nickname}
-                  </Text>
+                  <View style={{...styles.iconText, alignItems: 'center'}}>
+                    <Text
+                      style={{
+                        ...styles.feedTextStyle,
+                        fontSize: 16,
+                        fontWeight: '600',
+                        marginRight: 5,
+                      }}>
+                      {route.params.board.createUser.nickname}
+                    </Text>
+                    <HoldIcon
+                      width={18}
+                      height={18}
+                      color={
+                        YCLevelColorDict[route.params.board.createUser.rank]
+                      }
+                    />
+                  </View>
                   <Text style={{...styles.feedTextStyle, fontSize: 12}}>
                     {route.params.board.createdAt}
                   </Text>

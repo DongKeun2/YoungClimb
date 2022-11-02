@@ -21,6 +21,9 @@ import FillHeart from '../assets/image/feed/fillHeart.svg';
 import EmptyScrap from '../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
+import HoldIcon from '../assets/image/hold/hold.svg';
+
+import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
 // const Placeholder = () => {
 //   return (
@@ -51,16 +54,24 @@ function HomeFeed({feed, navigation, isViewable}) {
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
           <View style={styles.iconText}>
-            <UserAvatar source={avatar} rank={feed.createUser.rank} size={36} />
+            <UserAvatar source={avatar} size={36} />
             <View style={styles.headerTextGroup}>
-              <Text
-                style={{
-                  ...styles.feedTextStyle,
-                  fontSize: 16,
-                  fontWeight: '600',
-                }}>
-                {feed.createUser.nickname}
-              </Text>
+              <View style={{...styles.iconText, alignItems: 'center'}}>
+                <Text
+                  style={{
+                    ...styles.feedTextStyle,
+                    fontSize: 16,
+                    fontWeight: '600',
+                    marginRight: 5,
+                  }}>
+                  {feed.createUser.nickname}
+                </Text>
+                <HoldIcon
+                  width={18}
+                  height={18}
+                  color={YCLevelColorDict[feed.createUser.rank]}
+                />
+              </View>
               <Text style={{...styles.feedTextStyle, fontSize: 12}}>
                 {feed.createdAt}
               </Text>
