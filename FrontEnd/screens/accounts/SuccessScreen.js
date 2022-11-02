@@ -143,8 +143,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ADADAD',
     fontSize: 17,
-    padding: 5,
+    padding: 7,
     marginVertical: '10%',
+    borderRadius: 5,
     height: 74,
   },
   btnGroup: {
