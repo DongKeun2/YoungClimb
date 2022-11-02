@@ -160,6 +160,30 @@ public class BoardController {
 
 
     // 게시물 스크랩
+    @ApiOperation(value = "upBoardScrap : 스크랩 클릭")
+    @PostMapping("/{boardId}/scrap/{userId}")
+    public ResponseEntity<?> upBoardScrap(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
+
+        try {
+            return new ResponseEntity<Boolean>(boardService.boardScrap(boardId, userId), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 게시물 스크랩
+    @ApiOperation(value = "upBoardUnScrap : 스크랩 클릭")
+    @PostMapping("/{boardId}/unscrap/{userId}")
+    public ResponseEntity<?> upBoardUnScrap(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
+
+        try {
+            return new ResponseEntity<Boolean>(boardService.boardUnScrap(boardId, userId), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
 
     // 게시글 검색
 
