@@ -1,13 +1,15 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Image, Text, TouchableOpacity} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
 
 import RankItem from '../assets/info/RankItem';
+import {levelColorDict} from '../assets/info/ColorInfo';
 
-import Close from '../assets/image/profile/Close.svg';
+import Close from '../assets/image/rank/close.svg';
 
 // rank가 V1 이런 식으로 들어오는 상태
 function RankInfo({setIsRank, exp, rank}) {
+  const levels = ['빨강', '주황', '노랑', '초록', '파랑', '남색', '보라'];
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -15,7 +17,7 @@ function RankInfo({setIsRank, exp, rank}) {
           setIsRank(false);
         }}
         style={styles.close}>
-        <Close>나가기 </Close>
+        <Close />
       </TouchableOpacity>
       <Text style={styles.title}>현재 등급</Text>
       <Text style={styles.subTitle}>{rank}</Text>
@@ -56,12 +58,38 @@ function RankInfo({setIsRank, exp, rank}) {
       <View style={styles.horizonLine} />
 
       <Text style={styles.title}>YC 등급표</Text>
+
+      <View style={styles.levelBarBox}>
+        <FlatList
+          key={levels}
+          data={levels}
+          numColumns={levels.length}
+          renderItem={({item}) => (
+            <View
+              style={[
+                styles.levelbar,
+                {
+                  backgroundColor: levelColorDict[item],
+                  width: `${100 / levels.length - 0.2}%`,
+                },
+              ]}
+            />
+          )}
+        />
+      </View>
+      <Text style={styles.description}>
+        Young Climb은 자체 등급을 통해 개인 성장을 측정합니다! 풀이 문제의
+        난이도에 따라 경험치를 획득할 수 있습니다. 상위 단계로 올라가기 위해서는
+        일정치 이상의 경험치가 필요하며, 상위 난도의 문제를 3개 이상
+        풀어야합니다.
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
@@ -90,7 +118,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
-  subIcon: {marginHorizontal: 5},
+  subIcon: {
+    marginHorizontal: 5,
+  },
   barBox: {width: '100%', justifyContent: 'center', alignItems: 'center'},
   barBG: {
     width: '80%',
@@ -110,13 +140,29 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 12,
   },
-
   horizonLine: {
     borderColor: 'black',
     borderWidth: 0.2,
     width: '100%',
     height: 0,
     marginTop: 30,
+  },
+  levelBarBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  levelbar: {
+    height: 25,
+    width: '10%',
+  },
+  description: {
+    marginTop: 15,
+    width: '80%',
+    fontSize: 12,
+    color: 'black',
   },
 });
 

@@ -39,8 +39,9 @@ function ProfileScreen({navigation, route}) {
   const boards = useSelector(state => state.profile.profileInfo.boards);
   const scraps = useSelector(state => state.profile.profileInfo.scraps);
 
+  // YC에서 initialparams 지정
   useEffect(() => {
-    dispatch(profile(route.params.nickname));
+    // dispatch(profile(route.params.nickname));
   });
 
   return (
@@ -178,7 +179,6 @@ function CardList({articles, navigation}) {
     <>
       <View style={styles.articleContainer}>
         {articles.map((article, i) => {
-          console.log(article);
           return (
             <ArticleCard key={i} article={article} navigation={navigation} />
           );

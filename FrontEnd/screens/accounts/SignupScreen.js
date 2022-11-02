@@ -21,8 +21,8 @@ import CustomButton from '../../components/CustomBtn';
 
 import logo from '../../assets/image/main/signup.png';
 import checkIcon from '../../assets/image/main/done.png';
-import checked from '../../assets/image/main/checked.png';
-import unChecked from '../../assets/image/main/unchecked.png';
+import Checked from '../../assets/image/main/checked.svg';
+import UnChecked from '../../assets/image/main/unchecked.svg';
 import NextIcon from '../../assets/image/header/nextIcon.svg';
 
 const windowHeight = Dimensions.get('window').height;
@@ -207,11 +207,11 @@ function SignupScreen({navigation}) {
       <View style={styles.termsGroup}>
         {isCheckTerms ? (
           <TouchableOpacity onPress={() => dispatch(changeIsCheckTerms(false))}>
-            <Image source={checked} style={styles.checkBox} alt="checkBox" />
+            <Checked width={20} height={20} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={() => navigation.navigate('약관')}>
-            <Image source={unChecked} style={styles.checkBox} alt="checkBox" />
+            <UnChecked width={20} height={20} />
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={() => navigation.navigate('약관')}>
@@ -307,6 +307,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     margin: 10,
+  },
+  checkBoxBorder: {
+    borderWidth: 1,
+    borderColor: 'black',
   },
   checkBox: {
     width: 20,
