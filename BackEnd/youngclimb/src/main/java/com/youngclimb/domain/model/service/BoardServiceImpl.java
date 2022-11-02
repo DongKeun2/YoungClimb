@@ -381,7 +381,33 @@ public class BoardServiceImpl implements BoardService {
             boardDtos.add(boardDto);
         }
         memberDto.setBoards(boardDtos);
+
         return memberDto;
+    }
+
+    // 게시글 스크랩
+    @Override
+    public Boolean boardScrap(Long boardId, String email) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        BoardScrap boardScrap = BoardScrap.builder()
+                .board(board)
+                .member(member)
+                .build();
+        boardScrapRepository.save(boardScrap);
+
+        return true;
+    }
+
+    // 게시글 스크랩 취소
+    @Override
+    public Boolean boardUnScrap(Long boardId, String email) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        boardScrapRepository.deleteByBoardAndMember(board, member);
+        return false;
     }
 
 }

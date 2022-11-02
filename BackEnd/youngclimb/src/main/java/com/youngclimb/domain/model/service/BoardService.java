@@ -35,7 +35,9 @@ public interface BoardService {
     // 대댓글 작성
     public void writeRecomment(CommentCreate commentCreate);
     // 게시글 스크랩
-
+    public Boolean boardScrap(Long boardId, String email);
+    // 게시글 스크랩 취소
+    public Boolean boardUnScrap(Long boardId, String email);
     // 게시글 검색
 
     // 사용자 정보 조회
