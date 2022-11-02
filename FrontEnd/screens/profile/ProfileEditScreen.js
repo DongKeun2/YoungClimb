@@ -8,43 +8,30 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
 import UserAvatar from '../../components/UserAvatar';
 import Input from '../../components/Input';
-import CustomButton from '../../components/CustomBtn';
+
+import {changeEditForm} from '../../utils/slices/AccountsSlice';
 
 import avatar from '../../assets/image/profile/avatar.png';
 import checkIcon from '../../assets/image/main/done.png';
+import camera from '../../assets/image/main/camera.png';
 
 function ProfileEditScreen({navigation}) {
+  const dispatch = useDispatch();
+
   const [imageUri, setImageUri] = useState(undefined);
   const [isCheckNickname, setIsCheckNickname] = useState(false);
 
-  const [editForm, setForm] = useState({
-    nickname: {
-      value: '',
-      type: 'textInput',
-      valid: false,
-    },
-    password: {
-      value: '',
-      type: 'textInput',
-    },
-    intro: {
-      value: '',
-      type: 'textInput',
-    },
-  });
+  const editForm = useSelector(state => state.accounts.editForm);
 
   function updateInput(name, value) {
-    let formCopy = editForm;
-    formCopy[name].value = value;
-    setForm(editForm => {
-      return {...formCopy};
-    });
+    dispatch(changeEditForm({name, value}));
   }
 
   function checkNickname(nickname) {
@@ -71,9 +58,20 @@ function ProfileEditScreen({navigation}) {
     console.log('프로필 사진 변경');
   };
 
+  // 서브헤더 우측 완료버튼 이벤트
+  function onSubmitEdit() {
+    console.log('수정해줘');
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <CustomSubHeader title="프로필 설정" navigation={navigation} />
+      <CustomSubHeader
+        rightTitle="완료"
+        isProfile={true}
+        title="프로필 설정"
+        navigation={navigation}
+        request={onSubmitEdit}
+      />
       <View style={styles.inputContainer}>
         {imageUri ? (
           <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
@@ -86,7 +84,7 @@ function ProfileEditScreen({navigation}) {
           <Text style={styles.link}>프로필 사진 변경</Text>
         </TouchableOpacity>
         <View style={styles.nicknameBox}>
-          <Text style={styles.nicknameLabel}>닉네임</Text>
+          <Text style={styles.labelText}>닉네임</Text>
 
           <View style={styles.inputBox}>
             <Input
@@ -113,14 +111,56 @@ function ProfileEditScreen({navigation}) {
             />
           </View>
         </View>
-        <TextInput
-          style={styles.introInput}
-          placeholder="소개를 작성해주세요 :)"
+        <View style={styles.introBox}>
+          <Text style={styles.labelText}>소개</Text>
+          <TextInput
+            style={styles.introInput}
+            placeholder="소개를 작성해주세요 :)"
+            placeholderTextColor={'#ddd'}
+            multiline={true}
+            textAlignVertical="top"
+            onChangeText={value => updateInput('intro', value)}
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Input
+          style={styles.input}
+          placeholder="키(cm)"
           placeholderTextColor={'#ddd'}
-          multiline={true}
-          textAlignVertical="top"
-          onChangeText={value => updateInput('intro', value)}
+          value={editForm.height.value}
+          type={editForm.height.type}
+          onChangeText={value => updateInput('height', value)}
         />
+        <Input
+          style={styles.input}
+          placeholder="신발(mm)"
+          placeholderTextColor={'#ddd'}
+          value={editForm.shoeSize.value}
+          type={editForm.shoeSize.type}
+          onChangeText={value => updateInput('shoeSize', value)}
+        />
+        <View style={styles.inputBox}>
+          <Input
+            style={styles.input}
+            placeholder="윙스팬(cm)"
+            width="100%"
+            placeholderTextColor={'#ddd'}
+            value={editForm.wingspan.value}
+            type={editForm.wingspan.type}
+            onChangeText={value => updateInput('wingspan', value)}
+          />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('윙스팬', {
+                height: editForm.height.value,
+                type: 'edit',
+              })
+            }>
+            <Image source={camera} style={styles.cameraIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -150,11 +190,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-  header: {
-    alignItems: 'center',
-    width: '100%',
-    height: '10%',
-  },
   title: {
     fontSize: 20,
     color: '#F34D7F',
@@ -162,28 +197,25 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     backgroundColor: 'white',
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 30,
   },
-  nicknameBox: {
-    width: '80%',
-  },
+  nicknameBox: {},
   nicknameLabel: {fontSize: 12},
   inputBox: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    width: '100%',
-  },
-  introInput: {
     width: '80%',
+  },
+  introBox: {width: '80%'},
+  introInput: {
+    width: '100%',
     borderWidth: 1,
     borderColor: '#ADADAD',
     fontSize: 17,
     padding: 5,
-    marginVertical: '10%',
     height: 74,
   },
   btnGroup: {
@@ -214,6 +246,15 @@ const styles = StyleSheet.create({
   },
   checkTitle: {
     fontSize: 15,
+    color: 'black',
+  },
+  cameraIcon: {
+    position: 'absolute',
+    right: 0,
+    top: -30,
+  },
+  labelText: {
+    fontSize: 12,
     color: 'black',
   },
 });

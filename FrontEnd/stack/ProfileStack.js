@@ -8,6 +8,7 @@ import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
 import FollowScreen from '../screens/profile/FollowScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
 import CommentScreen from '../screens/profile/CommentScreen';
+import WingspanScreen from '../screens/accounts/WingspanScreen';
 
 import PostAddStack from './PostAddStack';
 import {getCurrentUser} from '../utils/Token';
@@ -46,6 +47,7 @@ function ProfileStack({navigation, route}) {
       <Stack.Screen name="게시글" component={DetailScreen} />
       <Stack.Screen name="댓글" component={CommentScreen} />
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
+      <Stack.Screen name="윙스팬" component={WingspanScreen} />
     </Stack.Navigator>
   );
 }

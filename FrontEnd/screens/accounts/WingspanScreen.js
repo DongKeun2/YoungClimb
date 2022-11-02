@@ -5,9 +5,14 @@ import {StyleSheet, View, Text, Image} from 'react-native';
 import logo from '../../assets/image/main/wingspan.png';
 import CustomButton from '../../components/CustomBtn';
 import UploadImg from '../../components/UploadImg';
-import {wingspan} from '../../utils/slices/AccountsSlice';
 
-function WingSpanScreen({navigation}) {
+import {
+  wingspan,
+  changeSignupForm,
+  changeEditForm,
+} from '../../utils/slices/AccountsSlice';
+
+function WingSpanScreen({navigation, route}) {
   const dispatch = useDispatch();
 
   const imageUri = useSelector(
@@ -17,7 +22,7 @@ function WingSpanScreen({navigation}) {
     state => state.accounts.uploadImg?.assets[0].fileName,
   );
 
-  const height = useSelector(state => state.accounts.signupForm.height.value);
+  const height = route.params.height;
 
   function onBeforePage() {
     navigation.goBack();
@@ -47,7 +52,25 @@ function WingSpanScreen({navigation}) {
     // console.log(data);
     // console.log(formdata._parts[0][1]);
     // console.log(formdata);
-    dispatch(wingspan(formdata));
+    dispatch(wingspan(formdata)).then(res => {
+      console.log(res.payload.wingspan);
+      if (route.params.type === 'signup') {
+        dispatch(
+          changeSignupForm({
+            name: 'wingspan',
+            value: String(res.payload.wingspan),
+          }),
+        );
+      } else if (route.params.type === 'edit') {
+        dispatch(
+          changeEditForm({
+            name: 'wingspan',
+            value: String(res.payload.wingspan),
+          }),
+        );
+      }
+      onBeforePage();
+    });
   }
 
   return (
