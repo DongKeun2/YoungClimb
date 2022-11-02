@@ -9,7 +9,7 @@ const boards = [
     createUser: {
       nickname: 'climb_june',
       image: null,
-      rank: 1,
+      rank: 'Y2',
     },
     createdAt: '2시간 전',
     centerName: '더 클라임 양재점',
@@ -38,7 +38,7 @@ const boards = [
     createUser: {
       nickname: '0_climb',
       image: null,
-      rank: 2,
+      rank: 'Y2',
     },
     createdAt: '3시간 전',
     centerName: '더 클라임 강남점',
@@ -62,7 +62,7 @@ const boards = [
     createUser: {
       nickname: 'YoungClimb_YoungJunK',
       image: null,
-      rank: 3,
+      rank: 'Y2',
     },
     createdAt: '5시간 전',
     centerName: '더 클라임 양재점',
@@ -87,7 +87,7 @@ const boards = [
     createUser: {
       nickname: '내 닉네임은 띄어쓰기가 가능하지',
       image: null,
-      rank: 1,
+      rank: 'Y2',
     },
     createdAt: '3월 16일',
     centerName: '더 클라임 신림점',
