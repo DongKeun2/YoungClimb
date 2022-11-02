@@ -5,6 +5,7 @@ import com.youngclimb.domain.model.dto.board.BoardDetailDto;
 import com.youngclimb.domain.model.dto.board.CommentCreate;
 import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.BoardDto;
+import com.youngclimb.domain.model.dto.member.MemberDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
