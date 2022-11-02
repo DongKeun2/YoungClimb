@@ -4,7 +4,7 @@ import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
 import RankItem from '../assets/info/RankItem';
 import {levelColorDict} from '../assets/info/ColorInfo';
 
-import Close from '../assets/image/rank/close.svg';
+import Close from '../assets/image/profile/close.svg';
 
 // rank가 V1 이런 식으로 들어오는 상태
 function RankInfo({setIsRank, exp, rank}) {

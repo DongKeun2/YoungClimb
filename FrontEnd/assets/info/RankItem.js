@@ -1,64 +1,59 @@
 import React from 'react';
 
-import Gray from '../image/rank/gray.svg';
-import Red from '../image/rank/red.svg';
-import Orange from '../image/rank/orange.svg';
-import Yellow from '../image/rank/yellow.svg';
-import Green from '../image/rank/green.svg';
-import Sky from '../image/rank/sky.svg';
-import Blue from '../image/rank/blue.svg';
-import Violet from '../image/rank/violet.svg';
+import HoldIcon from '../image/hold/hold.svg';
+// 홀드 컬러 딕트로 변경해줘야 함
+import {levelColorDict} from './ColorInfo';
 
 const RankItem =
   // 빈 경험치를 위한 친구
   [
     {
       name: 'Y0',
-      color: 'gray',
-      main: <Gray width={90} height={90} />,
-      sub: <Gray width={30} height={30} />,
+      color: '회색',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.회색} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.회색} />,
     },
     {
       name: 'Y1',
-      color: 'red',
-      main: <Red width={90} height={90} />,
-      sub: <Red width={30} height={30} />,
+      color: '빨강',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.빨강} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.빨강} />,
     },
     {
       name: 'Y2',
-      color: 'orange',
-      main: <Orange width={90} height={90} />,
-      sub: <Orange width={30} height={30} />,
+      color: '주황',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.주황} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.주황} />,
     },
     {
       name: 'Y3',
-      color: 'yellow',
-      main: <Yellow width={90} height={90} />,
-      sub: <Yellow width={30} height={30} />,
+      color: '노랑',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.노랑} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.노랑} />,
     },
     {
       name: 'Y4',
-      color: 'green',
-      main: <Green width={90} height={90} />,
-      sub: <Green width={30} height={30} />,
+      color: '초록',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.초록} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.초록} />,
     },
     {
       name: 'Y5',
-      color: 'sky',
-      main: <Sky width={90} height={90} />,
-      sub: <Sky width={30} height={30} />,
+      color: '파랑',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.파랑} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.파랑} />,
     },
     {
       name: 'Y6',
-      color: 'blue',
-      main: <Blue width={90} height={90} />,
-      sub: <Blue width={30} height={30} />,
+      color: '남색',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.남색} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.남색} />,
     },
     {
       name: 'Y7',
-      color: 'violet',
-      main: <Violet width={90} height={90} />,
-      sub: <Violet width={30} height={30} />,
+      color: '보라',
+      main: <HoldIcon width={90} height={90} color={levelColorDict.보라} />,
+      sub: <HoldIcon width={30} height={30} color={levelColorDict.보라} />,
     },
   ];
 
