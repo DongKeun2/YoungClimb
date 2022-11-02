@@ -20,7 +20,7 @@ public interface BoardService {
     // 게시글 좋아요
     public Boolean boardLike(Long boardId, String email);
     // 게시글 좋아요 취소
-    public Boolean BoardUnlike(Long boardId, String email);
+    public Boolean boardUnlike(Long boardId, String email);
     // 게시글 댓글 조회
     public BoardDetailDto readAllComments(Long boardId, Long memberId);
     // 댓글 좋아요
