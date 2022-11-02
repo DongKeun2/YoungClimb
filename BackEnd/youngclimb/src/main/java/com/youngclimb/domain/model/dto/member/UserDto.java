@@ -1,17 +1,20 @@
 package com.youngclimb.domain.model.dto.member;
 
-import com.youngclimb.domain.model.dto.board.BoardDto;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
-public class MemberInfo {
-    public String email;
-    public String nickname;
-    public String intro;
+public class UserDto {
     public String image;
+    public String nickname;
+    public String gender;
+    public String intro;
+    public String rank;
+
     public Integer height;
     public Integer shoeSize;
     public Integer wingspan;
+
+    public Long boardNum;
+    public Long followingNum;
+    public Long followerNum;
 }

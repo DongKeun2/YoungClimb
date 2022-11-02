@@ -1,10 +1,11 @@
 package com.youngclimb.domain.model.service;
 
-import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.BoardCreate;
 import com.youngclimb.domain.model.dto.board.BoardDetailDto;
-import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.dto.board.CommentCreate;
+import com.youngclimb.common.security.UserPrincipal;
+import com.youngclimb.domain.model.dto.board.BoardDto;
+import com.youngclimb.domain.model.dto.member.MemberDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,7 +21,7 @@ public interface BoardService {
     // 게시글 좋아요
     public Boolean boardLike(Long boardId, String email);
     // 게시글 좋아요 취소
-    public Boolean BoardUnlike(Long boardId, String email);
+    public Boolean boardUnlike(Long boardId, String email);
     // 게시글 댓글 조회
     public BoardDetailDto readAllComments(Long boardId, Long memberId);
     // 댓글 좋아요
@@ -34,7 +35,12 @@ public interface BoardService {
     // 대댓글 작성
     public void writeRecomment(CommentCreate commentCreate);
     // 게시글 스크랩
-
+    public Boolean boardScrap(Long boardId, String email);
+    // 게시글 스크랩 취소
+    public Boolean boardUnScrap(Long boardId, String email);
     // 게시글 검색
+
+    // 사용자 정보 조회
+    public MemberDto getUserInfoByUserId(String userId);
 
 }

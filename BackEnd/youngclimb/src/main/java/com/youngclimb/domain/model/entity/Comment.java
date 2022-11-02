@@ -57,15 +57,15 @@ public class Comment {
     public CommentDto toCommentDto() {
 
         String timeText = "";
-        Long minus = ChronoUnit.MINUTES.between(LocalDateTime.now(), createdDatetime);
+        Long minus = ChronoUnit.MINUTES.between(createdDatetime, LocalDateTime.now());
 
         if (minus <= 10L) {
             timeText = "방금 전";
         } else if (minus <= 60L) {
             timeText = minus + "분 전";
         } else if (minus <= 1440L) {
-            timeText = ChronoUnit.HOURS.between(LocalDateTime.now(), createdDatetime) + "시간 전";
-        } else if (ChronoUnit.YEARS.between(LocalDateTime.now(), createdDatetime) > 1) {
+            timeText = ChronoUnit.HOURS.between(createdDatetime, LocalDateTime.now()) + "시간 전";
+        } else if (ChronoUnit.YEARS.between(createdDatetime, LocalDateTime.now()) > 1) {
             timeText = createdDatetime.getMonth() + "월 " + createdDatetime.getDayOfMonth() + "일";
         } else {
             timeText = createdDatetime.getYear() + "년 " + createdDatetime.getMonth() + "월 " + createdDatetime.getDayOfMonth() + "일";
@@ -74,7 +74,7 @@ public class Comment {
         return CommentDto.builder()
                 .id(id)
                 .content(content)
-                .createdAt(createdDatetime)
+                .createdAt(timeText)
                 .build();
     }
 

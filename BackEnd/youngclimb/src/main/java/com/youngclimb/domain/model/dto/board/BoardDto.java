@@ -28,10 +28,9 @@ public class BoardDto {
     String content;
     Long like;
     Long view;
-    Boolean isFollow;
     Boolean isLiked;
     Boolean isScrap;
     Long commentNum;
-    CommentPreviewDto commentPreviewDto;
+    CommentPreviewDto commentPreview;
 
 }
