@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler';
 
-import React, {useRef, useState, useEffect} from 'react';
-// import {ImageBackground, Animated, View} from 'react-native';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
 import {useSelector} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -31,13 +30,14 @@ import ActiveReelsIcon from '../assets/image/tab/activeReels.svg';
 import ActiveHomeIcon from '../assets/image/tab/activeHome.svg';
 import ActiveSearchIcon from '../assets/image/tab/activeSearch.svg';
 import ActiveProfileIcon from '../assets/image/tab/activeProfile.svg';
+import { BackHandler } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 export default function YoungClimb() {
   const [loading, setIsLoading] = useState(true);
-
+  
   const login = useSelector(state => state.accounts.loginState);
 
   // const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -63,7 +63,9 @@ export default function YoungClimb() {
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-  });
+  },[]);
+  
+
 
   // useEffect(() => {
   //   // fadeIn();
@@ -88,7 +90,7 @@ export default function YoungClimb() {
         //     style={{width: '100%', height: '100%'}}
         //   />
         // </Animated.View>
-        <NavigationContainer>
+        <NavigationContainer >
           {login ? (
             <Tab.Navigator
               initialRouteName="홈탭"
