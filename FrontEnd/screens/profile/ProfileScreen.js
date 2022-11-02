@@ -21,12 +21,14 @@ import RankInfo from '../../components/RankInfo';
 import {profile, setIsClose} from '../../utils/slices/ProfileSlice';
 import {logout, testLogin} from '../../utils/slices/AccountsSlice';
 
-import rankIcon from '../../assets/image/profile/holdIcon.png';
+import HoldIcon from '../../assets/image/hold/hold.svg';
 import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
 import { Toast } from '../../components/Toast';
+
+import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
 function ProfileScreen({navigation, route}) {
   const [exitAttempt, setExitAttempt] = useState(false)
@@ -116,7 +118,7 @@ function ProfileScreen({navigation, route}) {
           </TouchableOpacity>
         </View>
       )}
-      <ScrollView style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
         <View style={styles.header}>
           <View style={styles.profileBox}>
             <UserAvatar source={userInfo.image} size={70} />
@@ -149,6 +151,8 @@ function ProfileScreen({navigation, route}) {
             setIsRank={setIsRank}
             rank={userInfo.rank}
             exp={userInfo.exp}
+            expleft={userInfo.expleft}
+            upto={userInfo.upto}
           />
         ) : (
           <>
@@ -157,7 +161,11 @@ function ProfileScreen({navigation, route}) {
                 style={styles.InfoBox}
                 onPress={() => setIsRank(true)}>
                 <Text style={styles.text}>등급</Text>
-                <Image style={styles.rankImg} source={rankIcon} />
+                <HoldIcon
+                  width={20}
+                  height={20}
+                  color={YCLevelColorDict[userInfo.rank]}
+                />
               </TouchableOpacity>
               <View style={styles.InfoBox}>
                 <Text style={styles.text}>게시글</Text>
@@ -290,10 +298,6 @@ const styles = StyleSheet.create({
   InfoBox: {
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  rankImg: {
-    width: 20,
-    height: 16,
   },
   tabBox: {
     width: '100%',

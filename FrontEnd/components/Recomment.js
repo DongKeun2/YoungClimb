@@ -5,23 +5,32 @@ import {Text, StyleSheet, View} from 'react-native';
 import UserAvatar from './UserAvatar';
 
 import avatar from '../assets/image/initial/background.png';
+import HoldIcon from '../assets/image/hold/hold.svg';
+
+import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
 function Recomment({recomment}) {
   return (
     <View style={styles.recommentContainer}>
-      <UserAvatar source={avatar} rank={recomment.user.rank} size={32} />
+      <UserAvatar source={avatar} size={32} />
       <View style={styles.recommentInfo}>
         <View style={styles.recommentMain}>
-          <Text style={{...styles.recommentTextStyle, fontWeight: '600'}}>
-            {recomment.user.nickname}
+          <View style={{...styles.iconText, alignItems: 'center'}}>
             <Text
               style={{
                 ...styles.recommentTextStyle,
-                fontWeight: 'normal',
+                fontWeight: '600',
+                marginRight: 5,
               }}>
-              {'  ' + recomment.content}
+              {recomment.user.nickname}
             </Text>
-          </Text>
+            <HoldIcon
+              width={15}
+              height={15}
+              color={YCLevelColorDict[recomment.user.rank]}
+            />
+          </View>
+          <Text style={styles.recommentTextStyle}>{recomment.content}</Text>
         </View>
         <View style={styles.recommentSub}>
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
@@ -55,6 +64,10 @@ const styles = StyleSheet.create({
   recommentTextStyle: {
     color: 'black',
     fontSize: 14,
+  },
+  iconText: {
+    display: 'flex',
+    flexDirection: 'row',
   },
 });
 

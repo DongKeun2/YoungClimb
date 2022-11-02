@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  TouchableOpacity,
+} from 'react-native';
+import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
 import HoldLabel from './HoldLabel';
@@ -14,14 +21,38 @@ import FillHeart from '../assets/image/feed/fillHeart.svg';
 import EmptyScrap from '../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
+import HoldIcon from '../assets/image/hold/hold.svg';
 
-function HomeFeed({feed, navigation}) {
-  const [contentHeight, setHeight] = useState(0);
+import {YCLevelColorDict} from '../assets/info/ColorInfo';
+
+const Placeholder = () => {
+  return (
+    <View
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        backgroundColor: 'black',
+      }}>
+      <ActivityIndicator size="large" color="white" />
+    </View>
+  );
+};
+
+function HomeFeed({feed, navigation, isViewable}) {
+  const [contentHeight, setContentHeight] = useState(0);
+  const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
-    setHeight(height);
+    setContentHeight(height);
+  };
+
+  const calVideoLength = e => {
+    const {width} = e.nativeEvent.layout;
+    setVideoLength(width);
   };
 
   const viewFullContent = () => {
@@ -29,21 +60,29 @@ function HomeFeed({feed, navigation}) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={calVideoLength}>
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
           <View style={styles.iconText}>
-            <UserAvatar source={avatar} rank={feed.createUser.rank} size={36} />
+            <UserAvatar source={avatar} size={36} />
             <View style={styles.headerTextGroup}>
-              <Text
-                style={{
-                  ...styles.feedTextStyle,
-                  fontSize: 16,
-                  fontWeight: '600',
-                }}>
-                {feed.createUser.nickname}
-              </Text>
+              <View style={{...styles.iconText, alignItems: 'center'}}>
+                <Text
+                  style={{
+                    ...styles.feedTextStyle,
+                    fontSize: 16,
+                    fontWeight: '600',
+                    marginRight: 5,
+                  }}>
+                  {feed.createUser.nickname}
+                </Text>
+                <HoldIcon
+                  width={18}
+                  height={18}
+                  color={YCLevelColorDict[feed.createUser.rank]}
+                />
+              </View>
               <Text style={{...styles.feedTextStyle, fontSize: 12}}>
                 {feed.createdAt}
               </Text>
@@ -66,26 +105,36 @@ function HomeFeed({feed, navigation}) {
         </View>
       </View>
       {/* 동영상 */}
-      <View>
-        <Text
-          style={{
-            width: '100%',
-            height: 400,
-            backgroundColor: '#a7a7a7',
-            color: 'white',
-            fontSize: 28,
-            textAlign: 'center',
-            textAlignVertical: 'center',
-          }}>
-          비디오 자리
-        </Text>
-        <View style={styles.solvedDate}>
-          <CameraIcon />
-          <Text
-            style={{color: 'white', fontSize: 12, marginLeft: 3, marginTop: 1}}>
-            {feed.solvedDate}
-          </Text>
-        </View>
+      <View style={{width: videoLength, height: videoLength}}>
+        {isViewable ? (
+          <>
+            <View style={styles.videoBox}>
+              <Video
+                source={{uri: feed.mediaId}}
+                style={styles.backgroundVideo}
+                fullscreen={false}
+                resizeMode={'contain'}
+                repeat={true}
+                controls={false}
+                muted={false}
+              />
+            </View>
+            <View style={styles.solvedDate}>
+              <CameraIcon />
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 12,
+                  marginLeft: 3,
+                  marginTop: 1,
+                }}>
+                {feed.solvedDate}
+              </Text>
+            </View>
+          </>
+        ) : (
+          <Placeholder />
+        )}
       </View>
       {/* 좋아요, 스크랩, 조회수 */}
       <View style={styles.popularInfo}>
@@ -211,6 +260,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 5,
     marginLeft: 5,
+  },
+  videoBox: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
   solvedDate: {
     display: 'flex',

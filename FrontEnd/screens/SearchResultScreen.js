@@ -6,7 +6,6 @@ function SearchResultScreen({navigation}) {
   return (
     <View>
       <CustomSubHeader title="검색 결과" navigation={navigation} />
-      <Text>검색 결과!</Text>
     </View>
   );
 }
