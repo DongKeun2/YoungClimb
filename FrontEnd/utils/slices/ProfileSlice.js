@@ -60,6 +60,8 @@ const initialState = {
       wingspan: 190,
       rank: 'Y4',
       exp: 70,
+      expleft: 200,
+      upto: 1,
       boardNum: 12,
       followingNum: 33,
       followerNum: 35,
