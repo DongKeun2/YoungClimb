@@ -14,7 +14,8 @@ const boards = [
     createdAt: '2시간 전',
     centerName: '더 클라임 양재점',
     centerLevelColor: 'blue',
-    mediaId: '/assets/video/video1.mp4',
+    mediaId:
+      'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/406d78de-790e-4437-b438-a15c6c1ca593.mp4',
     wallName: 'A구역',
     difficulty: 'V3',
     holdColor: 'red',
@@ -43,7 +44,8 @@ const boards = [
     createdAt: '3시간 전',
     centerName: '더 클라임 강남점',
     centerLevelColor: 'green',
-    mediaId: '/assets/video/video2.mp4',
+    mediaId:
+      'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/52cafc61-e0f5-4e5d-9f0b-343be1b06042.mp4',
     wallName: 'C구역',
     difficulty: 'V2',
     holdColor: 'yellow',
@@ -67,7 +69,8 @@ const boards = [
     createdAt: '5시간 전',
     centerName: '더 클라임 양재점',
     centerLevelColor: 'green',
-    mediaId: '/assets/video/video3.mp4',
+    mediaId:
+      'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/0f446944-8243-452d-b89b-7204e3fe446b.mp4',
     wallName: 'D구역',
     difficulty: 'V1',
     holdColor: 'black',
@@ -92,7 +95,8 @@ const boards = [
     createdAt: '3월 16일',
     centerName: '더 클라임 신림점',
     centerLevelColor: 'red',
-    mediaId: '/assets/video/video4.mp4',
+    mediaId:
+      'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/258683be-f3b5-477d-abaa-9d99dfb6d35b.mp4',
     wallName: 'B구역',
     difficulty: 'V5',
     holdColor: 'pink',
@@ -127,11 +131,6 @@ function HomeScreen({navigation}) {
   return (
     <>
       <CustomMainHeader type="홈" navigation={navigation} />
-      {/* <ScrollView showsVerticalScrollIndicator={false}>
-        {boards.map((feed, idx) => {
-          return <HomeFeed key={idx} feed={feed} navigation={navigation} />;
-        })}
-      </ScrollView> */}
       <FlatList
         data={boards}
         viewabilityConfig={viewConfigRef.current}
