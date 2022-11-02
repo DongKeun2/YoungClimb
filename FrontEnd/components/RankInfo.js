@@ -90,7 +90,7 @@ function UptoInfo({rank, upto}) {
       {count.map(item => {
         if (item <= upto) {
           return (
-            <View style={styles.subIcon}>
+            <View key={item} style={styles.subIcon}>
               <HoldIcon
                 width={30}
                 height={30}
@@ -100,7 +100,7 @@ function UptoInfo({rank, upto}) {
           );
         } else {
           return (
-            <View style={styles.subIcon}>
+            <View key={item} style={styles.subIcon}>
               <HoldIcon width={30} height={30} color={holdColorDict.회색} />
             </View>
           );
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     color: 'black',
-    fontSize: 12,
+    fontSize: 10,
   },
   horizonLine: {
     borderColor: 'black',

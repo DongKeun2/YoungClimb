@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Image, StyleSheet} from 'react-native';
 
-function UserAvatar({source, rank, size}) {
+function UserAvatar({source, size}) {
   return (
     <View style={[styles.imgBox, {width: size, height: size}]}>
       <Image
