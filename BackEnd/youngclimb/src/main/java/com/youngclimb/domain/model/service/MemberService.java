@@ -31,4 +31,6 @@ public interface MemberService {
     public String login(LoginMember member);
     // 로그아웃
     void logout(String email, String accessToken);
+    // 팔로우 추가, 제거
+    Boolean AddCancelFollow(String followingNickname);
 }

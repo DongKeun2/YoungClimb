@@ -1,5 +1,6 @@
 package com.youngclimb.domain.controller;
 
+import com.youngclimb.domain.model.dto.center.CenterDetailDto;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
@@ -112,6 +113,22 @@ public class MemberController {
         String accessToken = request.getHeader("Authorization").substring(7);
         memberService.logout(email, accessToken);
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
+    }
+
+    // 팔로우 추가, 취소
+    @ApiOperation(value = "addCancelFollow")
+    @PostMapping("/{nickname}/follow")
+    public ResponseEntity<?> addCancelFollow(@PathVariable String nickname) {
+        try {
+            Boolean addCancelFollow = memberService.AddCancelFollow(nickname);
+            if (addCancelFollow != null) {
+                return new ResponseEntity<Boolean>(addCancelFollow, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
     }
 
 
