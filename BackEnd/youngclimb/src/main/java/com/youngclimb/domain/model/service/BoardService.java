@@ -5,6 +5,7 @@ import com.youngclimb.domain.model.dto.board.BoardCreate;
 import com.youngclimb.domain.model.dto.board.BoardDetailDto;
 import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.dto.board.CommentCreate;
+import com.youngclimb.domain.model.dto.member.MemberDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +35,12 @@ public interface BoardService {
     // 대댓글 작성
     public void writeRecomment(CommentCreate commentCreate);
     // 게시글 스크랩
-
+    public Boolean boardScrap(Long boardId, String email);
+    // 게시글 스크랩 취소
+    public Boolean boardUnScrap(Long boardId, String email);
     // 게시글 검색
+
+    // 사용자 정보 조회
+    public MemberDto getUserInfoByUserId(String userId);
 
 }

@@ -19,8 +19,6 @@ public interface MemberService {
     public void addProfile(MemberProfile memberProfile, MultipartFile file) throws Exception;
     // 프로필 변경
     public void editProfile(MemberInfo memberInfo, MultipartFile file) throws Exception;
-    // 사용자 정보 조회
-    public MemberInfo getUserInfoByUserId(String userId);
     // 사용자 비밀번호 검증
     public void verifyUser(String email, String password);
     // 비밀번호 수정

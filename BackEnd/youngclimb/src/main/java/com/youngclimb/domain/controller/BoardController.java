@@ -59,7 +59,7 @@ public class BoardController {
     }
     // 게시글 댓글 조회(본문 + 댓글 리스트)
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
-    @GetMapping("/board/{boardId}")
+    @GetMapping("/{boardId}")
     public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, Long userId) throws Exception {
         try {
             BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, userId);
@@ -75,7 +75,7 @@ public class BoardController {
 
     // 게시글 좋아요
     @ApiOperation(value = "upBoardLike : 좋아요 클릭")
-    @PostMapping("/board/{boardId}/like/{userId}")
+    @PostMapping("/{boardId}/like/{userId}")
     public ResponseEntity<?> upBoardLike(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
 
         try {
@@ -100,6 +100,30 @@ public class BoardController {
     // 대댓글 작성
 
     // 게시물 스크랩
+    @ApiOperation(value = "upBoardScrap : 스크랩 클릭")
+    @PostMapping("/{boardId}/scrap/{userId}")
+    public ResponseEntity<?> upBoardScrap(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
+
+        try {
+            return new ResponseEntity<Boolean>(boardService.boardScrap(boardId, userId), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 게시물 스크랩
+    @ApiOperation(value = "upBoardUnScrap : 스크랩 클릭")
+    @PostMapping("/{boardId}/unscrap/{userId}")
+    public ResponseEntity<?> upBoardUnScrap(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
+
+        try {
+            return new ResponseEntity<Boolean>(boardService.boardUnScrap(boardId, userId), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
 
     // 게시글 검색
 

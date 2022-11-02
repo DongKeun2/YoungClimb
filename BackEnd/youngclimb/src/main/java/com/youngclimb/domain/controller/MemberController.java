@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MemberController {
 
     private final MemberService memberService;
+    private final BoardService boardService;
 
     // 이메일 중복 확인
     @ApiOperation(value = "checkEmail: 이메일 중복 확인")
