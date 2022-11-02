@@ -5,6 +5,7 @@ import com.youngclimb.domain.model.dto.board.BoardCreate;
 import com.youngclimb.domain.model.dto.board.BoardDetailDto;
 import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.dto.board.CommentCreate;
+import com.youngclimb.domain.model.dto.member.MemberDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,5 +37,8 @@ public interface BoardService {
     // 게시글 스크랩
 
     // 게시글 검색
+
+    // 사용자 정보 조회
+    public MemberDto getUserInfoByUserId(String userId);
 
 }

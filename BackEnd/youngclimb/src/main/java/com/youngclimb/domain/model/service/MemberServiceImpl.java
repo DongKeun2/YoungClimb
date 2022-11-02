@@ -6,15 +6,19 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
+import com.youngclimb.domain.model.dto.board.BoardDto;
+import com.youngclimb.domain.model.dto.board.CommentDto;
+import com.youngclimb.domain.model.dto.board.CommentPreviewDto;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
 import com.youngclimb.domain.model.dto.member.MemberProfile;
-import com.youngclimb.domain.model.entity.Member;
-import com.youngclimb.domain.model.entity.UserRole;
+import com.youngclimb.domain.model.entity.*;
+import com.youngclimb.domain.model.repository.BoardRepository;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
     private final AmazonS3 amazonS3;
 
 
@@ -164,10 +171,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
-    @Override
-    public MemberInfo getUserInfoByUserId(String userId) {
-        return null;
-    }
 
     @Override
     public void verifyUser(String email, String password) {
