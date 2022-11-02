@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-// import Video from 'react-native-video';
+import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
 import HoldLabel from './HoldLabel';
@@ -25,23 +25,34 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-// const Placeholder = () => {
-//   return (
-//     <View style={styles.item}>
-//       <ActivityIndicator size="large" color="white" />
-//     </View>
-//   );
-// };
+const Placeholder = () => {
+  return (
+    <View
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        backgroundColor: 'black',
+      }}>
+      <ActivityIndicator size="large" color="white" />
+    </View>
+  );
+};
 
 function HomeFeed({feed, navigation, isViewable}) {
-  const [contentHeight, setHeight] = useState(0);
+  const [contentHeight, setContentHeight] = useState(0);
+  const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
-  // const urlPath = 'file://' + feed.mediaId;
-  // console.log(urlPath);
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
-    setHeight(height);
+    setContentHeight(height);
+  };
+
+  const calVideoLength = e => {
+    const {width} = e.nativeEvent.layout;
+    setVideoLength(width);
   };
 
   const viewFullContent = () => {
@@ -49,7 +60,7 @@ function HomeFeed({feed, navigation, isViewable}) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} onLayout={calVideoLength}>
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
@@ -94,50 +105,36 @@ function HomeFeed({feed, navigation, isViewable}) {
         </View>
       </View>
       {/* 동영상 */}
-      <View style={styles.videoBox}>
-        {!isViewable ? (
-          <Text
-            style={{
-              width: '100%',
-              height: 400,
-              backgroundColor: '#a7a7a7',
-              color: 'white',
-              fontSize: 28,
-              textAlign: 'center',
-              textAlignVertical: 'center',
-            }}>
-            비디오 자리
-          </Text>
+      <View style={{width: videoLength, height: videoLength}}>
+        {isViewable ? (
+          <>
+            <View style={styles.videoBox}>
+              <Video
+                source={{uri: feed.mediaId}}
+                style={styles.backgroundVideo}
+                fullscreen={false}
+                resizeMode={'contain'}
+                repeat={true}
+                controls={false}
+                muted={false}
+              />
+            </View>
+            <View style={styles.solvedDate}>
+              <CameraIcon />
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 12,
+                  marginLeft: 3,
+                  marginTop: 1,
+                }}>
+                {feed.solvedDate}
+              </Text>
+            </View>
+          </>
         ) : (
-          <Text
-            style={{
-              width: '100%',
-              height: 400,
-              backgroundColor: 'black',
-              color: 'white',
-              fontSize: 28,
-              textAlign: 'center',
-              textAlignVertical: 'center',
-            }}>
-            비디오 재생중
-          </Text>
-          // <Video
-          //   source={{uri: urlPath}}
-          //   style={styles.backgroundVideo}
-          //   fullscreen={false}
-          //   resizeMode={'stretch'}
-          //   repeat={true}
-          //   controls={true}
-          //   muted={false}
-          // />
+          <Placeholder />
         )}
-        <View style={styles.solvedDate}>
-          <CameraIcon />
-          <Text
-            style={{color: 'white', fontSize: 12, marginLeft: 3, marginTop: 1}}>
-            {feed.solvedDate}
-          </Text>
-        </View>
       </View>
       {/* 좋아요, 스크랩, 조회수 */}
       <View style={styles.popularInfo}>
@@ -264,19 +261,21 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
   },
-  // videoBox: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   backgroundColor: 'blue',
-  // },
-  // backgroundVideo: {
-  //   position: 'absolute',
-  //   top: 0,
-  //   left: 0,
-  //   bottom: 0,
-  //   right: 0,
-  // },
+  videoBox: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
   solvedDate: {
     display: 'flex',
     flexDirection: 'row',
