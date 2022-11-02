@@ -9,122 +9,72 @@ import Geolocation from 'react-native-geolocation-service';
 import MyLocationImg from '../../assets/image/map/MyLocation.png'
 import MarkerImg from '../../assets/image/map/Marker.png'
 
+import axios from 'axios'
+import api from '../../utils/api'
+
 export default function StoreScreen({navigation, route}) {
-  const [currentLocation, setCurrentLocation] = useState({latitude: 37.587336576003295, longitude: 127.0575764763725});
+  const [currentLocation, setCurrentLocation] = useState({latitude: 37.0575, longitude: 127.0575});
   const [modalVisible, setModalVisible] = useState(false)
   const [mapView, setMapView] = useState('55%')
   const locationHandler = (e) => {
-    console.log(JSON.stringify(e))
     setCurrentLocation(e);
   }
-  const [climbingLocations, setClimbingLocations] = useState([
-    {id:'A125098234',
-    name: '더클라임 강남12',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '300m',
-    latitude: 37.49622174266254, longitude: 127.03029194140458
-    }, 
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '1손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '1손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '1손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },
-    {id:'A125098235',
-    name: '1손상원클라임 강남',
-    address: '서울 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-    distance: '700m',
-    latitude: 37.49552290450269, longitude: 127.0282506964424
-    },])
-    
-
-  useFocusEffect(()=>{
+  const [climbingLocations, setClimbingLocations] = useState([])
+  useEffect(()=>{
+    console.log(api.centers())
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
         setCurrentLocation({latitude,longitude})
       },
       error => {
-        setCurrentLocation({latitude: 37.587336576003295, longitude: 127.0575764763725})
-        // console.error(error.code, error.message);
+        setCurrentLocation({latitude: 37.5873, longitude: 127.0575})
+        console.error(error.code, error.message,10);
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
-    })
+    axios.post(api.centers(), 
+      {'lat':currentLocation.latitude,'lon':currentLocation.longitude}
+    )
+    .then((res)=>{
+        console.log(res)
+        // setClimbingLocations(res)
+      })
+    .catch((err)=>{
+      console.log(err.message,'err')
+    // })
+  })
+  }
+  ,[])
 
-  // useEffect(()=>{
-  //   console.log(currentLocation)
-  // },[currentLocation])
-  useFocusEffect(
-    ()=>{
-      BackHandler.addEventListener('hardwareBackPress', ()=>{
-        if (modalVisible) {
-          setModalVisible(false)
-          return true
-        }
+  useFocusEffect(()=>{
+    BackHandler.addEventListener('hardwareBackPress', ()=>{
+      if (modalVisible) {
+        setModalVisible(false)
         return true
       }
-      )
+      return true
+    }
+    )
+    return BackHandler.removeEventListener('hardwareBackPress')
+    })
+
+  useEffect(()=>{
+    axios.post(api.centers(), 
+      {'lat':currentLocation.latitude,
+       'lon':currentLocation.longitude}
+    )
+    .then((res)=>{
+        console.log(res)
+        setClimbingLocations(res.data)
       })
+    .catch((err)=>{
+      console.log(err.message,'err')
+    })
+
+  },[currentLocation])
 
   return (
-    // <View>
-    //   <Text>Store!</Text>
-    // </View>
     <View style={{height:'100%'}}>
       <Animated.View style={{position:'absolute', top:0, left:0,width:'100%', height:'100%', zIndex:0 }}>
         <NaverMapView style={{width: '100%', height: '100%'}}
