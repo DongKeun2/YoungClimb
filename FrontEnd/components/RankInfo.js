@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
 
-import RankItem from '../assets/info/RankItem';
 import {levelColorDict} from '../assets/info/ColorInfo';
 
-import Close from '../assets/image/rank/close.svg';
+import Close from '../assets/image/profile/close.svg';
+import HoldIcon from '../assets/image/hold/hold.svg';
+import {YCLevelColorDict, holdColorDict} from '../assets/info/ColorInfo';
 
 // rank가 V1 이런 식으로 들어오는 상태
-function RankInfo({setIsRank, exp, rank}) {
+function RankInfo({setIsRank, exp, expleft, rank, upto}) {
   const levels = ['빨강', '주황', '노랑', '초록', '파랑', '남색', '보라'];
 
   return (
@@ -19,19 +20,15 @@ function RankInfo({setIsRank, exp, rank}) {
         style={styles.close}>
         <Close />
       </TouchableOpacity>
+
       <Text style={styles.title}>현재 등급</Text>
       <Text style={styles.subTitle}>{rank}</Text>
+
       <View style={styles.mainIcon}>
-        {RankItem[parseInt(rank[1], 10)].main}
+        <HoldIcon width={90} height={90} color={YCLevelColorDict[rank]} />
       </View>
 
-      <View style={styles.iconBox}>
-        <View style={styles.subIcon}>
-          {RankItem[parseInt(rank[1], 10) + 1].sub}
-        </View>
-        <View style={styles.subIcon}>{RankItem[0].sub}</View>
-        <View style={styles.subIcon}>{RankItem[0].sub}</View>
-      </View>
+      <UptoInfo rank={rank} upto={upto} />
 
       <View style={styles.barBox}>
         <View style={styles.barBG}>
@@ -40,25 +37,23 @@ function RankInfo({setIsRank, exp, rank}) {
               styles.bar,
               {
                 width: `${exp}%`,
-                backgroundColor: `${RankItem[parseInt(rank[1], 10)].color}`,
+                backgroundColor: `${YCLevelColorDict[rank]}`,
               },
             ]}
           />
         </View>
       </View>
-
       <View style={styles.textBox}>
         <Text style={styles.text}>
-          다음 등급으로 올라가려면 Y{parseInt(rank[1], 10) + 1} 난도 {}문제를 더
-          풀어야합니다
+          다음 등급으로 올라가려면 Y{parseInt(rank[1], 10) + 1} 난도 {3 - upto}
+          문제를 더 문제를 더 풀어야합니다.
         </Text>
-        <Text style={styles.text}>다음 등급까지 {}xp 남았습니다.</Text>
+        <Text style={styles.text}>다음 등급까지 {expleft}xp 남았습니다.</Text>
       </View>
 
       <View style={styles.horizonLine} />
 
       <Text style={styles.title}>YC 등급표</Text>
-
       <View style={styles.levelBarBox}>
         <FlatList
           key={levels}
@@ -83,6 +78,34 @@ function RankInfo({setIsRank, exp, rank}) {
         일정치 이상의 경험치가 필요하며, 상위 난도의 문제를 3개 이상
         풀어야합니다.
       </Text>
+    </View>
+  );
+}
+
+function UptoInfo({rank, upto}) {
+  const count = [1, 2, 3];
+
+  return (
+    <View style={styles.iconBox}>
+      {count.map(item => {
+        if (item <= upto) {
+          return (
+            <View style={styles.subIcon}>
+              <HoldIcon
+                width={30}
+                height={30}
+                color={YCLevelColorDict[`Y${parseInt(rank[1], 10) + 1}`]}
+              />
+            </View>
+          );
+        } else {
+          return (
+            <View style={styles.subIcon}>
+              <HoldIcon width={30} height={30} color={holdColorDict.회색} />
+            </View>
+          );
+        }
+      })}
     </View>
   );
 }
