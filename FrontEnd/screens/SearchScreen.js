@@ -1,6 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {Picker} from '@react-native-picker/picker';
+
 import CustomMainHeader from '../components/CustomMainHeader';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
@@ -57,12 +59,75 @@ function SearchScreen({navigation}) {
 
 function BoardTab({navigation}) {
   const [isCheck, setIsCheck] = useState(false);
+
+  const [store, setStore] = useState('');
+
   function onSubmitSearch() {
     navigation.navigate('검색 결과');
   }
 
   return (
     <>
+      <View style={styles.pickerBox}>
+        <Text style={styles.text}>지점</Text>
+        <View style={styles.pickerItem}>
+          <Picker
+            mode="dropdown"
+            dropdownIconColor="black"
+            selectedValue={store}
+            style={styles.picker}
+            onValueChange={(value, idx) => setStore(value)}>
+            <Picker.Item style={styles.text} label="Java" value="java" />
+            <Picker.Item style={styles.text} label="JavaScript" value="js" />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.pickerBox}>
+        <Text style={styles.text}>구역</Text>
+        <View style={styles.pickerItem}>
+          <Picker
+            mode="dropdown"
+            dropdownIconColor="black"
+            selectedValue={store}
+            style={styles.picker}
+            onValueChange={(value, idx) => setStore(value)}>
+            <Picker.Item style={styles.text} label="Java" value="java" />
+            <Picker.Item style={styles.text} label="JavaScript" value="js" />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.pickerBox}>
+        <Text style={styles.text}>난이도</Text>
+        <View style={styles.pickerItem}>
+          <Picker
+            mode="dropdown"
+            dropdownIconColor="black"
+            selectedValue={store}
+            style={styles.picker}
+            onValueChange={(value, idx) => setStore(value)}>
+            <Picker.Item style={styles.text} label="Java" value="java" />
+            <Picker.Item style={styles.text} label="JavaScript" value="js" />
+          </Picker>
+        </View>
+      </View>
+
+      <View style={styles.pickerBox}>
+        <Text style={styles.text}>홀드 색상</Text>
+        <View style={styles.pickerItem}>
+          <Picker
+            mode="dropdown"
+            dropdownIconColor="black"
+            selectedValue={store}
+            style={styles.picker}
+            onValueChange={(value, idx) => setStore(value)}>
+            <Picker.Item style={styles.text} label="Java" value="java" />
+            <Picker.Item style={styles.text} label="JavaScript" value="js" />
+          </Picker>
+        </View>
+      </View>
+
       <View style={styles.checkGroup}>
         {isCheck ? (
           <TouchableOpacity
@@ -83,7 +148,7 @@ function BoardTab({navigation}) {
           onPress={() => {
             setIsCheck(!isCheck);
           }}>
-          <Text style={styles.text}>
+          <Text style={styles.checkText}>
             &nbsp; 나와 체형이 비슷한 사람의 결과만 보기
           </Text>
         </TouchableOpacity>
@@ -150,9 +215,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     margin: 10,
   },
+  checkText: {
+    color: 'black',
+    fontSize: 14,
+    backgroundColor: 'white',
+  },
+  pickerBox: {
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  textBox: {},
   text: {
     color: 'black',
-    fontSize: 13,
+    fontSize: 14,
+  },
+  pickerItem: {
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderColor: 'black',
+    width: '70%',
+    height: 50,
+  },
+  picker: {},
+  pickerText: {
+    color: 'black',
+    fontSize: 14,
   },
 });
 
