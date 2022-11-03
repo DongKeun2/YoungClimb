@@ -18,8 +18,9 @@ import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {Toast} from '../components/Toast';
 import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
 import centerInfo from '../assets/info/CenterInfo';
+import UserAvatar from '../components/UserAvatar';
 
-import {searchUser} from '../utils/slices/SearchSlice';
+import {fetchUser, searchUser} from '../utils/slices/SearchSlice';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
 import UserIcon from '../assets/image/search/user.svg';
@@ -127,21 +128,29 @@ function BoardTab({navigation}) {
   const [holdColor, setHoldColor] = useState('');
 
   function onSubmitSearch() {
-    const data = {
-      center,
-      wall,
-      level,
-      holdColor,
-      isSimilar,
-    };
-    // dispatch(search(data)).then(() => {
-    navigation.navigate('검색 결과', {
-      center: centerInfo[center - 1].name,
-      wall,
-      level,
-      holdColor,
-    });
-    // });
+    if (!center) {
+      return alert('지점을 선택해주세요');
+    } else if (!level) {
+      return alert('난이도를 선택해주세요.');
+    } else if (!holdColor) {
+      return alert('홀드 색상을 선택해주세요.');
+    } else {
+      const data = {
+        center,
+        wall,
+        level,
+        holdColor,
+        isSimilar,
+      };
+      // dispatch(search(data)).then(() => {
+      navigation.navigate('검색 결과', {
+        center: centerInfo[center - 1].name,
+        wall,
+        level,
+        holdColor,
+      });
+      // });
+    }
   }
 
   function onChangeCenter(value) {
@@ -305,35 +314,39 @@ function BoardTab({navigation}) {
 function UserTab({navigation}) {
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(fetchUser());
+  }, [dispatch]);
+
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(undefined);
   const [first, setFirst] = useState(true);
   const [result, setResult] = useState('');
 
+  const starUsers = useSelector(state => state.search.starUsers);
   const users = useSelector(state => state.search.users);
 
   const mockApiCall = useMemo(
     () =>
-      debounce(async (result, waitingTime = 1000) => {
+      debounce(async (result, waitingTime = 300) => {
+        setResult('');
         setLoading(true);
         if (keyword) {
           await new Promise(resolve => setTimeout(resolve, waitingTime));
 
-          // dispatch(searchUser(keyword)).then(res => {
-          //   setResult(res);
-          // });
-
-          setResult(keyword);
-
-          setFirst(true);
+          const data = {keyword};
+          dispatch(searchUser(data)).then(() => {
+            setResult(keyword);
+            setFirst(true);
+            setLoading(false);
+          });
         } else {
           setResult('');
           setFirst(true);
+          setLoading(false);
         }
-
-        setLoading(false);
       }, 500),
-    [keyword], // dispatch
+    [keyword, dispatch],
   );
 
   useEffect(() => {
@@ -366,21 +379,20 @@ function UserTab({navigation}) {
           <View>
             <Text style={styles.searchText}>검색 중</Text>
           </View>
-        ) : keyword ? (
-          result ? (
+        ) : keyword && result ? (
+          users?.length ? (
             <View>
               <Text style={styles.searchText}>'{result}'</Text>
+
               <CardList users={users} navigation={navigation} />
             </View>
-          ) : first ? null : (
-            <View>
-              <Text style={styles.searchText}>검색결과 없음</Text>
-            </View>
+          ) : (
+            <Text style={styles.text}>검색 결과 없음</Text>
           )
         ) : (
           <View>
             <Text style={styles.text}> 추천 유저</Text>
-            <CardList users={users} navigation={navigation} />
+            <CardList users={starUsers} navigation={navigation} />
           </View>
         )}
       </View>
@@ -392,23 +404,28 @@ function CardList({users, navigation}) {
   return (
     <>
       <View style={styles.articleContainer}>
-        {users.map((user, i) => {
-          return <ArticleCard key={i} user={user} navigation={navigation} />;
+        {users?.map((user, i) => {
+          return (
+            <UserCard key={user.nickname} user={user} navigation={navigation} />
+          );
         })}
       </View>
     </>
   );
 }
 
-function ArticleCard({user, navigation}) {
+function UserCard({user, navigation}) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('검색 결과');
+        navigation.navigate('서브프로필', {
+          initial: false,
+          nickname: user.nickname,
+        });
       }}
       style={styles.cardContainer}>
       <View style={styles.cardBox}>
-        <Image source={user.image} />
+        <UserAvatar source={{uri: user.image}} size={70} />
         <View style={styles.userInfoBox}>
           <Text style={styles.cardNickname}>{user.nickname}</Text>
           <HoldIcon

@@ -29,10 +29,9 @@ const api = {
   wingspan: () => WINGSPAN_URL,
 
   centers: () => API_BASE_URL + CENTERS_URL,
-  center: centerId=>API_BASE_URL + CENTERS_URL+ `/${centerId}`,
+  center: centerId => API_BASE_URL + CENTERS_URL + `/${centerId}`,
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
 };
 
 export default api;
-
