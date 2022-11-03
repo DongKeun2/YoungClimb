@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  BackHandler
+  BackHandler,
 } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 
 import CustomMainHeader from '../../components/CustomMainHeader';
@@ -26,54 +26,56 @@ import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
-import { Toast } from '../../components/Toast';
+import {Toast} from '../../components/Toast';
 
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
 function ProfileScreen({navigation, route}) {
-  const [exitAttempt, setExitAttempt] = useState(false)
-  const routeName = useRoute()
+  const [exitAttempt, setExitAttempt] = useState(false);
+  const routeName = useRoute();
   const toastRef = useRef(null);
-  const onPressExit = useCallback(()=>{
-      toastRef.current.show("앱을 종료하려면 뒤로가기를 한번 더 눌러주세요");
+  const onPressExit = useCallback(() => {
+    toastRef.current.show('앱을 종료하려면 뒤로가기를 한번 더 눌러주세요');
   }, []);
 
-  const backAction = ()=>{ 
-    if (routeName.name !== '메인프로필'){
-      navigation.goBack()
-      return true
-    } else{
-      if (!exitAttempt){
-        setExitAttempt(true)
-        setTimeout(()=>{setExitAttempt(false)}, 2000)
-        onPressExit()
-        return true
-      } else{
-        BackHandler.exitApp()
-        return true
+  const backAction = () => {
+    if (routeName.name !== '메인프로필') {
+      navigation.goBack();
+      return true;
+    } else {
+      if (!exitAttempt) {
+        setExitAttempt(true);
+        setTimeout(() => {
+          setExitAttempt(false);
+        }, 2000);
+        onPressExit();
+        return true;
+      } else {
+        BackHandler.exitApp();
+        return true;
       }
     }
-  }
+  };
 
-  useEffect(()=>{
-    let isBackHandler = true
-    if (isBackHandler){
-      BackHandler.removeEventListener('hardwareBackPress')
+  useEffect(() => {
+    let isBackHandler = true;
+    if (isBackHandler) {
+      BackHandler.removeEventListener('hardwareBackPress');
     }
-    return ()=>{ isBackHandler=false }
-  },[]
-  )
-  
-  useFocusEffect(()=>{
-  const backHandler = BackHandler.addEventListener(
-    "hardwareBackPress",
-    backAction
-  );
-  return ()=> {
-    backHandler.remove()
-  }
-   })
+    return () => {
+      isBackHandler = false;
+    };
+  }, []);
 
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => {
+      backHandler.remove();
+    };
+  });
 
   const dispatch = useDispatch();
 
@@ -225,7 +227,7 @@ function ProfileScreen({navigation, route}) {
           </>
         )}
       </ScrollView>
-      <Toast ref={toastRef}/>
+      <Toast ref={toastRef} />
     </>
   );
 }
@@ -321,7 +323,6 @@ const styles = StyleSheet.create({
   articleContainer: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',

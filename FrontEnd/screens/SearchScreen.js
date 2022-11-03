@@ -1,13 +1,25 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, BackHandler} from 'react-native';
+import React, {useState, useRef, useCallback, useEffect, useMemo} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  BackHandler,
+  Image,
+  TextInput,
+} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
+import {debounce} from 'lodash';
 
 import CustomMainHeader from '../components/CustomMainHeader';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { Toast } from '../components/Toast';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
+import {Toast} from '../components/Toast';
+import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
+import centerInfo from '../assets/info/CenterInfo';
 
-import {holdList} from '../assets/info/ColorInfo';
+import {searchUser} from '../utils/slices/SearchSlice';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
 import UserIcon from '../assets/image/search/user.svg';
@@ -16,47 +28,50 @@ import BoardIcon from '../assets/image/search/hold.svg';
 import BoardActiveIcon from '../assets/image/search/holdA.svg';
 import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
+import searchInputIcon from '../assets/image/profile/searchIcon.png';
+import HoldIcon from '../assets/image/hold/hold.svg';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
-  const [exitAttempt, setExitAttempt] = useState(false)
-  const routeName = useRoute()
+  const [exitAttempt, setExitAttempt] = useState(false);
+  const routeName = useRoute();
   const toastRef = useRef(null);
-  const onPressExit = useCallback(()=>{
-      toastRef.current.show("앱을 종료하려면 뒤로가기를 한번 더 눌러주세요");
+  const onPressExit = useCallback(() => {
+    toastRef.current.show('앱을 종료하려면 뒤로가기를 한번 더 눌러주세요');
   }, []);
 
-  const backAction = ()=>{ 
-    if (routeName.name !== '검색'){
-      navigation.goBack()
-      return true
-    } else{
-      if (!exitAttempt){
-        setExitAttempt(true)
-        setTimeout(()=>{setExitAttempt(false)}, 2000)
-        onPressExit()
-        return true
-      } else{
-        BackHandler.exitApp()
-        return true
+  const backAction = () => {
+    if (routeName.name !== '검색') {
+      navigation.goBack();
+      return true;
+    } else {
+      if (!exitAttempt) {
+        setExitAttempt(true);
+        setTimeout(() => {
+          setExitAttempt(false);
+        }, 2000);
+        onPressExit();
+        return true;
+      } else {
+        BackHandler.exitApp();
+        return true;
       }
     }
-  }
+  };
 
-  useEffect(()=>{
-    BackHandler.removeEventListener('hardwareBackPress')
-  },[]
-  )
-  
-  useFocusEffect(()=>{
-  const backHandler = BackHandler.addEventListener(
-    "hardwareBackPress",
-    backAction
-  );
-  return ()=> {
-    backHandler.remove()
-  }
-   })
+  useEffect(() => {
+    BackHandler.removeEventListener('hardwareBackPress');
+  }, []);
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => {
+      backHandler.remove();
+    };
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,15 +110,16 @@ function SearchScreen({navigation}) {
       ) : (
         <UserTab navigation={navigation} />
       )}
-      <Toast ref={toastRef}/>
+      <Toast ref={toastRef} />
     </SafeAreaView>
   );
 }
 
+// 게시글 검색
 function BoardTab({navigation}) {
-  const [isSimilar, setIsSimilar] = useState(false);
+  const dispatch = useDispatch();
 
-  const [isSelectCenter, setIsSelectCenter] = useState(false);
+  const [isSimilar, setIsSimilar] = useState(false);
 
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
@@ -111,32 +127,55 @@ function BoardTab({navigation}) {
   const [holdColor, setHoldColor] = useState('');
 
   function onSubmitSearch() {
-    navigation.navigate('검색 결과');
+    const data = {
+      center,
+      wall,
+      level,
+      holdColor,
+      isSimilar,
+    };
+    // dispatch(search(data)).then(() => {
+    navigation.navigate('검색 결과', {
+      center: centerInfo[center - 1].name,
+      wall,
+      level,
+      holdColor,
+    });
+    // });
   }
 
-  
+  function onChangeCenter(value) {
+    setCenter(value);
+    setWall('');
+    setLevel('');
+    setHoldColor('');
+  }
+
   return (
     <>
       <View style={styles.selectContainer}>
         <View style={styles.box}>
-          <Text style={styles.text}>지점</Text>
+          <Text style={styles.text}>지점*</Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={center}
-              style={styles.picker}
-              onValueChange={(value, idx) => setCenter(value)}>
+              style={center ? styles.picker : styles.nonePick}
+              onValueChange={(value, idx) => onChangeCenter(value)}>
               <Picker.Item
-                style={styles.pickerText}
-                label="Java"
-                value="java"
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
               />
-              <Picker.Item
-                style={styles.pickerText}
-                label="JavaScript"
-                value="js"
-              />
+              {centerInfo.map((item, id) => (
+                <Picker.Item
+                  key={id}
+                  style={styles.pickerLabel}
+                  label={item.name}
+                  value={item.id}
+                />
+              ))}
             </Picker>
           </View>
         </View>
@@ -148,65 +187,82 @@ function BoardTab({navigation}) {
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={wall}
-              style={styles.picker}
+              style={wall ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setWall(value)}>
               <Picker.Item
-                style={styles.pickerText}
-                label="Java"
-                value="java"
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
               />
-              <Picker.Item
-                style={styles.pickerText}
-                label="JavaScript"
-                value="js"
-              />
+              {center
+                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                    <Picker.Item
+                      key={id}
+                      style={styles.pickerLabel}
+                      label={item}
+                      value={item}
+                    />
+                  ))
+                : null}
             </Picker>
           </View>
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>난이도</Text>
+          <Text style={styles.text}>난이도*</Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={level}
-              style={styles.picker}
+              style={level ? styles.picker : styles.nonePick}
               itemStyle={styles.item}
               onValueChange={(value, idx) => setLevel(value)}>
-              {holdList.map(item => {
-                return (
-                  <Picker.Item
-                    key={item}
-                    style={styles.pickerText}
-                    label={item}
-                    value={item}
-                  />
-                );
-              })}
+              <Picker.Item
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
+              />
+              {center
+                ? centerInfo[center - 1]?.level.map((item, id) => (
+                    <Picker.Item
+                      key={id}
+                      style={styles.pickerLabel}
+                      label={item}
+                      value={item}
+                    />
+                  ))
+                : null}
             </Picker>
           </View>
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>홀드 색상</Text>
+          <Text style={styles.text}>홀드 색상*</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
+              mode="dropdown"
               dropdownIconColor="black"
               selectedValue={holdColor}
-              style={styles.picker}
+              style={holdColor ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setHoldColor(value)}>
-              {holdList.map(item => {
-                return (
-                  <Picker.Item
-                    key={item}
-                    style={styles.pickerText}
-                    label={item}
-                    value={item}
-                  />
-                );
-              })}
+              <Picker.Item
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
+              />
+              {center
+                ? holdList.map(item => {
+                    return (
+                      <Picker.Item
+                        key={item}
+                        style={styles.pickerLabel}
+                        label={item}
+                        value={item}
+                      />
+                    );
+                  })
+                : null}
             </Picker>
           </View>
         </View>
@@ -245,8 +301,125 @@ function BoardTab({navigation}) {
   );
 }
 
+// 유저 검색
 function UserTab({navigation}) {
-  return <></>;
+  const dispatch = useDispatch();
+
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(undefined);
+  const [first, setFirst] = useState(true);
+  const [result, setResult] = useState('');
+
+  const users = useSelector(state => state.search.users);
+
+  const mockApiCall = useMemo(
+    () =>
+      debounce(async (result, waitingTime = 1000) => {
+        setLoading(true);
+        if (keyword) {
+          await new Promise(resolve => setTimeout(resolve, waitingTime));
+
+          // dispatch(searchUser(keyword)).then(res => {
+          //   setResult(res);
+          // });
+
+          setResult(keyword);
+
+          setFirst(true);
+        } else {
+          setResult('');
+          setFirst(true);
+        }
+
+        setLoading(false);
+      }, 500),
+    [keyword], // dispatch
+  );
+
+  useEffect(() => {
+    console.log(keyword);
+
+    mockApiCall(keyword); // call the debounced function
+
+    return () => {
+      mockApiCall.cancel(); // cancel the debounced function
+    };
+  }, [mockApiCall, keyword]);
+
+  return (
+    <>
+      <View style={styles.searchBox}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="닉네임을 검색하세요."
+          placeholderTextColor={'#ADADAD'}
+          value={keyword}
+          onChangeText={value => {
+            setKeyword(value);
+          }}
+        />
+        <Image style={styles.searchIcon} source={searchInputIcon} />
+      </View>
+
+      <View style={styles.searchUserResultBox}>
+        {loading ? (
+          <View>
+            <Text style={styles.searchText}>검색 중</Text>
+          </View>
+        ) : keyword ? (
+          result ? (
+            <View>
+              <Text style={styles.searchText}>'{result}'</Text>
+              <CardList users={users} navigation={navigation} />
+            </View>
+          ) : first ? null : (
+            <View>
+              <Text style={styles.searchText}>검색결과 없음</Text>
+            </View>
+          )
+        ) : (
+          <View>
+            <Text style={styles.text}> 추천 유저</Text>
+            <CardList users={users} navigation={navigation} />
+          </View>
+        )}
+      </View>
+    </>
+  );
+}
+
+function CardList({users, navigation}) {
+  return (
+    <>
+      <View style={styles.articleContainer}>
+        {users.map((user, i) => {
+          return <ArticleCard key={i} user={user} navigation={navigation} />;
+        })}
+      </View>
+    </>
+  );
+}
+
+function ArticleCard({user, navigation}) {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('검색 결과');
+      }}
+      style={styles.cardContainer}>
+      <View style={styles.cardBox}>
+        <Image source={user.image} />
+        <View style={styles.userInfoBox}>
+          <Text style={styles.cardNickname}>{user.nickname}</Text>
+          <HoldIcon
+            width={15}
+            height={15}
+            color={YCLevelColorDict[user.rank]}
+          />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -304,7 +477,15 @@ const styles = StyleSheet.create({
     width: '100%',
     color: 'black',
   },
-  pickerText: {
+  nonePick: {
+    color: '#ADADAD',
+  },
+  pickerPlaceHold: {
+    backgroundColor: 'white',
+    color: '#ADADAD',
+    fontSize: 14,
+  },
+  pickerLabel: {
     backgroundColor: 'white',
     color: 'black',
     fontSize: 14,
@@ -334,6 +515,74 @@ const styles = StyleSheet.create({
   btnText: {
     color: 'white',
   },
+  searchBox: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  searchInput: {
+    width: '90%',
+    borderWidth: 1,
+    borderBottomColor: '#464646',
+    borderRadius: 10,
+    fontSize: 14,
+    padding: 5,
+    paddingLeft: 40,
+    color: 'black',
+  },
+  searchIcon: {
+    position: 'absolute',
+    top: 7,
+    left: '7%',
+  },
+  searchText: {
+    color: 'black',
+  },
+  articleContainer: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  cardContainer: {
+    display: 'flex',
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%',
+  },
+  cardBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    padding: 5,
+    borderRadius: 5,
+    backgroundColor: '#F8F8F8',
+  },
+  image: {
+    width: '100%',
+    resizeMode: 'contain',
+  },
+  InfoBox: {alignItems: 'flex-start', justifyContent: 'center', padding: 1},
+  cardInfo: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 1,
+  },
+  userInfoBox: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  cardNickname: {
+    color: 'black',
+    fontSize: 12,
+    marginRight: 3,
+  },
+  searchUserResultBox: {width: '90%'},
 });
 
 export default SearchScreen;
