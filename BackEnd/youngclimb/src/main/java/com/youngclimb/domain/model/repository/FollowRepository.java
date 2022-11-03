@@ -6,6 +6,7 @@ import com.youngclimb.domain.model.entity.MemberRankExp;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 @Repository
 public interface FollowRepository extends JpaRepository<Follow, Long> {
@@ -17,6 +18,9 @@ public interface FollowRepository extends JpaRepository<Follow, Long> {
     Optional<Follow> findByFollowing(Member member);
 
     Optional<Follow> findByFollower(Member member);
+
+    List<Follow> findAllByFollower(Member member);
+    List<Follow> findAllByFollowing(Member member);
 
     Long countByFollowing(Member member);
     Long countByFollower(Member member);

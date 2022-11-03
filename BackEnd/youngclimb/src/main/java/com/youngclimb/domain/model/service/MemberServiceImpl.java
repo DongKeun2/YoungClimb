@@ -9,14 +9,10 @@ import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.dto.board.CommentDto;
 import com.youngclimb.domain.model.dto.board.CommentPreviewDto;
-import com.youngclimb.domain.model.dto.member.JoinMember;
-import com.youngclimb.domain.model.dto.member.LoginMember;
-import com.youngclimb.domain.model.dto.member.MemberInfo;
-import com.youngclimb.domain.model.dto.member.MemberProfile;
-import com.youngclimb.domain.model.entity.Follow;
-import com.youngclimb.domain.model.entity.Member;
-import com.youngclimb.domain.model.entity.UserRole;
+import com.youngclimb.domain.model.dto.member.*;
+import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.FollowRepository;
+import com.youngclimb.domain.model.repository.MemberRankExpRepository;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import com.youngclimb.domain.model.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
+    private final MemberRankExpRepository memberRankExpRepository;
     private final AmazonS3 amazonS3;
 
 
@@ -257,12 +254,10 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 팔로잉하기/취소하기
-    public Boolean AddCancelFollow(String followingNickname) {
+    public Boolean addCancelFollow(String followingNickname) {
         long followerId = 1;
         Member follower = memberRepository.findById(followerId).orElseThrow();
         Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
-        System.out.println(follower.getEmail());
-        System.out.println(following.getEmail());
 
         if (follower == following) {
             return Boolean.FALSE;
@@ -283,6 +278,58 @@ public class MemberServiceImpl implements MemberService {
             followRepository.delete(follow);
             return Boolean.FALSE;
         }
+    }
+
+    // 팔로잉 팔로워 목록 읽기
+    public FollowMemberList listFollow(String nickname) {
+        Member member = memberRepository.findByNickname(nickname).orElseThrow();
+        FollowMemberList followMemberList = new FollowMemberList();
+
+        List<FollowMemberDto> follwings = new ArrayList<>();
+        List<FollowMemberDto> follwers = new ArrayList<>();
+
+        List<Follow> followingMembers = followRepository.findAllByFollower(member);
+        List<Follow> followerMembers = followRepository.findAllByFollowing(member);
+
+        for (Follow following: followingMembers) {
+            Member followingMember = following.getFollowing();
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followingMember).orElseThrow();
+
+
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(followingMember.getNickname());
+            myFollowing.setGender(followingMember.getGender());
+            myFollowing.setImage(followingMember.getMemberProfileImg());
+            myFollowing.setHeight(followingMember.getHeight());
+            myFollowing.setWingspan(followingMember.getWingspan());
+            myFollowing.setShoeSize(followingMember.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+
+            follwings.add(myFollowing);
+        }
+
+        for (Follow follower: followerMembers) {
+            Member followerMember = follower.getFollower();
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
+
+            FollowMemberDto myFollower = new FollowMemberDto();
+
+            myFollower.setNickname(followerMember.getNickname());
+            myFollower.setGender(followerMember.getGender());
+            myFollower.setImage(followerMember.getMemberProfileImg());
+            myFollower.setHeight(followerMember.getHeight());
+            myFollower.setWingspan(followerMember.getWingspan());
+            myFollower.setShoeSize(followerMember.getShoeSize());
+            myFollower.setRank(memberRankExp.getRank().getName());
+
+            follwers.add(myFollower);
+        }
+
+        followMemberList.setFollowers(follwers);
+        followMemberList.setFollowings(follwings);
+
+        return followMemberList;
     }
 
 }

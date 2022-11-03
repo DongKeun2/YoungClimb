@@ -43,11 +43,11 @@ public class CenterServicempl implements CenterService{
         List<WallDto> wallDtos = new ArrayList<>();
 
         Center center = centerRepository.findById(centerId).orElseThrow();
-        List<CenterTime> centerTimes = centerTimeRepository.findAll(Sort.by(Sort.Direction.ASC, "day"));
-        List<CenterLevel> centerLevels = centerLevelRepository.findAll(Sort.by(Sort.Direction.ASC, "level"));
-        List<CenterPrice> centerPrices = centerPriceRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
-        List<CenterEvent> centerEvents = centerEventRepository.findAll(Sort.by(Sort.Direction.ASC, "date"));
-        List<Wall> walls = wallRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
+        List<CenterTime> centerTimes = centerTimeRepository.findAllByCenterOrderByDayAsc(center);
+        List<CenterLevel> centerLevels = centerLevelRepository.findAllByCenterOrderByIdAsc(center);
+        List<CenterPrice> centerPrices = centerPriceRepository.findAllByCenterOrderByName(center);
+        List<CenterEvent> centerEvents = centerEventRepository.findAllByCenterOrderByDate(center);
+        List<Wall> walls = wallRepository.findAllByCenterOrderByName(center);
 
         centerDetailDto.setId(center.getId());
         centerDetailDto.setName(center.getName());
