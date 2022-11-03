@@ -319,25 +319,29 @@ function UserTab({navigation}) {
         <Image style={styles.searchIcon} source={searchInputIcon} />
       </View>
 
-      {loading ? (
-        <Text style={styles.noSearchText}>검색 중</Text>
-      ) : keyword ? (
-        result ? (
+      <View style={styles.searchUserResultBox}>
+        {loading ? (
           <View>
-            <Text style={styles.noSearchText}>검색 결과 : {result}</Text>
-            <CardList users={users} />
+            <Text style={styles.searchText}>검색 중</Text>
           </View>
-        ) : first ? null : (
+        ) : keyword ? (
+          result ? (
+            <View>
+              <Text style={styles.searchText}>'{result}'</Text>
+              <CardList users={users} navigation={navigation} />
+            </View>
+          ) : first ? null : (
+            <View>
+              <Text style={styles.searchText}>검색결과 없음</Text>
+            </View>
+          )
+        ) : (
           <View>
-            <Text style={styles.noSearchText}>검색결과 없음</Text>
+            <Text style={styles.text}> 추천 유저</Text>
+            <CardList users={users} navigation={navigation} />
           </View>
-        )
-      ) : (
-        <View>
-          <Text style={styles.text}> 추천 유저</Text>
-          <CardList users={users} />
-        </View>
-      )}
+        )}
+      </View>
     </>
   );
 }
@@ -358,13 +362,19 @@ function ArticleCard({user, navigation}) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('게시글');
+        navigation.navigate('검색 결과');
       }}
       style={styles.cardContainer}>
       <View style={styles.cardBox}>
         <Image source={user.image} />
-        <Text style={styles.articleText}>{user.nickname}</Text>
-        <HoldIcon width={30} height={30} color={YCLevelColorDict[user.rank]} />
+        <View style={styles.userInfoBox}>
+          <Text style={styles.cardNickname}>{user.nickname}</Text>
+          <HoldIcon
+            width={15}
+            height={15}
+            color={YCLevelColorDict[user.rank]}
+          />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -462,7 +472,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   searchInput: {
-    width: '80%',
+    width: '90%',
     borderWidth: 1,
     borderBottomColor: '#464646',
     borderRadius: 10,
@@ -474,9 +484,9 @@ const styles = StyleSheet.create({
   searchIcon: {
     position: 'absolute',
     top: 7,
-    left: '12%',
+    left: '7%',
   },
-  noSearchText: {
+  searchText: {
     color: 'black',
   },
   articleContainer: {
@@ -494,6 +504,9 @@ const styles = StyleSheet.create({
     width: '50%',
   },
   cardBox: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
     padding: 5,
     borderRadius: 5,
@@ -509,9 +522,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 1,
   },
-  articleText: {
-    color: 'black',
+  userInfoBox: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
+  cardNickname: {
+    color: 'black',
+    fontSize: 12,
+    marginRight: 3,
+  },
+  searchUserResultBox: {width: '90%'},
 });
 
 export default SearchScreen;
