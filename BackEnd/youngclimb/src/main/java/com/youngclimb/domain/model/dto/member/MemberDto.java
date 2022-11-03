@@ -10,5 +10,5 @@ public class MemberDto {
     boolean isfollow;
     UserDto user;
     List<BoardDto> boards;
-
+    List<BoardDto> scraps;
 }
