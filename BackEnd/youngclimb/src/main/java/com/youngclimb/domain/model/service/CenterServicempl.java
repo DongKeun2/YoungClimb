@@ -128,7 +128,7 @@ public class CenterServicempl implements CenterService{
             centerDto.setId(center.getId());
             centerDto.setName(center.getName());
             centerDto.setLongitude(center.getLongitude());
-            centerDto.setLatitude(center.getLongitude());
+            centerDto.setLatitude(center.getLatitude());
             centerDto.setAddress(center.getAddress());
             centerDto.setPhoneNumber(center.getPhoneNumber());
 
