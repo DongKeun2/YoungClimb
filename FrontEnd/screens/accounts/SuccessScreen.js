@@ -72,24 +72,26 @@ function SuccessScreen({navigation}) {
           프로필을 꾸미고 회원님의 클라이밍을 뽐내보세요!
         </Text>
       </View>
-      {imageUri ? (
-        <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
-      ) : (
+      <View style={styles.InputBox}>
+        {imageUri ? (
+          <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
+        ) : (
+          <TouchableOpacity onPress={SelectProfile}>
+            <Image source={avatar} />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={SelectProfile}>
-          <Image source={avatar} />
+          <Text style={styles.link}>프로필 사진 선택</Text>
         </TouchableOpacity>
-      )}
-      <TouchableOpacity onPress={SelectProfile}>
-        <Text style={styles.link}>프로필 사진 선택</Text>
-      </TouchableOpacity>
-      <TextInput
-        style={styles.input}
-        placeholder="소개를 작성해주세요 :)"
-        placeholderTextColor={'#ddd'}
-        multiline={true}
-        textAlignVertical="top"
-        onChangeText={value => setIntro(value)}
-      />
+        <TextInput
+          style={styles.input}
+          placeholder="소개를 작성해주세요 :)"
+          placeholderTextColor={'#ddd'}
+          multiline={true}
+          textAlignVertical="top"
+          onChangeText={value => setIntro(value)}
+        />
+      </View>
       <View style={styles.btnGroup}>
         <View style={styles.button}>
           <CustomButton
@@ -120,7 +122,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    marginTop: windowHeight / 15,
+    marginTop: windowHeight / 6,
     alignItems: 'center',
     width: '100%',
     height: '10%',
@@ -129,13 +131,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#F34D7F',
   },
+  InputBox: {
+    width: '100%',
+    backgroundColor: 'white',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginVertical: 30,
+  },
   input: {
     width: '80%',
     borderWidth: 1,
     borderColor: '#ADADAD',
     fontSize: 17,
-    padding: 5,
-    marginVertical: '3%',
+    padding: 7,
+    marginVertical: '10%',
+    borderRadius: 5,
     height: 74,
   },
   btnGroup: {
@@ -147,7 +157,10 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '45%',
-    height: '10%',
+  },
+  text: {
+    margin: 10,
+    color: 'black',
   },
   link: {
     color: '#F34D7F',

@@ -1,25 +1,9 @@
 import React from 'react';
 import {View, Image, StyleSheet} from 'react-native';
 
-import rankIcon from '../assets/image/profile/holdIcon.png';
-
-function UserAvatar({source, rank, size}) {
+function UserAvatar({source, size}) {
   return (
-    <View style={styles.imgBox}>
-      {rank && (
-        <Image
-          source={rankIcon}
-          style={[
-            styles.rank,
-            {
-              width: size / 2,
-              height: size / 2,
-              top: -size / 20,
-              left: -size / 20,
-            },
-          ]}
-        />
-      )}
+    <View style={[styles.imgBox, {width: size, height: size}]}>
       <Image
         style={[
           styles.image,
@@ -38,10 +22,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   image: {},
-  rank: {
-    position: 'absolute',
-    resizeMode: 'contain',
-    zIndex: 1,
-  },
 });
 export default UserAvatar;
