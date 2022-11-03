@@ -23,6 +23,7 @@ function HomeFeed({feed, navigation, isViewable}) {
   const [contentHeight, setContentHeight] = useState(0);
   const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
@@ -36,6 +37,10 @@ function HomeFeed({feed, navigation, isViewable}) {
 
   const viewFullContent = () => {
     setIsFullContent(true);
+  };
+
+  const changeMuted = () => {
+    setIsMuted(!isMuted);
   };
 
   return (
@@ -85,7 +90,10 @@ function HomeFeed({feed, navigation, isViewable}) {
       </View>
       {/* 동영상 */}
       <View style={{width: videoLength, height: videoLength}}>
-        <View style={styles.videoBox}>
+        <TouchableOpacity
+          style={styles.videoBox}
+          activeOpacity={1}
+          onPress={changeMuted}>
           <Video
             source={{uri: feed.mediaId}}
             style={styles.backgroundVideo}
@@ -94,9 +102,9 @@ function HomeFeed({feed, navigation, isViewable}) {
             repeat={true}
             controls={false}
             paused={!isViewable}
-            muted={false}
+            muted={isMuted}
           />
-        </View>
+        </TouchableOpacity>
         <View style={styles.solvedDate}>
           <CameraIcon />
           <Text
