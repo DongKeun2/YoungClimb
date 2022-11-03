@@ -117,6 +117,8 @@ function SearchScreen({navigation}) {
 
 // 게시글 검색
 function BoardTab({navigation}) {
+  const dispatch = useDispatch();
+
   const [isSimilar, setIsSimilar] = useState(false);
 
   const [center, setCenter] = useState('');
@@ -125,8 +127,21 @@ function BoardTab({navigation}) {
   const [holdColor, setHoldColor] = useState('');
 
   function onSubmitSearch() {
-    navigation.navigate('검색 결과');
-    console.log(centerInfo);
+    const data = {
+      center,
+      wall,
+      level,
+      holdColor,
+      isSimilar,
+    };
+    // dispatch(search(data)).then(() => {
+    navigation.navigate('검색 결과', {
+      center: centerInfo[center - 1].name,
+      wall,
+      level,
+      holdColor,
+    });
+    // });
   }
 
   function onChangeCenter(value) {
