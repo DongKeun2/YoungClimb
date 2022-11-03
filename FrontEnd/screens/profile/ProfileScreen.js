@@ -30,6 +30,7 @@ import {Toast} from '../../components/Toast';
 
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
+// route에 initail: false, nickname 보내야 함
 function ProfileScreen({navigation, route}) {
   const [exitAttempt, setExitAttempt] = useState(false);
   const routeName = useRoute();
