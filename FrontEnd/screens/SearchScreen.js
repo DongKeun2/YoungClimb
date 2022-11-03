@@ -15,8 +15,9 @@ import {debounce} from 'lodash';
 
 import CustomMainHeader from '../components/CustomMainHeader';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
-import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
 import {Toast} from '../components/Toast';
+import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
+import centerInfo from '../assets/info/CenterInfo';
 
 import {searchUser} from '../utils/slices/SearchSlice';
 
@@ -118,8 +119,6 @@ function SearchScreen({navigation}) {
 function BoardTab({navigation}) {
   const [isSimilar, setIsSimilar] = useState(false);
 
-  const [isSelectCenter, setIsSelectCenter] = useState(false);
-
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
   const [level, setLevel] = useState('');
@@ -127,30 +126,41 @@ function BoardTab({navigation}) {
 
   function onSubmitSearch() {
     navigation.navigate('검색 결과');
+    console.log(centerInfo);
+  }
+
+  function onChangeCenter(value) {
+    setCenter(value);
+    setWall('');
+    setLevel('');
+    setHoldColor('');
   }
 
   return (
     <>
       <View style={styles.selectContainer}>
         <View style={styles.box}>
-          <Text style={styles.text}>지점</Text>
+          <Text style={styles.text}>지점*</Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={center}
-              style={styles.picker}
-              onValueChange={(value, idx) => setCenter(value)}>
+              style={center ? styles.picker : styles.nonePick}
+              onValueChange={(value, idx) => onChangeCenter(value)}>
               <Picker.Item
-                style={styles.pickerText}
-                label="Java"
-                value="java"
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
               />
-              <Picker.Item
-                style={styles.pickerText}
-                label="JavaScript"
-                value="js"
-              />
+              {centerInfo.map((item, id) => (
+                <Picker.Item
+                  key={id}
+                  style={styles.pickerLabel}
+                  label={item.name}
+                  value={item.id}
+                />
+              ))}
             </Picker>
           </View>
         </View>
@@ -162,65 +172,82 @@ function BoardTab({navigation}) {
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={wall}
-              style={styles.picker}
+              style={wall ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setWall(value)}>
               <Picker.Item
-                style={styles.pickerText}
-                label="Java"
-                value="java"
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
               />
-              <Picker.Item
-                style={styles.pickerText}
-                label="JavaScript"
-                value="js"
-              />
+              {center
+                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                    <Picker.Item
+                      key={id}
+                      style={styles.pickerLabel}
+                      label={item}
+                      value={item}
+                    />
+                  ))
+                : null}
             </Picker>
           </View>
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>난이도</Text>
+          <Text style={styles.text}>난이도*</Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={level}
-              style={styles.picker}
+              style={level ? styles.picker : styles.nonePick}
               itemStyle={styles.item}
               onValueChange={(value, idx) => setLevel(value)}>
-              {holdList.map(item => {
-                return (
-                  <Picker.Item
-                    key={item}
-                    style={styles.pickerText}
-                    label={item}
-                    value={item}
-                  />
-                );
-              })}
+              <Picker.Item
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
+              />
+              {center
+                ? centerInfo[center - 1]?.level.map((item, id) => (
+                    <Picker.Item
+                      key={id}
+                      style={styles.pickerLabel}
+                      label={item}
+                      value={item}
+                    />
+                  ))
+                : null}
             </Picker>
           </View>
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>홀드 색상</Text>
+          <Text style={styles.text}>홀드 색상*</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
+              mode="dropdown"
               dropdownIconColor="black"
               selectedValue={holdColor}
-              style={styles.picker}
+              style={holdColor ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setHoldColor(value)}>
-              {holdList.map(item => {
-                return (
-                  <Picker.Item
-                    key={item}
-                    style={styles.pickerText}
-                    label={item}
-                    value={item}
-                  />
-                );
-              })}
+              <Picker.Item
+                style={styles.pickerPlaceHold}
+                label="선택 없음"
+                value=""
+              />
+              {center
+                ? holdList.map(item => {
+                    return (
+                      <Picker.Item
+                        key={item}
+                        style={styles.pickerLabel}
+                        label={item}
+                        value={item}
+                      />
+                    );
+                  })
+                : null}
             </Picker>
           </View>
         </View>
@@ -435,7 +462,15 @@ const styles = StyleSheet.create({
     width: '100%',
     color: 'black',
   },
-  pickerText: {
+  nonePick: {
+    color: '#ADADAD',
+  },
+  pickerPlaceHold: {
+    backgroundColor: 'white',
+    color: '#ADADAD',
+    fontSize: 14,
+  },
+  pickerLabel: {
     backgroundColor: 'white',
     color: 'black',
     fontSize: 14,
