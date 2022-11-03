@@ -8,15 +8,17 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
 import {debounce} from 'lodash';
 
 import CustomMainHeader from '../components/CustomMainHeader';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
+import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
 import {Toast} from '../components/Toast';
 
-import {holdList} from '../assets/info/ColorInfo';
+import {searchUser} from '../utils/slices/SearchSlice';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
 import UserIcon from '../assets/image/search/user.svg';
@@ -26,8 +28,7 @@ import BoardActiveIcon from '../assets/image/search/holdA.svg';
 import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
 import searchInputIcon from '../assets/image/profile/searchIcon.png';
-import {useDispatch, useSelector} from 'react-redux';
-import {searchUser} from '../utils/slices/SearchSlice';
+import HoldIcon from '../assets/image/hold/hold.svg';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
@@ -264,10 +265,10 @@ function UserTab({navigation}) {
 
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(undefined);
-  const [first, setFirst] = useState(false);
+  const [first, setFirst] = useState(true);
   const [result, setResult] = useState('');
 
-  // const result = useSelector(state => state.search.users);
+  const users = useSelector(state => state.search.users);
 
   const mockApiCall = useMemo(
     () =>
@@ -282,6 +283,9 @@ function UserTab({navigation}) {
 
           setResult(keyword);
 
+          setFirst(true);
+        } else {
+          setResult('');
           setFirst(true);
         }
 
@@ -314,20 +318,55 @@ function UserTab({navigation}) {
         />
         <Image style={styles.searchIcon} source={searchInputIcon} />
       </View>
+
       {loading ? (
         <Text style={styles.noSearchText}>검색 중</Text>
-      ) : result ? (
-        <View>
-          <Text style={styles.noSearchText}>검색 결과 : {result}</Text>
-        </View>
       ) : keyword ? (
-        first ? (
+        result ? (
+          <View>
+            <Text style={styles.noSearchText}>검색 결과 : {result}</Text>
+            <CardList users={users} />
+          </View>
+        ) : first ? null : (
           <View>
             <Text style={styles.noSearchText}>검색결과 없음</Text>
           </View>
-        ) : null
-      ) : null}
+        )
+      ) : (
+        <View>
+          <Text style={styles.text}> 추천 유저</Text>
+          <CardList users={users} />
+        </View>
+      )}
     </>
+  );
+}
+
+function CardList({users, navigation}) {
+  return (
+    <>
+      <View style={styles.articleContainer}>
+        {users.map((user, i) => {
+          return <ArticleCard key={i} user={user} navigation={navigation} />;
+        })}
+      </View>
+    </>
+  );
+}
+
+function ArticleCard({user, navigation}) {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('게시글');
+      }}
+      style={styles.cardContainer}>
+      <View style={styles.cardBox}>
+        <Image source={user.image} />
+        <Text style={styles.articleText}>{user.nickname}</Text>
+        <HoldIcon width={30} height={30} color={YCLevelColorDict[user.rank]} />
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -438,6 +477,39 @@ const styles = StyleSheet.create({
     left: '12%',
   },
   noSearchText: {
+    color: 'black',
+  },
+  articleContainer: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  cardContainer: {
+    display: 'flex',
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%',
+  },
+  cardBox: {
+    width: '100%',
+    padding: 5,
+    borderRadius: 5,
+    backgroundColor: '#F8F8F8',
+  },
+  image: {
+    width: '100%',
+    resizeMode: 'contain',
+  },
+  InfoBox: {alignItems: 'flex-start', justifyContent: 'center', padding: 1},
+  cardInfo: {
+    display: 'flex',
+    flexDirection: 'row',
+    padding: 1,
+  },
+  articleText: {
     color: 'black',
   },
 });

@@ -323,7 +323,6 @@ const styles = StyleSheet.create({
   articleContainer: {
     width: '100%',
     display: 'flex',
-    justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',

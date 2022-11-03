@@ -25,6 +25,16 @@ const initialState = {
       image: avatar,
       rank: 'Y3',
     },
+    {
+      nickname: '호호',
+      image: avatar,
+      rank: 'Y3',
+    },
+    {
+      nickname: '히히',
+      image: avatar,
+      rank: 'Y3',
+    },
   ],
 };
 
