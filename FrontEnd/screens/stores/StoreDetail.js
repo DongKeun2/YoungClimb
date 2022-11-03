@@ -9,33 +9,36 @@ import {
 	Image,
 	Linking
 } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 import CustomSubHeader from '../../components/CustomSubHeader';
 import ImgRollPic from '../../assets/image/map/ImgRollPic.svg'
 import ExpandDown from '../../assets/image/map/ExpandDown.svg'
 import ExpandUp from '../../assets/image/map/ExpandUp.svg'
 import { levelColorDict, holdColorDict } from '../../assets/info/ColorInfo';
+import axios from 'axios';
+import api from '../../utils/api';
 
 
 export default function StoreDetail({route, navigation}){
 	const {Id} = route.params;
 	const [detailInfo, setDetailInfo] = useState({
 		name: '',
-		phone:'',
+		phoneNumber:'',
 	address: '',
 	centerNumber: 0,
 	imageURL:'',
-	levels:[],
-	event: [{
+	centerLevelList:[],
+	centerEventList: [{
 		date: '', 
 		content: '' 
 }],
-	time: [{
+centerTimeList: [{
 		day: '', 
-		startTime: '', 
-		endTime:'' 
+		timeStart: '', 
+		timeEnd:'' 
 }],
-	price: [{
+centerPriceList: [{
 		name: '', 
 		price: ''
 }],
@@ -43,8 +46,9 @@ export default function StoreDetail({route, navigation}){
 	longitude:0,
 	})
 	const [isTimeToggleOpen, setIsTimeToggleOpen] = useState(false)
-	const [isPriceToggleOpen, setIsPriceToggleOpen] = useState(true)
+	const [isPriceToggleOpen, setIsPriceToggleOpen] = useState(false)
 	const [todayTimeInfo, setTodayTimeInfo] = useState('')
+	const [noData, setNoData] = useState(false)
 	const date = new Date()
 	const day = date.getDay()
 	const dayDict= {
@@ -64,77 +68,30 @@ export default function StoreDetail({route, navigation}){
 				navigation.goBack()
 				return true
 			})
-
-			setDetailInfo({
-				phone:'02-576-8821',
-				name: '더클라임 클라이밍 짐앤샵 강남점',
-				address: '서울특별시 강남구 테헤란로8길 21 화인강남빌딩 B1층',
-				centerNumber: 0,
-				imageURL:'https://blog.kakaocdn.net/dn/bRo0BE/btrIftkCXTX/WtPj5QCrrf9V8hSkdIRql0/img.png',
-				levels:['빨강','주황','노랑','초록','파랑','남색','보라'],
-				event: [{
-					date: '', 
-					content: '' 
-			}],
-				time: [{
-					day: 0, 
-					startTime: '10:00', 
-					endTime:'23:00' 
-			},
-			{
-				day: 1, 
-				startTime: '10:00', 
-				endTime:'23:00' 
-			},
-			{
-				day: 2, 
-				startTime: '10:00', 
-				endTime:'23:00' 
-			},
-			{
-				day: 3, 
-				startTime: '10:00', 
-				endTime:'23:00' 
-			}, 
-			{
-				day: 4, 
-				startTime: '10:00', 
-				endTime:'23:00' 
-			},
-			{
-				day: 5, 
-				startTime: '10:00', 
-				endTime:'20:00' 
-		},
-			{
-				day: 6, 
-				startTime: '10:00', 
-				endTime:'20:00' 
-		},
-		],
-				price:
-				[
-					{name: '스타터 패키지 2개월', price: 350000},
-				{name: '스타터 패키지 2개월', price: 220000},
-				{name: '일일 체험 강습', price: 30000},
-				{name: '일일 이용권', price: 22000},
-				{name: '평일 이용권(17시까지)', price: 110000},
-				{name: '주말 강습', price: 180000},
-				{name: '키즈 주말 강습', price: 160000},
-				{name: '정기권(3개월)', price: 330000}
-				],
-			latitude: 37.49622174266254, longitude: 127.03029194140458
-		})
+			console.log(route.params.Id)
+			const source = axios.CancelToken.source();
+			axios.get(api.center(route.params.Id), {cancelToken: source.token})
+			.then(res=>{
+				setDetailInfo(res.data)
+				console.log(res)
+			})
+			.catch(err=>{
+				console.log(err)
+				setNoData(true)
+			})
 
 
-		return () => BackHandler.removeEventListener('hardwareBackPress')
+		return () => {
+			BackHandler.removeEventListener('hardwareBackPress')
+			source.cancel();
+		}
 		},[]
 	)
 
 	useEffect(()=>{
-		const todayInfo = detailInfo.time.filter(info=>info.day === day)[0]
+		const todayInfo = detailInfo.centerTimeList.filter(info=>info.day === day)[0]
 		if (todayInfo){
-			setTodayTimeInfo(`${dayDict[day]}  ${todayInfo.startTime} - ${todayInfo.endTime}`)
+			setTodayTimeInfo(`${dayDict[day]}  ${todayInfo.timeStart} - ${todayInfo.timeEnd}`)
 		}
 
 	},[detailInfo])
@@ -145,13 +102,16 @@ export default function StoreDetail({route, navigation}){
 			  title={'상세 정보'} // 상단 헤더 제목 (헤더의 왼쪽에 위치)
 				navigation={navigation} // 헤더에서 이동 필요할 때 navigation={navigation} 작성해서 상속해주기
 			/>
+				{	noData ? 
+				<View style={{alignItems:'center', height:'100%', width:'100%'}}><Text>지점 정보가 존재하지 않습니다.</Text></View>
+				:
 
 				<ScrollView
 					// onScroll={()=>{Animated.event(
 					// 	[{nativeEvent:{contentOffset: {y:scrollA}}}]
 					// 	, {useNativeDriver:true}
 					// )}}
-					scrollEventThrottle={16}
+					// scrollEventThrottle={16}
 					showsVerticalScrollIndicator={false}
 					style={{width:'100%', backgroundColor:'white'}}
 
@@ -182,9 +142,9 @@ export default function StoreDetail({route, navigation}){
 							<Text style={styles.subTitle}>전화번호</Text>
 							<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
 							<TouchableOpacity 
-								onPress={()=>{Linking.openURL(`tel:${detailInfo.phone}`)}}>
+								onPress={()=>{Linking.openURL(`tel:${detailInfo.phoneNumber}`)}}>
 								<Text style={styles.phone}>
-									{detailInfo.phone}
+									{detailInfo.phoneNumber}
 								</Text>
 							</TouchableOpacity>
 						</View>
@@ -194,16 +154,16 @@ export default function StoreDetail({route, navigation}){
 							<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
 
 							{/* 운영시간 toggle */}
-							{detailInfo.time.length ?								
+							{detailInfo.centerTimeList.length ?								
 								isTimeToggleOpen ? 
 								<>
 								<View>
-									{ detailInfo.time.map((info,idx)=>{
+									{ detailInfo.centerTimeList.map((info,idx)=>{
 										return (
 											<Text 
 												key={idx}
 												style={info.day===day ? styles.detailFocus:styles.detailfont}>
-												{dayDict[info.day]}  {info.startTime} - {info.endTime}
+												{dayDict[info.day]}  {info.timeStart} - {info.timeEnd}
 											</Text>
 										)
 									})
@@ -240,11 +200,11 @@ export default function StoreDetail({route, navigation}){
 							<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
 							
 							{/* 가격정보 toggle */}
-							{detailInfo.price.length ? 
+							{detailInfo.centerPriceList.length ? 
 								isPriceToggleOpen ? 
 								<>
 									<View>
-									{ detailInfo.price.map((info,idx)=>{
+									{ detailInfo.centerPriceList.map((info,idx)=>{
 										const p = Number(info.price)
 										const priceFormat = p.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 										return (
@@ -269,7 +229,7 @@ export default function StoreDetail({route, navigation}){
 								<>
 									<TouchableOpacity
 										onPress={()=>{setIsPriceToggleOpen(!isPriceToggleOpen)}}
-									><Text style={styles.detailfont}>{detailInfo.price[0].name} ꞏ {detailInfo.price[0].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} 원 </Text></TouchableOpacity>
+									><Text style={styles.detailfont}>{detailInfo.centerPriceList[0].name} ꞏ {detailInfo.centerPriceList[0].price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} 원 </Text></TouchableOpacity>
 									<TouchableOpacity 
 									hitSlop={{left: 32, right: 32}}	
 									style={styles.toggleBtn}
@@ -284,15 +244,13 @@ export default function StoreDetail({route, navigation}){
 						</View>
 						{/* 난이도 grid */}
 						<Text style={{...styles.subTitle, marginTop:10, marginBottom:5}}>난이도</Text>
-						<FlatList
-							key = {detailInfo.levels}
-							data={detailInfo.levels}
-							numColumns = {detailInfo.levels.length}
-							renderItem = {
-								({item}) =>
-								<View style={{marginHorizontal:'0.1%',height:25, width:`${100/detailInfo.levels.length - 0.2}%`, backgroundColor:levelColorDict[item]}}></View>
-							}
-						/>
+						<View style={{width:'100%', height:25, flexDirection:'row'}}>
+							{detailInfo.centerLevelList.map((item, idx) => {
+								return(
+									<View key={item.color} style={{marginHorizontal:'0.1%',height:25, width:`${100/detailInfo.centerLevelList.length - 0.2}%`, backgroundColor:levelColorDict[item.color]}}></View>
+								)
+							})}
+						</View>
 						{/* 구분선 */}
 						<View style={{height:15, borderBottomColor:'#929292',borderBottomWidth:0.2}}></View>
 						{/* 주소 */}
@@ -301,6 +259,7 @@ export default function StoreDetail({route, navigation}){
 					<View style={{height:50, width:'100%'}}></View>
 
 				</ScrollView>
+				}
 		</>
 	)
 }

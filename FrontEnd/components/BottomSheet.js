@@ -99,6 +99,14 @@ const BottomSheet = (props) => {
     setMapView('100%')
 	}
 
+	const refactorDis = (dis) =>{
+		if (dis >= 1000) {
+			return String((dis/1000).toFixed(1))+'km' 
+		} else {
+			return String(dis)+'m'
+		}
+	}
+
 	const renderItem = ({item}) =>{
 		return(
 			<TouchableOpacity 
@@ -109,7 +117,7 @@ const BottomSheet = (props) => {
 				>
 				<View style={{...styles.detailContainer}}>
 					<Text style={styles.renderItemName}>{item.name}</Text>	
-					<Text style={styles.renderItemDetail}>{item.distance}</Text>
+					<Text style={styles.renderItemDetail}>{refactorDis(item.distance)}</Text>
 				</View>
 					<Text style={styles.renderItemDetail}>{item.address}</Text>
 			</TouchableOpacity>

@@ -24,14 +24,15 @@ const api = {
   checkNickname: () => API_BASE_URL + USER_URL + NICKNAME_URL,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   profile: () => API_BASE_URL + USER_URL + PROFILE_URL,
-  follow: nickname => API_BASE_URL + USER_URL + `${nickname}` + FOLLOW_URL,
+  follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,
 
   centers: () => API_BASE_URL + CENTERS_URL,
-  center: centerId => API_BASE_URL + CENTERS_URL + `${centerId}`,
+  center: centerId=>API_BASE_URL + CENTERS_URL+ `/${centerId}`,
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
 };
 
 export default api;
+
