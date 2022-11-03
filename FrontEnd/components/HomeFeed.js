@@ -1,12 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
@@ -25,25 +20,17 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-const Placeholder = () => {
-  return (
-    <View
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        backgroundColor: 'black',
-      }}>
-      <ActivityIndicator size="large" color="white" />
-    </View>
-  );
-};
-
 function HomeFeed({feed, navigation, isViewable}) {
   const [contentHeight, setContentHeight] = useState(0);
   const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => setIsMuted(true);
+    }, []),
+  );
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
@@ -57,6 +44,10 @@ function HomeFeed({feed, navigation, isViewable}) {
 
   const viewFullContent = () => {
     setIsFullContent(true);
+  };
+
+  const changeMuted = () => {
+    setIsMuted(!isMuted);
   };
 
   return (
@@ -106,35 +97,33 @@ function HomeFeed({feed, navigation, isViewable}) {
       </View>
       {/* 동영상 */}
       <View style={{width: videoLength, height: videoLength}}>
-        {isViewable ? (
-          <>
-            <View style={styles.videoBox}>
-              <Video
-                source={{uri: feed.mediaId}}
-                style={styles.backgroundVideo}
-                fullscreen={false}
-                resizeMode={'contain'}
-                repeat={true}
-                controls={false}
-                muted={false}
-              />
-            </View>
-            <View style={styles.solvedDate}>
-              <CameraIcon />
-              <Text
-                style={{
-                  color: 'white',
-                  fontSize: 12,
-                  marginLeft: 3,
-                  marginTop: 1,
-                }}>
-                {feed.solvedDate}
-              </Text>
-            </View>
-          </>
-        ) : (
-          <Placeholder />
-        )}
+        <TouchableOpacity
+          style={styles.videoBox}
+          activeOpacity={1}
+          onPress={changeMuted}>
+          <Video
+            source={{uri: feed.mediaId}}
+            style={styles.backgroundVideo}
+            fullscreen={false}
+            resizeMode={'contain'}
+            repeat={true}
+            controls={false}
+            paused={!isViewable}
+            muted={isMuted}
+          />
+        </TouchableOpacity>
+        <View style={styles.solvedDate}>
+          <CameraIcon />
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 12,
+              marginLeft: 3,
+              marginTop: 1,
+            }}>
+            {feed.solvedDate}
+          </Text>
+        </View>
       </View>
       {/* 좋아요, 스크랩, 조회수 */}
       <View style={styles.popularInfo}>
