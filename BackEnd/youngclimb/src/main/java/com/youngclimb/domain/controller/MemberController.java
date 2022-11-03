@@ -1,9 +1,6 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.member.JoinMember;
-import com.youngclimb.domain.model.dto.member.LoginMember;
-import com.youngclimb.domain.model.dto.member.MemberInfo;
-import com.youngclimb.domain.model.dto.member.MemberProfile;
+import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.service.BoardService;
 import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
@@ -121,9 +118,41 @@ public class MemberController {
     @PostMapping("/{nickname}/follow")
     public ResponseEntity<?> addCancelFollow(@PathVariable String nickname) {
         try {
-            Boolean addCancelFollow = memberService.AddCancelFollow(nickname);
+            Boolean addCancelFollow = memberService.addCancelFollow(nickname);
             if (addCancelFollow != null) {
                 return new ResponseEntity<Boolean>(addCancelFollow, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+
+    @ApiOperation(value = "팔로잉, 팔로워 목록 읽기")
+    @GetMapping("/{nickname}/follow")
+    public ResponseEntity<?> listFollow(@PathVariable String nickname) {
+        try {
+            FollowMemberList followMemberList = memberService.listFollow(nickname);
+            if (followMemberList != null) {
+                return new ResponseEntity<FollowMemberList>(followMemberList, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 유저 정보 조회
+    @ApiOperation(value = "readProfile : 유저 정보 조회")
+    @GetMapping("/user/{nickname}")
+    public ResponseEntity<?> readProfile(@PathVariable String nickname) throws Exception {
+        try {
+            MemberDto memberDto = boardService.getUserInfoByUserId(nickname);
+            if (memberDto != null) {
+                return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }

@@ -1,9 +1,6 @@
 package com.youngclimb.domain.model.service;
 
-import com.youngclimb.domain.model.dto.member.JoinMember;
-import com.youngclimb.domain.model.dto.member.LoginMember;
-import com.youngclimb.domain.model.dto.member.MemberInfo;
-import com.youngclimb.domain.model.dto.member.MemberProfile;
+import com.youngclimb.domain.model.dto.member.*;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
@@ -30,7 +27,7 @@ public interface MemberService {
     // 로그아웃
     void logout(String email, String accessToken);
     // 팔로우 추가, 제거
-    Boolean AddCancelFollow(String followingNickname);
-
-//    TokenDto reissue(String refreshToken);
+    Boolean addCancelFollow(String followingNickname);
+    // 팔로잉 팔로워 목록 읽기
+    public FollowMemberList listFollow(String nickname);
 }
