@@ -100,9 +100,7 @@ export default function StoreScreen({navigation, route}) {
           // showsMyLocationButton={true}
           // onCameraChange={e => console.warn('onCameraChange', JSON.stringify(e))}
           >
-            {/* 
-            받은 정보 map        
-            <Marker coordinate={P0} onClick={() => console.warn('onClick! p0')}/> */}
+            {/*             받은 정보 map         */}
             {climbingLocations.map((center, idx)=>{
               return(
                 <Marker coordinate={{latitude:center.latitude, longitude:center.longitude}} key={center.id} caption={{text:center.name, align:Align.Top}}/>
