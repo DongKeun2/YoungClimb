@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
 
@@ -24,6 +25,12 @@ function HomeFeed({feed, navigation, isViewable}) {
   const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => setIsMuted(true);
+    }, []),
+  );
 
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
