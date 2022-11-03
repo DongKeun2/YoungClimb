@@ -31,4 +31,6 @@ public interface MemberService {
     void logout(String email, String accessToken);
     // 팔로우 추가, 제거
     Boolean AddCancelFollow(String followingNickname);
+
+//    TokenDto reissue(String refreshToken);
 }

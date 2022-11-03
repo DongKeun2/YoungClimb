@@ -1,6 +1,5 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.center.CenterDetailDto;
 import com.youngclimb.domain.model.dto.member.JoinMember;
 import com.youngclimb.domain.model.dto.member.LoginMember;
 import com.youngclimb.domain.model.dto.member.MemberInfo;
@@ -132,6 +131,16 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
+    // 토큰 재발급
+//    @PostMapping("/reissue")
+//    public ResponseEntity<TokenDto> reissue(@RequestHeader("RefreshToken") String refreshToken) {
+//        try {
+//            return ResponseEntity.ok(memberService.reissue(refreshToken));
+//        } catch (Exception e) {
+//            return exceptionHandling(e);
+//        }
+//    }
 
 
     // 예외처리

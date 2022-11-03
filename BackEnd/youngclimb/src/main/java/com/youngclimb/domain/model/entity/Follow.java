@@ -19,11 +19,26 @@ public class Follow {
     @Column(name = "follow_id")
     private Long id;
     // 팔로우 id
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "follower_id", insertable = false, updatable = false)
-    private Member follower;
+    Member follower;
     // 팔로잉 id
     @ManyToOne
     @JoinColumn(name = "following_id", insertable = false, updatable = false)
-    private Member following;
+    Member following;
+
+    public Follow setFollowing(Member following) {
+        this.following = following;
+        return this;
+    }
+
+    public Follow setFollower(Member follower) {
+        this.follower = follower;
+        return this;
+    }
+
+    public Follow(Member follower, Member following) {
+        this.follower = follower;
+        this.following = following;
+    }
 }
