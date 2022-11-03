@@ -1,9 +1,6 @@
 package com.youngclimb.domain.model.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -20,10 +17,10 @@ public class Follow {
     private Long id;
     // 팔로우 id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "follower_id", insertable = false, updatable = false)
+    @JoinColumn(name = "follower_id")
     private Member follower;
     // 팔로잉 id
     @ManyToOne
-    @JoinColumn(name = "following_id", insertable = false, updatable = false)
+    @JoinColumn(name = "following_id")
     private Member following;
 }
