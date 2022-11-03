@@ -16,9 +16,9 @@ import javax.persistence.*;
 public class Rank {
     // 등급 번호
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "rank_id")
-    private Integer id;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "rank_id")
+//    private Integer id;
     // 등급 이름
     @Column(name = "rank_name")
     private String name;
