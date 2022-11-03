@@ -42,15 +42,17 @@ function LoginScreen({navigation}) {
     });
   }
 
-  function onSubmitLogin() {
-    // 임시 로그인
+  // 임시 로그인
+  function onTestLogin() {
     dispatch(testLogin(true));
+  }
 
-    // const data = {
-    //   email: loginForm.email.value,
-    //   password: loginForm.email.value,
-    // };
-    // dispatch(login(data));
+  function onSubmitLogin() {
+    const data = {
+      email: loginForm.email.value,
+      password: loginForm.password.value,
+    };
+    dispatch(login(data));
   }
   return (
     <View style={styles.container}>
@@ -81,6 +83,13 @@ function LoginScreen({navigation}) {
           buttonColor="#EF3F8F"
           title="로그인"
           onPress={onSubmitLogin}
+        />
+      </View>
+      <View style={styles.button}>
+        <CustomButton
+          buttonColor="#EF3F8F"
+          title="가짜로그인"
+          onPress={onTestLogin}
         />
       </View>
       <View style={styles.linkGroup}>

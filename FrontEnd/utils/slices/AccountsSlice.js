@@ -5,21 +5,21 @@ import getConfig from '../headers';
 
 import {
   setAccessToken,
-  setRefreshToken,
   removeAccessToken,
-  removeRefreshToken,
   setCurrentUser,
   removeCurrentUser,
 } from '../Token';
 
-const login = createAsyncThunk('login', async (payload, {rejectWithValue}) => {
+const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
+  console.log('로그인 요청 감', data);
   try {
-    const res = await axios.post(api.login(), payload, {});
+    const res = await axios.post(api.login(), data, {});
+    console.log('로그인 결과', res.data);
     setAccessToken(res.data.accessToken);
-    setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
+    console.log(err);
     return rejectWithValue(err.response.data);
   }
 });
@@ -28,7 +28,6 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   try {
     const res = await axios.post(api.logout(), {}, getConfig());
     removeAccessToken();
-    removeRefreshToken();
     removeCurrentUser();
     return res.data;
   } catch (err) {
@@ -68,7 +67,6 @@ const signup = createAsyncThunk(
     try {
       const res = await axios.post(api.signup(), payload, {});
       setAccessToken(res.data.accessToken);
-      setRefreshToken(res.data.refreshToken);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -245,6 +243,7 @@ export const AccountsSlice = createSlice({
       state.loginState = true;
     },
     [login.rejected]: state => {
+      alert('이메일과 비밀번호를 확인해주세요.');
       state.loginState = false;
     },
     [signup.fulfilled]: (state, action) => {
