@@ -17,7 +17,7 @@ public class SearchController {
     private final SearchService searchService;
 
     @ApiOperation(value = "readAllBoard: 전체 게시글 조회")
-    @GetMapping
+    @GetMapping("/user")
     public ResponseEntity<?> searchMember() {
         try {
             List<MemberPic> memberPics = searchService.getMemberRec();
@@ -32,7 +32,7 @@ public class SearchController {
     }
 
     @ApiOperation(value = "searchMember: 유저 검색")
-    @PostMapping
+    @PostMapping("/user")
     public ResponseEntity<?> searchMember(@RequestParam String nickname) {
         try {
             List<MemberPic> memberPics = searchService.getMemberPic(nickname);
