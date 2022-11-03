@@ -26,7 +26,8 @@ import BoardActiveIcon from '../assets/image/search/holdA.svg';
 import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
 import searchInputIcon from '../assets/image/profile/searchIcon.png';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {searchUser} from '../utils/slices/SearchSlice';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
@@ -266,6 +267,8 @@ function UserTab({navigation}) {
   const [first, setFirst] = useState(false);
   const [result, setResult] = useState('');
 
+  // const result = useSelector(state => state.search.users);
+
   const mockApiCall = useMemo(
     () =>
       debounce(async (result, waitingTime = 1000) => {
@@ -273,7 +276,7 @@ function UserTab({navigation}) {
         if (keyword) {
           await new Promise(resolve => setTimeout(resolve, waitingTime));
 
-          // dispatch(search(keyword)).then(res => {
+          // dispatch(searchUser(keyword)).then(res => {
           //   setResult(res);
           // });
 
@@ -284,7 +287,7 @@ function UserTab({navigation}) {
 
         setLoading(false);
       }, 500),
-    [keyword],
+    [keyword], // dispatch
   );
 
   useEffect(() => {

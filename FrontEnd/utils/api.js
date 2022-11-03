@@ -13,7 +13,9 @@ const NICKNAME_URL = '/nickname';
 const PROFILE_URL = '/profile';
 const FOLLOW_URL = '/follow';
 
-const CENTERS_URL = '/center'
+const CENTERS_URL = '/center';
+
+const SEARCH_URL = '/search';
 
 const api = {
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
@@ -27,7 +29,9 @@ const api = {
   wingspan: () => WINGSPAN_URL,
 
   centers: () => API_BASE_URL + CENTERS_URL,
-  center: centerId=>API_BASE_URL + CENTERS_URL+ `${centerId}`,
+  center: centerId => API_BASE_URL + CENTERS_URL + `${centerId}`,
+
+  searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
 };
 
 export default api;
