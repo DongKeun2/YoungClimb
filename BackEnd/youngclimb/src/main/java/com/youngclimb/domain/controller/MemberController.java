@@ -49,8 +49,8 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody LoginMember member, HttpServletResponse response) throws Exception {
         try {
             // 헤더에 쿠키 붙이기
-            response.addHeader("Set-Cookie", "refreshToken="+memberService.login(member)+"; path=/; MaxAge=7 * 24 * 60 * 60; SameSite=Lax; HttpOnly");
-            return ResponseEntity.status(200).body(memberService.login(member));
+            response.addHeader("Set-Cookie", "accessToken="+memberService.login(member)+", path=/, MaxAge=7 * 24 * 60 * 60, SameSite=Lax, HttpOnly");
+            return ResponseEntity.status(200).body("로그인 되었습니다");
         } catch (Exception e) {
             return ResponseEntity.status(400).body("로그인 에러가 발생했습니다.");
         }

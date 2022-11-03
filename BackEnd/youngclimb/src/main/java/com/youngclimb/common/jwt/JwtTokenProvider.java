@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now) //생성일 설정
                 .setExpiration(new Date(now.getTime() + tokenValidTime)); //만료일 설정
 
-//		    claims.put("userId", userId); //담고 싶은 값
+		    claims.put("role", "user"); //담고 싶은 값
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")

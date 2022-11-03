@@ -193,6 +193,7 @@ public class MemberServiceImpl implements MemberService {
         if (!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
+        jwtTokenProvider.createRefreshToken(member.getEmail());
         return jwtTokenProvider.createAccessToken(member.getEmail());
     }
 
