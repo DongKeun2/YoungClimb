@@ -16,9 +16,9 @@ import java.util.List;
 public class SearchController {
     private final SearchService searchService;
 
-    @ApiOperation(value = "readAllBoard: 전체 게시글 조회")
+    @ApiOperation(value = "recMember: 유저 추천")
     @GetMapping("/user")
-    public ResponseEntity<?> searchMember() {
+    public ResponseEntity<?> recMember() {
         try {
             List<MemberPic> memberPics = searchService.getMemberRec();
             if (!memberPics.isEmpty()) {
