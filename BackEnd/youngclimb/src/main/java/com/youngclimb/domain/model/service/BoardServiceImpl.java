@@ -464,7 +464,7 @@ public class BoardServiceImpl implements BoardService {
 
             // 댓글 DTO 1개 세팅
             List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
-            if (comments.get(0) != null) {
+            if (!comments.isEmpty()) {
                 CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
                         .nickname(comments.get(0).getMember().getNickname())
                         .comment(comments.get(0).getContent())
@@ -475,6 +475,82 @@ public class BoardServiceImpl implements BoardService {
             boardDtos.add(boardDto);
         }
         memberDto.setBoards(boardDtos);
+
+        List<BoardScrap> scraps = boardScrapRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "boardScrapId"));
+        List<BoardDto> scrapDtos = new ArrayList<>();
+
+        for (BoardScrap scrap : scraps) {
+
+            // 게시글 DTO 세팅
+            BoardDto scrapDto = BoardDto.builder()
+                    .id(scrap.getBoard().getBoardId())
+                    .solvedDate(scrap.getBoard().getSolvedDate())
+                    .content(scrap.getBoard().getContent())
+                    .like(boardLikeRepository.countByBoard(scrap.getBoard()))
+                    .view(boardScrapRepository.countByBoard(scrap.getBoard()))
+                    .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
+                    .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
+                    .commentNum(commentRepository.countByBoard(scrap.getBoard()))
+                    .build();
+
+            // 작성 유저 정보 세팅
+            Member writer = scrap.getBoard().getMember();
+            CreateMember createUser = CreateMember.builder()
+                    .nickname(writer.getNickname())
+                    .image(writer.getMemberProfileImg())
+                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
+                    .build();
+
+            scrapDto.setCreateUser(createUser);
+
+            LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
+
+            // 작성날짜 세팅
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+            if (minus <= 10) {
+                timeText = "방금 전";
+            } else if (minus <= 60) {
+                timeText = minus + "분 전";
+            } else if (minus <= 1440) {
+                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            }
+
+            scrapDto.setCreatedAt(timeText);
+
+            // 게시글 미디어 path 세팅
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
+            scrapDto.setMediaPath(boardMedia.getMediaPath());
+
+            // 카테고리 정보 세팅
+            Category category = categoryRepository.findByBoard(scrap.getBoard()).orElseThrow();
+            scrapDto.setCenterId(category.getCenter().getId());
+            scrapDto.setCenterName(category.getCenter().getName());
+            scrapDto.setCenterLevelId(category.getCenterlevel().getId());
+            scrapDto.setCenterLevelColor(category.getCenterlevel().getColor());
+            scrapDto.setWallId(category.getWall().getId());
+            scrapDto.setWallName(category.getWall().getName());
+            scrapDto.setDifficulty(category.getDifficulty());
+            scrapDto.setHoldColor(category.getHoldColor());
+
+
+            // 댓글 DTO 1개 세팅
+            List<Comment> comments = commentRepository.findAllByBoard(scrap.getBoard(), Sort.by(Sort.Direction.DESC, "createdDatetime"));
+            if (!comments.isEmpty()) {
+                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                        .nickname(comments.get(0).getMember().getNickname())
+                        .comment(comments.get(0).getContent())
+                        .build();
+                scrapDto.setCommentPreview(commentPreviewDto);
+            }
+            // List add
+            scrapDtos.add(scrapDto);
+        }
+
+        memberDto.setScraps(scrapDtos);
 
         return memberDto;
     }

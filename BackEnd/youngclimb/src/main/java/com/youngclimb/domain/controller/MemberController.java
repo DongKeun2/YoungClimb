@@ -130,6 +130,7 @@ public class MemberController {
         }
     }
 
+
     @ApiOperation(value = "팔로잉, 팔로워 목록 읽기")
     @GetMapping("/{nickname}/follow")
     public ResponseEntity<?> listFollow(@PathVariable String nickname) {
@@ -144,6 +145,23 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
+    // 유저 정보 조회
+    @ApiOperation(value = "readProfile : 유저 정보 조회")
+    @GetMapping("/user/{nickname}")
+    public ResponseEntity<?> readProfile(@PathVariable String nickname) throws Exception {
+        try {
+            MemberDto memberDto = boardService.getUserInfoByUserId(nickname);
+            if (memberDto != null) {
+                return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
 
     // 예외처리
     private ResponseEntity<String> exceptionHandling(Exception e) {
