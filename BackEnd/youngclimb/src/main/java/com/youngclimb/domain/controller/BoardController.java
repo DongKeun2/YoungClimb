@@ -75,26 +75,13 @@ public class BoardController {
         }
     }
 
-    // 게시글 좋아요
+    // 게시글 좋아요/취소
     @ApiOperation(value = "BoardLike : 좋아요 클릭")
     @PostMapping("/{boardId}/like")
-    public ResponseEntity<?> boardLike(@PathVariable Long boardId) throws Exception {
+    public ResponseEntity<?> boardLikeCancle(@PathVariable Long boardId) throws Exception {
         String email = "hello@young.climb";
         try {
-            return new ResponseEntity<Boolean>(boardService.boardLike(boardId, email), HttpStatus.OK);
-
-        } catch (Exception e) {
-            return exceptionHandling(e);
-        }
-    }
-
-    // 게시글 좋아요 취소
-    @ApiOperation(value = "BoardUnlike : 좋아요 취소")
-    @PostMapping("/{boardId}/unlike")
-    public ResponseEntity<?> boardUnlike(@PathVariable Long boardId) throws Exception {
-        String email = "hello@young.climb";
-        try {
-            return new ResponseEntity<Boolean>(boardService.boardUnlike(boardId, email), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.boardLikeCancle(boardId, email), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -131,26 +118,13 @@ public class BoardController {
         }
     }
 
-    // 댓글 좋아요
+    // 댓글 좋아요/취소
     @ApiOperation(value = "CommentLike : 댓글 좋아요 클릭")
-    @PostMapping("/{boardId}/comment/{commentId}/like")
-    public ResponseEntity<?> commentLike(@PathVariable Long boardId, @PathVariable Long commentId) throws Exception {
+    @PostMapping("/comment/{commentId}/like")
+    public ResponseEntity<?> commentLikeCancle(@PathVariable Long commentId) throws Exception {
         String email = "hello@young.climb";
         try {
-            return new ResponseEntity<Boolean>(boardService.commentLike(commentId, email), HttpStatus.OK);
-
-        } catch (Exception e) {
-            return exceptionHandling(e);
-        }
-    }
-
-    // 댓글 좋아요 취소
-    @ApiOperation(value = "CommentUnlike : 댓글 좋아요 취소")
-    @PostMapping("/{boardId}/comment/{commentId}/unlike")
-    public ResponseEntity<?> commentUnlike(@PathVariable Long boardId, @PathVariable Long commentId) throws Exception {
-        String email = "hello@young.climb";
-        try {
-            return new ResponseEntity<Boolean>(boardService.commentUnlike(commentId, email), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.commentLikeCancle(commentId, email), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -158,27 +132,13 @@ public class BoardController {
     }
 
 
-
-    // 게시물 스크랩
+    // 게시물 스크랩/취소
     @ApiOperation(value = "upBoardScrap : 스크랩 클릭")
-    @PostMapping("/{boardId}/scrap/{userId}")
-    public ResponseEntity<?> upBoardScrap(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
-
+    @PostMapping("/{boardId}/scrap")
+    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId) throws Exception {
+        String email = "hello@young.climb";
         try {
-            return new ResponseEntity<Boolean>(boardService.boardScrap(boardId, userId), HttpStatus.OK);
-
-        } catch (Exception e) {
-            return exceptionHandling(e);
-        }
-    }
-
-    // 게시물 스크랩 취소
-    @ApiOperation(value = "upBoardUnScrap : 스크랩 클릭")
-    @PostMapping("/{boardId}/unscrap/{userId}")
-    public ResponseEntity<?> upBoardUnScrap(@PathVariable Long boardId, @PathVariable String userId) throws Exception {
-
-        try {
-            return new ResponseEntity<Boolean>(boardService.boardUnScrap(boardId, userId), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.boardScrapCancle(boardId, email), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);

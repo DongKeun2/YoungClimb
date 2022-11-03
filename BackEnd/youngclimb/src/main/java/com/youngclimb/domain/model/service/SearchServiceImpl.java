@@ -1,6 +1,7 @@
 package com.youngclimb.domain.model.service;
 
 import com.youngclimb.domain.model.dto.board.BoardDto;
+import com.youngclimb.domain.model.dto.board.BoardSearchDto;
 import com.youngclimb.domain.model.dto.member.MemberDto;
 import com.youngclimb.domain.model.dto.member.MemberPic;
 import com.youngclimb.domain.model.entity.Board;
@@ -67,4 +68,21 @@ public class SearchServiceImpl implements SearchService {
         return memberPics;
     }
 
+//    @Override
+//    public List<BoardDto> getBoardPic(BoardSearchDto boardSearchDto) {
+//        List<Member> members = memberRepository.findAllByNicknameContains(boardSearchDto);
+//        List<MemberPic> memberPics = new ArrayList<>();
+//
+//        for (Member member : members) {
+//            MemberPic memberPic = MemberPic.builder()
+//                    .nickname(member.getNickname())
+//                    .image(member.getMemberProfileImg())
+//                    .rank(memberRankExpRepository.findByMember(member).orElseThrow().getRank().getName())
+//                    .build();
+//
+//            memberPics.add(memberPic);
+//        }
+//
+//        return memberPics;
+//    }
 }

@@ -188,29 +188,26 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 좋아요
     @Override
-    public Boolean boardLike(Long boardId, String email) {
+    public Boolean boardLikeCancle(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        BoardLike boardLike = BoardLike.builder()
-                .board(board)
-                .member(member)
-                .build();
-        boardLikeRepository.save(boardLike);
+        boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
-        return true;
+        if (!isLike) {
+            BoardLike boardLike = BoardLike.builder()
+                    .board(board)
+                    .member(member)
+                    .build();
+            boardLikeRepository.save(boardLike);
+
+            return true;
+        } else {
+            boardLikeRepository.deleteByBoardAndMember(board, member);
+            return false;
+        }
+
     }
-
-    // 게시글 좋아요 취소
-    @Override
-    public Boolean boardUnlike(Long boardId, String email) {
-        Board board = boardRepository.findById(boardId).orElseThrow();
-        Member member = memberRepository.findByEmail(email).orElseThrow();
-
-        boardLikeRepository.deleteByBoardAndMember(board, member);
-        return false;
-    }
-
 
     // 게시글 - 댓글 상세보기
     @Override
@@ -300,7 +297,7 @@ public class BoardServiceImpl implements BoardService {
             // 대댓글 세팅
             List<Comment> reComments = commentRepository.findByParentId(comment.getId());
             List<CommentDto> reCommentDtos = new ArrayList<>();
-            for(Comment reComment : reComments) {
+            for (Comment reComment : reComments) {
                 Member rcWriter = reComment.getMember();
                 CreateMember rcCreateMember = CreateMember.builder()
                         .nickname(rcWriter.getNickname())
@@ -325,27 +322,25 @@ public class BoardServiceImpl implements BoardService {
 
     // 댓글 좋아요
     @Override
-    public Boolean commentLike(Long commentId, String email) {
+    public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        CommentLike commentLike = CommentLike.builder()
-                .comment(comment)
-                .member(member)
-                .build();
+        boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
-        commentLikeRepository.save(commentLike);
-        return true;
-    }
+        if (!isLike) {
+            CommentLike commentLike = CommentLike.builder()
+                    .comment(comment)
+                    .member(member)
+                    .build();
 
-    // 댓글 좋아요 취소
-    @Override
-    public Boolean commentUnlike(Long commentId, String email) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
-        Member member = memberRepository.findByEmail(email).orElseThrow();
+            commentLikeRepository.save(commentLike);
+            return true;
+        } else {
+            commentLikeRepository.deleteByCommentAndMember(comment, member);
+            return false;
+        }
 
-        commentLikeRepository.deleteByCommentAndMember(comment, member);
-        return false;
     }
 
     // 댓글 작성
@@ -557,27 +552,25 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 스크랩
     @Override
-    public Boolean boardScrap(Long boardId, String email) {
+    public Boolean boardScrapCancle(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        BoardScrap boardScrap = BoardScrap.builder()
-                .board(board)
-                .member(member)
-                .build();
-        boardScrapRepository.save(boardScrap);
+        boolean isScrap = boardScrapRepository.existsByBoardAndMember(board, member);
 
-        return true;
-    }
+        if (!isScrap) {
+            BoardScrap boardScrap = BoardScrap.builder()
+                    .board(board)
+                    .member(member)
+                    .build();
+            boardScrapRepository.save(boardScrap);
 
-    // 게시글 스크랩 취소
-    @Override
-    public Boolean boardUnScrap(Long boardId, String email) {
-        Board board = boardRepository.findById(boardId).orElseThrow();
-        Member member = memberRepository.findByEmail(email).orElseThrow();
+            return true;
+        } else {
+            boardScrapRepository.deleteByBoardAndMember(board, member);
+            return false;
+        }
 
-        boardScrapRepository.deleteByBoardAndMember(board, member);
-        return false;
     }
 
 }

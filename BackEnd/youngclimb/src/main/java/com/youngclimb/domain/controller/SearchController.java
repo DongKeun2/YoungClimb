@@ -1,6 +1,7 @@
 package com.youngclimb.domain.controller;
 
 import com.youngclimb.domain.model.dto.UserSearchDto;
+import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.dto.board.BoardSearchDto;
 import com.youngclimb.domain.model.dto.member.MemberPic;
 import com.youngclimb.domain.model.service.SearchService;
@@ -44,9 +45,9 @@ public class SearchController {
 //    @PostMapping("/board")
 //    public ResponseEntity<?> searchBoard(@RequestBody BoardSearchDto boardSearchDto) {
 //        try {
-//            List<MemberPic> memberPics = searchService.getMemberPic(boardSearchDto);
-//            if (!memberPics.isEmpty()) {
-//                return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
+//            List<BoardDto> boardDtos = searchService.getBoardPic(boardSearchDto);
+//            if (!boardDtos.isEmpty()) {
+//                return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
 //            } else {
 //                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 //            }
