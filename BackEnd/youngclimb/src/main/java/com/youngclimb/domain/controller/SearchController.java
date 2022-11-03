@@ -33,9 +33,9 @@ public class SearchController {
 
     @ApiOperation(value = "searchMember: 유저 검색")
     @PostMapping("/user")
-    public ResponseEntity<?> searchMember(@RequestParam String nickname) {
+    public ResponseEntity<?> searchMember(@RequestBody String keyword) {
         try {
-            List<MemberPic> memberPics = searchService.getMemberPic(nickname);
+            List<MemberPic> memberPics = searchService.getMemberPic(keyword);
             if (!memberPics.isEmpty()) {
                 return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
             } else {
