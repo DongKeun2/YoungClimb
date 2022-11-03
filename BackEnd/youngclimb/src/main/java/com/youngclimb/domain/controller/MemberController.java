@@ -119,9 +119,25 @@ public class MemberController {
     @PostMapping("/{nickname}/follow")
     public ResponseEntity<?> addCancelFollow(@PathVariable String nickname) {
         try {
-            Boolean addCancelFollow = memberService.AddCancelFollow(nickname);
+            Boolean addCancelFollow = memberService.addCancelFollow(nickname);
             if (addCancelFollow != null) {
                 return new ResponseEntity<Boolean>(addCancelFollow, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+
+    @ApiOperation(value = "팔로잉, 팔로워 목록 읽기")
+    @GetMapping("/{nickname}/follow")
+    public ResponseEntity<?> listFollow(@PathVariable String nickname) {
+        try {
+            FollowMemberList followMemberList = memberService.listFollow(nickname);
+            if (followMemberList != null) {
+                return new ResponseEntity<FollowMemberList>(followMemberList, HttpStatus.OK);
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }
@@ -145,7 +161,6 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
-
 
 
     // 예외처리

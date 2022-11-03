@@ -24,7 +24,7 @@ public class MemberRankExp {
     private Member member;
     // 등급 번호
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rank_id")
+    @JoinColumn(name = "rank_name")
     private Rank rank;
     // 경험치
     @Column(name = "member_EXP")
