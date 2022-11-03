@@ -16,9 +16,9 @@ import java.util.List;
 public class SearchController {
     private final SearchService searchService;
 
-    @ApiOperation(value = "readAllBoard: 전체 게시글 조회")
-    @GetMapping
-    public ResponseEntity<?> searchMember() {
+    @ApiOperation(value = "recMember: 유저 추천")
+    @GetMapping("/user")
+    public ResponseEntity<?> recMember() {
         try {
             List<MemberPic> memberPics = searchService.getMemberRec();
             if (!memberPics.isEmpty()) {
@@ -32,7 +32,7 @@ public class SearchController {
     }
 
     @ApiOperation(value = "searchMember: 유저 검색")
-    @PostMapping
+    @PostMapping("/user")
     public ResponseEntity<?> searchMember(@RequestParam String nickname) {
         try {
             List<MemberPic> memberPics = searchService.getMemberPic(nickname);
