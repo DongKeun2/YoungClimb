@@ -1,12 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
@@ -24,21 +18,6 @@ import EyeIcon from '../assets/image/feed/eye.svg';
 import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
-
-const Placeholder = () => {
-  return (
-    <View
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        backgroundColor: 'black',
-      }}>
-      <ActivityIndicator size="large" color="white" />
-    </View>
-  );
-};
 
 function HomeFeed({feed, navigation, isViewable}) {
   const [contentHeight, setContentHeight] = useState(0);
@@ -106,35 +85,30 @@ function HomeFeed({feed, navigation, isViewable}) {
       </View>
       {/* 동영상 */}
       <View style={{width: videoLength, height: videoLength}}>
-        {isViewable ? (
-          <>
-            <View style={styles.videoBox}>
-              <Video
-                source={{uri: feed.mediaId}}
-                style={styles.backgroundVideo}
-                fullscreen={false}
-                resizeMode={'contain'}
-                repeat={true}
-                controls={false}
-                muted={false}
-              />
-            </View>
-            <View style={styles.solvedDate}>
-              <CameraIcon />
-              <Text
-                style={{
-                  color: 'white',
-                  fontSize: 12,
-                  marginLeft: 3,
-                  marginTop: 1,
-                }}>
-                {feed.solvedDate}
-              </Text>
-            </View>
-          </>
-        ) : (
-          <Placeholder />
-        )}
+        <View style={styles.videoBox}>
+          <Video
+            source={{uri: feed.mediaId}}
+            style={styles.backgroundVideo}
+            fullscreen={false}
+            resizeMode={'contain'}
+            repeat={true}
+            controls={false}
+            paused={!isViewable}
+            muted={false}
+          />
+        </View>
+        <View style={styles.solvedDate}>
+          <CameraIcon />
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 12,
+              marginLeft: 3,
+              marginTop: 1,
+            }}>
+            {feed.solvedDate}
+          </Text>
+        </View>
       </View>
       {/* 좋아요, 스크랩, 조회수 */}
       <View style={styles.popularInfo}>
