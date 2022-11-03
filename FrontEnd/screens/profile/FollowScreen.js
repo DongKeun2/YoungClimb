@@ -64,6 +64,7 @@ function FollowScreen({navigation}) {
         <TextInput
           style={styles.searchInput}
           placeholder="닉네임을 검색하세요."
+          placeholderTextColor={'#ADADAD'}
           value={keyword}
           onChangeText={value => setKeyword(value)}
         />
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomColor: '#464646',
     borderRadius: 10,
-    fontSize: 16,
+    fontSize: 14,
     padding: 5,
     paddingLeft: 40,
     color: 'black',

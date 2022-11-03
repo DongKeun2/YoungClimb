@@ -27,7 +27,11 @@ function SearchResultScreen({navigation, route}) {
         </View>
 
         <View>
-          <CardList articles={boards} navigation={navigation} />
+          {boards.length ? (
+            <CardList boards={boards} navigation={navigation} />
+          ) : (
+            <Text style={styles.text}>검색 결과 없음</Text>
+          )}
         </View>
       </ScrollView>
     </>
@@ -35,13 +39,13 @@ function SearchResultScreen({navigation, route}) {
 }
 
 import ArticleCard from '../components/ArticleCard';
-function CardList({articles, navigation}) {
+function CardList({boards, navigation}) {
   return (
     <>
       <View style={styles.articleContainer}>
-        {articles.map((article, i) => {
+        {boards.map((board, i) => {
           return (
-            <ArticleCard key={i} article={article} navigation={navigation} />
+            <ArticleCard key={i} article={board} navigation={navigation} />
           );
         })}
       </View>
