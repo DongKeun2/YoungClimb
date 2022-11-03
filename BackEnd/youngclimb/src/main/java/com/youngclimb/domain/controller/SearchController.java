@@ -23,11 +23,7 @@ public class SearchController {
     public ResponseEntity<?> recMember() {
         try {
             List<MemberPic> memberPics = searchService.getMemberRec();
-            if (!memberPics.isEmpty()) {
-                return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-            }
+            return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
@@ -38,11 +34,7 @@ public class SearchController {
     public ResponseEntity<?> searchMember(@RequestBody UserSearchDto userSearchDto) {
         try {
             List<MemberPic> memberPics = searchService.getMemberPic(userSearchDto.getKeyword());
-            if (!memberPics.isEmpty()) {
-                return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-            }
+            return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
