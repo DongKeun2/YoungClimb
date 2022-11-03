@@ -1,11 +1,20 @@
-import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, BackHandler} from 'react-native';
+import React, {useState, useRef, useCallback, useEffect, useMemo} from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  BackHandler,
+  Image,
+  TextInput,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Picker} from '@react-native-picker/picker';
+import {debounce} from 'lodash';
 
 import CustomMainHeader from '../components/CustomMainHeader';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
-import { Toast } from '../components/Toast';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
+import {Toast} from '../components/Toast';
 
 import {holdList} from '../assets/info/ColorInfo';
 
@@ -16,47 +25,50 @@ import BoardIcon from '../assets/image/search/hold.svg';
 import BoardActiveIcon from '../assets/image/search/holdA.svg';
 import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
+import searchInputIcon from '../assets/image/profile/searchIcon.png';
+import {useDispatch} from 'react-redux';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
-  const [exitAttempt, setExitAttempt] = useState(false)
-  const routeName = useRoute()
+  const [exitAttempt, setExitAttempt] = useState(false);
+  const routeName = useRoute();
   const toastRef = useRef(null);
-  const onPressExit = useCallback(()=>{
-      toastRef.current.show("앱을 종료하려면 뒤로가기를 한번 더 눌러주세요");
+  const onPressExit = useCallback(() => {
+    toastRef.current.show('앱을 종료하려면 뒤로가기를 한번 더 눌러주세요');
   }, []);
 
-  const backAction = ()=>{ 
-    if (routeName.name !== '검색'){
-      navigation.goBack()
-      return true
-    } else{
-      if (!exitAttempt){
-        setExitAttempt(true)
-        setTimeout(()=>{setExitAttempt(false)}, 2000)
-        onPressExit()
-        return true
-      } else{
-        BackHandler.exitApp()
-        return true
+  const backAction = () => {
+    if (routeName.name !== '검색') {
+      navigation.goBack();
+      return true;
+    } else {
+      if (!exitAttempt) {
+        setExitAttempt(true);
+        setTimeout(() => {
+          setExitAttempt(false);
+        }, 2000);
+        onPressExit();
+        return true;
+      } else {
+        BackHandler.exitApp();
+        return true;
       }
     }
-  }
+  };
 
-  useEffect(()=>{
-    BackHandler.removeEventListener('hardwareBackPress')
-  },[]
-  )
-  
-  useFocusEffect(()=>{
-  const backHandler = BackHandler.addEventListener(
-    "hardwareBackPress",
-    backAction
-  );
-  return ()=> {
-    backHandler.remove()
-  }
-   })
+  useEffect(() => {
+    BackHandler.removeEventListener('hardwareBackPress');
+  }, []);
+
+  useFocusEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+    return () => {
+      backHandler.remove();
+    };
+  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,11 +107,12 @@ function SearchScreen({navigation}) {
       ) : (
         <UserTab navigation={navigation} />
       )}
-      <Toast ref={toastRef}/>
+      <Toast ref={toastRef} />
     </SafeAreaView>
   );
 }
 
+// 게시글 검색
 function BoardTab({navigation}) {
   const [isSimilar, setIsSimilar] = useState(false);
 
@@ -114,7 +127,6 @@ function BoardTab({navigation}) {
     navigation.navigate('검색 결과');
   }
 
-  
   return (
     <>
       <View style={styles.selectContainer}>
@@ -245,8 +257,75 @@ function BoardTab({navigation}) {
   );
 }
 
+// 유저 검색
 function UserTab({navigation}) {
-  return <></>;
+  const dispatch = useDispatch();
+
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(undefined);
+  const [first, setFirst] = useState(false);
+  const [result, setResult] = useState('');
+
+  const mockApiCall = useMemo(
+    () =>
+      debounce(async (result, waitingTime = 1000) => {
+        setLoading(true);
+        if (keyword) {
+          await new Promise(resolve => setTimeout(resolve, waitingTime));
+
+          // dispatch(search(keyword)).then(res => {
+          //   setResult(res);
+          // });
+
+          setResult(keyword);
+
+          setFirst(true);
+        }
+
+        setLoading(false);
+      }, 500),
+    [keyword],
+  );
+
+  useEffect(() => {
+    console.log(keyword);
+
+    mockApiCall(keyword); // call the debounced function
+
+    return () => {
+      mockApiCall.cancel(); // cancel the debounced function
+    };
+  }, [mockApiCall, keyword]);
+
+  return (
+    <>
+      <View style={styles.searchBox}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="닉네임을 검색하세요."
+          placeholderTextColor={'#ADADAD'}
+          value={keyword}
+          onChangeText={value => {
+            setKeyword(value);
+          }}
+        />
+        <Image style={styles.searchIcon} source={searchInputIcon} />
+      </View>
+      {loading ? (
+        <Text style={styles.noSearchText}>검색 중</Text>
+      ) : result ? (
+        <View>
+          <Text style={styles.noSearchText}>검색 결과 : {result}</Text>
+        </View>
+      ) : keyword ? (
+        first ? (
+          <View>
+            <Text style={styles.noSearchText}>검색결과 없음</Text>
+          </View>
+        ) : null
+      ) : null}
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -333,6 +412,30 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: 'white',
+  },
+  searchBox: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  searchInput: {
+    width: '80%',
+    borderWidth: 1,
+    borderBottomColor: '#464646',
+    borderRadius: 10,
+    fontSize: 14,
+    padding: 5,
+    paddingLeft: 40,
+    color: 'black',
+  },
+  searchIcon: {
+    position: 'absolute',
+    top: 7,
+    left: '12%',
+  },
+  noSearchText: {
+    color: 'black',
   },
 });
 
