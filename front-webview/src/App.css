@@ -1,38 +1,65 @@
-.App {
-  text-align: center;
+@font-face {
+  font-family: 'LeferiPoint-BlackA';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/LeferiPoint-BlackA.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+@font-face {
+  font-family: 'LeferiPoint-BlackObliqueA';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/LeferiPoint-BlackObliqueA.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.outer {
+  height: 100vh;
+  overflow-y: auto;
+  position: relative;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.outer::webkit-scrollbar {
+  display:none
+}
+
+.fullVH{
+  height:100vh
+}
+
+.phone {
+  position:absolute;
+  width:50%;
+  left:45%;
+  top:50%;
+  transform: translateY(-50%);
+}
+
+.infoDiv{
+  position:absolute;
+  left:7%;
+  top:50%;
+  transform: translateY(-50%);
+}
+
+.title {
+  font-family: 'LeferiPoint-BlackObliqueA';
+  font-size: 3.5vw;
+  font-weight: 700;
+  color: #F34D7F;
+}
+
+.subtitle {
+  padding-left: 5px;
+  font-family: 'LeferiPoint-BlackObliqueA';
+  font-size: 1.2vw;
+  color: #F34D7F;
+}
+
+.flexTextBox {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.downloadBtn {
+  width: 40px;
+  height: 30px;
 }

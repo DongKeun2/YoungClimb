@@ -85,9 +85,11 @@ function HomeFeed({feed, navigation, isViewable}) {
           <Text style={{...styles.feedTextStyle, marginRight: 8}}>
             {feed.centerName}
           </Text>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-            {feed.wallName}
-          </Text>
+          {feed.wallName ? (
+            <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+              {feed.wallName}
+            </Text>
+          ) : null}
           <Text style={{...styles.feedTextStyle, marginRight: 3}}>
             {feed.difficulty}
           </Text>

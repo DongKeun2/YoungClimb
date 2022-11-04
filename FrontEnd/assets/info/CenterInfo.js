@@ -2,7 +2,11 @@ const centerInfo = [
   {
     id: 1,
     name: '더클라임 강남점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 1, name: '흰색'},
       {id: 2, name: '노랑'},
@@ -18,7 +22,12 @@ const centerInfo = [
   {
     id: 2,
     name: '더클라임 홍대점 B',
-    sector: ['A구역', 'B구역', 'C구역', 'D구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+      {id: 4, name: 'D구역'},
+    ],
     level: [
       {id: 10, name: '흰색'},
       {id: 11, name: '노랑'},
@@ -34,7 +43,11 @@ const centerInfo = [
   {
     id: 3,
     name: '더클라임 연남점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 19, name: '흰색'},
       {id: 20, name: '노랑'},
@@ -50,7 +63,11 @@ const centerInfo = [
   {
     id: 4,
     name: '더클라임 일산점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 29, name: '흰색'},
       {id: 30, name: '노랑'},
@@ -66,7 +83,11 @@ const centerInfo = [
   {
     id: 5,
     name: '더클라임 양재점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 38, name: '흰색'},
       {id: 39, name: '노랑'},
@@ -82,7 +103,11 @@ const centerInfo = [
   {
     id: 6,
     name: '더클라임 마곡점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 47, name: '흰색'},
       {id: 48, name: '노랑'},
@@ -98,7 +123,11 @@ const centerInfo = [
   {
     id: 7,
     name: '더클라임 서울대점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 56, name: '흰색'},
       {id: 57, name: '노랑'},
@@ -114,7 +143,11 @@ const centerInfo = [
   {
     id: 8,
     name: '더클라임 신림점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 65, name: '흰색'},
       {id: 66, name: '노랑'},
@@ -130,7 +163,11 @@ const centerInfo = [
   {
     id: 9,
     name: '비블럭 클라이밍 강남점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 74, name: '핑크'},
       {id: 75, name: '파랑'},
@@ -143,7 +180,11 @@ const centerInfo = [
   {
     id: 10,
     name: '락트리 클라이밍 강남점',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 80, name: '흰색'},
       {id: 81, name: '빨강'},
@@ -159,7 +200,11 @@ const centerInfo = [
   {
     id: 11,
     name: '정지현 클라이밍짐',
-    sector: ['A구역', 'B구역', 'C구역'],
+    sector: [
+      {id: 1, name: 'A구역'},
+      {id: 2, name: 'B구역'},
+      {id: 3, name: 'C구역'},
+    ],
     level: [
       {id: 89, name: '노랑'},
       {id: 90, name: '핑크'},
