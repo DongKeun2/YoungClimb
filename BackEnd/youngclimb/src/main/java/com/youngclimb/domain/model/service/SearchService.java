@@ -11,6 +11,5 @@ import java.util.List;
 public interface SearchService {
     List<MemberPic> getMemberRec();
     List<MemberPic> getMemberPic(String nickname);
-
 //    List<BoardDto> getBoardPic(BoardSearchDto boardSearchDto);
 }

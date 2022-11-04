@@ -8,7 +8,11 @@ import lombok.Data;
 public class BoardSearchDto {
     Integer center;
     Integer wall;
-    String level;
+    Integer level;
     String holdColor;
     boolean isSimilar;
+
+    public boolean getIsSimilar() {
+        return this.isSimilar;
+    }
 }

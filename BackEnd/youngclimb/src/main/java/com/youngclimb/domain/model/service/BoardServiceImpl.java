@@ -378,8 +378,7 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByNickname(userId).orElseThrow();
         MemberDto memberDto = new MemberDto();
 
-        memberDto.setIsfollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(1L, member.getMemberId()));
-
+        memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(1L, member.getMemberId()));
         UserDto userDto = new UserDto();
 
         userDto.setImage(member.getMemberProfileImg());
@@ -391,8 +390,8 @@ public class BoardServiceImpl implements BoardService {
         userDto.setWingspan(member.getWingspan());
         userDto.setRank(memberRankExpRepository.findByMember(member).orElseThrow().getRank().getName());
         userDto.setBoardNum(boardRepository.countByMember(member));
-        userDto.setFollowingNum(followRepository.countByFollowing(member));
-        userDto.setFollowerNum(followRepository.countByFollower(member));
+        userDto.setFollowingNum(followRepository.countByFollower(member));
+        userDto.setFollowerNum(followRepository.countByFollowing(member));
 
         memberDto.setUser(userDto);
 
