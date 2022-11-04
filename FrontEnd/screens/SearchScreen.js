@@ -164,7 +164,9 @@ function BoardTab({navigation}) {
     <>
       <View style={styles.selectContainer}>
         <View style={styles.box}>
-          <Text style={styles.text}>지점*</Text>
+          <Text style={styles.text}>
+            지점<Text style={{color: '#F34D7F'}}> *</Text>
+          </Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
@@ -218,7 +220,9 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>난이도*</Text>
+          <Text style={styles.text}>
+            난이도<Text style={{color: '#F34D7F'}}> *</Text>
+          </Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
@@ -237,8 +241,8 @@ function BoardTab({navigation}) {
                     <Picker.Item
                       key={id}
                       style={styles.pickerLabel}
-                      label={item}
-                      value={item}
+                      label={item.name}
+                      value={item.id}
                     />
                   ))
                 : null}
@@ -247,7 +251,9 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>홀드 색상*</Text>
+          <Text style={styles.text}>
+            홀드 색상<Text style={{color: '#F34D7F'}}> *</Text>
+          </Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
@@ -418,7 +424,7 @@ function UserCard({user, navigation}) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('서브프로필', {
+        navigation.push('서브프로필', {
           initial: false,
           nickname: user.nickname,
         });
