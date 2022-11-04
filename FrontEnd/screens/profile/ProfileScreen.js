@@ -102,7 +102,7 @@ function ProfileScreen({navigation, route}) {
     if (isFocused) {
       dispatch(profile(route.params.nickname));
     }
-  }, [dispatch, isFocused]);
+  }, [dispatch, route, isFocused]);
 
   return (
     <>
