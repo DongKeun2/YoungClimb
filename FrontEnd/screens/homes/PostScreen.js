@@ -171,9 +171,11 @@ function PostScreen({navigation, route}) {
               <Text style={{...styles.feedTextStyle, marginRight: 8}}>
                 {route.params.board.centerName}
               </Text>
-              <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                {route.params.board.wallName}
-              </Text>
+              {route.params.board.wallName ? (
+                <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                  {route.params.board.wallName}
+                </Text>
+              ) : null}
               <Text style={{...styles.feedTextStyle, marginRight: 3}}>
                 {route.params.board.difficulty}
               </Text>
