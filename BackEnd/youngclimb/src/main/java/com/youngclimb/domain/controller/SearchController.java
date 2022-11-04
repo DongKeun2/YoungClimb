@@ -40,8 +40,8 @@ public class SearchController {
             return exceptionHandling(e);
         }
     }
-
-//    @ApiOperation(value = "searchMember: 유저 검색")
+//
+//    @ApiOperation(value = "searchBoard: 게시글 검색")
 //    @PostMapping("/board")
 //    public ResponseEntity<?> searchBoard(@RequestBody BoardSearchDto boardSearchDto) {
 //        try {
