@@ -198,40 +198,38 @@ public class MemberServiceImpl implements MemberService {
                 .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
                 .build();
 
-        long expLeft = memberRankExp.getRank().getQual()-memberRankExp.getMemberExp();
 
-        memberRankExp.getRank().getProblem();
+//        memberRankExp.getRank().getProblem();
 
         MemberProblem memberProblem = memberProblemRepository.findByMember(loginMember).orElseThrow();
 
 
         int problemLeft = 0;
         switch (memberRankExp.getRank().getProblem()) {
-            case "VB":
-                problemLeft = (3 > memberProblem.getVB()) ? 3-memberProblem.getVB():0;
+            case "V0":
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0():3;
                 break;
             case "V1":
-                problemLeft = (3 > memberProblem.getV1()) ? 3-memberProblem.getV1():0;
-                break;
-            case "V2":
-                problemLeft = (3 > memberProblem.getV2()) ? 3-memberProblem.getV2():0;
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1():3;
                 break;
             case "V3":
-                problemLeft = (3 > memberProblem.getV3()) ? 3-memberProblem.getV3():0;
-                break;
-            case "V4":
-                problemLeft = (3 > memberProblem.getV4()) ? 3-memberProblem.getV4():0;
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3():3;
                 break;
             case "V5":
-                problemLeft = (3 > memberProblem.getV5()) ? 3-memberProblem.getV5():0;
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5():3;
                 break;
             case "V6":
-                problemLeft = (3 > memberProblem.getV6()) ? 3-memberProblem.getV6():0;
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6():3;
+                break;
+            case "V7":
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7():3;
                 break;
             default:
                 problemLeft = 0;
                 break;
         }
+
+        long expLeft = memberRankExp.getRank().getQual()-memberRankExp.getMemberExp();
 
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
@@ -240,7 +238,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp(Math.round(expLeft/memberRankExp.getRank().getQual()))
+                .exp((int) (expLeft*100/memberRankExp.getRank().getQual()))
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
