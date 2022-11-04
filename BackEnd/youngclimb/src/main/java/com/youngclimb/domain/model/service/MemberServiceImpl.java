@@ -58,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원 등록
     @Override
-    public String insertUser(JoinMember joinMember) throws Exception {
+    public LoginResDto insertUser(JoinMember joinMember) throws Exception {
         String role = "GUEST";
 
         if (memberRepository.existsByEmail(joinMember.getEmail())) {
@@ -87,6 +87,14 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         memberRepository.save(member);
 
+        LoginMemberInfo user = LoginMemberInfo.builder()
+                .nickname(member.getNickname())
+                .intro(member.getProfileContent())
+                .height(member.getHeight())
+                .shoeSize(member.getShoeSize())
+                .wingspan(member.getWingspan())
+                .build();
+
         MemberRankExp memberRankExp = MemberRankExp.builder()
                 .member(member)
                 .build();
@@ -97,8 +105,13 @@ public class MemberServiceImpl implements MemberService {
                 .build();
         memberProblemRepository.save(memberProblem);
 
-        jwtTokenProvider.createRefreshToken(member.getEmail());
-        return jwtTokenProvider.createAccessToken(member.getEmail());
+        LoginResDto loginResDto = LoginResDto.builder()
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .user(user)
+                .build();
+
+        return loginResDto;
     }
 
     // 신체정보 추가 또는 수정
