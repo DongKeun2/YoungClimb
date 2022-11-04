@@ -11,7 +11,7 @@ import {
 } from '../Token';
 
 const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
-  console.log('로그인 요청 감', data);
+  console.log('로그인 요청', data);
   try {
     const res = await axios.post(api.login(), data, {});
     console.log('로그인 결과', res.data);
@@ -38,6 +38,7 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
 const checkEmail = createAsyncThunk(
   'checkEmail',
   async (data, {rejectWithValue}) => {
+    console.log('이메일 확인', data);
     try {
       const res = await axios.post(api.checkEmail(), data, getConfig());
       return res.data;
@@ -50,7 +51,7 @@ const checkEmail = createAsyncThunk(
 const checkNickname = createAsyncThunk(
   'checkNickname',
   async (data, {rejectWithValue}) => {
-    console.log('요청 데이터', data);
+    console.log('닉네임 확인', data);
     try {
       const res = await axios.post(api.checkNickname(), data, {});
       return res.data;
@@ -60,19 +61,18 @@ const checkNickname = createAsyncThunk(
   },
 );
 
-const signup = createAsyncThunk(
-  'signup',
-  async (payload, {rejectWithValue}) => {
-    console.log('회원가입 정보', payload);
-    try {
-      const res = await axios.post(api.signup(), payload, {});
-      setAccessToken(res.data.accessToken);
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  },
-);
+const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
+  console.log('회원가입 정보', data);
+  try {
+    const res = await axios.post(api.signup(), data, {});
+    console.log(res.payload);
+    setAccessToken(res.data.accessToken);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response.data);
+  }
+});
 
 const profileCreate = createAsyncThunk(
   'profileCreate',
@@ -101,10 +101,10 @@ const wingspan = createAsyncThunk(
         data: formData,
         headers: header,
       });
-      console.log('결과', res.data);
+      console.log('측정 결과', res.data);
       return res.data;
     } catch (err) {
-      console.log('에러...', err);
+      console.log('측정 에러', err);
       return rejectWithValue(err.response.data);
     }
   },
