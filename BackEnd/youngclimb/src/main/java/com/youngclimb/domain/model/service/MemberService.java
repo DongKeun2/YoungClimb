@@ -9,7 +9,7 @@ public interface MemberService {
     // 아이디 중복 체크
     public boolean checkNicknameDuplicate(MemberNickname nickname);
     // 직접 회원 가입
-    public String insertUser(JoinMember joinMember) throws Exception;
+    public LoginResDto insertUser(JoinMember joinMember) throws Exception;
     // 신체 정보 추가
 //    public void addBodyInfo(MemberInfo memberInfo) throws Exception;
     // 프로필 추가
