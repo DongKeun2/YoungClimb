@@ -126,10 +126,14 @@ function ProfileScreen({navigation, route}) {
           <View style={styles.profileBox}>
             <UserAvatar source={userInfo.image} size={70} />
             <View style={styles.profileTextBox}>
-              <Text style={styles.profileNickname}>{userInfo.nickname}</Text>
+              <Text style={styles.profileNickname}>
+                {userInfo.nickname} {route.params.nickname}
+              </Text>
               <Text style={[styles.text, styles.profileSize]}>
-                {userInfo.gender} {userInfo.height}cm {userInfo.shoeSize}mm{' '}
-                {userInfo.wingspan}cm
+                {userInfo.gender === 'M' ? '남성' : '여성'}{' '}
+                {userInfo.height ? `${userInfo.height}cm` : null}
+                {userInfo.shoeSize ? `${userInfo.shoeSize}mm` : null}
+                {userInfo.wingspan ? `윙스팬 ${userInfo.wingspan}cm` : null}
               </Text>
             </View>
           </View>
@@ -143,7 +147,9 @@ function ProfileScreen({navigation, route}) {
         </View>
 
         <View style={styles.introBox}>
-          <Text style={styles.intro}>{userInfo.intro}</Text>
+          <Text style={styles.intro}>
+            {userInfo.intro ? userInfo.intro : '자기소개가 없습니다.'}
+          </Text>
         </View>
 
         <View style={styles.horizonLine} />
@@ -176,7 +182,7 @@ function ProfileScreen({navigation, route}) {
               </View>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('팔로우');
+                  navigation.push('팔로우', {nickname: route.params.nickname});
                 }}
                 style={styles.InfoBox}>
                 <Text style={styles.text}>팔로잉</Text>
@@ -184,7 +190,7 @@ function ProfileScreen({navigation, route}) {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('팔로우');
+                  navigation.push('팔로우', {nickname: route.params.nickname});
                 }}
                 style={styles.InfoBox}>
                 <Text style={styles.text}>팔로워</Text>
@@ -273,9 +279,12 @@ const styles = StyleSheet.create({
   },
   profileNickname: {
     color: 'black',
+    fontSize: 14,
+    fontWeight: 'bold',
     // paddingVertical: 5,
   },
   profileSize: {
+    fontSize: 12,
     paddingVertical: 5,
   },
   introBox: {
@@ -333,6 +342,8 @@ const styles = StyleSheet.create({
   },
   intro: {
     color: 'black',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   menu: {
     backgroundColor: '#fff',

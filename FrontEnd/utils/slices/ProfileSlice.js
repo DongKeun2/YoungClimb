@@ -10,17 +10,15 @@ import example3 from '../../assets/image/profile/example3.png';
 import example4 from '../../assets/image/profile/example4.png';
 import avatar from '../../assets/image/profile/avatar.png';
 
-const profile = createAsyncThunk(
-  'profile',
-  async (nickname, {rejectWithValue}) => {
-    try {
-      const res = await axios.get(api.profile(nickname), getConfig());
-      return res.data;
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  },
-);
+const profile = createAsyncThunk('profile', async (data, {rejectWithValue}) => {
+  console.log('프로필 요청함', data);
+  try {
+    const res = await axios.get(api.profile(data), {});
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
 
 const follow = createAsyncThunk(
   'follow',
@@ -37,10 +35,13 @@ const follow = createAsyncThunk(
 const fetchFollowList = createAsyncThunk(
   'fetchFollowList',
   async (nickname, {rejectWithValue}) => {
+    console.log('팔로우 정보 요청', nickname);
     try {
       const res = await axios.get(api.follow(nickname), getConfig());
+      console.log('팔로우 목록 결과', res.data);
       return res.data;
     } catch (err) {
+      console.log('팔로우 목록 실패');
       return rejectWithValue(err.response.data);
     }
   },
@@ -52,19 +53,19 @@ const initialState = {
     isFollow: false,
     user: {
       image: sampleImg,
-      nickname: '닉네임입니다',
+      nickname: 'climb_dk',
       gender: 'M',
-      intro: '안녕하세요ㅎㅎ',
-      height: 177,
-      shoeSize: 270,
-      wingspan: 190,
-      rank: 'Y4',
+      intro: '',
+      height: 173,
+      shoeSize: 260,
+      wingspan: 173,
+      rank: 'Y1',
       exp: 70,
-      expleft: 200,
-      upto: 1,
-      boardNum: 12,
-      followingNum: 33,
-      followerNum: 35,
+      expleft: 300,
+      upto: 2,
+      boardNum: 4,
+      followingNum: 5,
+      followerNum: 10,
     },
 
     boards: [
@@ -238,7 +239,7 @@ const initialState = {
     followings: [
       {
         image: avatar,
-        nickname: '나의 팔로워1',
+        nickname: '김싸피',
         height: 180,
         shoeSize: 260,
         wingspan: 190,
@@ -247,7 +248,7 @@ const initialState = {
       },
       {
         image: avatar,
-        nickname: '나의 팔로워2',
+        nickname: '이싸피',
         height: 180,
         shoeSize: 260,
         wingspan: 190,
@@ -256,7 +257,7 @@ const initialState = {
       },
       {
         image: avatar,
-        nickname: '나의 팔로워3',
+        nickname: '최싸피',
         height: 180,
         shoeSize: 260,
         wingspan: 190,

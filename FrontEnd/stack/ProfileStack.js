@@ -12,6 +12,7 @@ import WingspanScreen from '../screens/accounts/WingspanScreen';
 
 import PostAddStack from './PostAddStack';
 import {getCurrentUser} from '../utils/Token';
+import {useSelector} from 'react-redux';
 
 const Stack = createStackNavigator();
 
@@ -26,6 +27,9 @@ function ProfileStack({navigation, route}) {
   }, [navigation, route]);
 
   // const nickname = getCurrentUser().nickname;
+  const nickname = useSelector(
+    state => state.profile.profileInfo.user.nickname,
+  );
 
   return (
     <Stack.Navigator
@@ -38,7 +42,7 @@ function ProfileStack({navigation, route}) {
         component={ProfileScreen}
         initialParams={{
           initial: true,
-          // nickname
+          nickname,
         }}
       />
       <Stack.Screen name="게시글 생성" component={PostAddStack} />
