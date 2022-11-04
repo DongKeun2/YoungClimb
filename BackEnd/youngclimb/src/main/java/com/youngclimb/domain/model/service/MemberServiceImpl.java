@@ -97,6 +97,8 @@ public class MemberServiceImpl implements MemberService {
 
         MemberRankExp memberRankExp = MemberRankExp.builder()
                 .member(member)
+                .memberExp(0L)
+                .rank(rankRepository.findByName("Y1").orElse(new Rank()))
                 .build();
         memberRankExpRepository.save(memberRankExp);
 
