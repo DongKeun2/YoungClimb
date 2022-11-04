@@ -37,9 +37,10 @@ function ChoiceVideoScreen({navigation}) {
         if (res.didCancel) {
           return;
         }
+        console.log(res.assets[0].uri);
         let uri = 'file://' + res.assets[0].uri.substring(9);
         dispatch(changeUploadVideo(res));
-        dispatch(changeUploadVideoUri(uri));
+        dispatch(changeUploadVideoUri(res.assets[0].uri));
       },
     );
   };
@@ -53,21 +54,19 @@ function ChoiceVideoScreen({navigation}) {
         isVideo={true}
       />
       {uploadVideo && uploadVideoUri ? (
-        <>
-          <View style={styles.videoBox}>
-            <Video
-              source={{uri: uploadVideoUri}}
-              style={styles.backgroundVideo}
-              fullscreen={false}
-              resizeMode={'contain'}
-              repeat={false}
-              controls={false}
-              muted={true}
-              paused={true}
-            />
-          </View>
-          <Text style={{color: 'black', fontSize: 50}}>재생중</Text>
-        </>
+        <View style={styles.videoBox}>
+          <Video
+            source={{uri: uploadVideoUri}}
+            style={styles.backgroundVideo}
+            fullscreen={false}
+            resizeMode={'contain'}
+            repeat={false}
+            controls={false}
+            muted={true}
+            paused={true}
+          />
+        </View>
+        // <Text style={{color: 'black', fontSize: 50}}>재생중</Text>
       ) : (
         // <TouchableOpacity>
         //   <Image
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
   videoBox: {
     width: 300,
     height: 300,
-    flex: 1,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'black',

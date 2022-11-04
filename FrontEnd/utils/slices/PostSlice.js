@@ -1,7 +1,16 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-// import axios from 'axios';
-// import api from '../api';
+import axios from 'axios';
+import api from '../api';
 // import getConfig from '../headers';
+
+const postAdd = createAsyncThunk('post', async (data, {rejectWithValue}) => {
+  try {
+    const res = await axios.post(api.postAdd(), data, {});
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
 
 const initialState = {
   postInfo: {
@@ -29,8 +38,17 @@ export const PostSlice = createSlice({
       state.uploadVideoUri = action.payload;
     },
   },
-  extraReducers: {},
+  extraReducers: {
+    [postAdd.fulfilled]: state => {
+      console.log('성공');
+    },
+    [postAdd.rejected]: state => {
+      console.log('실패');
+    },
+  },
 });
+
+export {postAdd};
 
 export const {changeUploadVideo, changeUploadVideoUri} = PostSlice.actions;
 
