@@ -29,8 +29,8 @@ function FollowScreen({navigation, route}) {
     dispatch(fetchFollowList(route.params.nickname));
   }, [dispatch, route]);
 
-  const followings = useSelector(state => state.profile.followInfo.followings);
-  const followers = useSelector(state => state.profile.followInfo.followers);
+  const followings = useSelector(state => state.profile.followInfo?.followings);
+  const followers = useSelector(state => state.profile.followInfo?.followers);
 
   return (
     <ScrollView style={styles.container}>
@@ -115,7 +115,7 @@ function FollowItem({item, navigation}) {
             });
           }}
           style={styles.followItemInfo}>
-          <UserAvatar source={{uri: item.image}} size={45} rank={item.rank} />
+          <UserAvatar source={{uri: item.image}} size={45} />
           <View style={styles.profileBox}>
             <Text style={styles.nickname}>{item.nickname}</Text>
             <Text style={styles.text}>

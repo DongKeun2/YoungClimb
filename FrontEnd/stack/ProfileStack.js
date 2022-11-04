@@ -26,10 +26,7 @@ function ProfileStack({navigation, route}) {
     }
   }, [navigation, route]);
 
-  // const nickname = getCurrentUser().nickname;
-  const nickname = useSelector(
-    state => state.profile.profileInfo.user.nickname,
-  );
+  const nickname = useSelector(state => state.accounts.currentUser.nickname);
 
   return (
     <Stack.Navigator

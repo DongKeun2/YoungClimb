@@ -3,30 +3,31 @@ import axios from 'axios';
 import api from '../api';
 import getConfig from '../headers';
 
-import sampleImg from '../../assets/image/main/wingspanExample.png';
-import example1 from '../../assets/image/profile/example1.png';
-import example2 from '../../assets/image/profile/example2.png';
-import example3 from '../../assets/image/profile/example3.png';
-import example4 from '../../assets/image/profile/example4.png';
-import avatar from '../../assets/image/profile/avatar.png';
-
-const profile = createAsyncThunk('profile', async (data, {rejectWithValue}) => {
-  console.log('프로필 요청함', data);
-  try {
-    const res = await axios.get(api.profile(data), {});
-    return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response.data);
-  }
-});
+const profile = createAsyncThunk(
+  'profile',
+  async (nickname, {rejectWithValue}) => {
+    console.log('프로필 요청함', nickname);
+    try {
+      const res = await axios.get(api.profile(nickname), getConfig());
+      console.log('프로필 요청 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('프로필 요청 실패');
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
 
 const follow = createAsyncThunk(
   'follow',
   async (nickname, {rejectWithValue}) => {
+    console.log(nickname, '를 팔로우');
     try {
       const res = await axios.post(api.follow(nickname), {}, getConfig());
+      console.log('팔로우 성공');
       return res.data;
     } catch (err) {
+      console.log('팔로우 실패');
       return rejectWithValue(err.response.data);
     }
   },
@@ -48,261 +49,10 @@ const fetchFollowList = createAsyncThunk(
 );
 
 const initialState = {
-  profileInfo: {
-    isMine: false,
-    isFollow: false,
-    user: {
-      image: sampleImg,
-      nickname: 'climb_dk',
-      gender: 'M',
-      intro: '',
-      height: 173,
-      shoeSize: 260,
-      wingspan: 173,
-      rank: 'Y1',
-      exp: 70,
-      expleft: 300,
-      upto: 2,
-      boardNum: 4,
-      followingNum: 5,
-      followerNum: 10,
-    },
-
-    boards: [
-      {
-        id: 1,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example1,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: '파랑',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: '민트',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 4,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example2,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: '흰색',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: '하늘',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 2,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example3,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: '노랑',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: '청록',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 3,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example4,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: '갈색',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: '빨강',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-    ],
-    scraps: [
-      {
-        id: 4,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example2,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: '보라',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: '검정',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 1,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example1,
-        wallId: 5,
-        difficulty: 'V1',
-        centerName: '더클라임 양재점',
-        centerLevelColor: '빨강',
-        wallName: 'A구역',
-        holdColor: '노랑',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-
-      {
-        id: 3,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example4,
-        wallId: 5,
-        difficulty: 'V1',
-        centerName: '더클라임 양재점',
-        centerLevelColor: '빨강',
-        wallName: 'A구역',
-        holdColor: '검정',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-    ],
-  },
+  profileInfo: {},
   followInfo: {
-    followings: [
-      {
-        image: avatar,
-        nickname: '김싸피',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '이싸피',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '최싸피',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '나의 팔로워4',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '나의 팔로워5',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-    ],
-    followers: [
-      {
-        image: avatar,
-        nickname: '팔로우해주세요',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '제발요',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-    ],
+    followings: [],
+    followers: [],
   },
   isOpen: false,
 };

@@ -23,7 +23,7 @@ const api = {
   checkEmail: () => API_BASE_URL + USER_URL + EMAIL_URL,
   checkNickname: () => API_BASE_URL + USER_URL + NICKNAME_URL,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
-  profile: () => API_BASE_URL + USER_URL + PROFILE_URL,
+  profile: nickname => API_BASE_URL + USER_URL + `/${nickname}`,
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,

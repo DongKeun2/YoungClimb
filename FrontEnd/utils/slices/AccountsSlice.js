@@ -112,6 +112,7 @@ const wingspan = createAsyncThunk(
 
 const initialState = {
   loginState: false,
+  currentUser: {},
   signupForm: {
     email: {
       value: '',
@@ -206,6 +207,11 @@ export const AccountsSlice = createSlice({
     testLogin: (state, action) => {
       state.loginState = action.payload;
     },
+    fetchCurrentUser: (state, action) => {
+      console.log('state에 붙이는 정보', action.payload);
+      state.currentUser = action.payload;
+      state.loginState = true;
+    },
     changeSignupForm: (state, action) => {
       if (
         action.payload.name === 'height' ||
@@ -239,8 +245,9 @@ export const AccountsSlice = createSlice({
     },
   },
   extraReducers: {
-    [login.fulfilled]: state => {
+    [login.fulfilled]: (state, action) => {
       state.loginState = true;
+      state.currentUser = action.paylaod.user;
     },
     [login.rejected]: state => {
       alert('이메일과 비밀번호를 확인해주세요.');
@@ -267,6 +274,13 @@ export const AccountsSlice = createSlice({
       alert('사용 불가능한 닉네임입니다.');
       console.log(action.payload);
     },
+    [logout.fulfilled]: (state, action) => {
+      console.log('로그아웃 실패');
+    },
+    [logout.rejected]: state => {
+      console.log('로그아웃 성공');
+      state.loginState = false;
+    },
   },
 });
 
@@ -286,6 +300,7 @@ export const {
   changeIsCheckTerms,
   changeUploadImg,
   changeEditForm,
+  fetchCurrentUser,
 } = AccountsSlice.actions;
 
 export default AccountsSlice.reducer;
