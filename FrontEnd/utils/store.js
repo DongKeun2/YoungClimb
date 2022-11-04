@@ -6,12 +6,15 @@ import ProfileSlice from './slices/ProfileSlice';
 import StoreDetailSlice from './slices/StoreDetailSlice';
 import SearchSlice from './slices/SearchSlice';
 
+import PostSlice from './slices/PostSlice'
+
 const store = configureStore({
   reducer: {
     accounts: AccountsSlice,
     profile: ProfileSlice,
     storeDetail: StoreDetailSlice,
     search: SearchSlice,
+    post: PostSlice,
   },
 });
 

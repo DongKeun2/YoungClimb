@@ -20,7 +20,7 @@ const boards = [
     centerLevelColor: '파랑',
     mediaId:
       'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/406d78de-790e-4437-b438-a15c6c1ca593.mp4',
-    wallName: 'A구역',
+    wallName: '',
     difficulty: 'V3',
     holdColor: '빨강',
     solvedDate: '2022.10.21',
