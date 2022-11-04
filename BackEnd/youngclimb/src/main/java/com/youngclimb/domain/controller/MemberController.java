@@ -147,7 +147,7 @@ public class MemberController {
 
     // 유저 정보 조회
     @ApiOperation(value = "readProfile : 유저 정보 조회")
-    @GetMapping("/user/{nickname}")
+    @GetMapping("/{nickname}")
     public ResponseEntity<?> readProfile(@PathVariable String nickname) throws Exception {
         try {
             MemberDto memberDto = boardService.getUserInfoByUserId(nickname);
