@@ -196,13 +196,14 @@ function BoardTab({navigation}) {
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
-              dropdownIconColor="black"
+              dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={wall}
+              enabled={center ? true : false}
               style={wall ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setWall(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label="선택 없음"
+                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
                 value=""
               />
               {center
@@ -210,8 +211,8 @@ function BoardTab({navigation}) {
                     <Picker.Item
                       key={id}
                       style={styles.pickerLabel}
-                      label={item}
-                      value={item}
+                      label={item.name}
+                      value={item.id}
                     />
                   ))
                 : null}
@@ -226,14 +227,15 @@ function BoardTab({navigation}) {
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
-              dropdownIconColor="black"
+              dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={level}
+              enabled={center ? true : false}
               style={level ? styles.picker : styles.nonePick}
               itemStyle={styles.item}
               onValueChange={(value, idx) => setLevel(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label="선택 없음"
+                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
                 value=""
               />
               {center
@@ -257,13 +259,14 @@ function BoardTab({navigation}) {
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
-              dropdownIconColor="black"
+              dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={holdColor}
+              enabled={center ? true : false}
               style={holdColor ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setHoldColor(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label="선택 없음"
+                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
                 value=""
               />
               {center
