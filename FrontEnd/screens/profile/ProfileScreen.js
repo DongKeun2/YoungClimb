@@ -99,9 +99,10 @@ function ProfileScreen({navigation, route}) {
   // YC에서 initialparams 지정
 
   useEffect(() => {
-    console.log('이니셜 확인', route.params);
-    dispatch(profile(route.params.nickname));
-  }, [dispatch, route, isFocused]);
+    if (isFocused) {
+      dispatch(profile(route.params.nickname));
+    }
+  }, [dispatch, isFocused]);
 
   return (
     <>

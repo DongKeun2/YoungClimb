@@ -424,7 +424,7 @@ function UserCard({user, navigation}) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('서브프로필', {
+        navigation.push('서브프로필', {
           initial: false,
           nickname: user.nickname,
         });
