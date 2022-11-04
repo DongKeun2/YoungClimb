@@ -5,9 +5,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface MemberService {
     // 이메일 중복 체크
-    public boolean checkEmailDuplicate(String email);
+    public boolean checkEmailDuplicate(MemberEmail email);
     // 아이디 중복 체크
-    public boolean checkNicknameDuplicate(String nickname);
+    public boolean checkNicknameDuplicate(MemberNickname nickname);
     // 직접 회원 가입
     public String insertUser(JoinMember joinMember) throws Exception;
     // 신체 정보 추가
@@ -23,7 +23,7 @@ public interface MemberService {
     // 회원 탈퇴
     public void deleteMember(String email);
     // 로그인
-    public String login(LoginMember member);
+    public LoginResDto login(LoginMember member);
     // 로그아웃
     void logout(String email, String accessToken);
     // 팔로우 추가, 제거

@@ -24,7 +24,7 @@ public class MemberController {
     // 이메일 중복 확인
     @ApiOperation(value = "checkEmail: 이메일 중복 확인")
     @PostMapping("/email")
-    public ResponseEntity<?> checkEmail(@RequestParam String email) {
+    public ResponseEntity<?> checkEmail(@RequestBody MemberEmail email) {
         try {
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
         } catch (Exception e) {
@@ -35,7 +35,7 @@ public class MemberController {
     // 닉네임 중복 확인
     @ApiOperation(value = "checkNickname: 닉네임 중복 확인")
     @PostMapping("/nickname")
-    public ResponseEntity<?> checkNickname(@RequestParam String nickname) {
+    public ResponseEntity<?> checkNickname(@RequestBody MemberNickname nickname) {
         try {
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
         } catch (Exception e) {
@@ -49,10 +49,10 @@ public class MemberController {
     public ResponseEntity<?> login(@RequestBody LoginMember member, HttpServletResponse response) throws Exception {
         try {
             // 헤더에 쿠키 붙이기
-            response.addHeader("Set-Cookie", "accessToken="+memberService.login(member)+", path=/, MaxAge=7 * 24 * 60 * 60, SameSite=Lax, HttpOnly");
-            return ResponseEntity.status(200).body("로그인 되었습니다");
+//            response.addHeader("Set-Cookie", "accessToken="+memberService.login(member)+", path=/, MaxAge=7 * 24 * 60 * 60, SameSite=Lax, HttpOnly");
+            return new ResponseEntity<LoginResDto>(memberService.login(member), HttpStatus.OK);
         } catch (Exception e) {
-            return ResponseEntity.status(400).body("로그인 에러가 발생했습니다.");
+            return exceptionHandling(e);
         }
     }
 
@@ -87,7 +87,7 @@ public class MemberController {
             memberService.addProfile(memberProfile, file);
             return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<String>("오류가 발생했습니다", HttpStatus.BAD_REQUEST);
+            return exceptionHandling(e);
         }
     }
     // 프로필 변경
