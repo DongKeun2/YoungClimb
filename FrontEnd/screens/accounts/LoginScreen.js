@@ -85,13 +85,6 @@ function LoginScreen({navigation}) {
           onPress={onSubmitLogin}
         />
       </View>
-      <View style={styles.button}>
-        <CustomButton
-          buttonColor="#EF3F8F"
-          title="가짜로그인"
-          onPress={onTestLogin}
-        />
-      </View>
       <View style={styles.linkGroup}>
         <Text style={styles.text}>회원이 아니신가요? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('회원가입')}>

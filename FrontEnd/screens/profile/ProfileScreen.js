@@ -87,7 +87,7 @@ function ProfileScreen({navigation, route}) {
 
   const currentUser = useSelector(state => state.accounts.currentUser);
   const userInfo = useSelector(state => state.profile.profileInfo?.user);
-  const isFollow = useSelector(state => state.profile.profileInfo.isFollow);
+  const follow = useSelector(state => state.profile.profileInfo.follow);
 
   const [type, setType] = useState('board');
   const boards = useSelector(state => state.profile.profileInfo.boards);
@@ -101,7 +101,7 @@ function ProfileScreen({navigation, route}) {
   useEffect(() => {
     console.log('이니셜 확인', route.params);
     dispatch(profile(route.params.nickname));
-  }, [isFocused]);
+  }, [dispatch, route, isFocused]);
 
   return (
     <>
@@ -136,9 +136,7 @@ function ProfileScreen({navigation, route}) {
             <View style={styles.profileBox}>
               <UserAvatar source={{uri: userInfo?.image}} size={70} />
               <View style={styles.profileTextBox}>
-                <Text style={styles.profileNickname}>
-                  {userInfo?.nickname} {currentUser.nickname}
-                </Text>
+                <Text style={styles.profileNickname}>{userInfo?.nickname}</Text>
                 <Text style={[styles.text, styles.profileSize]}>
                   {userInfo?.gender === 'M' ? '남성' : '여성'}{' '}
                   {userInfo?.height ? `${userInfo.height}cm` : null}
@@ -148,7 +146,7 @@ function ProfileScreen({navigation, route}) {
               </View>
             </View>
             {!isOpen && (
-              <FollowBtn isFollow={isFollow} nickname={userInfo?.nickname} />
+              <FollowBtn follow={follow} nickname={userInfo?.nickname} />
             )}
           </View>
 

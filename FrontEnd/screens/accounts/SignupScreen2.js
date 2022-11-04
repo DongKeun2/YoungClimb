@@ -55,7 +55,7 @@ function SecondPage({navigation}) {
     if (!isSkip) {
       data.height = signupForm.height.value;
       data.shoeSize = signupForm.shoeSize.value;
-      data.wingspan = signupForm.shoeSize.value;
+      data.wingspan = signupForm.wingspan.value;
     }
 
     dispatch(signup(data)).then(res => {

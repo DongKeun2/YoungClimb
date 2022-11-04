@@ -25,12 +25,17 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
 });
 
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
+  console.log('로그아웃 시도');
   try {
     const res = await axios.post(api.logout(), {}, getConfig());
+    console.log('로그아웃 성공');
     removeAccessToken();
     removeCurrentUser();
     return res.data;
   } catch (err) {
+    console.log('로그아웃 실패', err.response);
+    removeAccessToken();
+    removeCurrentUser();
     return rejectWithValue(err.response.data);
   }
 });
@@ -61,12 +66,14 @@ const checkNickname = createAsyncThunk(
   },
 );
 
+// 회원가입시에도 스토리지에 저장
 const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
   console.log('회원가입 정보', data);
   try {
     const res = await axios.post(api.signup(), data, {});
     console.log(res.payload);
     setAccessToken(res.data.accessToken);
+    setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -204,9 +211,6 @@ export const AccountsSlice = createSlice({
   name: 'accounts',
   initialState,
   reducers: {
-    testLogin: (state, action) => {
-      state.loginState = action.payload;
-    },
     fetchCurrentUser: (state, action) => {
       console.log('state에 붙이는 정보', action.payload);
       state.currentUser = action.payload;
@@ -247,7 +251,7 @@ export const AccountsSlice = createSlice({
   extraReducers: {
     [login.fulfilled]: (state, action) => {
       state.loginState = true;
-      state.currentUser = action.paylaod.user;
+      state.currentUser = action.payload.user;
     },
     [login.rejected]: state => {
       alert('이메일과 비밀번호를 확인해주세요.');
@@ -274,11 +278,10 @@ export const AccountsSlice = createSlice({
       alert('사용 불가능한 닉네임입니다.');
       console.log(action.payload);
     },
-    [logout.fulfilled]: (state, action) => {
-      console.log('로그아웃 실패');
+    [logout.fulfilled]: state => {
+      state.loginState = false;
     },
     [logout.rejected]: state => {
-      console.log('로그아웃 성공');
       state.loginState = false;
     },
   },
@@ -295,7 +298,6 @@ export {
 };
 
 export const {
-  testLogin,
   changeSignupForm,
   changeIsCheckTerms,
   changeUploadImg,

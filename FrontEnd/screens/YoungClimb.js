@@ -44,9 +44,9 @@ export default function YoungClimb() {
 
   useEffect(() => {
     if (getAccessToken()) {
-      getCurrentUser().then(currentUser =>
-        dispatch(fetchCurrentUser(currentUser)).then(dispatch()),
-      );
+      getCurrentUser()
+        .then(currentUser => dispatch(fetchCurrentUser(currentUser)))
+        .catch(err => console.log(err));
     }
     setTimeout(() => {
       setIsLoading(false);

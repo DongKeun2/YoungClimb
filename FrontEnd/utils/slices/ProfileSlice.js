@@ -18,13 +18,14 @@ const profile = createAsyncThunk(
   },
 );
 
-const follow = createAsyncThunk(
-  'follow',
+const followSubmit = createAsyncThunk(
+  'followSubmit',
   async (nickname, {rejectWithValue}) => {
     console.log(nickname, '를 팔로우');
     try {
       const res = await axios.post(api.follow(nickname), {}, getConfig());
       console.log('팔로우 성공');
+      console.log(res.data);
       return res.data;
     } catch (err) {
       console.log('팔로우 실패');
@@ -72,8 +73,8 @@ export const ProfileSlice = createSlice({
     [profile.fulfilled]: (state, action) => {
       state.profileInfo = action.payload;
     },
-    [follow.fulfilled]: (state, action) => {
-      state.profileInfo.isFollow = action.payload;
+    [followSubmit.fulfilled]: (state, action) => {
+      state.profileInfo.follow = action.payload;
     },
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followInfo = action.payload;
@@ -81,7 +82,7 @@ export const ProfileSlice = createSlice({
   },
 });
 
-export {profile, follow, fetchFollowList};
+export {profile, followSubmit, fetchFollowList};
 
 export const {setIsOpen, setIsClose} = ProfileSlice.actions;
 

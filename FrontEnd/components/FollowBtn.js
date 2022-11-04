@@ -2,23 +2,23 @@ import React from 'react';
 import {StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {follow} from '../utils/slices/ProfileSlice';
+import {followSubmit} from '../utils/slices/ProfileSlice';
 import {getCurrentUser} from '../utils/Token';
 
 import followAddIcon from '../assets/image/profile/followA.png';
 import followDeleteIcon from '../assets/image/profile/followD.png';
 
-function FollowBtn({isFollow, nickname}) {
+function FollowBtn({follow, nickname}) {
   const dispatch = useDispatch();
 
   const currentUser = useSelector(state => state.accounts.currentUser);
   function onClickFollow() {
-    dispatch(follow(nickname));
+    dispatch(followSubmit(nickname));
     console.log(nickname, '팔로우 버튼 클릭');
   }
   return (
     <>
-      {currentUser.nickname === nickname ? null : isFollow ? (
+      {currentUser.nickname === nickname ? null : follow ? (
         <TouchableOpacity onPress={onClickFollow} style={styles.unfollowBtn}>
           <Image source={followDeleteIcon} style={styles.followIcon} />
         </TouchableOpacity>
