@@ -24,7 +24,7 @@ public class Board {
     @Column(name = "board_id")
     private Long boardId;
     // 회원
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
     // 글 본문
