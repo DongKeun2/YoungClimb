@@ -18,12 +18,12 @@ public class MemberRankExp {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_rank_exp_id")
     private Long id;
-    // 회원번호
-    @OneToOne(fetch = FetchType.LAZY)
+     // 회원번호
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
     // 등급 번호
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rank_name")
     private Rank rank;
     // 경험치

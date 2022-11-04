@@ -14,12 +14,12 @@ import javax.persistence.*;
 @Entity
 @Table(name = "tb_member_problem")
 public class MemberProblem {
-    // 회원번호
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_problem_id")
     private Long id;
-    @OneToOne(fetch = FetchType.LAZY)
+    // 회원번호
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
     // 난이도 0

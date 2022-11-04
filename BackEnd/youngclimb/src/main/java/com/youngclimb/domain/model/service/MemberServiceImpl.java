@@ -6,18 +6,11 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
-import com.youngclimb.domain.model.dto.board.BoardDto;
-import com.youngclimb.domain.model.dto.board.CommentDto;
-import com.youngclimb.domain.model.dto.board.CommentPreviewDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
-import com.youngclimb.domain.model.repository.FollowRepository;
-import com.youngclimb.domain.model.repository.MemberRankExpRepository;
-import com.youngclimb.domain.model.repository.MemberRepository;
-import com.youngclimb.domain.model.entity.Member;
+import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -45,19 +38,21 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final FollowRepository followRepository;
     private final MemberRankExpRepository memberRankExpRepository;
+    private final RankRepository rankRepository;
+    private final MemberProblemRepository memberProblemRepository;
     private final AmazonS3 amazonS3;
 
 
     // 이메일 중복 체크
     @Override
-    public boolean checkEmailDuplicate(String email) {
-        return !memberRepository.existsByEmail(email);
+    public boolean checkEmailDuplicate(MemberEmail email) {
+        return !memberRepository.existsByEmail(email.getEmail());
     }
 
     // 닉네임 중복 체크
     @Override
-    public boolean checkNicknameDuplicate(String nickname) {
-        return !memberRepository.existsByNickname(nickname);
+    public boolean checkNicknameDuplicate(MemberNickname nickname) {
+        return !memberRepository.existsByNickname(nickname.getNickname());
     }
 
     // 회원 등록
@@ -189,13 +184,67 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public String login(LoginMember member) {
+    public LoginResDto login(LoginMember member) {
         Member loginMember = memberRepository.findByEmail(member.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", member.getEmail()));
         if (!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
-        return jwtTokenProvider.createAccessToken(member.getEmail());
+
+        MemberRankExp memberRankExp = memberRankExpRepository.findByMember(loginMember).orElseThrow();
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .build();
+
+
+//        memberRankExp.getRank().getProblem();
+
+        MemberProblem memberProblem = memberProblemRepository.findByMember(loginMember).orElseThrow();
+
+
+        int problemLeft = 0;
+        switch (memberRankExp.getRank().getProblem()) {
+            case "V0":
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0():3;
+                break;
+            case "V1":
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1():3;
+                break;
+            case "V3":
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3():3;
+                break;
+            case "V5":
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5():3;
+                break;
+            case "V6":
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6():3;
+                break;
+            case "V7":
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7():3;
+                break;
+            default:
+                problemLeft = 0;
+                break;
+        }
+
+        long expLeft = memberRankExp.getRank().getQual()-memberRankExp.getMemberExp();
+
+        LoginMemberInfo loginMem = LoginMemberInfo.builder()
+                .nickname(loginMember.getNickname())
+                .intro(loginMember.getProfileContent())
+                .height(loginMember.getHeight())
+                .shoeSize(loginMember.getShoeSize())
+                .wingspan(loginMember.getWingspan())
+                .rank(memberRankExp.getRank().getName())
+                .exp((int) (expLeft*100/memberRankExp.getRank().getQual()))
+                .expleft(expLeft)
+                .upto(problemLeft)
+                .build();
+        loginResDto.setUser(loginMem);
+
+        return loginResDto;
     }
 
     // 로그아웃
@@ -266,12 +315,11 @@ public class MemberServiceImpl implements MemberService {
         Follow follow = followRepository.findByFollowerAndFollowing(follower, following).orElse(null);
 
         if (follow == null) {
-            Follow followBulid = Follow.builder()
+            Follow followBuild = Follow.builder()
                     .follower(follower)
                     .following(following)
                     .build();
-
-            followRepository.save(followBulid);
+            followRepository.save(followBuild);
 
             return Boolean.TRUE;
         } else {
@@ -294,7 +342,6 @@ public class MemberServiceImpl implements MemberService {
         for (Follow following: followingMembers) {
             Member followingMember = following.getFollowing();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followingMember).orElseThrow();
-
 
             FollowMemberDto myFollowing = new FollowMemberDto();
 
