@@ -55,22 +55,21 @@ function RankInfo({setIsRank, exp, expleft, rank, upto}) {
 
       <Text style={styles.title}>YC 등급표</Text>
       <View style={styles.levelBarBox}>
-        <FlatList
-          key={levels}
-          data={levels}
-          numColumns={levels.length}
-          renderItem={({item}) => (
-            <View
-              style={[
-                styles.levelbar,
-                {
-                  backgroundColor: levelColorDict[item],
-                  width: `${100 / levels.length - 0.2}%`,
-                },
-              ]}
-            />
-          )}
-        />
+        <View style={{width: '100%', height: 25, flexDirection: 'row'}}>
+          {levels.map((item, idx) => {
+            return (
+              <View
+                key={item}
+                style={[
+                  styles.levelBar,
+                  {
+                    backgroundColor: levelColorDict[item],
+                  },
+                ]}
+              />
+            );
+          })}
+        </View>
       </View>
       <Text style={styles.description}>
         Young Climb은 자체 등급을 통해 개인 성장을 측정합니다! 풀이 문제의
@@ -177,9 +176,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  levelbar: {
+  levelBar: {
+    marginHorizontal: '0.1%',
     height: 25,
-    width: '10%',
+    width: `${100 / 7 - 0.2}%`,
   },
   description: {
     marginTop: 15,
