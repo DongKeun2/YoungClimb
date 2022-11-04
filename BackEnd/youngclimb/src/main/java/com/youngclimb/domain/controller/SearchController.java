@@ -40,17 +40,13 @@ public class SearchController {
             return exceptionHandling(e);
         }
     }
-//
+
 //    @ApiOperation(value = "searchBoard: 게시글 검색")
 //    @PostMapping("/board")
 //    public ResponseEntity<?> searchBoard(@RequestBody BoardSearchDto boardSearchDto) {
 //        try {
 //            List<BoardDto> boardDtos = searchService.getBoardPic(boardSearchDto);
-//            if (!boardDtos.isEmpty()) {
-//                return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
-//            } else {
-//                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-//            }
+//            return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
 //        } catch (Exception e) {
 //            return exceptionHandling(e);
 //        }
