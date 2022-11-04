@@ -2,8 +2,6 @@ package com.youngclimb.domain.model.dto.member;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 public class JoinMember {
 
@@ -14,6 +12,5 @@ public class JoinMember {
     public Integer height;
     public Integer shoeSize;
     public Integer wingspan;
-    public LocalDate joinDate;
 
 }

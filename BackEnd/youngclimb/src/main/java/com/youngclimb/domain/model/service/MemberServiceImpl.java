@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -57,7 +58,7 @@ public class MemberServiceImpl implements MemberService {
 
     // 회원 등록
     @Override
-    public String insertUser(JoinMember joinMember) throws Exception {
+    public LoginResDto insertUser(JoinMember joinMember) throws Exception {
         String role = "GUEST";
 
         if (memberRepository.existsByEmail(joinMember.getEmail())) {
@@ -77,16 +78,40 @@ public class MemberServiceImpl implements MemberService {
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
                 .gender(joinMember.getGender())
-                .joinDate(joinMember.getJoinDate())
+                .joinDate(LocalDate.now())
                 .height(joinMember.getHeight())
                 .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
+                .wingheight(joinMember.getHeight()+ joinMember.getWingspan())
                 .role(UserRole.GUEST)
                 .build();
         memberRepository.save(member);
 
-        jwtTokenProvider.createRefreshToken(member.getEmail());
-        return jwtTokenProvider.createAccessToken(member.getEmail());
+        LoginMemberInfo user = LoginMemberInfo.builder()
+                .nickname(member.getNickname())
+                .intro(member.getProfileContent())
+                .height(member.getHeight())
+                .shoeSize(member.getShoeSize())
+                .wingspan(member.getWingspan())
+                .build();
+
+        MemberRankExp memberRankExp = MemberRankExp.builder()
+                .member(member)
+                .build();
+        memberRankExpRepository.save(memberRankExp);
+
+        MemberProblem memberProblem = MemberProblem.builder()
+                .member(member)
+                .build();
+        memberProblemRepository.save(memberProblem);
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .user(user)
+                .build();
+
+        return loginResDto;
     }
 
     // 신체정보 추가 또는 수정
