@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class MemberDto {
-    boolean isfollow;
+    boolean isFollow;
     UserDto user;
     List<BoardDto> boards;
     List<BoardDto> scraps;

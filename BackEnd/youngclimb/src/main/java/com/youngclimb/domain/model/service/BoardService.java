@@ -19,25 +19,19 @@ public interface BoardService {
     // 게시물 작성
     public void writeBoard(BoardCreate boardCreate, MultipartFile file);
     // 게시글 좋아요
-    public Boolean boardLike(Long boardId, String email);
-    // 게시글 좋아요 취소
-    public Boolean boardUnlike(Long boardId, String email);
+    public Boolean boardLikeCancle(Long boardId, String email);
     // 게시글 댓글 조회
     public BoardDetailDto readAllComments(Long boardId, Long memberId);
-    // 댓글 좋아요
-    public Boolean commentLike(Long commentId, String email);
-    // 댓글 좋아요 취소
-    public Boolean commentUnlike(Long commentId, String email);
+    // 댓글 좋아요/취소
+    public Boolean commentLikeCancle(Long commentId, String email);
     // 게시글 신고
 
     // 댓글 작성
     public void writeComment(CommentCreate commentCreate);
     // 대댓글 작성
     public void writeRecomment(CommentCreate commentCreate);
-    // 게시글 스크랩
-    public Boolean boardScrap(Long boardId, String email);
-    // 게시글 스크랩 취소
-    public Boolean boardUnScrap(Long boardId, String email);
+    // 게시글 스크랩/취소
+    public Boolean boardScrapCancle(Long boardId, String email);
     // 게시글 검색
 
     // 사용자 정보 조회
