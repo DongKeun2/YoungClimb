@@ -52,20 +52,19 @@ function SecondPage({navigation}) {
     };
 
     // 건너뛰기 클릭 시 추가정보 제외하고 회원가입 신청
-    if (isSkip) {
-      dispatch(signup(data)).then(() => {
-        navigation.navigate('완료');
-      });
-    } else {
+    if (!isSkip) {
       data.height = signupForm.height.value;
       data.shoeSize = signupForm.shoeSize.value;
-      data.wingspan = signupForm.shoeSize.value;
-
-      dispatch(signup(data)).then(() => {
-        navigation.navigate('완료');
-      });
-      console.log('확인');
+      data.wingspan = signupForm.wingspan.value;
     }
+
+    dispatch(signup(data)).then(res => {
+      if (res.type === 'signup/rejected') {
+        alert('회원가입에 실패하였습니다.');
+      } else {
+        navigation.navigate('완료');
+      }
+    });
   }
 
   function goWingspan() {
