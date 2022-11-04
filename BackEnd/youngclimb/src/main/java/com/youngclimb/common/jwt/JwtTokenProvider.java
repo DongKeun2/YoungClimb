@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now) //생성일 설정
                 .setExpiration(new Date(now.getTime() + tokenValidTime)); //만료일 설정
 
-//		    claims.put("userId", userId); //담고 싶은 값
+		    claims.put("role", "user"); //담고 싶은 값
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -106,8 +106,8 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String token = null;
         if (request.getHeader("Authorization") != null) token = request.getHeader("Authorization");
-//	        Cookie cookie = WebUtils.getCookie(request, "accessToken");
-//	        if(cookie != null) token = cookie.getValue();
+            token = token.substring(0,6);
+            System.out.println(token);
         return token;
     }
 
