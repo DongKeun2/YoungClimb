@@ -1,49 +1,55 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
 
-// import { useNavigation } from '@react-navigation/native';
-
 import mainLogo from '../assets/image/main/logo.png';
-import postAddIcon from '../assets/image/header/postAddIcon.png';
-import noticeIcon from '../assets/image/header/noticeIcon.png';
-import settingIcon from '../assets/image/header/settingIcon.png';
+import PostAddIcon from '../assets/image/header/postAddIcon.svg';
+import NoticeIcon from '../assets/image/header/noticeIcon.svg';
 
-export default class CustomMainHeader extends Component {
-  static defaultProps = {
-    type: '홈',
-  };
+import DropDown from './Dropdown';
 
-  constructor(props) {
-    super(props);
-  }
-
-  render() {
-    return this.props.type === '홈' ? (
-      <View style={styles.container}>
-        <Image source={mainLogo} />
-        <View style={styles.iconGroup}>
-          <Image style={{marginRight: 10}} source={postAddIcon} />
-          <Image style={{marginRight: 10}} source={noticeIcon} />
-        </View>
+function CustomMainHeader(props) {
+  return props.type === '홈' ? (
+    <View style={styles.container}>
+      <Image style={styles.logoImg} source={mainLogo} />
+      <View style={styles.iconGroup}>
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('게시글 생성') : null
+          }>
+          <PostAddIcon style={{marginRight: 10}} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('알림') : null
+          }>
+          <NoticeIcon style={{marginRight: 10}} />
+        </TouchableOpacity>
       </View>
-    ) : this.props.type === '프로필' ? (
-      <View style={styles.container}>
-        <Text style={styles.headerTitle}>{this.props.type}</Text>
-        <View style={styles.iconGroup}>
-          <Image style={{marginRight: 10}} source={postAddIcon} />
-          <Image style={{marginRight: 10}} source={settingIcon} />
-        </View>
+    </View>
+  ) : props.type === '프로필' ? (
+    <View style={styles.container}>
+      <Text style={styles.headerTitle}>{props.type}</Text>
+      <View style={styles.iconGroup}>
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation ? props.navigation.navigate('게시글 생성') : null
+          }>
+          <PostAddIcon style={{marginRight: 10}} />
+        </TouchableOpacity>
+        <DropDown navigation={props.navigation} />
       </View>
-    ) : (
-      <View style={styles.container}>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('댓글')}>
-          <Image style={{marginLeft: 5, marginRight: 5}} source={mainLogo} />
-        </TouchableOpacity> */}
-        <Text style={styles.headerTitle}>{this.props.type}</Text>
-      </View>
-    );
-  }
+    </View>
+  ) : (
+    <View style={styles.container}>
+      <Text style={styles.headerTitle}>{props.type}</Text>
+    </View>
+  );
 }
+
+CustomMainHeader.defaultProps = {
+  type: '홈',
+  navigation: null,
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -56,12 +62,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   headerTitle: {
+    color: 'black',
     fontSize: 20,
     fontWeight: '600',
     marginLeft: 12,
+    marginBottom: 5,
+  },
+  logoImg: {
+    height: 32,
+    resizeMode: 'contain',
   },
   iconGroup: {
     display: 'flex',
     flexDirection: 'row',
   },
 });
+
+export default CustomMainHeader;

@@ -40,19 +40,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
     height: '50%',
   },
-  logo: {},
+  logo: {
+    margin: 30,
+  },
   title: {
     width: '100%',
     resizeMode: 'contain',
   },
   button: {
-    width: '80%',
-    height: '10%',
+    width: '60%',
+    marginTop: 10,
   },
 });
 
