@@ -20,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -77,13 +78,24 @@ public class MemberServiceImpl implements MemberService {
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
                 .gender(joinMember.getGender())
-                .joinDate(joinMember.getJoinDate())
+                .joinDate(LocalDate.now())
                 .height(joinMember.getHeight())
                 .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
+                .wingheight(joinMember.getHeight()+ joinMember.getWingspan())
                 .role(UserRole.GUEST)
                 .build();
         memberRepository.save(member);
+
+        MemberRankExp memberRankExp = MemberRankExp.builder()
+                .member(member)
+                .build();
+        memberRankExpRepository.save(memberRankExp);
+
+        MemberProblem memberProblem = MemberProblem.builder()
+                .member(member)
+                .build();
+        memberProblemRepository.save(memberProblem);
 
         jwtTokenProvider.createRefreshToken(member.getEmail());
         return jwtTokenProvider.createAccessToken(member.getEmail());

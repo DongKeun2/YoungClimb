@@ -58,7 +58,9 @@ public class Member {
     // 프로필 이미지
     @Column(name = "member_profile_img")
     private String memberProfileImg;
-
+    //윙스팬+키
+    @Column(name = "member_wingheight")
+    private Integer wingheight;
     // 프로필 이미지
 //    @OneToOne(mappedBy = "member")
 //    private MemberProfileImg memberProfileImg;
