@@ -23,11 +23,11 @@ public class Comment {
     @Column(name = "comment_id")
     private Long id;
     // 글번호
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     private Board board;
     // 회원번호
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
     // 댓글 내용
@@ -66,9 +66,9 @@ public class Comment {
         } else if (minus <= 1440L) {
             timeText = ChronoUnit.HOURS.between(createdDatetime, LocalDateTime.now()) + "시간 전";
         } else if (ChronoUnit.YEARS.between(createdDatetime, LocalDateTime.now()) > 1) {
-            timeText = createdDatetime.getMonth() + "월 " + createdDatetime.getDayOfMonth() + "일";
+            timeText = createdDatetime.getMonth().toString() + "월 " + createdDatetime.getDayOfMonth() + "일";
         } else {
-            timeText = createdDatetime.getYear() + "년 " + createdDatetime.getMonth() + "월 " + createdDatetime.getDayOfMonth() + "일";
+            timeText = createdDatetime.getYear() + "년 " + createdDatetime.getMonth().toString() + "월 " + createdDatetime.getDayOfMonth() + "일";
         }
 
         return CommentDto.builder()
