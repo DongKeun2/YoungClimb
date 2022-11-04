@@ -1,4 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
+import {useSelector} from 'react-redux';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import BackIcon from '../assets/image/header/backIcon.svg';
 import NextIcon from '../assets/image/header/nextIcon.svg';
@@ -13,38 +15,46 @@ function CustomSubHeader({
   isPhoto, // 프로필 관련 서브 헤더에서 갤러리 접근하면 true, 나머지 경우에는 사용할 필요 x
   request, // 프로필 관련 서브 헤더에서 요청하는 api 함수 입력
 }) {
+  const uploadVideo = useSelector(state => state.post.uploadVideo);
+
   return isVideo ? (
     <View style={styles.headerbox}>
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => (navigation ? navigation.goBack() : null)}>
-          <CloseIcon style={{marginLeft: 5, marginRight: 5}} />
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => (navigation ? navigation.goBack() : null)}>
+        <CloseIcon style={{marginLeft: 5, marginRight: 5}} />
         <Text style={styles.textStyle}>{title}</Text>
-      </View>
-      <View style={styles.container}>
-        <Text style={styles.textStyle}>{rightTitle}</Text>
+      </TouchableOpacity>
+      {uploadVideo ? (
         <TouchableOpacity
+          style={styles.container}
           onPress={() =>
             navigation ? navigation.navigate('정보 입력') : null
           }>
-          <NextIcon style={{marginLeft: 5, marginRight: 5}} />
+          <Text style={styles.textStyle}>{rightTitle}</Text>
+          <NextIcon style={{marginRight: 5, color: '#3F333C'}} />
         </TouchableOpacity>
-      </View>
+      ) : (
+        <View style={styles.container}>
+          <Text style={{...styles.textStyle, color: '#a7a7a7'}}>
+            {rightTitle}
+          </Text>
+          <NextIcon style={{marginRight: 5, color: '#a7a7a7'}} />
+        </View>
+      )}
     </View>
   ) : isProfile ? (
     <View style={styles.headerbox}>
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() => (navigation ? navigation.goBack() : null)}>
-          {isPhoto ? (
-            <CloseIcon style={{marginLeft: 5, marginRight: 5}} />
-          ) : (
-            <BackIcon style={{marginLeft: 5, marginRight: 5}} />
-          )}
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => (navigation ? navigation.goBack() : null)}>
+        {isPhoto ? (
+          <CloseIcon style={{marginLeft: 5, marginRight: 5}} />
+        ) : (
+          <BackIcon style={{marginLeft: 5, marginRight: 5}} />
+        )}
         <Text style={styles.textStyle}>{title}</Text>
-      </View>
+      </TouchableOpacity>
       <View style={styles.container}>
         <TouchableOpacity
           onPress={() => {
@@ -59,10 +69,11 @@ function CustomSubHeader({
   ) : (
     <View style={styles.header}>
       <TouchableOpacity
+        style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
         <BackIcon style={{marginLeft: 5, marginRight: 5}} />
+        <Text style={styles.textStyle}>{title}</Text>
       </TouchableOpacity>
-      <Text style={styles.textStyle}>{title}</Text>
     </View>
   );
 }
