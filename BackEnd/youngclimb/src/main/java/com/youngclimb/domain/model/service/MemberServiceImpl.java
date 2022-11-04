@@ -333,7 +333,7 @@ public class MemberServiceImpl implements MemberService {
         Member follower = memberRepository.findById(followerId).orElseThrow();
         Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
 
-        if (follower == following) {
+        if (follower.getMemberId() == following.getMemberId()) {
             return Boolean.FALSE;
         }
 
