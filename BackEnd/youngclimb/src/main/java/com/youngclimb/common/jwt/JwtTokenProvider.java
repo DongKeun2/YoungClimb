@@ -106,8 +106,8 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String token = null;
         if (request.getHeader("Authorization") != null) token = request.getHeader("Authorization");
-            token = token.substring(0,6);
-            System.out.println(token);
+//            token = token.substring(0,6);
+//            System.out.println(token);
         return token;
     }
 
