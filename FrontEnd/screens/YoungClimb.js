@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useRef, useState, useEffect, useCallback} from 'react';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -19,7 +19,6 @@ import StoreStack from '../stack/StoreStack';
 import RandomScreen from './RandomScreen';
 import ProfileStack from '../stack/ProfileStack';
 
-import background from '../assets/image/initial/background.png';
 import MapIcon from '../assets/image/tab/map.svg';
 import ReelsIcon from '../assets/image/tab/reels.svg';
 import HomeIcon from '../assets/image/tab/home.svg';
@@ -30,67 +29,36 @@ import ActiveReelsIcon from '../assets/image/tab/activeReels.svg';
 import ActiveHomeIcon from '../assets/image/tab/activeHome.svg';
 import ActiveSearchIcon from '../assets/image/tab/activeSearch.svg';
 import ActiveProfileIcon from '../assets/image/tab/activeProfile.svg';
-import { BackHandler } from 'react-native';
+
+import {getAccessToken, getCurrentUser} from '../utils/Token';
+import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 export default function YoungClimb() {
+  const dispatch = useDispatch();
   const [loading, setIsLoading] = useState(true);
-  
+
   const login = useSelector(state => state.accounts.loginState);
 
-  // const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  // const fadeIn = () => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 1,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // };
-
-  // const fadeOut = async () => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 0,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  //   return true;
-  // };
-
   useEffect(() => {
+    if (getAccessToken()) {
+      getCurrentUser()
+        .then(currentUser => dispatch(fetchCurrentUser(currentUser)))
+        .catch(err => console.log(err));
+    }
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-  },[]);
-  
-
-
-  // useEffect(() => {
-  //   // fadeIn();
-  //   setTimeout(() => {
-  //     fadeOut().then(() => {
-  //       setIsLoading(false);
-  //     });
-  //   }, 2500);
-  // });
+  }, [dispatch]);
 
   return (
     <>
       {loading ? (
         <InitialScreen />
       ) : (
-        // <Animated.View
-        //   style={{
-        //     opacity: fadeAnim,
-        //   }}>
-        //   <ImageBackground
-        //     source={background}
-        //     style={{width: '100%', height: '100%'}}
-        //   />
-        // </Animated.View>
-        <NavigationContainer >
+        <NavigationContainer>
           {login ? (
             <Tab.Navigator
               initialRouteName="홈탭"

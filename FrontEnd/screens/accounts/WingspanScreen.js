@@ -32,7 +32,7 @@ function WingSpanScreen({navigation, route}) {
     console.log('버튼 눌림');
     const match = /\.(\w+)$/.exec(imageName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
-    console.log(imageUri);
+    console.log('이미지', imageUri);
     const formdata = new FormData();
     formdata.append('image', {
       uri: imageUri,
@@ -53,23 +53,28 @@ function WingSpanScreen({navigation, route}) {
     // console.log(formdata._parts[0][1]);
     // console.log(formdata);
     dispatch(wingspan(formdata)).then(res => {
-      console.log(res.payload.wingspan);
-      if (route.params.type === 'signup') {
-        dispatch(
-          changeSignupForm({
-            name: 'wingspan',
-            value: String(res.payload.wingspan),
-          }),
-        );
-      } else if (route.params.type === 'edit') {
-        dispatch(
-          changeEditForm({
-            name: 'wingspan',
-            value: String(res.payload.wingspan),
-          }),
-        );
+      if (res.type === 'wingspan/rejected') {
+        console.log('윙스팬 측정 실패함 ㅠㅠ');
+      } else {
+        console.log('측정 결과', res.payload.wingspan);
+        if (route.params.type === 'signup') {
+          console.log('회원가입에서 보냄');
+          dispatch(
+            changeSignupForm({
+              name: 'wingspan',
+              value: String(res.payload.wingspan),
+            }),
+          );
+        } else if (route.params.type === 'edit') {
+          dispatch(
+            changeEditForm({
+              name: 'wingspan',
+              value: String(res.payload.wingspan),
+            }),
+          );
+        }
+        onBeforePage();
       }
-      onBeforePage();
     });
   }
 

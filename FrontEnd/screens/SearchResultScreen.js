@@ -7,10 +7,12 @@ import CustomSubHeader from '../components/CustomSubHeader';
 import LevelLabel from '../components/LevelLabel';
 import HoldLabel from '../components/HoldLabel';
 
+import {levelInfo} from '../assets/info/CenterInfo';
+
 function SearchResultScreen({navigation, route}) {
   const center = route.params.center;
   const wall = route.params.wall;
-  const level = route.params.level;
+  const level = levelInfo[route.params.level]?.name;
   const holdColor = route.params.holdColor;
   const boards = useSelector(state => state.search.boards);
 

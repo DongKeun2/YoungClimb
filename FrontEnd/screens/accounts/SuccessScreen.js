@@ -61,7 +61,10 @@ function SuccessScreen({navigation}) {
     if (isSkip) {
       dispatch(profileCreate(formdata));
     }
-    dispatch(testLogin(true));
+    // 스토어에 회원정보 입력 후 로그인 처리
+    getCurrentUser().then(currentUser =>
+      dispatch(fetchCurrentUser(currentUser)).then(dispatch()),
+    );
   }
 
   return (
