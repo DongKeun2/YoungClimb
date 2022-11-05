@@ -12,6 +12,15 @@ public class DownloadServiceImpl implements DownloadService {
 
     private final DownloadRepository downloadRepository;
 
+    public Integer serveDownload() {
+        Download download = downloadRepository.findById(1).orElse(new Download(1, 0));
+
+        DownloadDto downloadDto = new DownloadDto();
+        downloadDto.setDownload(download.getDownload());
+
+        return downloadDto.getDownload();
+    }
+
     public Integer updateDownload() {
         Download download = downloadRepository.findById(1).orElse(new Download(1, 0));
 

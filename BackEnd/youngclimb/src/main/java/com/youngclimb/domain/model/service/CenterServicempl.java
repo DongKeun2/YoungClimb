@@ -72,6 +72,7 @@ public class CenterServicempl implements CenterService{
             centerTimeDto.setDay(centerTime.getDay());
             centerTimeDto.setTimeStart(centerTime.getTimeStart());
             centerTimeDto.setTimeEnd(centerTime.getTimeEnd());
+            centerDetailDto.setWall(center.getWall());
 
             centerTimeDtos.add(centerTimeDto);
         }
