@@ -34,4 +34,8 @@ public class Center {
     // 클라이밍장 전화번호
     @Column(name = "center_phone_number")
     private String phoneNumber;
+
+    // 클라이밍장 3d 벽여부
+    @Column(name = "center_wall")
+    private Boolean wall;
 }
