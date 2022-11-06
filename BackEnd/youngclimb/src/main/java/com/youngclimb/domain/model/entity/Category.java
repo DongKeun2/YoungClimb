@@ -20,19 +20,19 @@ public class Category {
     @Column(name = "category_id")
     private Long categoryId;
     // 글
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     private Board board;
     // 클라이밍장 번호
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "center_id")
     private Center center;
     // 벽 번호
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "wall_id")
     private Wall wall;
     // 클라이밍장 난이도 번호
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="center_level_id")
     private CenterLevel centerlevel;
     // 홀드 색깔

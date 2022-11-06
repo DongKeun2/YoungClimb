@@ -1,14 +1,18 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { BackHandler } from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {getFocusedRouteNameFromRoute, useFocusEffect} from '@react-navigation/native';
 
-import HomeScreen from '../screens/HomeScreen';
-import PostScreen from '../screens/PostScreen';
+import HomeScreen from '../screens/homes/HomeScreen';
+import PostScreen from '../screens/homes/PostScreen';
+import NoticeScreen from '../screens/homes/NoticeScreen';
+
+import PostAddStack from './PostAddStack';
 
 const Stack = createStackNavigator();
 
 function HomeStack({navigation, route}) {
+
   React.useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (routeName === '댓글') {
@@ -26,6 +30,8 @@ function HomeStack({navigation, route}) {
       }}>
       <Stack.Screen name="홈" component={HomeScreen} />
       <Stack.Screen name="댓글" component={PostScreen} />
+      <Stack.Screen name="알림" component={NoticeScreen} />
+      <Stack.Screen name="게시글 생성" component={PostAddStack} />
     </Stack.Navigator>
   );
 }

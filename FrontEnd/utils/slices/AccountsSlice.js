@@ -8,6 +8,8 @@ import {
   setRefreshToken,
   removeAccessToken,
   removeRefreshToken,
+  setCurrentUser,
+  removeCurrentUser,
 } from '../Token';
 
 const login = createAsyncThunk('login', async (payload, {rejectWithValue}) => {
@@ -15,6 +17,7 @@ const login = createAsyncThunk('login', async (payload, {rejectWithValue}) => {
     const res = await axios.post(api.login(), payload, {});
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
+    setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -26,19 +29,84 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
     const res = await axios.post(api.logout(), {}, getConfig());
     removeAccessToken();
     removeRefreshToken();
+    removeCurrentUser();
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
   }
 });
 
-const fetchProfile = createAsyncThunk(
-  'fetchProfile',
-  async (nickname, {rejectWithValue}) => {
+const checkEmail = createAsyncThunk(
+  'checkEmail',
+  async (data, {rejectWithValue}) => {
     try {
-      const res = await axios.get(api.fetchProfile(nickname), getConfig());
+      const res = await axios.post(api.checkEmail(), data, getConfig());
       return res.data;
     } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const checkNickname = createAsyncThunk(
+  'checkNickname',
+  async (data, {rejectWithValue}) => {
+    console.log('요청 데이터', data);
+    try {
+      const res = await axios.post(api.checkNickname(), data, {});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const signup = createAsyncThunk(
+  'signup',
+  async (payload, {rejectWithValue}) => {
+    console.log('회원가입 정보', payload);
+    try {
+      const res = await axios.post(api.signup(), payload, {});
+      setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const profileCreate = createAsyncThunk(
+  'profileCreate',
+  async (formdata, {rejectWithValue}) => {
+    console.log('회원가입 후 프로필, 자기소개 입력', formdata);
+    try {
+      const res = await axios.post(api.profile(), formdata, getConfig());
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const wingspan = createAsyncThunk(
+  'wingspan',
+  async (formData, {rejectWithValue}) => {
+    console.log('측정 요청 감');
+    const header = {
+      'Content-Type': 'multipart/form-data',
+    };
+    try {
+      const res = await axios({
+        method: 'post',
+        url: api.wingspan(),
+        data: formData,
+        headers: header,
+      });
+      console.log('결과', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('에러...', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -87,13 +155,47 @@ const initialState = {
       rules: {},
       valid: false,
     },
-    wingSpan: {
+    wingspan: {
       value: '',
       type: 'textInput',
       rules: {},
       valid: false,
     },
   },
+  editForm: {
+    nickname: {
+      value: '',
+      type: 'textInput',
+      valid: false,
+    },
+    password: {
+      value: '',
+      type: 'textInput',
+    },
+    intro: {
+      value: '',
+      type: 'textInput',
+    },
+    height: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    shoeSize: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+    wingspan: {
+      value: '',
+      type: 'textInput',
+      rules: {},
+      valid: false,
+    },
+  },
+  uploadImg: null,
   isCheckNickname: false,
   isCheckEmail: false,
   isCheckTerms: false,
@@ -106,18 +208,36 @@ export const AccountsSlice = createSlice({
     testLogin: (state, action) => {
       state.loginState = action.payload;
     },
-    onCheckTerms: (state, action) => {
+    changeSignupForm: (state, action) => {
+      if (
+        action.payload.name === 'height' ||
+        action.payload.name === 'shoeSize' ||
+        action.payload.name === 'wingspan'
+      ) {
+        state.signupForm[action.payload.name].value =
+          action.payload.value.replace(/[^0-9]/g, '');
+      } else {
+        switch (action.payload.name) {
+          case 'email':
+            state.isCheckEmail = false;
+            break;
+          case 'nickname':
+            state.isCheckNickname = false;
+            break;
+          default:
+            break;
+        }
+        state.signupForm[action.payload.name].value = action.payload.value;
+      }
+    },
+    changeEditForm: (state, action) => {
+      state.editForm[action.payload.name].value = action.payload.value;
+    },
+    changeIsCheckTerms: (state, action) => {
       state.isCheckTerms = action.payload;
     },
-    changeSignupForm: (state, action) => {
-      state.signupForm[action.payload.name].value = action.payload.value;
-      console.log(state.signupForm);
-    },
-    changeIsCheckNickname: (state, action) => {
-      state.isCheckNickname = action.payload;
-    },
-    changeIsCheckEmail: (state, action) => {
-      state.isCheckEmail = action.payload;
+    changeUploadImg: (state, action) => {
+      state.uploadImg = action.payload;
     },
   },
   extraReducers: {
@@ -127,17 +247,46 @@ export const AccountsSlice = createSlice({
     [login.rejected]: state => {
       state.loginState = false;
     },
+    [signup.fulfilled]: (state, action) => {
+      console.log('회원가입 성공');
+    },
+    [signup.rejected]: (state, action) => {
+      console.log('회원가입 실패');
+    },
+    [checkEmail.fulfilled]: (state, action) => {
+      console.log(action.payload);
+      state.isCheckEmail = action.payload;
+    },
+    [checkEmail.rejected]: (state, action) => {
+      alert('사용 불가능한 이메일입니다.');
+      console.log(action.payload);
+    },
+    [checkNickname.fulfilled]: (state, action) => {
+      state.isCheckNickname = action.payload;
+    },
+    [checkNickname.rejected]: (state, action) => {
+      alert('사용 불가능한 닉네임입니다.');
+      console.log(action.payload);
+    },
   },
 });
 
-export {login};
+export {
+  login,
+  logout,
+  wingspan,
+  signup,
+  profileCreate,
+  checkEmail,
+  checkNickname,
+};
 
 export const {
   testLogin,
-  onCheckTerms,
   changeSignupForm,
-  changeIsCheckNickname,
-  changeIsCheckEmail,
+  changeIsCheckTerms,
+  changeUploadImg,
+  changeEditForm,
 } = AccountsSlice.actions;
 
 export default AccountsSlice.reducer;

@@ -17,4 +17,5 @@ public class CenterDetailDto {
     List<CenterPriceDto> centerPriceList;
     List<CenterLevelDto> centerLevelList;
     List<WallDto> wallList;
+    Boolean wall;
 }
