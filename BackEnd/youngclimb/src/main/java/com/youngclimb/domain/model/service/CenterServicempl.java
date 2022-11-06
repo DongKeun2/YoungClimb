@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CenterServicempl implements CenterService{
+public class CenterServicempl implements CenterService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -167,6 +167,53 @@ public class CenterServicempl implements CenterService{
 
 
         return (int) Math.round(distance);
+    }
+
+    // 지점 난이도 정보
+    public List<CenterInfoDto> readCenterInfo() {
+        List<CenterInfoDto> centerInfoDtos = new ArrayList<>();
+
+
+        List<Center> centers = centerRepository.findAll();
+
+        for (Center center : centers) {
+            CenterInfoDto centerInfoDto = new CenterInfoDto();
+            List<CenterLevelDto> centerLevelDtos = new ArrayList<>();
+            List<WallDto> wallDtos = new ArrayList<>();
+
+            List<CenterLevel> centerLevels = centerLevelRepository.findAllByCenterOrderByIdAsc(center);
+            List<Wall> walls = wallRepository.findAllByCenterOrderByName(center);
+
+            centerInfoDto.setId(center.getId());
+            centerInfoDto.setName(center.getName());
+            for (Wall wall : walls) {
+                WallDto wallDto = new WallDto();
+
+                wallDto.setName(wall.getName());
+                wallDto.setId(wall.getId());
+
+                wallDtos.add(wallDto);
+            }
+
+            for (CenterLevel centerLevel : centerLevels) {
+                CenterLevelDto centerLevelDto = new CenterLevelDto();
+
+                centerLevelDto.setId(centerLevel.getId());
+                centerLevelDto.setLevelRank(centerLevel.getLevel().getRank());
+                centerLevelDto.setColor(centerLevel.getColor());
+
+                centerLevelDtos.add(centerLevelDto);
+            }
+
+
+            centerInfoDto.setWallList(wallDtos);
+            centerInfoDto.setCenterLevelList(centerLevelDtos);
+
+            centerInfoDtos.add(centerInfoDto);
+        }
+
+
+        return centerInfoDtos;
     }
 
 }
