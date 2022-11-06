@@ -2,6 +2,7 @@ package com.youngclimb.domain.controller;
 
 import com.youngclimb.domain.model.dto.center.CenterDetailDto;
 import com.youngclimb.domain.model.dto.center.CenterDto;
+import com.youngclimb.domain.model.dto.center.CenterInfoDto;
 import com.youngclimb.domain.model.dto.center.CenterLocation;
 import com.youngclimb.domain.model.service.CenterService;
 import io.swagger.annotations.ApiOperation;
@@ -46,6 +47,19 @@ public class CenterController {
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 지점 난이도 정보
+    @ApiOperation(value = "readCenterInfo: 지점 난이도정보")
+    @GetMapping
+    public ResponseEntity<?> readCenterInfo() {
+        try {
+            List<CenterInfoDto> centerInfoDtos = centerService.readCenterInfo();
+            return new ResponseEntity<List<CenterInfoDto>>(centerInfoDtos, HttpStatus.OK);
+
         } catch (Exception e) {
             return exceptionHandling(e);
         }
