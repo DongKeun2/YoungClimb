@@ -37,6 +37,7 @@ import {
   removeCurrentUser,
 } from '../utils/Token';
 import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
+import {fetchCenterInfo} from '../utils/slices/CenterSlice';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -49,6 +50,7 @@ export default function YoungClimb() {
 
   useEffect(() => {
     console.log('앱 새로고침');
+    dispatch(fetchCenterInfo());
 
     getCurrentUser().then(res => {
       if (res) {

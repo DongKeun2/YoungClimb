@@ -21,6 +21,8 @@ const EDIT_URL = '/edit';
 const BOARD_URL = '/board';
 
 const api = {
+  fetchCenter: () => API_BASE_URL + CENTERS_URL,
+
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   logout: () => API_BASE_URL + USER_URL + LOGOUT_URL,
   checkEmail: () => API_BASE_URL + USER_URL + EMAIL_URL,
@@ -37,6 +39,7 @@ const api = {
   center: centerId => API_BASE_URL + CENTERS_URL + `/${centerId}`,
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
+  search: () => API_BASE_URL + SEARCH_URL + BOARD_URL,
 
   postAdd: () => API_BASE_URL + BOARD_URL,
 };
