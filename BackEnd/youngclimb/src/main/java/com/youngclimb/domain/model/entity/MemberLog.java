@@ -21,8 +21,8 @@ public class MemberLog {
     private Long id;
     // 신고 번호
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "notice_id")
-    private Notice notice;
+    @JoinColumn(name = "report_id")
+    private Report report;
     // 회원 번호
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
