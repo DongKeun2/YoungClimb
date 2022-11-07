@@ -50,6 +50,7 @@ public class BoardServiceImpl implements BoardService {
     private final CenterLevelRepository centerLevelRepository;
     private final FollowRepository followRepository;
     private final MemberRankExpRepository memberRankExpRepository;
+    private final ReportRepository reportRepository;
     private final AmazonS3 amazonS3;
 
     // 게시글 읽기
@@ -570,6 +571,40 @@ public class BoardServiceImpl implements BoardService {
             return false;
         }
 
+    }
+
+    // 게시글 신고하기
+    public Boolean boardReport(Long boardId, String content, String email) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        List<Report> boardList = reportRepository.findAllByBoard(board);
+        int boardListLength = boardList.size();
+
+        if (board.getMember() == member) {
+            return Boolean.FALSE;
+        }
+
+        Report report = reportRepository.findByBoardAndMember(board, member).orElse(null);
+
+        if (boardListLength >= 9) {
+            board.setIsDelete(2);
+        }
+
+        if (report == null) {
+            Report reportCreate = Report.builder()
+                    .board(board)
+                    .member(member)
+                    .content(content)
+                    .flag(0)
+                    .build();
+
+            reportRepository.save(reportCreate);
+
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
     }
 
 }

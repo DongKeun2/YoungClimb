@@ -6,7 +6,6 @@ import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +17,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CenterServicempl implements CenterService {
+public class CenterServiceImpl implements CenterService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
