@@ -13,9 +13,9 @@ public interface MemberService {
     // 신체 정보 추가
 //    public void addBodyInfo(MemberInfo memberInfo) throws Exception;
     // 프로필 추가
-    public void addProfile(MemberProfile memberProfile, MultipartFile file) throws Exception;
+    public void addProfile(String email, MemberProfile memberProfile, MultipartFile file) throws Exception;
     // 프로필 변경
-    public void editProfile(MemberInfo memberInfo, MultipartFile file) throws Exception;
+    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception;
     // 사용자 비밀번호 검증
     public void verifyUser(String email, String password);
     // 비밀번호 수정
@@ -27,7 +27,7 @@ public interface MemberService {
     // 로그아웃
     void logout(String email, String accessToken);
     // 팔로우 추가, 제거
-    Boolean addCancelFollow(String followingNickname);
+    Boolean addCancelFollow(String followingNickname, String followerEmail);
     // 팔로잉 팔로워 목록 읽기
     public FollowMemberList listFollow(String nickname);
 }

@@ -35,6 +35,6 @@ public interface BoardService {
     // 게시글 검색
 
     // 사용자 정보 조회
-    public MemberDto getUserInfoByUserId(String userId);
+    public MemberDto getUserInfoByUserId(String userId, String loginEmail);
 
 }
