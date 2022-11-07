@@ -255,7 +255,14 @@ function CardList({articles, navigation}) {
       <View style={styles.articleContainer}>
         {articles.map((article, i) => {
           return (
-            <ArticleCard key={i} article={article} navigation={navigation} />
+            <TouchableOpacity
+              key={i}
+              style={styles.cardContainer}
+              onPress={() => {
+                navigation.navigate('게시글');
+              }}>
+              <ArticleCard article={article} navigation={navigation} />
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -267,8 +274,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    // alignItems: 'center',
-    // justifyContent: 'flex-start',
   },
   header: {
     alignSelf: 'center',
@@ -382,6 +387,13 @@ const styles = StyleSheet.create({
     opacity: 1,
     visibility: 'visible',
     transform: [{translateY: 0}],
+  },
+  cardContainer: {
+    display: 'flex',
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%',
   },
 });
 
