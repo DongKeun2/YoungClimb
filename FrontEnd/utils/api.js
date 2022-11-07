@@ -18,6 +18,8 @@ const CENTERS_URL = '/center';
 const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
 
+const BOARD_URL = '/board';
+
 const api = {
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   logout: () => API_BASE_URL + USER_URL + LOGOUT_URL,
@@ -35,6 +37,8 @@ const api = {
   center: centerId => API_BASE_URL + CENTERS_URL + `/${centerId}`,
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
+
+  postAdd: () => API_BASE_URL + BOARD_URL,
 };
 
 export default api;

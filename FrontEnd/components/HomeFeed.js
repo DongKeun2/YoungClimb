@@ -104,7 +104,7 @@ function HomeFeed({feed, navigation, isViewable}) {
           activeOpacity={1}
           onPress={changeMuted}>
           <Video
-            source={{uri: feed.mediaId}}
+            source={{uri: feed.mediaPath}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
