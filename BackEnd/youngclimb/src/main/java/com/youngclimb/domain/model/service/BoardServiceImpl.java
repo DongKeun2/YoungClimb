@@ -53,6 +53,11 @@ public class BoardServiceImpl implements BoardService {
     private final ReportRepository reportRepository;
     private final AmazonS3 amazonS3;
 
+
+//    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//    UserDetails userDetails = (UserDetails) principal;
+//    String username = userDetails.getUsername();
+
     // 게시글 읽기
     @Override
     public List<BoardDto> readAllBoard(String email, Pageable pageable, UserPrincipal currUser) {
@@ -376,6 +381,7 @@ public class BoardServiceImpl implements BoardService {
     public MemberDto getUserInfoByUserId(String userId, String loginEmail) {
 
         Member member = memberRepository.findByNickname(userId).orElseThrow();
+        System.out.println(loginEmail);
         Member loginMember = memberRepository.findByEmail(loginEmail).orElseThrow();
         MemberDto memberDto = new MemberDto();
 

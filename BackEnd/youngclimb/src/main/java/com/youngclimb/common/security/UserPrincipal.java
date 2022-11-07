@@ -22,9 +22,9 @@ public class UserPrincipal implements UserDetails {
 
         return new UserPrincipal(
                 member.getMemberId(),
-                member.getNickname(),
                 member.getEmail(),
                 member.getPw(),
+                member.getNickname(),
                 member.getRole().getKey()
         );
     }
@@ -41,7 +41,7 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getUsername() {
-        return nickname;
+        return memberEmail;
     }
 
     @Override
