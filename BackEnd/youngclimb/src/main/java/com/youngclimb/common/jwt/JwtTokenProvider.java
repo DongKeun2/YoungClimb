@@ -56,7 +56,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now) //생성일 설정
                 .setExpiration(new Date(now.getTime() + tokenValidTime)); //만료일 설정
 
-		    claims.put("role", "user"); //담고 싶은 값
+		    claims.put("role", "USER"); //담고 싶은 값
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -105,9 +105,9 @@ public class JwtTokenProvider {
     // Request의 Header에서 token 값을 가져옵니다. "accessToken" : "TOKEN값'
     public String resolveToken(HttpServletRequest request) {
         String token = null;
-        if (request.getHeader("Authorization") != null) token = request.getHeader("Authorization");
+        if (request.getHeader("Authorization") != null) { token = request.getHeader("Authorization");
 //            token = token.substring(0,6);
-//            System.out.println(token);
+            System.out.println(token);}
         return token;
     }
 
