@@ -1,10 +1,8 @@
 package com.youngclimb.common.security;
 
-import com.youngclimb.common.redis.CacheKey;
 import com.youngclimb.domain.model.entity.Member;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,12 +16,12 @@ public class UserDetailServiceImpl implements UserDetailsService {
 private final MemberRepository memberRepository;
 
     @Override
-    @Cacheable(value = CacheKey.USER, key = "#username", unless = "#result == null")
+//    @Cacheable(value = CacheKey.USER, key = "#username", unless = "#result == null")
     @Transactional
-    public UserDetails loadUserByUsername(String memberEmail) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Member member = memberRepository.findByEmail(memberEmail)
-                .orElseThrow(() -> new UsernameNotFoundException(memberEmail));
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(email));
 
         return UserPrincipal.create(member);
     }
