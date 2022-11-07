@@ -1,23 +1,45 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef,useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
     View,
     StyleSheet,
-    Text,
-    Modal,
     Animated,
-    TouchableWithoutFeedback,
     Dimensions,
-    PanResponder
+    PanResponder,
+		Text,
+		BackHandler
 } from 'react-native';
 
+
+import HomeMenuStack from '../stack/HomeMenuStack';
+
+
 const DeclareSheet = (props) => {
-    const { modalVisible, setModalVisible } = props;
-    const screenHeight = Dimensions.get("screen").height;
+    const { modalVisible, setModalVisible, focusedContent, navigation, route } = props;
+		const [focusedPage, setFocusedPage] = useState('메뉴메인')
+		const [pageSize, setPageSize] = useState(200)
+		const [pageTitle, setPageTitle] = useState('')
+		const screenHeight = Dimensions.get("screen").height;
     const panY = useRef(new Animated.Value(screenHeight)).current;
     const translateY = panY.interpolate({
         inputRange: [-1, 0, 1],
         outputRange: [0, 0, 1],
     });
+
+		useEffect(()=>{
+			if (focusedPage ==='메뉴메인'){
+				setPageSize(200)
+				setPageTitle('')
+			} else if (focusedPage === '게시물정보') {
+			  setPageSize(360)
+				setPageTitle('게시물 상세 정보')
+			} else if (focusedPage === '표시이유') {
+			  setPageSize(220)
+			} else if (focusedPage === '신고') {
+			  setPageSize(320)
+				setPageTitle('신고하기')
+			}
+		},[focusedPage])
 
     const resetBottomSheet = Animated.timing(panY, {
         toValue: 0,
@@ -59,47 +81,81 @@ const DeclareSheet = (props) => {
         })
     }
 
+		useEffect(()=>{
+			closeModal()
+		},[props.closeSignal])
+
     return (
-        <Modal
-            visible={modalVisible}
-            animationType={"fade"}
-            transparent
-            statusBarTranslucent
-        >
-            <View style={styles.overlay}>
-                <TouchableWithoutFeedback
-                    onPress={closeModal}
-                >
-                    <View style={styles.background}/>
-                </TouchableWithoutFeedback>
-                <Animated.View
-                    style={{...styles.bottomSheetContainer, transform: [{ translateY: translateY }]}}
-                    {...panResponders.panHandlers}
-                >
-                    <Text>This is BottomSheet</Text>   
-                </Animated.View>
-            </View>
-        </Modal>
+		<>
+		{
+			modalVisible?
+			<>
+				<Animated.View
+						style={{...styles.bottomSheetContainer, transform: [{ translateY: translateY }]}}
+				>
+					<Animated.View style={{...styles.upper, height: pageTitle ? 55:40}} {...panResponders.panHandlers}> 
+							<View style={{backgroundColor:'#626262', borderRadius:10,height:3,width:36, position:'absolute', top: pageTitle ? 15:20, left:'50%', transform:[{ translateX: -18}, {translateY: -1.5}]}}></View>
+							<Text style={{color:'#323232', fontSize: 15, fontWeight:'600',textAlign:'center', width:'100%', position:'absolute',  top: 24}}>{pageTitle}</Text>
+						</Animated.View>
+					<View style={{width:'100%', height:pageSize}}>
+						<HomeMenuStack style={{height:300, with:'100%'}} setModalVisible={setModalVisible} focusedContent={focusedContent} setFocusedPage={setFocusedPage} navigation={navigation} route={route}/>  
+					</View>
+				</Animated.View>
+			</>
+			:
+			<></>
+		}
+		</>
     )
 }
 
 const styles = StyleSheet.create({
+  background:{
+    height:'100%',
+    width:'100%',
+		position:'absolute',
+		bottom:0,
+		left:0,
+		backgroundColor:'black',
+		opacity:0.5,
+		zIndex:2,
+
+	},
+	upper: {
+		width:'100%',
+		height:40,
+		borderTopLeftRadius: 10,
+		borderTopRightRadius: 10,
+		padding:0,
+		margin:0,
+		borderBottomColor:'#929292',
+		borderBottomWidth:0.1,
+		// backgroundColor:'yellow',
+		...Platform.select({
+			ios:{},
+			android:{
+				elevation:0.35,
+			}
+		})
+	},
     overlay: {
         flex: 1,
         justifyContent: "flex-end",
         backgroundColor: "rgba(0, 0, 0, 0.4)"
     },
-    background: {
-        flex: 1,
-    },
-    bottomSheetContainer: {
-        height: 300,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "white",
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-    }
+		bottomSheetContainer: {
+			position: 'absolute', //Here is the trick
+			// paddingBottom: 40,
+			bottom: 0,
+			// height: 'auto',
+			width:'100%',
+			// justifyContent: "center",
+			alignItems: "center",
+			backgroundColor: "white",
+			borderTopLeftRadius: 10,
+			borderTopRightRadius: 10,
+			zIndex:3,
+		}
 })
 
 export default DeclareSheet;
