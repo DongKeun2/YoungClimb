@@ -18,7 +18,7 @@ const boards = [
     createdAt: '2시간 전',
     centerName: '더 클라임 양재점',
     centerLevelColor: '파랑',
-    mediaId:
+    mediaPath:
       'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/406d78de-790e-4437-b438-a15c6c1ca593.mp4',
     wallName: '',
     difficulty: 'V3',
@@ -48,7 +48,7 @@ const boards = [
     createdAt: '3시간 전',
     centerName: '더 클라임 강남점',
     centerLevelColor: '초록',
-    mediaId:
+    mediaPath:
       'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/52cafc61-e0f5-4e5d-9f0b-343be1b06042.mp4',
     wallName: 'C구역',
     difficulty: 'V2',
@@ -73,7 +73,7 @@ const boards = [
     createdAt: '5시간 전',
     centerName: '더 클라임 양재점',
     centerLevelColor: '초록',
-    mediaId:
+    mediaPath:
       'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/0f446944-8243-452d-b89b-7204e3fe446b.mp4',
     wallName: 'D구역',
     difficulty: 'V1',
@@ -99,7 +99,7 @@ const boards = [
     createdAt: '3월 16일',
     centerName: '더 클라임 신림점',
     centerLevelColor: '빨강',
-    mediaId:
+    mediaPath:
       'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/258683be-f3b5-477d-abaa-9d99dfb6d35b.mp4',
     wallName: 'B구역',
     difficulty: 'V5',
