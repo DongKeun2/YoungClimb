@@ -8,7 +8,6 @@ import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.*;
 import com.youngclimb.domain.model.dto.member.CreateMember;
 import com.youngclimb.domain.model.dto.member.MemberDto;
-import com.youngclimb.domain.model.dto.member.MemberInfo;
 import com.youngclimb.domain.model.dto.member.UserDto;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -373,12 +372,13 @@ public class BoardServiceImpl implements BoardService {
 
     // 사용자 정보 조회
     @Override
-    public MemberDto getUserInfoByUserId(String userId) {
+    public MemberDto getUserInfoByUserId(String userId, String loginEmail) {
 
         Member member = memberRepository.findByNickname(userId).orElseThrow();
+        Member loginMember = memberRepository.findByEmail(loginEmail).orElseThrow();
         MemberDto memberDto = new MemberDto();
 
-        memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(1L, member.getMemberId()));
+        memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(loginMember.getMemberId(), member.getMemberId()));
         UserDto userDto = new UserDto();
 
         userDto.setImage(member.getMemberProfileImg());

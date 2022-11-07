@@ -12,7 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
@@ -84,20 +86,20 @@ public class MemberController {
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
     @PostMapping("/profile")
-    public ResponseEntity<?> addProfile(@RequestPart MemberProfile memberProfile, @RequestPart(required = false) MultipartFile file) throws Exception {
+    public ResponseEntity<?> addProfile(@RequestPart MemberProfile memberProfile, @RequestPart(required = false) MultipartFile file, Principal principal) throws Exception {
         try {
-            memberService.addProfile(memberProfile, file);
+            memberService.addProfile(principal.getName(), memberProfile, file);
             return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
     }
     // 프로필 변경
-    @ApiOperation(value = "addProfile: 프로필 정보 입력")
+    @ApiOperation(value = "editProfile: 프로필 정보 수정")
     @PostMapping("/profile/edit")
-    public ResponseEntity<?> editProfile(@RequestPart MemberInfo memberInfo, @RequestPart(required = false) MultipartFile file) throws Exception {
+    public ResponseEntity<?> editProfile(@RequestPart MemberInfo memberInfo, @RequestPart(required = false) MultipartFile file, Principal principal) throws Exception {
         try {
-            memberService.editProfile(memberInfo, file);
+            memberService.editProfile(principal.getName(), memberInfo, file);
             return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<String>("오류가 발생했습니다", HttpStatus.BAD_REQUEST);
@@ -109,18 +111,18 @@ public class MemberController {
     // 로그아웃
     @ApiOperation(value = "logout: 로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(String email, HttpServletRequest request) {
+    public ResponseEntity<?> logout(Principal principal, HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7);
-        memberService.logout(email, accessToken);
+        memberService.logout(principal.getName(), accessToken);
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
     }
 
     // 팔로우 추가, 취소
     @ApiOperation(value = "addCancelFollow")
     @PostMapping("/{nickname}/follow")
-    public ResponseEntity<?> addCancelFollow(@PathVariable String nickname) {
+    public ResponseEntity<?> addCancelFollow(@PathVariable String nickname, Principal principal) {
         try {
-            Boolean addCancelFollow = memberService.addCancelFollow(nickname);
+            Boolean addCancelFollow = memberService.addCancelFollow(nickname, principal.getName());
             if (addCancelFollow != null) {
                 return new ResponseEntity<Boolean>(addCancelFollow, HttpStatus.OK);
             } else {
@@ -150,9 +152,9 @@ public class MemberController {
     // 유저 정보 조회
     @ApiOperation(value = "readProfile : 유저 정보 조회")
     @GetMapping("/{nickname}")
-    public ResponseEntity<?> readProfile(@PathVariable String nickname) throws Exception {
+    public ResponseEntity<?> readProfile(@PathVariable String nickname, Principal principal) throws Exception {
         try {
-            MemberDto memberDto = boardService.getUserInfoByUserId(nickname);
+            MemberDto memberDto = boardService.getUserInfoByUserId(nickname, principal.getName());
             if (memberDto != null) {
                 return new ResponseEntity<MemberDto>(memberDto, HttpStatus.OK);
             } else {
