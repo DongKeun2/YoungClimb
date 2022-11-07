@@ -8,6 +8,7 @@ import Geolocation from 'react-native-geolocation-service';
 
 import MyLocationImg from '../../assets/image/map/MyLocation.png'
 import MarkerImg from '../../assets/image/map/Marker.png'
+import Refresh from '../../assets/image/map/Refresh.svg'
 
 import axios from 'axios'
 import api from '../../utils/api'
@@ -15,11 +16,12 @@ import { Toast } from '../../components/Toast';
 
 export default function StoreScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState({latitude: 37.0575, longitude: 127.0575});
+  const [currentCenter, setCurrentCenter] = useState({latitude: 37.0575, longitude: 127.0575})
   const [modalVisible, setModalVisible] = useState(false)
-  const [mapView, setMapView] = useState('55%')
   const [exitAttempt, setExitAttempt] = useState(false) 
+  const [rerender, setRerender] = useState(1)
   const locationHandler = (e) => {
-    setCurrentLocation(e);
+    setCurrentCenter(e);
   }
   const [climbingLocations, setClimbingLocations] = useState([])
   const routeName = useRoute()
@@ -49,11 +51,11 @@ export default function StoreScreen({navigation, route}) {
   }
 
   useEffect(()=>{
-    console.log(api.centers())
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
         setCurrentLocation({latitude,longitude})
+        setCurrentCenter({latitude,longitude})
       },
       error => {
         setCurrentLocation({latitude: 37.5873, longitude: 127.0575})
@@ -62,7 +64,7 @@ export default function StoreScreen({navigation, route}) {
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
   }
-  ,[])
+  ,[rerender])
 
   useFocusEffect(()=>{
   
@@ -76,34 +78,65 @@ export default function StoreScreen({navigation, route}) {
    })
 
   useEffect(()=>{
+    const source = axios.CancelToken.source();
     axios.post(api.centers(), 
       {'lat':currentLocation.latitude,
-       'lon':currentLocation.longitude}
+       'lon':currentLocation.longitude},
+      {cancelToken: source.token}
     )
     .then((res)=>{
-        console.log(res)
         setClimbingLocations(res.data)
       })
     .catch((err)=>{
       console.log(err.message,'err')
     })
-
+    return () => {
+			source.cancel();
+		}
   },[currentLocation])
+
+  const onSearchThisRegion = ()=>{
+    setCurrentLocation(currentCenter)
+  }
+
+  const onRefresh = () =>{
+    setRerender(rerender+1)
+  }
 
   return (
     <View style={{height:'100%'}}>
+      <TouchableOpacity
+        style={{...styles.button, zIndex:0.5, position:'absolute', backgroundColor:'white',top:15, left:'50%', transform:[{ translateX: -55 }]}} 
+        onPress={()=>{onSearchThisRegion()}}
+      >
+        <Text style={{...styles.text, color:'#F34D7F', fontSize:14.5}}>현재 지역 검색</Text>
+        </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={{...styles.button, zIndex:0.5, borderRadius:3, width:30,position:'absolute', backgroundColor:'white',top:15, right:15}} 
+        onPress={()=>{onRefresh()}}
+      >
+        <Refresh/>
+        </TouchableOpacity>
+      
+      {/* <TouchableOpacity>refresh</TouchableOpacity> */}
       <Animated.View style={{position:'absolute', top:0, left:0,width:'100%', height:'100%', zIndex:0 }}>
         <NaverMapView style={{width: '100%', height: '100%'}}
+          useTextureView={true}
           onMapClick={e => locationHandler(e)}
           center={{...currentLocation, zoom: 14}}
           zoomControl ={true}
-          // showsMyLocationButton={true}
-          // onCameraChange={e => console.warn('onCameraChange', JSON.stringify(e))}
+          onCameraChange={(e)=>{setCurrentCenter({latitude:e.latitude,longitude:e.longitude})}}
           >
             {/*             받은 정보 map         */}
             {climbingLocations.map((center, idx)=>{
               return(
-                <Marker coordinate={{latitude:center.latitude, longitude:center.longitude}} key={center.id} caption={{text:center.name, align:Align.Top}}/>
+                <Marker 
+                  coordinate={{latitude:center.latitude, longitude:center.longitude}} 
+                  key={center.id} 
+                  image={MarkerImg} 
+                  caption={{text:center.name, align:Align.Top}}
+                  onClick={()=> navigation.navigate('지점상세', {Id:center.id})}/>
               )
             })}
             <Marker coordinate={currentLocation} image={MyLocationImg}/>
@@ -111,10 +144,9 @@ export default function StoreScreen({navigation, route}) {
       </Animated.View> 
         <BottomSheet
         navigation = {navigation}
-        style={{...styles.bottomView,zIndex:10}}
+        style={{...styles.bottomView,zIndex:1}}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        setMapView={setMapView}
         climbingLocations={climbingLocations}
       />
       {modalVisible?
@@ -157,7 +189,7 @@ const styles = StyleSheet.create({
         },
 
         android: {
-            elevation: 0,
+            elevation: 2,
             marginHorizontal: 'auto',
         },
     })
