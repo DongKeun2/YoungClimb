@@ -30,7 +30,12 @@ import ActiveHomeIcon from '../assets/image/tab/activeHome.svg';
 import ActiveSearchIcon from '../assets/image/tab/activeSearch.svg';
 import ActiveProfileIcon from '../assets/image/tab/activeProfile.svg';
 
-import {getAccessToken, getCurrentUser} from '../utils/Token';
+import {
+  getAccessToken,
+  getCurrentUser,
+  removeAccessToken,
+  removeCurrentUser,
+} from '../utils/Token';
 import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
 
 const Tab = createBottomTabNavigator();
@@ -43,11 +48,19 @@ export default function YoungClimb() {
   const login = useSelector(state => state.accounts.loginState);
 
   useEffect(() => {
-    if (getAccessToken()) {
-      getCurrentUser()
-        .then(currentUser => dispatch(fetchCurrentUser(currentUser)))
-        .catch(err => console.log(err));
-    }
+    console.log('앱 새로고침');
+
+    getCurrentUser().then(res => {
+      if (res) {
+        console.log('로그인됨', res);
+        dispatch(fetchCurrentUser(res));
+      } else {
+        console.log('비로그인상태임');
+        removeAccessToken();
+        removeCurrentUser();
+      }
+    });
+
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);

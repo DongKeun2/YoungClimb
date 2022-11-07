@@ -16,6 +16,7 @@ const FOLLOW_URL = '/follow';
 const CENTERS_URL = '/center';
 
 const SEARCH_URL = '/search';
+const EDIT_URL = '/edit';
 
 const BOARD_URL = '/board';
 
@@ -26,6 +27,8 @@ const api = {
   checkNickname: () => API_BASE_URL + USER_URL + NICKNAME_URL,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   profile: nickname => API_BASE_URL + USER_URL + `/${nickname}`,
+  profileCreate: () => API_BASE_URL + USER_URL + PROFILE_URL,
+  profileEdit: () => API_BASE_URL + USER_URL + PROFILE_URL + EDIT_URL,
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,
