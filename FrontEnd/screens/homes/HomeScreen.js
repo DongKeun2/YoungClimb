@@ -1,11 +1,12 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 
-import {FlatList, BackHandler} from 'react-native';
+import {FlatList, BackHandler, View, StyleSheet, TouchableOpacity} from 'react-native';
 import CustomMainHeader from '../../components/CustomMainHeader';
 import HomeFeed from '../../components/HomeFeed';
 
 import {Toast} from '../../components/Toast';
+import DeclareSheet from '../../components/DeclareSheet';
 
 const boards = [
   {
@@ -117,8 +118,11 @@ const boards = [
   },
 ];
 
-function HomeScreen({navigation}) {
+function HomeScreen({navigation, route}) {
   const [visablePostIndex, setVisablePostIndex] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false)
+  const [focusedContent, setFocusedContent] = useState(null)
+  const [closeSignal, setCloseSignal] = useState(0)
 
   const onViewRef = useRef(({viewableItems}) => {
     if (viewableItems && viewableItems[0]) {
@@ -179,7 +183,7 @@ function HomeScreen({navigation}) {
   });
 
   return (
-    <>
+    <View style={{height:'100%', position:'relative'}}>
       <CustomMainHeader type="홈" navigation={navigation} />
       <FlatList
         data={boards}
@@ -189,14 +193,32 @@ function HomeScreen({navigation}) {
         renderItem={({item, index}) => (
           <HomeFeed
             feed={item}
+            isRecommend={false}
             navigation={navigation}
             isViewable={index === visablePostIndex}
+            setModalVisible={setModalVisible}
+            setFocusedContent={setFocusedContent}
           />
         )}
       />
       <Toast ref={toastRef} />
-    </>
+      {modalVisible? <TouchableOpacity style={{...styles.background}} onPress={()=>setCloseSignal(closeSignal+1)}></TouchableOpacity> : <></>}
+      <DeclareSheet navigation={navigation} route={route} modalVisible={modalVisible} setModalVisible={setModalVisible} focusedContent={focusedContent} closeSignal={closeSignal}/>
+
+    </View>
   );
 }
 
 export default HomeScreen;
+
+const styles = StyleSheet.create({
+  background:{
+    height:'100%',
+    width:'100%',
+		position:'absolute',
+		bottom:0,
+		left:0,
+		zIndex:2,
+
+	},
+})
