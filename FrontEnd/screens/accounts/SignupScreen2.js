@@ -21,12 +21,8 @@ import {
 import CustomButton from '../../components/CustomBtn';
 
 import logo from '../../assets/image/main/signup.png';
-import checkIcon from '../../assets/image/main/done.png';
-import checked from '../../assets/image/main/checked.png';
-import unChecked from '../../assets/image/main/unchecked.png';
 import camera from '../../assets/image/main/camera.png';
 import BackIcon from '../../assets/image/header/backIcon.svg';
-import NextIcon from '../../assets/image/header/nextIcon.svg';
 
 const windowHeight = Dimensions.get('window').height;
 

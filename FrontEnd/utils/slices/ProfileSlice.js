@@ -56,6 +56,7 @@ const initialState = {
     followers: [],
   },
   isOpen: false,
+  uploadImg: null,
 };
 
 export const ProfileSlice = createSlice({
@@ -67,6 +68,9 @@ export const ProfileSlice = createSlice({
     },
     setIsClose: state => {
       state.isOpen = false;
+    },
+    changeUploadImg: (state, action) => {
+      state.uploadImg = action.payload;
     },
   },
   extraReducers: {
@@ -84,6 +88,6 @@ export const ProfileSlice = createSlice({
 
 export {profile, followSubmit, fetchFollowList};
 
-export const {setIsOpen, setIsClose} = ProfileSlice.actions;
+export const {setIsOpen, setIsClose, changeUploadImg} = ProfileSlice.actions;
 
 export default ProfileSlice.reducer;

@@ -17,10 +17,9 @@ import CustomMainHeader from '../components/CustomMainHeader';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {Toast} from '../components/Toast';
 import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
-import centerInfo from '../assets/info/CenterInfo';
 import UserAvatar from '../components/UserAvatar';
 
-import {fetchUser, searchUser} from '../utils/slices/SearchSlice';
+import {fetchUser, searchUser, search} from '../utils/slices/SearchSlice';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
 import UserIcon from '../assets/image/search/user.svg';
@@ -120,8 +119,9 @@ function SearchScreen({navigation}) {
 function BoardTab({navigation}) {
   const dispatch = useDispatch();
 
-  const [isSimilar, setIsSimilar] = useState(false);
+  const centerInfo = useSelector(state => state.center.centerInfo);
 
+  const [isSimilar, setIsSimilar] = useState(false);
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
   const [level, setLevel] = useState('');
@@ -142,14 +142,14 @@ function BoardTab({navigation}) {
         holdColor,
         isSimilar,
       };
-      // dispatch(search(data)).then(() => {
-      navigation.navigate('검색 결과', {
-        center: centerInfo[center - 1].name,
-        wall,
-        level,
-        holdColor,
+      dispatch(search(data)).then(() => {
+        navigation.navigate('검색 결과', {
+          center: centerInfo[center - 1].name,
+          wall,
+          level,
+          holdColor,
+        });
       });
-      // });
     }
   }
 
@@ -179,9 +179,9 @@ function BoardTab({navigation}) {
                 label="선택 없음"
                 value=""
               />
-              {centerInfo.map((item, id) => (
+              {centerInfo.map((item, idx) => (
                 <Picker.Item
-                  key={id}
+                  key={idx}
                   style={styles.pickerLabel}
                   label={item.name}
                   value={item.id}
@@ -207,9 +207,9 @@ function BoardTab({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                ? centerInfo[center - 1]?.wallList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
                       label={item.name}
                       value={item.id}
@@ -239,11 +239,11 @@ function BoardTab({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.level.map((item, id) => (
+                ? centerInfo[center - 1]?.centerLevelList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
-                      label={item.name}
+                      label={item.color}
                       value={item.id}
                     />
                   ))

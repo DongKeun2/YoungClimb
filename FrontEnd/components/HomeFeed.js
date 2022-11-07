@@ -114,7 +114,7 @@ function HomeFeed({feed, isRecommend, navigation, isViewable, setModalVisible, s
           activeOpacity={1}
           onPress={changeMuted}>
           <Video
-            source={{uri: feed.mediaId}}
+            source={{uri: feed.mediaPath}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
