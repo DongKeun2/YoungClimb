@@ -1,5 +1,6 @@
 package com.youngclimb.common.jwt;
 
+import com.youngclimb.common.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +29,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             // SecurityContext에 Authentication 객체를 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
             // 로그용
-//	            UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+	            UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+                System.out.println(userDetails.getUsername());
 
         }
 

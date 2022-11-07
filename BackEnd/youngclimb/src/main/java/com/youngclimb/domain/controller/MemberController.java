@@ -26,6 +26,7 @@ public class MemberController {
     @PostMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestBody MemberEmail email) {
         try {
+            if(email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -37,6 +38,7 @@ public class MemberController {
     @PostMapping("/nickname")
     public ResponseEntity<?> checkNickname(@RequestBody MemberNickname nickname) {
         try {
+            if(nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");

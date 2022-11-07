@@ -59,17 +59,18 @@ public class MemberServiceImpl implements MemberService {
     // 회원 등록
     @Override
     public LoginResDto insertUser(JoinMember joinMember) throws Exception {
-        String role = "GUEST";
-
         if (memberRepository.existsByEmail(joinMember.getEmail())) {
+            System.out.println("중복된 이메일");
             throw new EntityExistsException("중복된 이메일입니다!");
         }
 
         if (!isEmail(joinMember.getEmail())) {
+            System.out.println("이메일 형식");
             throw new Exception("이메일 형식이 틀렸습니다.");
         }
 
-        if (memberRepository.existsByNickname(joinMember.getEmail())) {
+        if (memberRepository.existsByNickname(joinMember.getNickname())) {
+            System.out.println("중복된 닉네임");
             throw new EntityExistsException("중복된 닉네임입니다!");
         }
 
@@ -85,6 +86,7 @@ public class MemberServiceImpl implements MemberService {
                 .wingheight(joinMember.getHeight()+ joinMember.getWingspan())
                 .role(UserRole.USER)
                 .build();
+        if(member == null) System.out.println("멤버 빌드 실패");
         memberRepository.save(member);
 
         LoginMemberInfo user = LoginMemberInfo.builder()

@@ -34,7 +34,8 @@ public class JwtTokenProvider {
 
     // access token 생성
     public String createAccessToken(String email) {
-        Long tokenValidTime = 1000L * 60 * 3; // 3분
+//        Long tokenValidTime = 1000L * 60 * 3; // 3분
+        Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
         return this.createToken(email, tokenValidTime);
     }
 
@@ -56,7 +57,7 @@ public class JwtTokenProvider {
                 .setIssuedAt(now) //생성일 설정
                 .setExpiration(new Date(now.getTime() + tokenValidTime)); //만료일 설정
 
-		    claims.put("role", "USER"); //담고 싶은 값
+        claims.put("role", "USER"); //담고 싶은 값
 
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
@@ -75,6 +76,7 @@ public class JwtTokenProvider {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key).build()
                     .parseClaimsJws(accessToken).getBody();
+            System.out.println(claims.toString());
             return true;
 
         } catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
@@ -105,9 +107,11 @@ public class JwtTokenProvider {
     // Request의 Header에서 token 값을 가져옵니다. "accessToken" : "TOKEN값'
     public String resolveToken(HttpServletRequest request) {
         String token = null;
-        if (request.getHeader("Authorization") != null) { token = request.getHeader("Authorization");
-//            token = token.substring(0,6);
-            System.out.println(token);}
+        if (request.getHeader("Authorization") != null) {
+            token = request.getHeader("Authorization");
+            token = token.substring(7);
+            System.out.println(token);
+        }
         return token;
     }
 
