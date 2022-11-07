@@ -37,4 +37,7 @@ public interface BoardService {
     // 사용자 정보 조회
     public MemberDto getUserInfoByUserId(String userId);
 
+    // 게시글 신고하기
+    public Boolean boardReport(Long boardId, String content, String email);
+
 }

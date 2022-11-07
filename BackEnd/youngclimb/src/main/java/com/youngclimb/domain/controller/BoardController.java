@@ -1,9 +1,6 @@
 package com.youngclimb.domain.controller;
 
-import com.youngclimb.domain.model.dto.board.BoardCreate;
-import com.youngclimb.domain.model.dto.board.BoardDetailDto;
-import com.youngclimb.domain.model.dto.board.BoardDto;
-import com.youngclimb.domain.model.dto.board.CommentCreate;
+import com.youngclimb.domain.model.dto.board.*;
 import com.youngclimb.domain.model.service.BoardService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -148,6 +145,17 @@ public class BoardController {
     // 게시글 검색
 
     // 게시글 신고
+    @ApiOperation(value = "boardReport : 게시글 신고하기")
+    @PostMapping("/{boardId}/report")
+    public ResponseEntity<?> boardReport(@PathVariable Long boardId, @RequestBody ReportCreate reportCreate) throws Exception {
+        String email = "test2@test.com";
+        try {
+            return new ResponseEntity<Boolean>(boardService.boardReport(boardId, reportCreate.getContent(), email), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
 
 
     // 예외 처리
