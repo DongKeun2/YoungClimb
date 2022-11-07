@@ -10,6 +10,8 @@ import DetailScreen from '../screens/profile/DetailScreen';
 import CommentScreen from '../screens/profile/CommentScreen';
 import WingspanScreen from '../screens/accounts/WingspanScreen';
 
+import ProfileDrawer from './ProfileDrawer';
+
 import PostAddStack from './PostAddStack';
 import {getCurrentUser} from '../utils/Token';
 import {useSelector} from 'react-redux';
@@ -30,13 +32,13 @@ function ProfileStack({navigation, route}) {
 
   return (
     <Stack.Navigator
-      initialRouteName="메인프로필"
+      initialRouteName="프로필 메뉴"
       screenOptions={{
         headerShown: false,
       }}>
       <Stack.Screen
-        name="메인프로필"
-        component={ProfileScreen}
+        name="프로필 메뉴"
+        component={ProfileDrawer}
         initialParams={{
           initial: true,
           nickname,
