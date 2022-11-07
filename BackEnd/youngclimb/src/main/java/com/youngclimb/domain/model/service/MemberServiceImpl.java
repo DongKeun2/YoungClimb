@@ -83,10 +83,10 @@ public class MemberServiceImpl implements MemberService {
                 .height(joinMember.getHeight())
                 .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
-                .wingheight(joinMember.getHeight()+ joinMember.getWingspan())
+                .wingheight(joinMember.getHeight() + joinMember.getWingspan())
                 .role(UserRole.USER)
                 .build();
-        if(member == null) System.out.println("멤버 빌드 실패");
+        if (member == null) System.out.println("멤버 빌드 실패");
         memberRepository.save(member);
 
         LoginMemberInfo user = LoginMemberInfo.builder()
@@ -129,9 +129,12 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 추가
     @Override
-    public void addProfile(MemberProfile memberProfile, MultipartFile file) throws Exception {
-        Member member = memberRepository.findByEmail(memberProfile.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
+    public void addProfile(String email, MemberProfile memberProfile, MultipartFile file) throws Exception {
+
+        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
+
+//        Member member = memberRepository.findByEmail(memberProfile.getEmail())
+//                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
 
         // 프로필 사진 s3 저장
         if (file == null) {
@@ -158,9 +161,11 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 수정
     @Override
-    public void editProfile(MemberInfo memberInfo, MultipartFile file) throws Exception {
-        Member member = memberRepository.findByEmail(memberInfo.getEmail())
+    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception {
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
+//        Member member = memberRepository.findByEmail(memberInfo.getEmail())
+//                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 
         // 프로필 사진 s3 저장
         if (file == null) {
@@ -193,7 +198,6 @@ public class MemberServiceImpl implements MemberService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다");
         }
     }
-
 
 
     @Override
@@ -236,29 +240,29 @@ public class MemberServiceImpl implements MemberService {
         int problemLeft = 0;
         switch (memberRankExp.getRank().getProblem()) {
             case "V0":
-                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0():3;
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0() : 3;
                 break;
             case "V1":
-                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1():3;
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1() : 3;
                 break;
             case "V3":
-                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3():3;
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3() : 3;
                 break;
             case "V5":
-                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5():3;
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5() : 3;
                 break;
             case "V6":
-                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6():3;
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6() : 3;
                 break;
             case "V7":
-                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7():3;
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7() : 3;
                 break;
             default:
                 problemLeft = 0;
                 break;
         }
 
-        long expLeft = memberRankExp.getRank().getQual()-memberRankExp.getMemberExp();
+        long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
@@ -267,7 +271,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (expLeft*100/memberRankExp.getRank().getQual()))
+                .exp((int) (expLeft * 100 / memberRankExp.getRank().getQual()))
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -279,6 +283,7 @@ public class MemberServiceImpl implements MemberService {
     // 로그아웃
     @Override
     public void logout(String email, String accessToken) {
+
         jwtTokenProvider.logout(email, accessToken);
     }
 
@@ -328,13 +333,12 @@ public class MemberServiceImpl implements MemberService {
         if (!matcher.find()) {
             return "Detected: Wrong Regex";
         }
-    return "";
+        return "";
     }
 
     // 팔로잉하기/취소하기
-    public Boolean addCancelFollow(String followingNickname) {
-        long followerId = 1;
-        Member follower = memberRepository.findById(followerId).orElseThrow();
+    public Boolean addCancelFollow(String followingNickname, String followerEmail) {
+        Member follower = memberRepository.findByEmail(followerEmail).orElseThrow();
         Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
 
         if (follower.getMemberId() == following.getMemberId()) {
@@ -368,7 +372,7 @@ public class MemberServiceImpl implements MemberService {
         List<Follow> followingMembers = followRepository.findAllByFollower(member);
         List<Follow> followerMembers = followRepository.findAllByFollowing(member);
 
-        for (Follow following: followingMembers) {
+        for (Follow following : followingMembers) {
             Member followingMember = following.getFollowing();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followingMember).orElseThrow();
 
@@ -385,7 +389,7 @@ public class MemberServiceImpl implements MemberService {
             follwings.add(myFollowing);
         }
 
-        for (Follow follower: followerMembers) {
+        for (Follow follower : followerMembers) {
             Member followerMember = follower.getFollower();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
 

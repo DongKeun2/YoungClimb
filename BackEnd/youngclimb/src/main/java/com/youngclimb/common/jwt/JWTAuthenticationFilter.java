@@ -30,8 +30,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             // 로그용
 	            UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
+                System.out.println("스프링 필터에서 걸린거야");
                 System.out.println(userDetails.getUsername());
-
         }
 
         filterChain.doFilter(request, response);

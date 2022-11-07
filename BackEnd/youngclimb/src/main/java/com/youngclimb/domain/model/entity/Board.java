@@ -38,13 +38,18 @@ public class Board {
     private LocalDate solvedDate;
     // 게시글 삭제여부
     @Column(name = "board_is_deleted")
-    private Boolean isDelete;
+    private Integer isDelete;
     // 게시글 조회수
     @Column(name = "board_view")
     private Long boardView;
 
     public Board setMember(Member member) {
         this.member = member;
+        return this;
+    }
+
+    public Board setIsDelete(Integer num) {
+        this.isDelete = num;
         return this;
     }
 

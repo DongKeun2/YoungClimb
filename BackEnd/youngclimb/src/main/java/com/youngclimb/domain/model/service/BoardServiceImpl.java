@@ -8,7 +8,6 @@ import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.*;
 import com.youngclimb.domain.model.dto.member.CreateMember;
 import com.youngclimb.domain.model.dto.member.MemberDto;
-import com.youngclimb.domain.model.dto.member.MemberInfo;
 import com.youngclimb.domain.model.dto.member.UserDto;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -51,7 +50,13 @@ public class BoardServiceImpl implements BoardService {
     private final CenterLevelRepository centerLevelRepository;
     private final FollowRepository followRepository;
     private final MemberRankExpRepository memberRankExpRepository;
+    private final ReportRepository reportRepository;
     private final AmazonS3 amazonS3;
+
+
+//    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//    UserDetails userDetails = (UserDetails) principal;
+//    String username = userDetails.getUsername();
 
     // 게시글 읽기
     @Override
@@ -373,12 +378,14 @@ public class BoardServiceImpl implements BoardService {
 
     // 사용자 정보 조회
     @Override
-    public MemberDto getUserInfoByUserId(String userId) {
+    public MemberDto getUserInfoByUserId(String userId, String loginEmail) {
 
         Member member = memberRepository.findByNickname(userId).orElseThrow();
+        System.out.println(loginEmail);
+        Member loginMember = memberRepository.findByEmail(loginEmail).orElseThrow();
         MemberDto memberDto = new MemberDto();
 
-        memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(1L, member.getMemberId()));
+        memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(loginMember.getMemberId(), member.getMemberId()));
         UserDto userDto = new UserDto();
 
         userDto.setImage(member.getMemberProfileImg());
@@ -570,6 +577,40 @@ public class BoardServiceImpl implements BoardService {
             return false;
         }
 
+    }
+
+    // 게시글 신고하기
+    public Boolean boardReport(Long boardId, String content, String email) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        List<Report> boardList = reportRepository.findAllByBoard(board);
+        int boardListLength = boardList.size();
+
+        if (board.getMember() == member) {
+            return Boolean.FALSE;
+        }
+
+        Report report = reportRepository.findByBoardAndMember(board, member).orElse(null);
+
+        if (boardListLength >= 9) {
+            board.setIsDelete(2);
+        }
+
+        if (report == null) {
+            Report reportCreate = Report.builder()
+                    .board(board)
+                    .member(member)
+                    .content(content)
+                    .flag(0)
+                    .build();
+
+            reportRepository.save(reportCreate);
+
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
     }
 
 }
