@@ -83,7 +83,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
                 .wingheight(joinMember.getHeight()+ joinMember.getWingspan())
-                .role(UserRole.GUEST)
+                .role(UserRole.USER)
                 .build();
         memberRepository.save(member);
 
@@ -97,6 +97,8 @@ public class MemberServiceImpl implements MemberService {
 
         MemberRankExp memberRankExp = MemberRankExp.builder()
                 .member(member)
+                .memberExp(0L)
+                .rank(rankRepository.findByName("Y1").orElse(new Rank()))
                 .build();
         memberRankExpRepository.save(memberRankExp);
 

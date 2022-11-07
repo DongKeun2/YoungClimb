@@ -22,7 +22,7 @@ public class MemberRankExp {
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "member_id")
     private Member member;
-    // 등급 번호
+    // 등급 이름
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rank_name")
     private Rank rank;
