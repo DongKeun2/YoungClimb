@@ -12,12 +12,12 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tb_notice")
-public class Notice {
+@Table(name = "tb_report")
+public class Report {
     // 신고 번호
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notice_id")
+    @Column(name = "report_id")
     private Long id;
     // 회원 번호
     @ManyToOne(fetch = FetchType.LAZY)
@@ -28,9 +28,9 @@ public class Notice {
     @JoinColumn(name = "board_id")
     private Board board;
     // 신고 내용
-    @Column(name = "notice_content")
+    @Column(name = "report_content")
     private String content;
     // 신고 처리 여부
-    @Column(name = "notice_flag")
+    @Column(name = "report_flag")
     private Integer flag;
 }
