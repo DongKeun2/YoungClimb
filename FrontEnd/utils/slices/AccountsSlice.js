@@ -85,10 +85,40 @@ const profileCreate = createAsyncThunk(
   'profileCreate',
   async (formdata, {rejectWithValue}) => {
     console.log('회원가입 후 프로필, 자기소개 입력', formdata);
+
+    const headers = {
+      'Content-Type': 'multipart/form-data',
+    };
     try {
-      const res = await axios.post(api.profile(), formdata, getConfig());
+      const res = await axios.post(api.profileCreate(), formdata, headers);
+      console.log('프로필 입력 성공', res.data);
       return res.data;
     } catch (err) {
+      console.log('프로필 입력 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const profileEdit = createAsyncThunk(
+  'profileEdit',
+  async (formdata, {rejectWithValue}) => {
+    console.log('수정 신청', formdata);
+    const header = {
+      'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString',
+    };
+    try {
+      const res = await axios({
+        method: 'post',
+        url: api.profileEdit(),
+        data: formdata,
+        headers: header,
+      });
+      alert('수정 완료');
+      console.log('프로필 입력 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('수정 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -295,6 +325,7 @@ export {
   profileCreate,
   checkEmail,
   checkNickname,
+  profileEdit,
 };
 
 export const {
