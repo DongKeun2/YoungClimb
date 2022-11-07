@@ -9,8 +9,8 @@ public class JoinMember {
     public String nickname;
     public String password;
     public String gender;
-    public Integer height;
-    public Integer shoeSize;
-    public Integer wingspan;
+    public Integer height = 0;
+    public Integer shoeSize = 0;
+    public Integer wingspan = 0;
 
 }
