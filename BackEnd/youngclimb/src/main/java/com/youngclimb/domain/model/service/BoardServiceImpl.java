@@ -84,7 +84,7 @@ public class BoardServiceImpl implements BoardService {
             CreateMember createUser = CreateMember.builder()
                     .nickname(writer.getNickname())
                     .image(writer.getMemberProfileImg())
-//                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
                     .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
                     .build();
 
@@ -164,7 +164,7 @@ public class BoardServiceImpl implements BoardService {
         CreateMember createUser = CreateMember.builder()
                 .nickname(writer.getNickname())
                 .image(writer.getMemberProfileImg())
-//                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
                 .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
                 .build();
 
@@ -319,7 +319,7 @@ public class BoardServiceImpl implements BoardService {
         CreateMember createUser = CreateMember.builder()
                 .nickname(writer.getNickname())
                 .image(writer.getMemberProfileImg())
-//                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
                 .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), memberId))
                 .build();
 
@@ -365,7 +365,7 @@ public class BoardServiceImpl implements BoardService {
             CreateMember cCreateMember = CreateMember.builder()
                     .nickname(cWriter.getNickname())
                     .image(cWriter.getMemberProfileImg())
-//                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
+                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
                     .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), memberId))
                     .build();
 
@@ -384,7 +384,7 @@ public class BoardServiceImpl implements BoardService {
                 CreateMember rcCreateMember = CreateMember.builder()
                         .nickname(rcWriter.getNickname())
                         .image(rcWriter.getMemberProfileImg())
-//                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
+                        .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
                         .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(rcWriter.getMemberId(), memberId))
                         .build();
 
