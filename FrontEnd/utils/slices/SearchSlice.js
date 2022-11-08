@@ -13,7 +13,7 @@ const fetchUser = createAsyncThunk(
   async (arg, {rejectWithValue}) => {
     console.log('추천 유저 받기');
     try {
-      const res = await axios.get(api.searchUser(), {});
+      const res = await axios.get(api.searchUser(), await getConfig());
       console.log('추천유저정보', res.data);
       return res.data;
     } catch (err) {
@@ -25,7 +25,7 @@ const fetchUser = createAsyncThunk(
 const search = createAsyncThunk('search', async (data, {rejectWithValue}) => {
   try {
     console.log('검색 요청', data);
-    const res = await axios.post(api.search(), data, {});
+    const res = await axios.post(api.search(), data, await getConfig());
     console.log('검색 성공', res.data);
     return res.data;
   } catch (err) {
@@ -39,7 +39,7 @@ const searchUser = createAsyncThunk(
   async (data, {rejectWithValue}) => {
     console.log('유저 검색 요청');
     try {
-      const res = await axios.post(api.searchUser(), data, {});
+      const res = await axios.post(api.searchUser(), data, await getConfig());
       console.log('검색결과', res);
       return res.data;
     } catch (err) {

@@ -19,6 +19,7 @@ const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
 
 const BOARD_URL = '/board';
+const DETAIL_URL = '/detail';
 
 const api = {
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
@@ -40,6 +41,7 @@ const api = {
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
   search: () => API_BASE_URL + SEARCH_URL + BOARD_URL,
+  detail: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DETAIL_URL,
 
   postAdd: () => API_BASE_URL + BOARD_URL,
 };

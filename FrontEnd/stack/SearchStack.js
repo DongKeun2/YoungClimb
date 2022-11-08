@@ -7,6 +7,7 @@ import SearchResultScreen from '../screens/SearchResultScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import FollowScreen from '../screens/profile/FollowScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
+import PostScreen from '../screens/homes/PostScreen';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ function SearchStack() {
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
       <Stack.Screen name="팔로우" component={FollowScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
+      <Stack.Screen name="댓글" component={PostScreen} />
     </Stack.Navigator>
   );
 }

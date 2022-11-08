@@ -262,7 +262,7 @@ function CardList({articles, navigation}) {
               key={i}
               style={styles.cardContainer}
               onPress={() => {
-                navigation.navigate('게시글');
+                navigation.navigate('게시글', {id: article.id});
               }}>
               <ArticleCard article={article} navigation={navigation} />
             </TouchableOpacity>
