@@ -57,11 +57,8 @@ public class ReelsServiceImpl implements ReelsService {
 
         for (Member member : members) {
             List<Board> boards = boardRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
-            System.out.println("됐다");
-            System.out.println(member.getMemberId());
 
             if (boards.isEmpty()) {
-                System.out.println("과연?");
                 continue;
             }
 
@@ -144,11 +141,9 @@ public class ReelsServiceImpl implements ReelsService {
             boardDtos = boardDtos.subList(0,60);
         }
 
-        System.out.println("여기는?");
 
         List<Board> popularBoards = boardRepository.findByBoardViewGreaterThanOrderByBoardViewDesc(100L);
 
-        System.out.println("어디서 막히니..");
         for (Board board : popularBoards) {
             // 게시글 DTO 세팅
             BoardDto boardDto = BoardDto.builder()
