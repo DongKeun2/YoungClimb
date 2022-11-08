@@ -1,11 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // AccessToken 저장 및 삭제
-export const setAccessToken = token => {
-  AsyncStorage.setItem('accessToken', token);
+export const setAccessToken = async token => {
+  await AsyncStorage.setItem('accessToken', JSON.stringify(token));
 };
 export const getAccessToken = async () => {
-  return await AsyncStorage.getItem('accessToken');
+  const token = await AsyncStorage.getItem('accessToken');
+  return token.replace('"', '').replace('"', '');
 };
 export const removeAccessToken = () => {
   AsyncStorage.removeItem('accessToken');
