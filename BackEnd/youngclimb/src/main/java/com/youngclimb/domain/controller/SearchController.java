@@ -26,7 +26,7 @@ public class SearchController {
     @GetMapping("/user")
     public ResponseEntity<?> recMember(@CurrentUser UserPrincipal principal) {
         try {
-            List<MemberPic> memberPics = searchService.getMemberRec(principal.getName());
+            List<MemberPic> memberPics = searchService.getMemberRec(principal.getUsername());
             return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);

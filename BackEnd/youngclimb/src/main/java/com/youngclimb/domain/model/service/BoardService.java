@@ -16,6 +16,7 @@ import java.util.List;
 public interface BoardService {
     // 전체 게시글 조회
     public List<BoardDto> readAllBoard(String userId, Pageable pageable, UserPrincipal currUser);
+    public BoardDto readBoardDetail(Long boardId, String email);
     // 게시물 작성
     public void writeBoard(BoardCreate boardCreate, MultipartFile file);
     // 게시글 좋아요
