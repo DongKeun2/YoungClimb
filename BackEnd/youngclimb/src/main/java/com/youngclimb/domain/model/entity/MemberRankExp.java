@@ -29,4 +29,13 @@ public class MemberRankExp {
     // 경험치
     @Column(name = "member_EXP")
     private Long memberExp;
+
+    // 경험치 증가
+    public void addMemberExp(Long exp) {
+        this.memberExp += exp;
+    }
+
+    public void setRank(Rank rank) {
+        this.rank = rank;
+    }
 }
