@@ -194,7 +194,7 @@ function ProfileEditScreen({navigation}) {
           <Input
             style={styles.input}
             placeholder={
-              currentUser?.wingspan ? `${currentUser.wingspan}` : '윙스팬"cm"'
+              currentUser?.wingspan ? `${currentUser.wingspan}` : '윙스팬(cm)'
             }
             width="100%"
             placeholderTextColor={'#ddd'}

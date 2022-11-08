@@ -83,168 +83,171 @@ function ProfileScreen({navigation, route}) {
   const dispatch = useDispatch();
 
   const [isRank, setIsRank] = useState(false);
-  const isOpen = useSelector(state => state.profile.isOpen);
 
   const currentUser = useSelector(state => state.accounts.currentUser);
   const userInfo = useSelector(state => state.profile.profileInfo?.user);
-  const follow = useSelector(state => state.profile.profileInfo.follow);
+  const follow = useSelector(state => state.profile.profileInfo?.follow);
 
   const [type, setType] = useState('board');
-  const boards = useSelector(state => state.profile.profileInfo.boards);
-  const scraps = useSelector(state => state.profile.profileInfo.scraps);
+  const boards = useSelector(state => state.profile.profileInfo?.boards);
+  const scraps = useSelector(state => state.profile.profileInfo?.scraps);
 
   const [params, setParams] = useState(route.params);
 
   const isFocused = useIsFocused();
   // YC에서 initialparams 지정
 
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     if (isFocused) {
-      dispatch(profile(route.params.nickname));
+      dispatch(profile(route.params.nickname)).then(() => setIsLoading(false));
     }
   }, [dispatch, route, isFocused]);
 
   return (
     <>
-      {route.params.initial ? (
-        <CustomMainHeader type="프로필" navigation={navigation} />
-      ) : (
-        <CustomSubHeader
-          title={`${userInfo?.nickname}`}
-          navigation={navigation}
-        />
-      )}
+      {isLoading ? null : (
+        <>
+          {route.params.initial ? (
+            <CustomMainHeader type="프로필" navigation={navigation} />
+          ) : (
+            <CustomSubHeader
+              title={`${userInfo?.nickname}`}
+              navigation={navigation}
+            />
+          )}
 
-      {route.params.initial && isOpen && (
-        <View style={isOpen ? [styles.menu, styles.active] : styles.menu}>
-          <TouchableOpacity
-            onPress={() => {
-              dispatch(logout());
-            }}>
-            <Text style={styles.text}>로그아웃</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('프로필 설정')}>
-            <Text style={styles.text}>정보 수정</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+          {userInfo ? (
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={styles.container}>
+              <View style={styles.header}>
+                <View style={styles.profileBox}>
+                  <UserAvatar source={{uri: userInfo?.image}} size={70} />
+                  <View style={styles.profileTextBox}>
+                    <Text style={styles.profileNickname}>
+                      {userInfo?.nickname}
+                    </Text>
+                    <Text style={[styles.text, styles.profileSize]}>
+                      {userInfo?.gender === 'M' ? '남성' : '여성'}{' '}
+                      {userInfo?.height ? `${userInfo.height}cm` : null}
+                      {userInfo?.shoeSize ? `${userInfo.shoeSize}mm` : null}
+                      {userInfo?.wingspan
+                        ? `윙스팬 ${userInfo.wingspan}cm`
+                        : null}
+                    </Text>
+                  </View>
+                </View>
 
-      {userInfo ? (
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.container}>
-          <View style={styles.header}>
-            <View style={styles.profileBox}>
-              <UserAvatar source={{uri: userInfo?.image}} size={70} />
-              <View style={styles.profileTextBox}>
-                <Text style={styles.profileNickname}>{userInfo?.nickname}</Text>
-                <Text style={[styles.text, styles.profileSize]}>
-                  {userInfo?.gender === 'M' ? '남성' : '여성'}{' '}
-                  {userInfo?.height ? `${userInfo.height}cm` : null}
-                  {userInfo?.shoeSize ? `${userInfo.shoeSize}mm` : null}
-                  {userInfo?.wingspan ? `윙스팬 ${userInfo.wingspan}cm` : null}
+                <FollowBtn follow={follow} nickname={userInfo?.nickname} />
+              </View>
+
+              <View style={styles.introBox}>
+                <Text style={styles.intro}>
+                  {userInfo?.intro ? userInfo.intro : '자기소개가 없습니다.'}
                 </Text>
               </View>
-            </View>
-            {!isOpen && (
-              <FollowBtn follow={follow} nickname={userInfo?.nickname} />
-            )}
-          </View>
 
-          <View style={styles.introBox}>
-            <Text style={styles.intro}>
-              {userInfo?.intro ? userInfo.intro : '자기소개가 없습니다.'}
-            </Text>
-          </View>
-
-          <View style={styles.horizonLine} />
-
-          {isRank ? (
-            // 랭크 정보 로그인 한 회원의 rank로 수정해야함.
-            <RankInfo
-              setIsRank={setIsRank}
-              rank={currentUser.rank}
-              exp={currentUser.exp}
-              expleft={currentUser.expleft}
-              upto={currentUser.upto}
-            />
-          ) : (
-            <>
-              <View style={styles.InfoContainer}>
-                <TouchableOpacity
-                  style={styles.InfoBox}
-                  onPress={() => setIsRank(true)}>
-                  <Text style={styles.text}>등급</Text>
-                  <HoldIcon
-                    width={20}
-                    height={20}
-                    color={YCLevelColorDict[userInfo?.rank]}
-                  />
-                </TouchableOpacity>
-                <View style={styles.InfoBox}>
-                  <Text style={styles.text}>게시글</Text>
-                  <Text style={styles.text}>{userInfo?.boardNum}</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.push('팔로우', {
-                      nickname: route.params.nickname,
-                    });
-                  }}
-                  style={styles.InfoBox}>
-                  <Text style={styles.text}>팔로잉</Text>
-                  <Text style={styles.text}>{userInfo.followingNum}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.push('팔로우', {
-                      nickname: route.params.nickname,
-                    });
-                  }}
-                  style={styles.InfoBox}>
-                  <Text style={styles.text}>팔로워</Text>
-                  <Text style={styles.text}>{userInfo.followerNum}</Text>
-                </TouchableOpacity>
-              </View>
-
-              {type === 'board' ? (
-                <View style={styles.tabBox}>
-                  <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
-                    <Image source={boardActiveIcon} style={styles.tabIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setType('scrap');
-                    }}
-                    style={styles.tabBtn}>
-                    <Image source={bookmarkIcon} style={styles.tabIcon} />
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View style={styles.tabBox}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setType('board');
-                    }}
-                    style={styles.tabBtn}>
-                    <Image source={boardIcon} style={styles.tabIcon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
-                    <Image source={bookmarkActiveIcon} style={styles.tabIcon} />
-                  </TouchableOpacity>
-                </View>
-              )}
               <View style={styles.horizonLine} />
 
-              <CardList
-                navigation={navigation}
-                articles={type === 'board' ? boards : scraps}
-              />
-            </>
-          )}
-        </ScrollView>
-      ) : null}
-      <Toast ref={toastRef} />
+              {isRank ? (
+                // 랭크 정보 로그인 한 회원의 rank로 수정해야함.
+                <RankInfo
+                  setIsRank={setIsRank}
+                  rank={currentUser.rank}
+                  exp={currentUser.exp}
+                  expleft={currentUser.expleft}
+                  upto={currentUser.upto}
+                />
+              ) : (
+                <>
+                  <View style={styles.InfoContainer}>
+                    <TouchableOpacity
+                      style={styles.InfoBox}
+                      onPress={() => setIsRank(true)}>
+                      <Text style={styles.text}>등급</Text>
+                      <HoldIcon
+                        width={20}
+                        height={20}
+                        color={YCLevelColorDict[userInfo?.rank]}
+                      />
+                    </TouchableOpacity>
+                    <View style={styles.InfoBox}>
+                      <Text style={styles.text}>게시글</Text>
+                      <Text style={styles.text}>{userInfo?.boardNum}</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.push('팔로우', {
+                          nickname: route.params.nickname,
+                        });
+                      }}
+                      style={styles.InfoBox}>
+                      <Text style={styles.text}>팔로잉</Text>
+                      <Text style={styles.text}>{userInfo.followingNum}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigation.push('팔로우', {
+                          nickname: route.params.nickname,
+                        });
+                      }}
+                      style={styles.InfoBox}>
+                      <Text style={styles.text}>팔로워</Text>
+                      <Text style={styles.text}>{userInfo.followerNum}</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {type === 'board' ? (
+                    <View style={styles.tabBox}>
+                      <TouchableOpacity
+                        onPress={() => {}}
+                        style={styles.activeTab}>
+                        <Image
+                          source={boardActiveIcon}
+                          style={styles.tabIcon}
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setType('scrap');
+                        }}
+                        style={styles.tabBtn}>
+                        <Image source={bookmarkIcon} style={styles.tabIcon} />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View style={styles.tabBox}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setType('board');
+                        }}
+                        style={styles.tabBtn}>
+                        <Image source={boardIcon} style={styles.tabIcon} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {}}
+                        style={styles.activeTab}>
+                        <Image
+                          source={bookmarkActiveIcon}
+                          style={styles.tabIcon}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                  <View style={styles.horizonLine} />
+
+                  <CardList
+                    navigation={navigation}
+                    articles={type === 'board' ? boards : scraps}
+                  />
+                </>
+              )}
+            </ScrollView>
+          ) : null}
+          <Toast ref={toastRef} />
+        </>
+      )}
     </>
   );
 }
