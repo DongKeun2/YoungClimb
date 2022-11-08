@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class ReportCreate {
-    String content;
+    Integer content;
 }

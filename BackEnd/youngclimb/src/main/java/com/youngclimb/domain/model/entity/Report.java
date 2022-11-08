@@ -29,7 +29,7 @@ public class Report {
     private Board board;
     // 신고 내용
     @Column(name = "report_content")
-    private String content;
+    private Integer content;
     // 신고 처리 여부
     @Column(name = "report_flag")
     private Integer flag;
