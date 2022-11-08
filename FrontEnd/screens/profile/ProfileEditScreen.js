@@ -21,27 +21,42 @@ import {
   profileEdit,
   logout,
 } from '../../utils/slices/AccountsSlice';
-import {changeUploadImg} from '../../utils/slices/ProfileSlice';
+import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
 import avatar from '../../assets/image/profile/avatar.png';
 import checkIcon from '../../assets/image/main/done.png';
 import camera from '../../assets/image/main/camera.png';
+import {useIsFocused} from '@react-navigation/native';
 
 function ProfileEditScreen({navigation}) {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.accounts.currentUser);
 
   const imageUri = useSelector(state => state.profile.uploadImg);
-  const [isCheckNickname, setIsCheckNickname] = useState(false);
+  const [isCheckNickname, setIsCheckNickname] = useState(true);
 
   const editForm = useSelector(state => state.accounts.editForm);
 
   function updateInput(name, value) {
+    if (name === 'nickname') {
+      setIsCheckNickname(false);
+    }
     dispatch(changeEditForm({name, value}));
   }
 
-  function checkNickname(nickname) {
-    setIsCheckNickname(!isCheckNickname);
+  function onCheckNickname() {
+    if (editForm.nickname.value === currentUser.nickname) {
+      setIsCheckNickname(true);
+    } else if (editForm.nickname.value) {
+      const data = {nickname: editForm.nickname.value};
+      dispatch(checkNickname(data)).then(res => {
+        if (res.type === 'checkNickname/fulfilled') {
+          setIsCheckNickname(res.payload);
+        }
+      });
+    } else {
+      alert('닉네임을 입력해주세요.');
+    }
   }
 
   const selectProfile = () => {
@@ -62,6 +77,7 @@ function ProfileEditScreen({navigation}) {
     console.log('프로필 사진 변경');
   };
 
+  const isFocused = useIsFocused();
   useEffect(() => {
     dispatch(changeEditForm({name: 'nickname', value: currentUser.nickname}));
     dispatch(changeEditForm({name: 'height', value: currentUser.height}));
@@ -69,10 +85,14 @@ function ProfileEditScreen({navigation}) {
     dispatch(changeEditForm({name: 'wingspan', value: currentUser.wingspan}));
     dispatch(changeEditForm({name: 'intro', value: currentUser.intro}));
     console.log('프로필 설정 입장');
-  }, [dispatch, currentUser]);
+  }, [dispatch, currentUser, isFocused]);
 
   // 서브헤더 우측 완료버튼 이벤트
   function onSubmitEdit() {
+    if (!isCheckNickname) {
+      alert('닉네임을 확인해주세요.');
+      return;
+    }
     console.log('저장된 uri', imageUri.assets[0].uri);
     const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
@@ -110,7 +130,7 @@ function ProfileEditScreen({navigation}) {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <CustomSubHeader
         rightTitle="완료"
         isProfile={true}
@@ -144,7 +164,7 @@ function ProfileEditScreen({navigation}) {
             />
             <CheckButton
               type="nickname"
-              onPress={checkNickname}
+              onPress={onCheckNickname}
               buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
               borderColor={!isCheckNickname && '#F34D7F'}
               title={
@@ -172,32 +192,32 @@ function ProfileEditScreen({navigation}) {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.inputText}>키</Text>
+        <Text style={styles.inputText}>키 (cm)</Text>
         <Input
           style={styles.input}
-          placeholder={'키(cm)'}
+          placeholder={'키를 입력해주세요.'}
           placeholderTextColor={'#ddd'}
-          value={editForm.height.value}
+          value={editForm.height.value.toString()}
           type={editForm.height.type}
           onChangeText={value => updateInput('height', value)}
         />
-        <Text style={styles.inputText}>신발 사이즈</Text>
+        <Text style={styles.inputText}>신발 사이즈 (mm)</Text>
         <Input
           style={styles.input}
-          placeholder={'신발(mm)'}
+          placeholder={'신발 사이즈를 입력해주세요.'}
           placeholderTextColor={'#ddd'}
-          value={editForm.shoeSize.value}
+          value={editForm.shoeSize?.value.toString()}
           type={editForm.shoeSize.type}
           onChangeText={value => updateInput('shoeSize', value)}
         />
-        <Text style={styles.inputText}>윙스팬</Text>
+        <Text style={styles.inputText}>윙스팬 (cm)</Text>
         <View style={styles.inputBox}>
           <Input
             style={styles.input}
-            placeholder={'윙스팬(cm)'}
+            placeholder={'윙스팬을 입력해주세요.'}
             width="100%"
             placeholderTextColor={'#ddd'}
-            value={editForm.wingspan.value}
+            value={editForm.wingspan.value.toString()}
             type={editForm.wingspan.type}
             onChangeText={value => updateInput('wingspan', value)}
           />
@@ -215,7 +235,7 @@ function ProfileEditScreen({navigation}) {
       <TouchableOpacity onPress={() => dispatch(logout())}>
         <Text style={styles.link}>로그아웃</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -260,7 +280,11 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginBottom: -20,
   },
-  nicknameBox: {},
+  nicknameBox: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
   nicknameLabel: {fontSize: 12},
   inputBox: {
     display: 'flex',
