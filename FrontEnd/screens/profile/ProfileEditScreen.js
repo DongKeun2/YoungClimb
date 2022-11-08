@@ -16,7 +16,11 @@ import CustomSubHeader from '../../components/CustomSubHeader';
 import UserAvatar from '../../components/UserAvatar';
 import Input from '../../components/Input';
 
-import {changeEditForm, profileEdit} from '../../utils/slices/AccountsSlice';
+import {
+  changeEditForm,
+  profileEdit,
+  logout,
+} from '../../utils/slices/AccountsSlice';
 import {changeUploadImg} from '../../utils/slices/ProfileSlice';
 
 import avatar from '../../assets/image/profile/avatar.png';
@@ -105,7 +109,7 @@ function ProfileEditScreen({navigation}) {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <CustomSubHeader
         rightTitle="완료"
         isProfile={true}
@@ -194,7 +198,7 @@ function ProfileEditScreen({navigation}) {
           <Input
             style={styles.input}
             placeholder={
-              currentUser?.wingspan ? `${currentUser.wingspan}` : '윙스팬"cm"'
+              currentUser?.wingspan ? `${currentUser.wingspan}` : '윙스팬(cm)'
             }
             width="100%"
             placeholderTextColor={'#ddd'}
@@ -213,7 +217,10 @@ function ProfileEditScreen({navigation}) {
           </TouchableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+      <TouchableOpacity onPress={() => dispatch(logout())}>
+        <Text style={styles.link}>로그아웃</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 

@@ -6,13 +6,12 @@ import getConfig from '../headers';
 const profile = createAsyncThunk(
   'profile',
   async (nickname, {rejectWithValue}) => {
-    console.log('프로필 요청함', nickname);
     try {
-      const res = await axios.get(api.profile(nickname), getConfig());
+      const res = await axios.get(api.profile(nickname), await getConfig());
       console.log('프로필 요청 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('프로필 요청 실패');
+      console.log('프로필 요청 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -55,7 +54,6 @@ const initialState = {
     followings: [],
     followers: [],
   },
-  isOpen: false,
   uploadImg: null,
 };
 
@@ -63,18 +61,13 @@ export const ProfileSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
-    setIsOpen: state => {
-      state.isOpen = !state.isOpen;
-    },
-    setIsClose: state => {
-      state.isOpen = false;
-    },
     changeUploadImg: (state, action) => {
       state.uploadImg = action.payload;
     },
   },
   extraReducers: {
     [profile.fulfilled]: (state, action) => {
+      console.log('요청성공', action.payload);
       state.profileInfo = action.payload;
     },
     [followSubmit.fulfilled]: (state, action) => {

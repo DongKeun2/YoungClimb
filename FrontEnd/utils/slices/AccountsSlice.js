@@ -27,7 +27,7 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   console.log('로그아웃 시도');
   try {
-    const res = await axios.post(api.logout(), {}, getConfig());
+    const res = await axios.post(api.logout(), {}, await getConfig());
     console.log('로그아웃 성공');
     removeAccessToken();
     removeCurrentUser();
