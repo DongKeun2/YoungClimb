@@ -28,9 +28,7 @@ const DeclareMenu = ({navigation, focusedContent}) => {
   
   useEffect(()=>{
     setDeclareList(
-      declareList.map((option,idx)=>{
-        console.log(option, id)
-        const orig = option.selected
+      declareList.map((option)=>{
         if (option.id === selected) {
           option.selected = true
         } else{

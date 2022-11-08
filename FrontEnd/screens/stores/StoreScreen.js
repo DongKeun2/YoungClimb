@@ -58,7 +58,6 @@ export default function StoreScreen({navigation, route}) {
   }
 
   useEffect(()=>{
-    console.log(rerender)
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;

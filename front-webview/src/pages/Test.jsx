@@ -3,45 +3,56 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { MapControls, Stats } from "@react-three/drei";
 import { useRef, useState } from "react";
 import Orbit from '../components/Orbit'
-// import climbing3 from '../assets/walls/climbing3.glb'
-import climbing3 from '../assets/walls/1_더클라임강남점_0.glb'
+import Wall_1_0 from '../assets/walls/Wall_1_0.glb'
+import Wall_5_0 from '../assets/walls/Wall_5_0.glb'
+import Wall_5_1 from '../assets/walls/Wall_5_1.glb'
+import Wall_8_0 from '../assets/walls/Wall_8_0.glb'
 
-const Box = () => {
-  const ref = useRef();
-  useFrame((state) => {
-    ref.current.rotation.x += 0.01;
-    ref.current.rotation.y += 0.01;
-  });
-  return (
-    <mesh ref={ref}>
-      <boxBufferGeometry />
-      <meshBasicMaterial color="blue" />
-    </mesh>
-  );
-};
-
-const Wall = (props) => {
-  const gltf = useLoader(GLTFLoader, climbing3)
-  // const mesh = gltf.scene.children[0];
-  const {setHover} = props
-
+const Cen1Wall0 = () => {
+  const gltf = useLoader(GLTFLoader, Wall_1_0)
+  const mesh = gltf.scene.children[0];
+  
   return <primitive 
-  onPointerOver={() => {
-    setHover(true);
-  }}
-  onPointerOut={() => {
-    setHover(false);
-  }}
   scale={2}
   roughness={5}
-  object={gltf.scene} position={[0, 0, 20]}/>
+  object={gltf.scene} position={[2, 0, 20]}/>
+}
+
+const Cen5Wall0 = () => {
+  const gltf = useLoader(GLTFLoader, Wall_5_0)
+  const mesh = gltf.scene.children[0];
+  mesh.rotation.y += 0.5;
+
+  return <primitive 
+  scale={3}
+  roughness={5}
+  object={gltf.scene} position={[9, 3, 17]}/>
+}
+
+
+const Cen5Wall1 = () => {
+  const gltf = useLoader(GLTFLoader, Wall_5_1)
+  const mesh = gltf.scene.children[0];
+  mesh.rotation.z -= 0.05;
+
+  return <primitive 
+  scale={5}
+  roughness={5}
+  object={gltf.scene} position={[0, 0, 13]}/>
+}
+
+const Cen8Wall0 = () => {
+  const gltf = useLoader(GLTFLoader, Wall_8_0)
+  const mesh = gltf.scene.children[0];
+  mesh.rotation.y -= 0.5;
+
+  return <primitive 
+  scale={2}
+  roughness={1.5}
+  object={gltf.scene} position={[-3.5, 7,11]}/>
 }
 
 const CameraControls = () => {
-  // Get a reference to the Three.js Camera, and the canvas html element.
-  // We need these to setup the OrbitControls class.
-  // https://threejs.org/docs/#examples/en/controls/OrbitControls
-
   const {
     camera,
     gl: { domElement }
@@ -63,19 +74,78 @@ const CameraControls = () => {
   );
 };
 
-function Test() {
-  return (
-    <div style={{ width: "100vw", height: "100vh" }}>
+function Test(props) {
+  const {centerId, wallId} = props
+  if (centerId==='1' && wallId==='0'){
+    return (
+      <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas style={{ background: "white" }} camera={{ position: [0, 0, 25] }}>
         <CameraControls/>
-        <Wall/>
+        <Cen1Wall0/>
+        
         <ambientLight args={['white', 0.8]} />
         <spotLight intensity={1.8} position={[0, 10, 80]} />
         <spotLight intensity={1.5} position={[-100, -100, -200]} />
-        <axesHelper args={[10]} />
+        {/* <axesHelper args={[10]} /> */}
       </Canvas>
     </div>
-  );
+    )
+  } else if (centerId === '5' && wallId === '0'){
+    return (
+      <div style={{ width: "100vw", height: "100vh" }}>
+      <Canvas style={{ background: "white" }} camera={{ position: [0, 0, 25] }}>
+        <CameraControls/>
+        <Cen5Wall0/>
+        <ambientLight args={['white', 0.8]} />
+        <spotLight intensity={1.8} position={[0, 10, 80]} />
+        <spotLight intensity={1.5} position={[-100, -100, -200]} />
+        {/* <axesHelper args={[10]} /> */}
+      </Canvas>
+    </div>
+    )
+  } else if (centerId === '5' && wallId === '1'){
+    return (
+      <div style={{ width: "100vw", height: "100vh" }}>
+      <Canvas style={{ background: "white" }} camera={{ position: [0, 0, 25] }}>
+        <CameraControls/>
+        <Cen5Wall1/>
+        <ambientLight args={['white', 0.8]} />
+        <spotLight intensity={1.8} position={[0, 10, 80]} />
+        <spotLight intensity={1.5} position={[-100, -100, -200]} />
+        {/* <axesHelper args={[10]} /> */}
+      </Canvas>
+    </div>
+    )
+  } else if (centerId === '8' && wallId === '0'){
+    return (
+      <div style={{ width: "100vw", height: "100vh" }}>
+      <Canvas style={{ background: "white" }} camera={{ position: [0, 0, 25] }}>
+        <CameraControls/>
+        <Cen8Wall0/>
+        <ambientLight args={['white', 0.8]} />
+        <spotLight intensity={1.8} position={[0, 10, 80]} />
+        <spotLight intensity={1.5} position={[-100, -100, -200]} />
+        {/* <axesHelper args={[10]} /> */}
+      </Canvas>
+    </div>
+    )
+  }
+  
+  else{
+    return (
+      <div style={{ width: "100vw", height: "100vh" }}>
+        <Canvas style={{ background: "white" }} camera={{ position: [0, 0, 25] }}>
+          <CameraControls/>
+          <Cen1Wall0/>
+          <ambientLight args={['white', 0.8]} />
+          <spotLight intensity={1.8} position={[0, 10, 80]} />
+          <spotLight intensity={1.5} position={[-100, -100, -200]} />
+          {/* <axesHelper args={[10]} /> */}
+        </Canvas>
+      </div>
+    );
+
+  }
 }
 
 export default Test;
