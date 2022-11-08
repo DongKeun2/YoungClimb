@@ -52,4 +52,110 @@ public class MemberProblem {
     // 난이도 9
     @Column(name = "V8")
     private Integer v8;
+
+
+    // 푼 문제 증가
+    public void addVB() {
+        this.vB++;
+    }
+
+    public void addV0() {
+        this.v0++;
+    }
+
+    public void addV1() {
+        this.v1++;
+    }
+
+    public void addV2() {
+        this.v2++;
+    }
+
+    public void addV3() {
+        this.v3++;
+    }
+
+    public void addV4() {
+        this.v4++;
+    }
+
+    public void addV5() {
+        this.v5++;
+    }
+
+    public void addV6() {
+        this.v6++;
+    }
+
+    public void addV7() {
+        this.v7++;
+    }
+
+    public void addV8() {
+        this.v8++;
+    }
+
+    public void addProblem(String rank) {
+        switch (rank) {
+            case "VB":
+                this.vB++;
+                break;
+            case "V0":
+                this.v0++;
+                break;
+            case "V1":
+                this.v1++;
+                break;
+            case "V2":
+                this.v2++;
+                break;
+            case "V3":
+                this.v3++;
+                break;
+            case "V4":
+                this.v4++;
+                break;
+            case "V5":
+                this.v5++;
+                break;
+            case "V6":
+                this.v6++;
+                break;
+            case "V7":
+                this.v7++;
+                break;
+            case "V8":
+                this.v8++;
+                break;
+        }
+    }
+
+    public Integer findSolvedProblem(String rank) {
+        switch (rank) {
+            case "VB":
+                return this.vB;
+            case "V0":
+                return this.v0;
+            case "V1":
+                return this.v1;
+            case "V2":
+                return this.v2;
+            case "V3":
+                return this.v3;
+            case "V4":
+                return this.v4;
+            case "V5":
+                return this.v5;
+            case "V6":
+                return this.v6;
+            case "V7":
+                return this.v7;
+            case "V8":
+                return this.v8;
+            default:
+                return 0;
+        }
+    }
+
+
 }
