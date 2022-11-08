@@ -46,8 +46,7 @@ export default function YoungClimb() {
   const dispatch = useDispatch();
   const [loading, setIsLoading] = useState(true);
 
-  // const login = useSelector(state => state.accounts.loginState);
-  const login=true
+  const login = useSelector(state => state.accounts.loginState);
 
   useEffect(() => {
     console.log('앱 새로고침');
