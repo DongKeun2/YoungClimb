@@ -101,8 +101,12 @@ function SignupScreen({navigation}) {
     }
   }
   function onCheckNickname() {
-    const data = {nickname: signupForm.nickname.value};
-    dispatch(checkNickname(data));
+    if (signupForm.nickname.value) {
+      const data = {nickname: signupForm.nickname.value};
+      dispatch(checkNickname(data));
+    } else {
+      alert('닉네임을 입력해주세요.');
+    }
   }
 
   return (
@@ -225,7 +229,7 @@ function SignupScreen({navigation}) {
         </TouchableOpacity>
         <TouchableOpacity style={styles.next} onPress={goNextPage}>
           <Text style={styles.nextText}>다음</Text>
-          <NextIcon style={{marginLeft: 5, marginRight: 5}} />
+          <NextIcon color="black" style={{marginLeft: 5, marginRight: 5}} />
         </TouchableOpacity>
       </View>
     </View>

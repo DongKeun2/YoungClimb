@@ -35,11 +35,10 @@ function UploadImg() {
         includeBase64: Platform.OS === 'android',
       },
       res => {
-        console.log(res);
         if (res.didCancel) {
           return;
         }
-        console.log(res);
+
         dispatch(changeUploadImg(res));
       },
     );

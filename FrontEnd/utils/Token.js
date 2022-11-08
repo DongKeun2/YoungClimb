@@ -1,39 +1,27 @@
-// import jwtDecode from 'jwt-decode';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // AccessToken 저장 및 삭제
-export const setAccessToken = token => {
-  AsyncStorage.setItem('accessToken', token);
+export const setAccessToken = async token => {
+  await AsyncStorage.setItem('accessToken', JSON.stringify(token));
 };
-export const getAccessToken = () => {
-  return AsyncStorage.getItem('accessToken');
+export const getAccessToken = async () => {
+  const token = await AsyncStorage.getItem('accessToken');
+  return token.replace('"', '').replace('"', '');
 };
 export const removeAccessToken = () => {
   AsyncStorage.removeItem('accessToken');
 };
 
-// RefreshToken 저장 및 삭제
-export const setRefreshToken = token => {
-  AsyncStorage.setItem('refreshToken', token);
-};
-export const getRefreshToken = () => {
-  return AsyncStorage.getItem('refreshToken');
-};
-export const removeRefreshToken = () => {
-  AsyncStorage.removeItem('refreshToken');
+// {"exp": 50, "expleft": 100, "height": 180, "intro": "이제 된다능 페페", "nickname": "김싸피", "rank": "Y2", "shoeSize": 290, "upto": 2, "wingspan": 210}
+export const setCurrentUser = async currentUser => {
+  console.log('스토리지에 저장할 정보', currentUser);
+  await AsyncStorage.setItem('currentUser', JSON.stringify(currentUser));
 };
 
-// 로그인 유저 정보
-// export const decodeAccessToken = accessToken => {
-//   return jwtDecode(accessToken);
-// };
-
-export const setCurrentUser = currentUser => {
-  AsyncStorage.setItem('currentUser', JSON.stringify(currentUser));
-};
-
-export const getCurrentUser = () => {
-  return JSON.parse(AsyncStorage.getItem('currentUser'));
+export const getCurrentUser = async () => {
+  const info = await AsyncStorage.getItem('currentUser');
+  const currentUser = JSON.parse(info);
+  return currentUser;
 };
 
 export const removeCurrentUser = () => {

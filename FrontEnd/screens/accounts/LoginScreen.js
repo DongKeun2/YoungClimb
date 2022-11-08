@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import {login, testLogin} from '../../utils/slices/AccountsSlice';
+import {login} from '../../utils/slices/AccountsSlice';
 
 import Input from '../../components/Input';
 import CustomButton from '../../components/CustomBtn';
@@ -43,14 +43,11 @@ function LoginScreen({navigation}) {
   }
 
   function onSubmitLogin() {
-    // 임시 로그인
-    dispatch(testLogin(true));
-
-    // const data = {
-    //   email: loginForm.email.value,
-    //   password: loginForm.email.value,
-    // };
-    // dispatch(login(data));
+    const data = {
+      email: loginForm.email.value,
+      password: loginForm.password.value,
+    };
+    dispatch(login(data));
   }
   return (
     <View style={styles.container}>

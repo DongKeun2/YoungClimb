@@ -8,18 +8,22 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-// import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
 
+import {postAdd} from '../../utils/slices/PostSlice';
+
 import {holdList} from '../../assets/info/ColorInfo';
-import centerInfo from '../../assets/info/CenterInfo';
 import CalendarIcon from '../../assets/image/feed/calendarIcon.svg';
 
 function PostAddInfoScreen({navigation}) {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
+  const centerInfo = useSelector(state => state.center.centerInfo);
 
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
@@ -47,15 +51,40 @@ function PostAddInfoScreen({navigation}) {
 
   const handleConfirm = date => {
     setSolvedDate(date);
-    console.log('A date has been picked: ', solvedDate);
     hideDatePicker();
   };
+
+  function onPostAdd() {
+    if (!center) {
+      return alert('지점을 선택해주세요');
+    } else if (!level) {
+      return alert('난이도를 선택해주세요');
+    } else if (!holdColor) {
+      return alert('홀드 색상을 선택해주세요');
+    } else if (!solvedDate) {
+      return alert('풀이 날짜를 선택해주세요');
+    } else {
+      const formdata = new FormData();
+      const data = {
+        centerId: center,
+        wallId: wall,
+        centerLevelId: level,
+        holdColor: holdColor,
+        solvedDate: solvedDate,
+        content: content,
+        memberId: 1, // 임시
+      };
+      console.log(data);
+      dispatch(postAdd(data)).then(() => {
+        alert('생성완료');
+      });
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <CustomSubHeader title="정보 입력" navigation={navigation} />
-      <Text>정보 입력</Text>
-      <View style={styles.selectContainer}>
+      <KeyboardAwareScrollView  style={styles.selectContainer}>
         <View style={styles.box}>
           <Text style={styles.text}>
             지점<Text style={{color: '#F34D7F'}}> *</Text>
@@ -100,9 +129,9 @@ function PostAddInfoScreen({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                ? centerInfo[center - 1]?.wallList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
                       label={item.name}
                       value={item.id}
@@ -132,11 +161,11 @@ function PostAddInfoScreen({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.level.map((item, id) => (
+                ? centerInfo[center - 1]?.centerLevelList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
-                      label={item.name}
+                      label={item.color}
                       value={item.id}
                     />
                   ))
@@ -182,27 +211,30 @@ function PostAddInfoScreen({navigation}) {
           <Text style={styles.text}>
             풀이 날짜<Text style={{color: '#F34D7F'}}> *</Text>
           </Text>
-          {solvedDate ? (
-            <TouchableOpacity style={styles.dateBox} onPress={showDatePicker}>
+          <TouchableOpacity style={styles.dateBox} onPress={showDatePicker}>
+            {solvedDate ? (
               <Text style={styles.text}>
-                {String(solvedDate).substring(0, 15)}
+                {solvedDate.getFullYear() +
+                  '-' +
+                  (solvedDate.getMonth() + 1) +
+                  '-' +
+                  solvedDate.getDate()}
               </Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity style={styles.dateBox} onPress={showDatePicker}>
+            ) : (
               <Text style={styles.pickerPlaceHold}>날짜를 선택해주세요</Text>
-              <CalendarIcon />
-            </TouchableOpacity>
-          )}
+            )}
+            <CalendarIcon style={{marginRight: -2}} />
+          </TouchableOpacity>
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
             mode="date"
             onConfirm={handleConfirm}
             onCancel={hideDatePicker}
+            maximumDate={new Date()}
           />
         </View>
 
-        <View style={{width: '80%', marginTop: 20}}>
+        <View style={{width: '100%', marginTop: 20}}>
           <TextInput
             style={styles.introInput}
             placeholder="본문을 작성해주세요 :)"
@@ -212,9 +244,9 @@ function PostAddInfoScreen({navigation}) {
             onChangeText={value => setContent(value)}
           />
         </View>
-      </View>
+      </KeyboardAwareScrollView>
 
-      <TouchableOpacity onPress={null} style={styles.button}>
+      <TouchableOpacity onPress={onPostAdd} style={styles.button}>
         <Text style={{color: 'white', fontSize: 18, fontWeight: '600'}}>
           업로드
         </Text>
@@ -231,12 +263,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginVertical: '15%',
+    width: '80%',
+    marginVertical: 20,
+    marginHorizontal: 'auto',
   },
   box: {
-    width: '80%',
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -289,7 +321,8 @@ const styles = StyleSheet.create({
     width: '80%',
     height: 40,
     backgroundColor: '#F34D7F',
-    marginTop: '15%',
+    marginTop: 30,
+    marginBottom: 100,
   },
   introInput: {
     width: '100%',
@@ -300,7 +333,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 5,
     paddingHorizontal: 8,
-    height: 80,
+    height: 90,
   },
 });
 
