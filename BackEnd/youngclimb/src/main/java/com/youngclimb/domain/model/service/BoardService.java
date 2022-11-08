@@ -14,7 +14,11 @@ import java.util.List;
 // 일단 login 될 때까지만 임시로 사용
 public interface BoardService {
     // 전체 게시글 조회
+
     public List<BoardDto> readAllBoard(String userId, Pageable pageable);
+
+    public BoardDto readBoardDetail(Long boardId, String email);
+
     // 게시물 작성
     public void writeBoard(String email ,BoardCreate boardCreate, MultipartFile file);
     // 게시글 좋아요
@@ -37,6 +41,6 @@ public interface BoardService {
     public MemberDto getUserInfoByUserId(String userId, String loginEmail);
 
     // 게시글 신고하기
-    public Boolean boardReport(Long boardId, String content, String email);
+    public Boolean boardReport(Long boardId, Integer content, String email);
 
 }

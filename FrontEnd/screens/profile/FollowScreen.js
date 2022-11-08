@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,21 +7,30 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {useDispatch} from 'react-redux';
 import {TextInput} from 'react-native-gesture-handler';
 import {useSelector} from 'react-redux';
 import CustomSubHeader from '../../components/CustomSubHeader';
 import FollowBtn from '../../components/FollowBtn';
 import UserAvatar from '../../components/UserAvatar';
 
+import {fetchFollowList} from '../../utils/slices/ProfileSlice';
+
 import searchIcon from '../../assets/image/profile/searchIcon.png';
 
-function FollowScreen({navigation}) {
+function FollowScreen({navigation, route}) {
+  const dispatch = useDispatch();
+
   const [type, setType] = useState('following');
 
   const [keyword, setKeyword] = useState('');
 
-  const followings = useSelector(state => state.profile.followInfo.followings);
-  const followers = useSelector(state => state.profile.followInfo.followers);
+  useEffect(() => {
+    dispatch(fetchFollowList(route.params.nickname));
+  }, [dispatch, route]);
+
+  const followings = useSelector(state => state.profile.followInfo?.followings);
+  const followers = useSelector(state => state.profile.followInfo?.followers);
 
   return (
     <ScrollView style={styles.container}>
@@ -100,17 +109,20 @@ function FollowItem({item, navigation}) {
       <View style={styles.followItem}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate('서브프로필', {
+            navigation.push('서브프로필', {
               initial: false,
               nickname: item.nickname,
             });
           }}
           style={styles.followItemInfo}>
-          <UserAvatar source={item.image} size={45} rank={item.rank} />
-          <View>
+          <UserAvatar source={{uri: item.image}} size={45} />
+          <View style={styles.profileBox}>
             <Text style={styles.nickname}>{item.nickname}</Text>
             <Text style={styles.text}>
-              {item.gender} {item.height}cm {item.shoeSize}mm {item.wingspan}cm
+              {item.gender === 'M' ? '남성' : '여성'}
+              {item.height ? `${item.height}cm` : null}
+              {item.shoeSize ? `${item.shoeSize}mm` : null}
+              {item.wingspan ? `윙스팬 ${item.wingspan}cm` : null}
             </Text>
           </View>
         </TouchableOpacity>
@@ -186,6 +198,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  profileBox: {
+    marginLeft: 5,
   },
   tabFont: {
     fontSize: 15,

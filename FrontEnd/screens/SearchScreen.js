@@ -17,10 +17,9 @@ import CustomMainHeader from '../components/CustomMainHeader';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {Toast} from '../components/Toast';
 import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
-import centerInfo from '../assets/info/CenterInfo';
 import UserAvatar from '../components/UserAvatar';
 
-import {fetchUser, searchUser} from '../utils/slices/SearchSlice';
+import {fetchUser, searchUser, search} from '../utils/slices/SearchSlice';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
 import UserIcon from '../assets/image/search/user.svg';
@@ -120,8 +119,9 @@ function SearchScreen({navigation}) {
 function BoardTab({navigation}) {
   const dispatch = useDispatch();
 
-  const [isSimilar, setIsSimilar] = useState(false);
+  const centerInfo = useSelector(state => state.center.centerInfo);
 
+  const [isSimilar, setIsSimilar] = useState(false);
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
   const [level, setLevel] = useState('');
@@ -142,14 +142,14 @@ function BoardTab({navigation}) {
         holdColor,
         isSimilar,
       };
-      // dispatch(search(data)).then(() => {
-      navigation.navigate('검색 결과', {
-        center: centerInfo[center - 1].name,
-        wall,
-        level,
-        holdColor,
+      dispatch(search(data)).then(() => {
+        navigation.navigate('검색 결과', {
+          center: centerInfo[center - 1].name,
+          wall,
+          level,
+          holdColor,
+        });
       });
-      // });
     }
   }
 
@@ -164,7 +164,9 @@ function BoardTab({navigation}) {
     <>
       <View style={styles.selectContainer}>
         <View style={styles.box}>
-          <Text style={styles.text}>지점*</Text>
+          <Text style={styles.text}>
+            지점<Text style={{color: '#F34D7F'}}> *</Text>
+          </Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
@@ -177,9 +179,9 @@ function BoardTab({navigation}) {
                 label="선택 없음"
                 value=""
               />
-              {centerInfo.map((item, id) => (
+              {centerInfo.map((item, idx) => (
                 <Picker.Item
-                  key={id}
+                  key={idx}
                   style={styles.pickerLabel}
                   label={item.name}
                   value={item.id}
@@ -194,22 +196,23 @@ function BoardTab({navigation}) {
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
-              dropdownIconColor="black"
+              dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={wall}
+              enabled={center ? true : false}
               style={wall ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setWall(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label="선택 없음"
+                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                ? centerInfo[center - 1]?.wallList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
-                      label={item}
-                      value={item}
+                      label={item.name}
+                      value={item.id}
                     />
                   ))
                 : null}
@@ -218,27 +221,30 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>난이도*</Text>
+          <Text style={styles.text}>
+            난이도<Text style={{color: '#F34D7F'}}> *</Text>
+          </Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
-              dropdownIconColor="black"
+              dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={level}
+              enabled={center ? true : false}
               style={level ? styles.picker : styles.nonePick}
               itemStyle={styles.item}
               onValueChange={(value, idx) => setLevel(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label="선택 없음"
+                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.level.map((item, id) => (
+                ? centerInfo[center - 1]?.centerLevelList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
-                      label={item}
-                      value={item}
+                      label={item.color}
+                      value={item.id}
                     />
                   ))
                 : null}
@@ -247,17 +253,20 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>홀드 색상*</Text>
+          <Text style={styles.text}>
+            홀드 색상<Text style={{color: '#F34D7F'}}> *</Text>
+          </Text>
           <View style={styles.pickerItem}>
             <Picker
               mode="dropdown"
-              dropdownIconColor="black"
+              dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={holdColor}
+              enabled={center ? true : false}
               style={holdColor ? styles.picker : styles.nonePick}
               onValueChange={(value, idx) => setHoldColor(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label="선택 없음"
+                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
                 value=""
               />
               {center
@@ -418,7 +427,7 @@ function UserCard({user, navigation}) {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate('서브프로필', {
+        navigation.push('서브프로필', {
           initial: false,
           nickname: user.nickname,
         });

@@ -1,7 +1,10 @@
 package com.youngclimb.domain.model.service;
 
+import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface MemberService {
     // 이메일 중복 체크
@@ -30,4 +33,6 @@ public interface MemberService {
     Boolean addCancelFollow(String followingNickname, String followerEmail);
     // 팔로잉 팔로워 목록 읽기
     public FollowMemberList listFollow(String nickname);
+    // 알림 목록 읽기
+    public List<NoticeDto> readNotice(String email);
 }
