@@ -63,20 +63,10 @@ function ChoiceVideoScreen({navigation}) {
             repeat={false}
             controls={false}
             muted={true}
-            paused={true}
+            paused={false}
           />
         </View>
-        // <Text style={{color: 'black', fontSize: 50}}>재생중</Text>
       ) : (
-        // <TouchableOpacity>
-        //   <Image
-        //     style={styles.image}
-        //     source={{uri: uploadImg?.assets[0]?.uri}}
-        //   />
-        // </TouchableOpacity>
-        // <TouchableOpacity>
-        //   <Image style={styles.image} source={wingspanExample} />
-        // </TouchableOpacity>
         <Text style={{color: 'black', fontSize: 50}}>업로드 해줘</Text>
       )}
       <TouchableOpacity onPress={onVideoGallery} style={styles.cameraBtn}>
