@@ -10,8 +10,11 @@ import DetailScreen from '../screens/profile/DetailScreen';
 import CommentScreen from '../screens/profile/CommentScreen';
 import WingspanScreen from '../screens/accounts/WingspanScreen';
 
+import ProfileDrawer from './ProfileDrawer';
+
 import PostAddStack from './PostAddStack';
 import {getCurrentUser} from '../utils/Token';
+import {useSelector} from 'react-redux';
 
 const Stack = createStackNavigator();
 
@@ -25,20 +28,20 @@ function ProfileStack({navigation, route}) {
     }
   }, [navigation, route]);
 
-  // const nickname = getCurrentUser().nickname;
+  const nickname = useSelector(state => state.accounts.currentUser.nickname);
 
   return (
     <Stack.Navigator
-      initialRouteName="메인프로필"
+      initialRouteName="프로필 메뉴"
       screenOptions={{
         headerShown: false,
       }}>
       <Stack.Screen
-        name="메인프로필"
-        component={ProfileScreen}
+        name="프로필 메뉴"
+        component={ProfileDrawer}
         initialParams={{
           initial: true,
-          // nickname
+          nickname,
         }}
       />
       <Stack.Screen name="게시글 생성" component={PostAddStack} />

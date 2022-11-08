@@ -9,15 +9,19 @@ import {
   TextInput,
   Dimensions,
 } from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {CommonActions} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
-import {profileCreate, testLogin} from '../../utils/slices/AccountsSlice';
+import {
+  profileCreate,
+  fetchCurrentUser,
+} from '../../utils/slices/AccountsSlice';
 import CustomButton from '../../components/CustomBtn';
 import UserAvatar from '../../components/UserAvatar';
 
 import avatar from '../../assets/image/profile/avatar.png';
+import {getCurrentUser} from '../../utils/Token';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -57,11 +61,30 @@ function SuccessScreen({navigation}) {
       name: imageUri?.assets[0]?.filename,
       type,
     });
-    formdata.append('data', JSON.stringify({intro}));
-    if (isSkip) {
-      dispatch(profileCreate(formdata));
+
+    // 임시 이메일로 설정
+
+    const data = {
+      intro,
+      email: 'test1@young.climb',
+    };
+
+    formdata.append(
+      'data',
+      new Blob([JSON.stringify(data)], {
+        type: 'application/json',
+      }),
+    );
+    if (!isSkip) {
+      dispatch(profileCreate(formdata))
+        .then(res => {
+          // 스토어에 회원정보 입력 후 로그인 처리
+          getCurrentUser().then(currentUser =>
+            dispatch(fetchCurrentUser(currentUser)),
+          );
+        })
+        .catch(alert('실패요'));
     }
-    dispatch(testLogin(true));
   }
 
   return (
@@ -98,14 +121,14 @@ function SuccessScreen({navigation}) {
             titleColor="#7E7E7E"
             buttonColor="#F3F3F3"
             title="건너뛰기"
-            onPress={onSubmitProfile}
+            onPress={() => onSubmitProfile(true)}
           />
         </View>
         <View style={styles.button}>
           <CustomButton
             buttonColor="#F34D7F"
             title="완료"
-            onPress={onSubmitProfile}
+            onPress={() => onSubmitProfile(false)}
           />
         </View>
       </View>
@@ -147,6 +170,7 @@ const styles = StyleSheet.create({
     marginVertical: '10%',
     borderRadius: 5,
     height: 74,
+    color: 'black',
   },
   btnGroup: {
     width: '80%',

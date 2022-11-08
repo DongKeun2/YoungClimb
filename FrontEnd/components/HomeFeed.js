@@ -20,7 +20,7 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-function HomeFeed({feed, navigation, isViewable}) {
+function HomeFeed({feed, isRecommend, navigation, isViewable, setModalVisible, setFocusedContent}) {
   const [contentHeight, setContentHeight] = useState(0);
   const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
@@ -49,6 +49,11 @@ function HomeFeed({feed, navigation, isViewable}) {
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
+
+  const openMenu = (feed) =>{
+    setModalVisible(true)
+    setFocusedContent({...feed, isRecommend})
+  }
 
   return (
     <View style={styles.container} onLayout={calVideoLength}>
@@ -79,7 +84,12 @@ function HomeFeed({feed, navigation, isViewable}) {
               </Text>
             </View>
           </View>
-          <MenuIcon width={16} height={16} />
+          <TouchableOpacity
+            hitSlop={10}
+            onPress={()=>openMenu(feed)}
+          >
+            <MenuIcon width={16} height={16}/>
+          </TouchableOpacity>
         </View>
         <View style={styles.wallInfo}>
           <Text style={{...styles.feedTextStyle, marginRight: 8}}>
@@ -104,7 +114,7 @@ function HomeFeed({feed, navigation, isViewable}) {
           activeOpacity={1}
           onPress={changeMuted}>
           <Video
-            source={{uri: feed.mediaId}}
+            source={{uri: feed.mediaPath}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
