@@ -85,7 +85,7 @@ public class SearchServiceImpl implements SearchService {
         boolean isSimilar = boardSearchDto.getIsSimilar();
 
 
-        List<Category> categories = categoryRepository.findAllByCenterIdAndWallIdAndCenterlevelIdAndHoldColor(centerId, wallId, levelId, holdColor);
+        List<Category> categories = categoryRepository.findAllByCenterIdOrWallIdAndCenterlevelIdAndHoldColor(centerId, wallId, levelId, holdColor);
 
         if (!isSimilar) {
             categories.sort(new Comparator<Category>() {
