@@ -370,7 +370,6 @@ public class MemberServiceImpl implements MemberService {
             noticeRepository.save(noticeBuild);
 
 
-
             return Boolean.TRUE;
         } else {
             noticeRepository.delete(notice);
@@ -412,7 +411,6 @@ public class MemberServiceImpl implements MemberService {
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
 
             FollowMemberDto myFollower = new FollowMemberDto();
-
             myFollower.setNickname(followerMember.getNickname());
             myFollower.setGender(followerMember.getGender());
             myFollower.setImage(followerMember.getMemberProfileImg());
