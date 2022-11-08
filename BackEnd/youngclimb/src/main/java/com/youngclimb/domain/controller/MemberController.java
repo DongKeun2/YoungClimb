@@ -2,6 +2,7 @@ package com.youngclimb.domain.controller;
 
 import com.youngclimb.common.security.CurrentUser;
 import com.youngclimb.common.security.UserPrincipal;
+import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.service.BoardService;
 import com.youngclimb.domain.model.service.MemberService;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -166,6 +168,24 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
+    // 알림 목록 읽기
+    @ApiOperation(value = "readNotice : 알림 목록 읽기")
+    @GetMapping("/notice")
+    public ResponseEntity<?> readProfile(@CurrentUser UserPrincipal principal) throws Exception {
+        try {
+            String email = principal.getUsername();
+            List<NoticeDto> noticeDtos = memberService.readNotice(principal.getUsername());
+            if (noticeDtos != null) {
+                return new ResponseEntity<List<NoticeDto>>(noticeDtos, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
 
     // 토큰 재발급
 //    @PostMapping("/reissue")

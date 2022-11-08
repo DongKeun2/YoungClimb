@@ -157,13 +157,12 @@ public class BoardController {
         }
     }
 
-    // 게시글 검색
 
     // 게시글 신고
     @ApiOperation(value = "boardReport : 게시글 신고하기")
     @PostMapping("/{boardId}/report")
-    public ResponseEntity<?> boardReport(@PathVariable Long boardId, @RequestBody ReportCreate reportCreate) throws Exception {
-        String email = "test2@test.com";
+    public ResponseEntity<?> boardReport(@PathVariable Long boardId, @RequestBody ReportCreate reportCreate, @CurrentUser UserPrincipal principal) throws Exception {
+        String email = principal.getUsername();
         try {
             return new ResponseEntity<Boolean>(boardService.boardReport(boardId, reportCreate.getContent(), email), HttpStatus.OK);
 
