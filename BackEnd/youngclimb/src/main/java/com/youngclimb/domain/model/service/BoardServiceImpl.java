@@ -54,6 +54,7 @@ public class BoardServiceImpl implements BoardService {
     private final ReportRepository reportRepository;
     private final MemberProblemRepository memberProblemRepository;
     private final RankRepository rankRepository;
+    private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
 
 
@@ -304,6 +305,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean boardLikeCancle(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
+        Notice notice = noticeRepository.findByToMemberAndFromMember(board.getMember(), member).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
@@ -314,8 +316,22 @@ public class BoardServiceImpl implements BoardService {
                     .build();
             boardLikeRepository.save(boardLike);
 
+            if (board.getMember() != member) {
+                Notice noticeBuild = Notice.builder()
+                        .type(2)
+                        .toMember(board.getMember())
+                        .fromMember(member)
+                        .board(board)
+                        .createdDateTime(LocalDateTime.now())
+                        .build();
+                noticeRepository.save(noticeBuild);
+            }
+
             return true;
         } else {
+            if (board.getMember() != member) {
+                noticeRepository.delete(notice);
+            }
             boardLikeRepository.deleteByBoardAndMember(board, member);
             return false;
         }
@@ -438,6 +454,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
+        Notice notice = noticeRepository.findByToMemberAndFromMember(comment.getMember(), member).orElse(null);
 
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
@@ -446,10 +463,24 @@ public class BoardServiceImpl implements BoardService {
                     .comment(comment)
                     .member(member)
                     .build();
-
             commentLikeRepository.save(commentLike);
+
+            if (comment.getMember() != member) {
+                Notice noticeBuild = Notice.builder()
+                        .type(4)
+                        .toMember(comment.getMember())
+                        .fromMember(member)
+                        .board(comment.getBoard())
+                        .createdDateTime(LocalDateTime.now())
+                        .build();
+                noticeRepository.save(noticeBuild);
+            }
+
             return true;
         } else {
+            if (comment.getMember() != member) {
+                noticeRepository.delete(notice);
+            }
             commentLikeRepository.deleteByCommentAndMember(comment, member);
             return false;
         }
@@ -465,9 +496,22 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
         Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
 
+
         comment.setBoard(board);
         comment.setMember(member);
         commentRepository.save(comment);
+
+        // 알림 저장하기
+        if (board.getMember() != member) {
+            Notice noticeBuild = Notice.builder()
+                    .type(3)
+                    .toMember(board.getMember())
+                    .fromMember(member)
+                    .board(board)
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
+            noticeRepository.save(noticeBuild);
+        }
     }
 
     // 대댓글 작성
@@ -481,6 +525,17 @@ public class BoardServiceImpl implements BoardService {
         comment.setMember(member);
         commentRepository.save(comment);
 
+        // 알림 저장하기
+        if (comment.getMember() != member) {
+            Notice noticeBuild = Notice.builder()
+                    .type(5)
+                    .toMember(comment.getMember())
+                    .fromMember(member)
+                    .board(board)
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
+            noticeRepository.save(noticeBuild);
+        }
     }
 
 
