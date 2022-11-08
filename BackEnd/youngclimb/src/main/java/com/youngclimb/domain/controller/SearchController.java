@@ -24,7 +24,7 @@ public class SearchController {
 
     @ApiOperation(value = "recMember: 유저 추천")
     @GetMapping("/user")
-    public ResponseEntity<?> recMember(Principal principal) {
+    public ResponseEntity<?> recMember(@CurrentUser UserPrincipal principal) {
         try {
             List<MemberPic> memberPics = searchService.getMemberRec(principal.getName());
             return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
