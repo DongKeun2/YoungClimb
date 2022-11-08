@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class BoardCreate {
-    Long memberId;
     Integer centerId;
     Integer centerLevelId;
     Long mediaId;

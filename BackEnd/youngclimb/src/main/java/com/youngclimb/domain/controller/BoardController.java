@@ -26,10 +26,9 @@ public class BoardController {
     // 전체 게시글 조회
     @ApiOperation(value = "readAllBoard: 전체 게시글 조회")
     @GetMapping("/home")
-    public ResponseEntity<?> readAllBoard(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
-        String email = "hello@young.climb";
+    public ResponseEntity<?> readAllBoard(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal ) throws Exception {
         try {
-            List<BoardDto> boardDtos = boardService.readAllBoard(email, pageable, null);
+            List<BoardDto> boardDtos = boardService.readAllBoard(principal.getUsername(), pageable);
             if (boardDtos != null) {
                 return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
             } else {
@@ -48,9 +47,10 @@ public class BoardController {
             @RequestPart BoardCreate boardCreate
             , @RequestPart(name = "file", required = false) MultipartFile file
 //			,@RequestParam(name = "file", required = false) MultipartFile file
+            , @CurrentUser UserPrincipal principal
     ) throws Exception {
         try {
-            boardService.writeBoard(boardCreate, file);
+            boardService.writeBoard(principal.getUsername() ,boardCreate, file);
             return new ResponseEntity<Void>(HttpStatus.OK);
 
         } catch (Exception e) {
@@ -61,10 +61,10 @@ public class BoardController {
     // 게시글 댓글 조회(본문 + 댓글 리스트)
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
     @GetMapping("/{boardId}")
-    public ResponseEntity<?> readOneBoard(@PathVariable Long boardId) throws Exception {
+    public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         Long userId = 1L;
         try {
-            BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, userId);
+            BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, principal.getUsername());
             if (boardDetailDto != null) {
                 return new ResponseEntity<BoardDetailDto>(boardDetailDto, HttpStatus.OK);
             } else {
@@ -90,10 +90,9 @@ public class BoardController {
     // 게시글 좋아요/취소
     @ApiOperation(value = "BoardLike : 좋아요 클릭")
     @PostMapping("/{boardId}/like")
-    public ResponseEntity<?> boardLikeCancle(@PathVariable Long boardId) throws Exception {
-        String email = "hello@young.climb";
+    public ResponseEntity<?> boardLikeCancle(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            return new ResponseEntity<Boolean>(boardService.boardLikeCancle(boardId, email), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.boardLikeCancle(boardId, principal.getUsername()), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -103,11 +102,10 @@ public class BoardController {
     // 댓글 작성
     @ApiOperation(value = "WriteComment : 댓글 작성")
     @PostMapping("/{boardId}/comment")
-    public ResponseEntity<?> writeComment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId) throws Exception {
+    public ResponseEntity<?> writeComment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         commentCreate.setBoardId(boardId);
-        commentCreate.setMemberId(1L);
         try {
-            boardService.writeComment(commentCreate);
+            boardService.writeComment(commentCreate, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -118,12 +116,11 @@ public class BoardController {
     // 대댓글 작성
     @ApiOperation(value = "WriteRecomment : 대댓글 작성")
     @PostMapping("/{boardId}/comment/{commentId}")
-    public ResponseEntity<?> writeRecomment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @PathVariable Long commentId) throws Exception {
+    public ResponseEntity<?> writeRecomment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @PathVariable Long commentId, @CurrentUser UserPrincipal principal) throws Exception {
         commentCreate.setBoardId(boardId);
-        commentCreate.setMemberId(1L);
         commentCreate.setParaentId(commentId);
         try {
-            boardService.writeRecomment(commentCreate);
+            boardService.writeRecomment(commentCreate, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -133,10 +130,9 @@ public class BoardController {
     // 댓글 좋아요/취소
     @ApiOperation(value = "CommentLike : 댓글 좋아요 클릭")
     @PostMapping("/comment/{commentId}/like")
-    public ResponseEntity<?> commentLikeCancle(@PathVariable Long commentId) throws Exception {
-        String email = "hello@young.climb";
+    public ResponseEntity<?> commentLikeCancle(@PathVariable Long commentId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            return new ResponseEntity<Boolean>(boardService.commentLikeCancle(commentId, email), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.commentLikeCancle(commentId, principal.getUsername()), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -147,10 +143,9 @@ public class BoardController {
     // 게시물 스크랩/취소
     @ApiOperation(value = "upBoardScrap : 스크랩 클릭")
     @PostMapping("/{boardId}/scrap")
-    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId) throws Exception {
-        String email = "hello@young.climb";
+    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId,  @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            return new ResponseEntity<Boolean>(boardService.boardScrapCancle(boardId, email), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.boardScrapCancle(boardId, principal.getUsername()), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -162,9 +157,8 @@ public class BoardController {
     @ApiOperation(value = "boardReport : 게시글 신고하기")
     @PostMapping("/{boardId}/report")
     public ResponseEntity<?> boardReport(@PathVariable Long boardId, @RequestBody ReportCreate reportCreate, @CurrentUser UserPrincipal principal) throws Exception {
-        String email = principal.getUsername();
         try {
-            return new ResponseEntity<Boolean>(boardService.boardReport(boardId, reportCreate.getContent(), email), HttpStatus.OK);
+            return new ResponseEntity<Boolean>(boardService.boardReport(boardId, reportCreate.getContent(), principal.getUsername()), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
