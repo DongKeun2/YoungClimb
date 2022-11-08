@@ -31,9 +31,8 @@ public class SearchServiceImpl implements SearchService {
     private final BoardMediaRepository boardMediaRepository;
 
     @Override
-    public List<MemberPic> getMemberRec() {
-        String name = "김싸피";
-        Member user = memberRepository.findByNickname(name).orElseThrow();
+    public List<MemberPic> getMemberRec(String email) {
+        Member user = memberRepository.findByEmail(email).orElseThrow();
 
         List<Follow> follows = followRepository.findByFollower(user);
         List<MemberPic> memberPics = new ArrayList<>();
@@ -76,9 +75,8 @@ public class SearchServiceImpl implements SearchService {
     }
 
     @Override
-    public List<BoardDto> getBoardPic(BoardSearchDto boardSearchDto) {
-        String nickname = "이싸피";
-        Member member = memberRepository.findByNickname(nickname).orElseThrow();
+    public List<BoardDto> getBoardPic(BoardSearchDto boardSearchDto, String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
         List<BoardDto> boardDtos = new ArrayList<>();
         Integer centerId = boardSearchDto.getCenter();
         Integer wallId = boardSearchDto.getWall();
