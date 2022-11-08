@@ -21,6 +21,8 @@ public interface BoardService {
 
     // 게시물 작성
     public void writeBoard(String email ,BoardCreate boardCreate, MultipartFile file);
+    // 게시글 삭제
+    public void deleteBoard(String email, Long boardId);
     // 게시글 좋아요
     public Boolean boardLikeCancle(Long boardId, String email);
     // 게시글 댓글 조회

@@ -144,7 +144,7 @@ public class CenterServiceImpl implements CenterService {
             }
         });
 
-        return centerDtos;
+        return centerDtos.subList(0,20);
     }
 
     // 거리계산기

@@ -286,6 +286,17 @@ public class BoardServiceImpl implements BoardService {
 
 
     }
+    // 게시글 삭제하기
+    @Override
+    public void deleteBoard(String email, Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+
+        if (board.getMember().getEmail() == email) {
+            board.setIsDelete(1);
+            boardRepository.save(board);
+        }
+
+    }
 
     private String createFileName(String fileName) {
         return UUID.randomUUID().toString().concat(getFileExtension(fileName));
@@ -304,7 +315,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean boardLikeCancle(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Notice notice = noticeRepository.findByToMemberAndFromMember(board.getMember(), member).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member,2).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
@@ -453,7 +464,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Notice notice = noticeRepository.findByToMemberAndFromMember(comment.getMember(), member).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(comment.getMember(), member,4).orElse(null);
 
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
@@ -525,10 +536,12 @@ public class BoardServiceImpl implements BoardService {
         commentRepository.save(comment);
 
         // 알림 저장하기
-        if (comment.getMember() != member) {
+        Comment parentComment = commentRepository.findById(comment.getParentId()).orElseThrow();
+
+        if (parentComment.getMember() != member) {
             Notice noticeBuild = Notice.builder()
                     .type(5)
-                    .toMember(comment.getMember())
+                    .toMember(parentComment.getMember())
                     .fromMember(member)
                     .board(board)
                     .createdDateTime(LocalDateTime.now())

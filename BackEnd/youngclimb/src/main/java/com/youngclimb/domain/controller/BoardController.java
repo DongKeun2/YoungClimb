@@ -58,6 +58,19 @@ public class BoardController {
         }
     }
 
+    // 게시물 삭제
+    @ApiOperation(value = "deleteBoard : 글 삭제하기")
+    @PostMapping("/{boardId}/delete")
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId,@CurrentUser UserPrincipal principal) throws Exception {
+        try {
+            boardService.deleteBoard(principal.getUsername(), boardId);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
     // 게시글 댓글 조회(본문 + 댓글 리스트)
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
     @GetMapping("/{boardId}")
