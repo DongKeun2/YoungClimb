@@ -580,7 +580,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     // 게시글 신고하기
-    public Boolean boardReport(Long boardId, String content, String email) {
+    public Boolean boardReport(Long boardId, Integer content, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
