@@ -23,6 +23,7 @@
     "react-native-geolocation-service": "^5.3.1",
     "react-native-gesture-handler": "^2.7.1",
     "react-native-image-picker": "^4.10.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modal-datetime-picker": "^14.0.0",
     "react-native-nmap": "^0.0.66",
     "react-native-reanimated": "^2.12.0",
