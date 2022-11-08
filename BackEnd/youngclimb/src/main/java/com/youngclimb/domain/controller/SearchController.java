@@ -1,5 +1,7 @@
 package com.youngclimb.domain.controller;
 
+import com.youngclimb.common.security.CurrentUser;
+import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.UserSearchDto;
 import com.youngclimb.domain.model.dto.board.BoardDto;
 import com.youngclimb.domain.model.dto.board.BoardSearchDto;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,9 +24,9 @@ public class SearchController {
 
     @ApiOperation(value = "recMember: 유저 추천")
     @GetMapping("/user")
-    public ResponseEntity<?> recMember() {
+    public ResponseEntity<?> recMember(Principal principal) {
         try {
-            List<MemberPic> memberPics = searchService.getMemberRec();
+            List<MemberPic> memberPics = searchService.getMemberRec(principal.getName());
             return new ResponseEntity<List<MemberPic>>(memberPics, HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -43,9 +46,9 @@ public class SearchController {
 
     @ApiOperation(value = "searchBoard: 게시글 검색")
     @PostMapping("/board")
-    public ResponseEntity<?> searchBoard(@RequestBody BoardSearchDto boardSearchDto) {
+    public ResponseEntity<?> searchBoard(@RequestBody BoardSearchDto boardSearchDto, @CurrentUser UserPrincipal principal) {
         try {
-            List<BoardDto> boardDtos = searchService.getBoardPic(boardSearchDto);
+            List<BoardDto> boardDtos = searchService.getBoardPic(boardSearchDto, principal.getUsername());
             return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
