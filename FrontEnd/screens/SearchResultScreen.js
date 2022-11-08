@@ -50,7 +50,7 @@ function CardList({boards, navigation}) {
             <TouchableOpacity
               key={i}
               onPress={() => {
-                navigation.navigate('게시글');
+                navigation.navigate('게시글', {id: board.id});
               }}
               style={styles.cardContainer}>
               <ArticleCard

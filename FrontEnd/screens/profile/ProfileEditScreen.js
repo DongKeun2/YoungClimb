@@ -62,6 +62,15 @@ function ProfileEditScreen({navigation}) {
     console.log('프로필 사진 변경');
   };
 
+  useEffect(() => {
+    dispatch(changeEditForm({name: 'nickname', value: currentUser.nickname}));
+    dispatch(changeEditForm({name: 'height', value: currentUser.height}));
+    dispatch(changeEditForm({name: 'shoeSize', value: currentUser.shoeSize}));
+    dispatch(changeEditForm({name: 'wingspan', value: currentUser.wingspan}));
+    dispatch(changeEditForm({name: 'intro', value: currentUser.intro}));
+    console.log('프로필 설정 입장');
+  }, [dispatch, currentUser]);
+
   // 서브헤더 우측 완료버튼 이벤트
   function onSubmitEdit() {
     console.log('저장된 uri', imageUri.assets[0].uri);
@@ -93,14 +102,6 @@ function ProfileEditScreen({navigation}) {
     );
 
     console.log('유저 정보', currentUser);
-    // const data = {
-    //   email: 'hello@young.climb',
-    //   nickname: editForm.intro.value,
-    //   intro: editForm.intro.value,
-    //   height: editForm.height.value,
-    //   shoeSize: editForm.shoeSize.value,
-    //   wingspan: editForm.wingspan.value,
-    // };
 
     formdata.append('memberInfo', data);
     dispatch(profileEdit(formdata)).then(() => {
@@ -134,7 +135,7 @@ function ProfileEditScreen({navigation}) {
           <View style={styles.inputBox}>
             <Input
               style={styles.input}
-              placeholder={currentUser.nickname}
+              placeholder={'닉네임을 입력해주세요.'}
               placeholderTextColor={'#ddd'}
               width="78%"
               value={editForm.nickname.value}
@@ -161,9 +162,7 @@ function ProfileEditScreen({navigation}) {
           <Text style={styles.introText}>소개</Text>
           <TextInput
             style={styles.introInput}
-            placeholder={
-              currentUser?.intro ? currentUser.intro : '소개를 작성해주세요 :)'
-            }
+            placeholder={'소개를 작성해주세요 :)'}
             placeholderTextColor={'#ddd'}
             multiline={true}
             textAlignVertical="top"
@@ -176,7 +175,7 @@ function ProfileEditScreen({navigation}) {
         <Text style={styles.inputText}>키</Text>
         <Input
           style={styles.input}
-          placeholder={currentUser?.height ? `${currentUser.height}` : '키(cm)'}
+          placeholder={'키(cm)'}
           placeholderTextColor={'#ddd'}
           value={editForm.height.value}
           type={editForm.height.type}
@@ -185,9 +184,7 @@ function ProfileEditScreen({navigation}) {
         <Text style={styles.inputText}>신발 사이즈</Text>
         <Input
           style={styles.input}
-          placeholder={
-            currentUser?.shoeSize ? `${currentUser.shoeSize}` : '신발(mm)'
-          }
+          placeholder={'신발(mm)'}
           placeholderTextColor={'#ddd'}
           value={editForm.shoeSize.value}
           type={editForm.shoeSize.type}
@@ -197,9 +194,7 @@ function ProfileEditScreen({navigation}) {
         <View style={styles.inputBox}>
           <Input
             style={styles.input}
-            placeholder={
-              currentUser?.wingspan ? `${currentUser.wingspan}` : '윙스팬(cm)'
-            }
+            placeholder={'윙스팬(cm)'}
             width="100%"
             placeholderTextColor={'#ddd'}
             value={editForm.wingspan.value}

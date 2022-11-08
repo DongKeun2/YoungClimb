@@ -17,22 +17,17 @@ import UserAvatar from '../../components/UserAvatar';
 import ArticleCard from '../../components/ArticleCard';
 import FollowBtn from '../../components/FollowBtn';
 import RankInfo from '../../components/RankInfo';
+import {Toast} from '../../components/Toast';
 
-import {profile, setIsClose} from '../../utils/slices/ProfileSlice';
-import {logout, testLogin} from '../../utils/slices/AccountsSlice';
+import {profile} from '../../utils/slices/ProfileSlice';
+import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
 import HoldIcon from '../../assets/image/hold/hold.svg';
 import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
-import {Toast} from '../../components/Toast';
 
-import {YCLevelColorDict} from '../../assets/info/ColorInfo';
-
-import {getCurrentUser} from '../../utils/Token';
-
-// route에 initail: false, nickname 보내야 함
 function ProfileScreen({navigation, route}) {
   const [exitAttempt, setExitAttempt] = useState(false);
   const routeName = useRoute();
@@ -180,6 +175,7 @@ function ProfileScreen({navigation, route}) {
                       onPress={() => {
                         navigation.push('팔로우', {
                           nickname: route.params.nickname,
+                          type: 'following',
                         });
                       }}
                       style={styles.InfoBox}>
@@ -190,6 +186,7 @@ function ProfileScreen({navigation, route}) {
                       onPress={() => {
                         navigation.push('팔로우', {
                           nickname: route.params.nickname,
+                          type: 'follower',
                         });
                       }}
                       style={styles.InfoBox}>
@@ -262,7 +259,7 @@ function CardList({articles, navigation}) {
               key={i}
               style={styles.cardContainer}
               onPress={() => {
-                navigation.navigate('게시글');
+                navigation.navigate('게시글', {id: article.id});
               }}>
               <ArticleCard article={article} navigation={navigation} />
             </TouchableOpacity>

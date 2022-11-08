@@ -19,11 +19,17 @@ const ProfileDrawer = () => {
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
+        drawerStyle: {
+          // backgroundColor: 'black',
+          width: 150,
+        },
       }}>
       <Drawer.Screen
         name="메인프로필"
         component={ProfileScreen}
-        options={{drawerLabel: '프로필'}}
+        options={{
+          drawerItemStyle: {display: 'none'},
+        }}
         style={{display: 'none'}}
         initialParams={{
           initial: true,
