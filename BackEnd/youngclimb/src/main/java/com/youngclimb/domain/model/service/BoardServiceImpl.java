@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,12 +52,10 @@ public class BoardServiceImpl implements BoardService {
     private final FollowRepository followRepository;
     private final MemberRankExpRepository memberRankExpRepository;
     private final ReportRepository reportRepository;
+    private final MemberProblemRepository memberProblemRepository;
+    private final RankRepository rankRepository;
     private final AmazonS3 amazonS3;
 
-
-//    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//    UserDetails userDetails = (UserDetails) principal;
-//    String username = userDetails.getUsername();
 
     // 게시글 읽기
     @Override
@@ -244,7 +243,6 @@ public class BoardServiceImpl implements BoardService {
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
-            System.out.println(fileName);
             try (InputStream inputStream = file.getInputStream()) {
                 amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
@@ -254,6 +252,39 @@ public class BoardServiceImpl implements BoardService {
                     .build();
             boardMediaRepository.save(boardMedia);
         }
+
+        // 유저 경험치 등급 저장하기
+        // 게시물에서 등급 받아오기
+        Level level = category.getCenterlevel().getLevel();
+
+        // 회원 경험치 업데이트
+        MemberRankExp memberExp = memberRankExpRepository.findByMember(member).orElseThrow();
+        memberExp.addMemberExp(level.getExp());
+
+        // 회원 푼 문제 업데이트
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+        memberProblem.addProblem(level.getRank());
+        memberProblemRepository.save(memberProblem);
+
+        // 랭크 업데이트
+        List<Rank> ranks = rankRepository.findAll();
+        ranks.sort(new Comparator<Rank>() {
+            @Override
+            public int compare(Rank o1, Rank o2) {
+                return (int) (o1.getQual() - o2.getQual());
+            }
+        });
+
+        for (Rank tmp : ranks) {
+            if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
+                memberExp.setRank(tmp);
+                break;
+            }
+        }
+
+        memberRankExpRepository.save(memberExp);
+
+
     }
 
     private String createFileName(String fileName) {
