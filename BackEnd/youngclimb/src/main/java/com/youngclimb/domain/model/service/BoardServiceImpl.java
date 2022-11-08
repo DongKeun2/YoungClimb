@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.*;
 import com.youngclimb.domain.model.dto.member.CreateMember;
 import com.youngclimb.domain.model.dto.member.MemberDto;
@@ -59,7 +58,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 읽기
     @Override
-    public List<BoardDto> readAllBoard(String email, Pageable pageable, UserPrincipal currUser) {
+    public List<BoardDto> readAllBoard(String email, Pageable pageable) {
         List<BoardDto> boardDtos = new ArrayList<>();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
@@ -141,11 +140,11 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 작성
     @Override
-    public void writeBoard(BoardCreate boardCreate, MultipartFile file) {
+    public void writeBoard(String email, BoardCreate boardCreate, MultipartFile file) {
 
         // 게시글 저장하기
         Board board = boardCreate.toBoard();
-        Member member = memberRepository.findById(boardCreate.getMemberId()).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
         board.setMember(member);
         boardRepository.save(board);
 
@@ -247,10 +246,10 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 - 댓글 상세보기
     @Override
-    public BoardDetailDto readAllComments(Long boardId, Long memberId) {
+    public BoardDetailDto readAllComments(Long boardId, String email) {
         BoardDetailDto boardDetailDto = new BoardDetailDto();
 
-        Member member = memberRepository.findById(memberId).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 
         // 게시글 DTO 세팅
         Board board = boardRepository.findById(boardId).orElseThrow();
@@ -274,7 +273,7 @@ public class BoardServiceImpl implements BoardService {
                 .nickname(writer.getNickname())
                 .image(writer.getMemberProfileImg())
 //                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), memberId))
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
                 .build();
 
         boardDto.setCreateUser(createUser);
@@ -320,7 +319,7 @@ public class BoardServiceImpl implements BoardService {
                     .nickname(cWriter.getNickname())
                     .image(cWriter.getMemberProfileImg())
 //                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), memberId))
+                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId()))
                     .build();
 
             // 댓글 세팅
@@ -339,7 +338,7 @@ public class BoardServiceImpl implements BoardService {
                         .nickname(rcWriter.getNickname())
                         .image(rcWriter.getMemberProfileImg())
 //                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(rcWriter.getMemberId(), memberId))
+                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(rcWriter.getMemberId(), member.getMemberId()))
                         .build();
 
                 CommentDto reCommentDto = reComment.toCommentDto();
@@ -381,12 +380,12 @@ public class BoardServiceImpl implements BoardService {
 
     // 댓글 작성
     @Override
-    public void writeComment(CommentCreate commentCreate) {
+    public void writeComment(CommentCreate commentCreate, String email) {
 
         // 댓글 저장하기
         Comment comment = commentCreate.toComment();
         Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
-        Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 
         comment.setBoard(board);
         comment.setMember(member);
@@ -395,10 +394,10 @@ public class BoardServiceImpl implements BoardService {
 
     // 대댓글 작성
     @Override
-    public void writeRecomment(CommentCreate commentCreate) {
+    public void writeRecomment(CommentCreate commentCreate, String email) {
         Comment comment = commentCreate.toComment();
         Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
-        Member member = memberRepository.findById(commentCreate.getMemberId()).orElseThrow();
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 
         comment.setBoard(board);
         comment.setMember(member);
