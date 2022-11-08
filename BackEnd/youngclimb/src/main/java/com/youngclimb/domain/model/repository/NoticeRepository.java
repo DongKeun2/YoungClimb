@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    Optional<Notice> findByToMemberAndFromMember(Member toMember, Member fromMember);
+    Optional<Notice> findByToMemberAndFromMemberAndType(Member toMember, Member fromMember, Integer type);
 
     List<Notice> findAllByToMember(Member toMember);
 }

@@ -345,7 +345,7 @@ public class MemberServiceImpl implements MemberService {
     public Boolean addCancelFollow(String followingNickname, String followerEmail) {
         Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
         Member follower = memberRepository.findByEmail(followerEmail).orElseThrow();
-        Notice notice = noticeRepository.findByToMemberAndFromMember(following, follower).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(following, follower, 1).orElse(null);
 
         if (follower.getMemberId() == following.getMemberId()) {
             return Boolean.FALSE;
