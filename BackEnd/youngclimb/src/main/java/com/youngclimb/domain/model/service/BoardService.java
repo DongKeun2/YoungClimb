@@ -38,6 +38,6 @@ public interface BoardService {
     public MemberDto getUserInfoByUserId(String userId, String loginEmail);
 
     // 게시글 신고하기
-    public Boolean boardReport(Long boardId, String content, String email);
+    public Boolean boardReport(Long boardId, Integer content, String email);
 
 }
