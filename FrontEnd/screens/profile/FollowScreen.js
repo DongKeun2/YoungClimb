@@ -21,11 +21,12 @@ import searchIcon from '../../assets/image/profile/searchIcon.png';
 function FollowScreen({navigation, route}) {
   const dispatch = useDispatch();
 
-  const [type, setType] = useState('following');
+  const [type, setType] = useState('');
 
   const [keyword, setKeyword] = useState('');
 
   useEffect(() => {
+    setType(route.params.type);
     dispatch(fetchFollowList(route.params.nickname));
   }, [dispatch, route]);
 
@@ -34,7 +35,7 @@ function FollowScreen({navigation, route}) {
 
   return (
     <ScrollView style={styles.container}>
-      <CustomSubHeader title="팔로우" navigation={navigation} />
+      <CustomSubHeader title={route.params.nickname} navigation={navigation} />
 
       {type === 'following' ? (
         <View style={styles.tabBox}>
