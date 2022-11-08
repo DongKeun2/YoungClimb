@@ -28,6 +28,7 @@ import NaverMapView, {Marker, Align} from "react-native-nmap";
 export default function StoreDetail({route, navigation}){
 	const {Id} = route.params;
 	const [detailInfo, setDetailInfo] = useState({
+		wall:false,
 		name: '',
 		phoneNumber:'',
 	address: '',
@@ -85,6 +86,7 @@ centerPriceList: [{
 	)
 
 	useEffect(()=>{
+		console.log(detailInfo)
 		const todayInfo = detailInfo.centerTimeList.filter(info=>info.day === day)[0]
 		if (todayInfo){
 			setTodayTimeInfo(`${dayDict[day]}  ${todayInfo.timeStart.slice(0,5)} - ${todayInfo.timeEnd.slice(0,5)}`)
@@ -119,13 +121,17 @@ centerPriceList: [{
 							{/* 이름 */}
 							<Text style={styles.nameFont}>{detailInfo.name}</Text>
 							{/* 3d벽 버튼 */}
-							<TouchableOpacity 
-							style={{...styles.wallBtn, backgroundColor:'white'}}
-							onPress={()=> navigation.navigate('3D벽', {Id:detailInfo.centerNumber})}
-							>
-								<ImgRollPic style={{height:20}}/>
-								<Text style={{color: 'black', fontWeight:'bold'}}>3D</Text>
-							</TouchableOpacity>
+							{detailInfo.wall?
+								<TouchableOpacity 
+								style={{...styles.wallBtn, backgroundColor:'white'}}
+								onPress={()=> navigation.navigate('3D벽', {Id: Id})}
+								>
+									<ImgRollPic style={{height:20}}/>
+									<Text style={{color: 'black', fontWeight:'bold'}}>3D</Text>
+								</TouchableOpacity>
+							:
+							<></>
+						}
 						</View>
 						{/* 연락처 */}
 						<View style={styles.infoFlex}>
