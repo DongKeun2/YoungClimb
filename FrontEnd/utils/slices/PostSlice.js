@@ -29,32 +29,7 @@ const fetchDetail = createAsyncThunk(
 );
 
 const initialState = {
-  boardInfo: {
-    id: 3,
-    createUser: {
-      nickname: 'YoungClimb_YoungJunK',
-      image: null,
-      rank: 'Y1',
-    },
-    createdAt: '5시간 전',
-    centerName: '더 클라임 양재점',
-    centerLevelColor: '초록',
-    mediaPath:
-      'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/0f446944-8243-452d-b89b-7204e3fe446b.mp4',
-    wallName: 'D구역',
-    difficulty: 'V1',
-    holdColor: '검정',
-    solvedDate: '2022.09.24',
-    content:
-      'T1이 이기겠지..? 이길거야 징동 T1 무서워했다며.. 실력으로 보여줄거야 구마유시 믿는다 황마유시 대상혁도 나오면 더 좋고ㅎ 진짜 무조건 이겨야 해 그래야 Lck 내전 본다~',
-    like: 968,
-    view: 3160,
-    isFollow: true,
-    isLiked: false,
-    isScrap: true,
-    commentNum: 1557,
-    commentPreview: {nickname: '0_climb', comment: '무조건 이기지~!!!'},
-  },
+  boardInfo: {},
   postInfo: {
     media: null,
     centerId: null,

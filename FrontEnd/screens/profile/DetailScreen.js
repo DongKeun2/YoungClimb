@@ -56,181 +56,188 @@ function DetailScreen({navigation, route}) {
 
   return (
     <View style={styles.container} onLayout={calVideoLength}>
-      {/* 피드 상단 헤더 */}
-      <View style={styles.feedHeader}>
-        <View style={styles.headerTop}>
-          <View style={styles.iconText}>
-            <UserAvatar source={avatar} size={36} />
-            <View style={styles.headerTextGroup}>
-              <View style={{...styles.iconText, alignItems: 'center'}}>
-                <Text
-                  style={{
-                    ...styles.feedTextStyle,
-                    fontSize: 16,
-                    fontWeight: '600',
-                    marginRight: 5,
-                  }}>
-                  {feed.createUser.nickname}
-                </Text>
-                <HoldIcon
-                  width={18}
-                  height={18}
-                  color={YCLevelColorDict[feed.createUser.rank]}
-                />
+      {isLoading ? (
+        <></>
+      ) : (
+        <>
+          <View style={styles.feedHeader}>
+            <View style={styles.headerTop}>
+              <View style={styles.iconText}>
+                <UserAvatar source={avatar} size={36} />
+                <View style={styles.headerTextGroup}>
+                  <View style={{...styles.iconText, alignItems: 'center'}}>
+                    <Text
+                      style={{
+                        ...styles.feedTextStyle,
+                        fontSize: 16,
+                        fontWeight: '600',
+                        marginRight: 5,
+                      }}>
+                      {feed.createUser.nickname}
+                    </Text>
+                    <HoldIcon
+                      width={18}
+                      height={18}
+                      color={YCLevelColorDict[feed.createUser.rank]}
+                    />
+                  </View>
+                  <Text style={{...styles.feedTextStyle, fontSize: 12}}>
+                    {feed.createdAt}
+                  </Text>
+                </View>
               </View>
-              <Text style={{...styles.feedTextStyle, fontSize: 12}}>
-                {feed.createdAt}
+              <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
+                <MenuIcon width={16} height={16} />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.wallInfo}>
+              <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                {feed.centerName}
+              </Text>
+              {feed.wallName ? (
+                <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                  {feed.wallName}
+                </Text>
+              ) : null}
+              <Text style={{...styles.feedTextStyle, marginRight: 3}}>
+                {feed.difficulty}
+              </Text>
+              <LevelLabel color={feed.centerLevelColor} />
+              <HoldLabel color={feed.holdColor} />
+            </View>
+          </View>
+
+          <View style={{width: videoLength, height: videoLength}}>
+            <TouchableOpacity
+              style={styles.videoBox}
+              activeOpacity={1}
+              onPress={changeMuted}>
+              <Video
+                source={{uri: feed.mediaPath}}
+                style={styles.backgroundVideo}
+                fullscreen={false}
+                resizeMode={'contain'}
+                repeat={true}
+                controls={false}
+                paused={false}
+                muted={isMuted}
+              />
+            </TouchableOpacity>
+            <View style={styles.solvedDate}>
+              <CameraIcon />
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 12,
+                  marginLeft: 3,
+                  marginTop: 1,
+                }}>
+                {feed.solvedDate}
               </Text>
             </View>
           </View>
-          <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
-            <MenuIcon width={16} height={16} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.wallInfo}>
-          <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-            {feed.centerName}
-          </Text>
-          {feed.wallName ? (
-            <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-              {feed.wallName}
-            </Text>
-          ) : null}
-          <Text style={{...styles.feedTextStyle, marginRight: 3}}>
-            {feed.difficulty}
-          </Text>
-          <LevelLabel color={feed.centerLevelColor} />
-          <HoldLabel color={feed.holdColor} />
-        </View>
-      </View>
-      {/* 동영상 */}
-      <View style={{width: videoLength, height: videoLength}}>
-        <TouchableOpacity
-          style={styles.videoBox}
-          activeOpacity={1}
-          onPress={changeMuted}>
-          <Video
-            source={{uri: feed.mediaPath}}
-            style={styles.backgroundVideo}
-            fullscreen={false}
-            resizeMode={'contain'}
-            repeat={true}
-            controls={false}
-            paused={true}
-            muted={isMuted}
-          />
-        </TouchableOpacity>
-        <View style={styles.solvedDate}>
-          <CameraIcon />
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 12,
-              marginLeft: 3,
-              marginTop: 1,
-            }}>
-            {feed.solvedDate}
-          </Text>
-        </View>
-      </View>
-      {/* 좋아요, 스크랩, 조회수 */}
-      <View style={styles.popularInfo}>
-        <View style={styles.likeGroup}>
-          <View style={styles.iconText}>
-            {feed.isLiked ? (
-              <TouchableOpacity onPress={() => null}>
-                <FillHeart style={{marginRight: 5}} />
+
+          <View style={styles.popularInfo}>
+            <View style={styles.likeGroup}>
+              <View style={styles.iconText}>
+                {feed.isLiked ? (
+                  <TouchableOpacity onPress={() => null}>
+                    <FillHeart style={{marginRight: 5}} />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={() => null}>
+                    <EmptyHeart style={{marginRight: 5}} />
+                  </TouchableOpacity>
+                )}
+                <Text style={styles.feedTextStyle}>
+                  {feed.like} 명이 좋아합니다.
+                </Text>
+              </View>
+              {feed.isScrap ? (
+                <TouchableOpacity onPress={() => null}>
+                  <FillScrap style={{marginRight: 5}} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => null}>
+                  <EmptyScrap style={{marginRight: 5}} />
+                </TouchableOpacity>
+              )}
+            </View>
+            <View style={styles.iconText}>
+              <EyeIcon style={{marginRight: 5}} />
+              <Text style={styles.feedTextStyle}>
+                {feed.view} 명이 감상했습니다.
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.contentSummary}>
+            <View
+              onLayout={onLayout}
+              style={{position: 'absolute', top: 0, opacity: 0}}>
+              <Text style={styles.contentPreview}>{feed.content}</Text>
+            </View>
+            {!isFullContent && contentHeight > 32 ? (
+              <TouchableOpacity
+                style={styles.viewFullContent}
+                onPress={viewFullContent}>
+                <Text
+                  numberOfLines={2}
+                  ellipsizeMode="clip"
+                  style={styles.contentPreview}>
+                  {feed.content}
+                </Text>
+                <Text style={{color: '#a7a7a7', fontSize: 13}}>
+                  ... 더 보기
+                </Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity onPress={() => null}>
-                <EmptyHeart style={{marginRight: 5}} />
+              <TouchableOpacity
+                onPress={() =>
+                  navigation ? navigation.navigate('댓글', {board: feed}) : null
+                }>
+                <Text style={styles.contentPreview}>{feed.content}</Text>
               </TouchableOpacity>
             )}
-            <Text style={styles.feedTextStyle}>
-              {feed.like} 명이 좋아합니다.
-            </Text>
           </View>
-          {feed.isScrap ? (
-            <TouchableOpacity onPress={() => null}>
-              <FillScrap style={{marginRight: 5}} />
+
+          {feed.commentPreview ? (
+            <TouchableOpacity
+              style={styles.commentSummary}
+              onPress={() =>
+                navigation ? navigation.navigate('댓글', {board: feed}) : null
+              }>
+              <View style={styles.commentPreview}>
+                <Text
+                  style={{
+                    ...styles.feedTextStyle,
+                    fontWeight: '600',
+                    marginRight: 8,
+                  }}>
+                  {feed.commentPreview?.nickname}
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    ...styles.feedTextStyle,
+                    width: '60%',
+                    overflow: 'hidden',
+                  }}>
+                  {feed.commentPreview?.comment}
+                </Text>
+              </View>
+              <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
+                댓글 {feed.commentNum}개 모두 보기
+              </Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={() => null}>
-              <EmptyScrap style={{marginRight: 5}} />
-            </TouchableOpacity>
+            <View>
+              <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
+                작성된 댓글이 없습니다.
+              </Text>
+            </View>
           )}
-        </View>
-        <View style={styles.iconText}>
-          <EyeIcon style={{marginRight: 5}} />
-          <Text style={styles.feedTextStyle}>
-            {feed.view} 명이 감상했습니다.
-          </Text>
-        </View>
-      </View>
-      {/* 본문, 댓글 미리보기, 댓글 수 */}
-      <View style={styles.contentSummary}>
-        <View
-          onLayout={onLayout}
-          style={{position: 'absolute', top: 0, opacity: 0}}>
-          <Text style={styles.contentPreview}>{feed.content}</Text>
-        </View>
-        {!isFullContent && contentHeight > 32 ? (
-          <TouchableOpacity
-            style={styles.viewFullContent}
-            onPress={viewFullContent}>
-            <Text
-              numberOfLines={2}
-              ellipsizeMode="clip"
-              style={styles.contentPreview}>
-              {feed.content}
-            </Text>
-            <Text style={{color: '#a7a7a7', fontSize: 13}}>... 더 보기</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            onPress={() =>
-              navigation ? navigation.navigate('댓글', {board: feed}) : null
-            }>
-            <Text style={styles.contentPreview}>{feed.content}</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      {feed.commentPreview ? (
-        <TouchableOpacity
-          style={styles.commentSummary}
-          onPress={() =>
-            navigation ? navigation.navigate('댓글', {board: feed}) : null
-          }>
-          <View style={styles.commentPreview}>
-            <Text
-              style={{
-                ...styles.feedTextStyle,
-                fontWeight: '600',
-                marginRight: 8,
-              }}>
-              {feed.commentPreview?.nickname}
-            </Text>
-            <Text
-              numberOfLines={1}
-              style={{
-                ...styles.feedTextStyle,
-                width: '60%',
-                overflow: 'hidden',
-              }}>
-              {feed.commentPreview?.comment}
-            </Text>
-          </View>
-          <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
-            댓글 {feed.commentNum}개 모두 보기
-          </Text>
-        </TouchableOpacity>
-      ) : (
-        <View>
-          <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
-            작성된 댓글이 없습니다.
-          </Text>
-        </View>
+        </>
       )}
     </View>
   );
