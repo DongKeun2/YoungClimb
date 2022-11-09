@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, BackHandler } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 
-const DeclareMenu = ({navigation, focusedContent}) => {
+const DeclareMenu = ({navigation,focusedContent}) => {
   const [selected, setSelected] = useState(0)
   const [declareList, setDeclareList] = useState([
     { id: 1,
@@ -25,6 +26,16 @@ const DeclareMenu = ({navigation, focusedContent}) => {
       selected: false
     },
     ])
+
+  useFocusEffect(()=>{
+    BackHandler.removeEventListener('hardwareBackPress')
+    const backAction = ()=>{
+      navigation.navigate('메뉴메인')
+      return true  
+    }
+    const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction);
+    return () =>{backHandler.remove();}
+  })
   
   useEffect(()=>{
     setDeclareList(

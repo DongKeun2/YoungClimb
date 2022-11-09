@@ -10,12 +10,13 @@ import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 const Stack = createStackNavigator();
 
 const HomeMenuStack = (props) =>{
-  const {navigation, route, focusedContent, setFocusedPage, setModalVisible} = props
+  const {parentnavigation, parentroute, focusedContent, setFocusedPage, setModalVisible} = props
   
   React.useLayoutEffect(() => {
-    const routeName = getFocusedRouteNameFromRoute(route);
+    const routeName = getFocusedRouteNameFromRoute(parentroute);
     setFocusedPage(routeName)
-  },[navigation,route]);
+    console.log(routeName, parentroute)
+  },[parentnavigation,parentroute]);
 
   return(
     <Stack.Navigator
@@ -24,16 +25,16 @@ const HomeMenuStack = (props) =>{
       headerShown: false,
     }}>
       <Stack.Screen name="메뉴메인" options={{headerShown:false}}>
-        {props => <MenuMain {...props} focusedContent={focusedContent} setModalVisible={setModalVisible} />}
+        {props => <MenuMain {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} setModalVisible={setModalVisible} />}
       </Stack.Screen>
       <Stack.Screen name="신고" options={{headerShown:false}}>
-        {props => <DeclareMenu {...props} focusedContent={focusedContent} />}
+        {props => <DeclareMenu {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} />}
       </Stack.Screen>
       <Stack.Screen name="표시이유" options={{headerShown:false}}>
-        {props => <ReasonShown {...props} focusedContent={focusedContent} />}
+        {props => <ReasonShown {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} />}
       </Stack.Screen>
       <Stack.Screen name="게시물정보" options={{headerShown:false}}>
-        {props => <ContentInfo {...props} focusedContent={focusedContent} />}
+        {props => <ContentInfo {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} />}
       </Stack.Screen>
     </Stack.Navigator>
   )
