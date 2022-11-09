@@ -10,12 +10,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -89,7 +91,8 @@ public class MemberController {
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
     @PostMapping("/profile")
-    public ResponseEntity<?> addProfile(@RequestPart MemberProfile memberProfile, @RequestPart(required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> addProfile(@RequestPart(value = "memberInfo") MemberProfile memberProfile, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+
         try {
             memberService.addProfile(principal.getUsername(), memberProfile, file);
             return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
@@ -100,12 +103,13 @@ public class MemberController {
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
     @PostMapping("/profile/edit")
-    public ResponseEntity<?> editProfile(@RequestPart MemberInfo memberInfo, @RequestPart(required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> editProfile(@RequestHeader MultiValueMap<String, String> headerMap, @RequestPart MemberInfo memberInfo, @CurrentUser UserPrincipal principal) throws Exception {
+        System.out.println(memberInfo);
         try {
-            memberService.editProfile(principal.getUsername(), memberInfo, file);
+//            memberService.editProfile(principal.getUsername(), memberInfo, file);
             return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<String>("오류가 발생했습니다", HttpStatus.BAD_REQUEST);
+            return exceptionHandling(e);
         }
     }
 

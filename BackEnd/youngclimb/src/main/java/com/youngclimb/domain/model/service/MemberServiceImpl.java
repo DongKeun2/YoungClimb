@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.util.annotation.Nullable;
 
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
@@ -166,7 +167,9 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 수정
     @Override
-    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception {
+    public void editProfile(String email, MemberInfo memberInfo, @Nullable MultipartFile file) throws Exception {
+        System.out.println(memberInfo);
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
