@@ -103,8 +103,8 @@ public class MemberController {
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
     @PostMapping("/profile/edit")
-    public ResponseEntity<?> editProfile(@RequestHeader MultiValueMap<String, String> headerMap, @RequestPart MemberInfo memberInfo, @CurrentUser UserPrincipal principal) throws Exception {
-        System.out.println(memberInfo);
+    public ResponseEntity<?> editProfile(@RequestPart(value = "memberInfo", required = false) MemberInfo memberInfo, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+        System.out.println(file);
         try {
 //            memberService.editProfile(principal.getUsername(), memberInfo, file);
             return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
