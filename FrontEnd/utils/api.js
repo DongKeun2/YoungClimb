@@ -40,11 +40,11 @@ const api = {
     USER_URL +
     PROFILE_URL +
     EDIT_URL +
-    `/${data.nickname}` +
     `/${data.intro ? data.intro : ' '}` +
-    `/${data.height ? data.height : ' '}` +
-    `/${data.shoeSize ? data.shoeSize : ' '}` +
-    `/${data.wingspan ? data.wingspan : ' '}`,
+    `/${data.height ? data.height : '0'}` +
+    `/${data.shoeSize ? data.shoeSize : '0'}` +
+    `/${data.wingspan ? data.wingspan : '0'}` +
+    `/${data.nickname}`,
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,
@@ -56,7 +56,8 @@ const api = {
   search: () => API_BASE_URL + SEARCH_URL + BOARD_URL,
   detail: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DETAIL_URL,
 
-  homeFeed: pageNumber => API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,
+  homeFeed: pageNumber =>
+    API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,
   feedComment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}`,
   postAdd: () => API_BASE_URL + BOARD_URL,
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,

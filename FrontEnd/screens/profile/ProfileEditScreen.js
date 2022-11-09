@@ -25,6 +25,7 @@ import {
 import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
 import avatar from '../../assets/image/profile/avatar.png';
+import Camera from '../../assets/image/main/camera.svg';
 import checkIcon from '../../assets/image/main/done.png';
 import camera from '../../assets/image/main/camera.png';
 import {useIsFocused} from '@react-navigation/native';
@@ -220,8 +221,8 @@ function ProfileEditScreen({navigation}) {
           </TouchableOpacity>
 
           <View style={styles.nicknameBox}>
-            <Text style={styles.inputText}>닉네임</Text>
-            <View style={styles.inputBox}>
+            <Text style={styles.nicknameLabel}>닉네임</Text>
+            <View style={styles.nicknameInputBox}>
               <Input
                 placeholder={'닉네임을 입력해주세요.'}
                 placeholderTextColor={'#ddd'}
@@ -260,47 +261,52 @@ function ProfileEditScreen({navigation}) {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.inputText}>키 (cm)</Text>
-          <Input
-            style={styles.input}
-            placeholder={'키를 입력해주세요.'}
-            placeholderTextColor={'#ddd'}
-            value={editForm.height.value.toString()}
-            maxLength={3}
-            type={editForm.height.type}
-            onChangeText={value => updateInput('height', value)}
-          />
-          <Text style={styles.inputText}>신발 사이즈 (mm)</Text>
-          <Input
-            style={styles.input}
-            placeholder={'신발 사이즈를 입력해주세요.'}
-            placeholderTextColor={'#ddd'}
-            value={editForm.shoeSize?.value.toString()}
-            maxLength={3}
-            type={editForm.shoeSize.type}
-            onChangeText={value => updateInput('shoeSize', value)}
-          />
-          <Text style={styles.inputText}>윙스팬 (cm)</Text>
-          <View style={styles.inputBox}>
-            <Input
+          <View style={styles.inputForm}>
+            <Text style={styles.inputText}>키 (cm)</Text>
+            <TextInput
               style={styles.input}
-              placeholder={'윙스팬을 입력해주세요.'}
-              width="100%"
+              placeholder={'키를 입력해주세요.'}
               placeholderTextColor={'#ddd'}
-              value={editForm.wingspan.value.toString()}
+              value={editForm.height.value.toString()}
               maxLength={3}
-              type={editForm.wingspan.type}
-              onChangeText={value => updateInput('wingspan', value)}
+              type={editForm.height.type}
+              onChangeText={value => updateInput('height', value)}
             />
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('윙스팬', {
-                  height: editForm.height.value,
-                  type: 'edit',
-                })
-              }>
-              <Image source={camera} style={styles.cameraIcon} />
-            </TouchableOpacity>
+          </View>
+          <View style={styles.inputForm}>
+            <Text style={styles.inputText}>신발 (mm)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={'신발 사이즈를 입력해주세요.'}
+              placeholderTextColor={'#ddd'}
+              value={editForm.shoeSize?.value.toString()}
+              maxLength={3}
+              type={editForm.shoeSize.type}
+              onChangeText={value => updateInput('shoeSize', value)}
+            />
+          </View>
+          <View style={styles.inputForm}>
+            <Text style={styles.inputText}>윙스팬 (cm)</Text>
+            <View style={styles.inputBox}>
+              <TextInput
+                style={styles.input}
+                placeholder={'윙스팬을 입력해주세요.'}
+                placeholderTextColor={'#ddd'}
+                value={editForm.wingspan.value.toString()}
+                maxLength={3}
+                type={editForm.wingspan.type}
+                onChangeText={value => updateInput('wingspan', value)}
+              />
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('윙스팬', {
+                    height: editForm.height.value,
+                    type: 'edit',
+                  })
+                }>
+                <Camera style={styles.cameraIcon} width={30} height={30} />
+              </TouchableOpacity>
+            </View>
           </View>
           <TouchableOpacity
             style={styles.logout}
@@ -346,24 +352,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputText: {
-    color: 'black',
+    color: '#525050',
     justifyContent: 'center',
-    width: '80%',
+    width: '35%',
     marginTop: 30,
-    marginBottom: -20,
   },
   nicknameBox: {
     justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    width: '80%',
   },
-  nicknameLabel: {fontSize: 12},
+  nicknameLabel: {fontSize: 14, marginBottom: -20, color: 'black'},
   inputBox: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    width: '80%',
+    width: '60%',
+  },
+  nicknameInputBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   introBox: {width: '85%', marginTop: 20},
   introInput: {
@@ -386,7 +397,8 @@ const styles = StyleSheet.create({
     width: '45%',
   },
   text: {
-    margin: 10,
+    fontSize: 12,
+    marginBottom: 10,
     color: 'black',
   },
   link: {
@@ -408,7 +420,7 @@ const styles = StyleSheet.create({
   },
   cameraIcon: {
     position: 'absolute',
-    right: 0,
+    right: -10,
     top: -30,
   },
   introText: {
@@ -417,7 +429,23 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   logout: {
-    marginBottom: 30,
+    marginVertical: 30,
+  },
+  inputForm: {
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#464646',
+  },
+  input: {
+    fontSize: 16,
+    color: 'black',
+    width: '65%',
+    padding: 5,
+    marginTop: 30,
   },
 });
 
