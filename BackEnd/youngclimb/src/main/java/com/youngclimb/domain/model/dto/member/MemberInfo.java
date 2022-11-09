@@ -2,6 +2,7 @@ package com.youngclimb.domain.model.dto.member;
 
 import com.youngclimb.domain.model.dto.board.BoardDto;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
