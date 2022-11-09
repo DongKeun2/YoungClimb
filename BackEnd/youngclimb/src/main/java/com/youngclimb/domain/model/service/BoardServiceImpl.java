@@ -417,42 +417,44 @@ public class BoardServiceImpl implements BoardService {
         List<CommentDto> commentDtos = new ArrayList<>();
         for (Comment comment : comments) {
 
-            // 댓글 작성자
-            Member cWriter = comment.getMember();
-            CreateMember cCreateMember = CreateMember.builder()
-                    .nickname(cWriter.getNickname())
-                    .image(cWriter.getMemberProfileImg())
-                    .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId()))
-                    .build();
-
-            // 댓글 세팅
-            CommentDto commentDto = comment.toCommentDto();
-            // 댓글 작성자 세팅
-            commentDto.setUser(cCreateMember);
-            // 댓글 좋아요 여부
-            commentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(comment, member));
-
-            // 대댓글 세팅
-            List<Comment> reComments = commentRepository.findByParentId(comment.getId());
-            List<CommentDto> reCommentDtos = new ArrayList<>();
-            for (Comment reComment : reComments) {
-                Member rcWriter = reComment.getMember();
-                CreateMember rcCreateMember = CreateMember.builder()
-                        .nickname(rcWriter.getNickname())
-                        .image(rcWriter.getMemberProfileImg())
+            if (comment.getParentId() == 0) {
+                // 댓글 작성자
+                Member cWriter = comment.getMember();
+                CreateMember cCreateMember = CreateMember.builder()
+                        .nickname(cWriter.getNickname())
+                        .image(cWriter.getMemberProfileImg())
                         .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(rcWriter.getMemberId(), member.getMemberId()))
+                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId()))
                         .build();
 
-                CommentDto reCommentDto = reComment.toCommentDto();
-                reCommentDto.setUser(rcCreateMember);
-                reCommentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(reComment, member));
-                reCommentDtos.add(reCommentDto);
-            }
+                // 댓글 세팅
+                CommentDto commentDto = comment.toCommentDto();
+                // 댓글 작성자 세팅
+                commentDto.setUser(cCreateMember);
+                // 댓글 좋아요 여부
+                commentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(comment, member));
 
-            commentDto.setReComment(reCommentDtos);
-            commentDtos.add(commentDto);
+                // 대댓글 세팅
+                List<Comment> reComments = commentRepository.findByParentId(comment.getId());
+                List<CommentDto> reCommentDtos = new ArrayList<>();
+                for (Comment reComment : reComments) {
+                    Member rcWriter = reComment.getMember();
+                    CreateMember rcCreateMember = CreateMember.builder()
+                            .nickname(rcWriter.getNickname())
+                            .image(rcWriter.getMemberProfileImg())
+                            .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
+                            .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(rcWriter.getMemberId(), member.getMemberId()))
+                            .build();
+
+                    CommentDto reCommentDto = reComment.toCommentDto();
+                    reCommentDto.setUser(rcCreateMember);
+                    reCommentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(reComment, member));
+                    reCommentDtos.add(reCommentDto);
+                }
+
+                commentDto.setReComment(reCommentDtos);
+                commentDtos.add(commentDto);
+            }
         }
         boardDetailDto.setCommentDtos(commentDtos);
 
