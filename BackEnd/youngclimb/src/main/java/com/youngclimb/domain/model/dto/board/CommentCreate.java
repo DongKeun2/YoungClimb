@@ -10,17 +10,14 @@ import java.time.LocalDateTime;
 @Builder
 public class CommentCreate {
 
-    Long boardId;
     String content;
-
-    Long paraentId;
 
     public Comment toComment() {
         return Comment.builder()
                 .content(content)
                 .createdDatetime(LocalDateTime.now())
                 .isDeleted(false)
-                .parentId(paraentId)
+                .parentId(0L)
                 .build();
     }
 

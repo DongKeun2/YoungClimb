@@ -29,9 +29,9 @@ public interface BoardService {
     // 게시글 신고
 
     // 댓글 작성
-    public void writeComment(CommentCreate commentCreate, String email);
+    public void writeComment(CommentCreate commentCreate, Long boardId, String email);
     // 대댓글 작성
-    public void writeRecomment(CommentCreate commentCreate, String email);
+    public void writeRecomment(CommentCreate commentCreate, Long boardId, Long commentId, String email);
     // 게시글 스크랩/취소
     public Boolean boardScrapCancle(Long boardId, String email);
     // 게시글 검색
