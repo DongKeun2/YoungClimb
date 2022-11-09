@@ -209,10 +209,6 @@ const initialState = {
       type: 'textInput',
       valid: false,
     },
-    password: {
-      value: '',
-      type: 'textInput',
-    },
     intro: {
       value: '',
       type: 'textInput',
@@ -274,7 +270,17 @@ export const AccountsSlice = createSlice({
       }
     },
     changeEditForm: (state, action) => {
-      state.editForm[action.payload.name].value = action.payload.value;
+      if (
+        !action.payload.reset &&
+        (action.payload.name === 'height' ||
+          action.payload.name === 'shoeSize' ||
+          action.payload.name === 'wingspan')
+      ) {
+        state.editForm[action.payload.name].value =
+          action.payload.value.replace(/[^0-9]/g, '');
+      } else {
+        state.editForm[action.payload.name].value = action.payload.value;
+      }
     },
     changeIsCheckTerms: (state, action) => {
       state.isCheckTerms = action.payload;

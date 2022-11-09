@@ -80,13 +80,69 @@ function ProfileEditScreen({navigation}) {
 
   const isFocused = useIsFocused();
   useEffect(() => {
-    dispatch(changeEditForm({name: 'nickname', value: currentUser.nickname}));
-    dispatch(changeEditForm({name: 'height', value: currentUser.height}));
-    dispatch(changeEditForm({name: 'shoeSize', value: currentUser.shoeSize}));
-    dispatch(changeEditForm({name: 'wingspan', value: currentUser.wingspan}));
-    dispatch(changeEditForm({name: 'intro', value: currentUser.intro}));
+    dispatch(changeUploadImg(currentUser.image));
+    dispatch(
+      changeEditForm({
+        name: 'nickname',
+        value: currentUser.nickname,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'height', value: currentUser.height, reset: true}),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'shoeSize',
+        value: currentUser.shoeSize,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'wingspan',
+        value: currentUser.wingspan,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
+    );
     console.log('프로필 설정 입장');
   }, [dispatch, currentUser, isFocused]);
+
+  function reset() {
+    alert('초기화');
+    dispatch(changeUploadImg(currentUser.image));
+    dispatch(
+      changeEditForm({
+        name: 'nickname',
+        value: currentUser.nickname,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'height', value: currentUser.height, reset: true}),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'shoeSize',
+        value: currentUser.shoeSize,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'wingspan',
+        value: currentUser.wingspan,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
+    );
+    setIsCheckNickname(true);
+  }
 
   // 서브헤더 우측 완료버튼 이벤트
   function onSubmitEdit() {
@@ -157,14 +213,16 @@ function ProfileEditScreen({navigation}) {
             onPress={() => {
               dispatch(changeUploadImg(''));
             }}>
-            <Text style={styles.link}>사진 초기화</Text>
+            <Text style={styles.link}>프로필 사진 제거</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={reset}>
+            <Text style={styles.link}>변경사항 초기화</Text>
           </TouchableOpacity>
 
           <View style={styles.nicknameBox}>
             <Text style={styles.inputText}>닉네임</Text>
             <View style={styles.inputBox}>
               <Input
-                style={styles.input}
                 placeholder={'닉네임을 입력해주세요.'}
                 placeholderTextColor={'#ddd'}
                 width="78%"
@@ -208,6 +266,7 @@ function ProfileEditScreen({navigation}) {
             placeholder={'키를 입력해주세요.'}
             placeholderTextColor={'#ddd'}
             value={editForm.height.value.toString()}
+            maxLength={3}
             type={editForm.height.type}
             onChangeText={value => updateInput('height', value)}
           />
@@ -217,6 +276,7 @@ function ProfileEditScreen({navigation}) {
             placeholder={'신발 사이즈를 입력해주세요.'}
             placeholderTextColor={'#ddd'}
             value={editForm.shoeSize?.value.toString()}
+            maxLength={3}
             type={editForm.shoeSize.type}
             onChangeText={value => updateInput('shoeSize', value)}
           />
@@ -228,6 +288,7 @@ function ProfileEditScreen({navigation}) {
               width="100%"
               placeholderTextColor={'#ddd'}
               value={editForm.wingspan.value.toString()}
+              maxLength={3}
               type={editForm.wingspan.type}
               onChangeText={value => updateInput('wingspan', value)}
             />
@@ -312,6 +373,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     padding: 5,
     height: 74,
+    color: 'black',
   },
   btnGroup: {
     width: '80%',
