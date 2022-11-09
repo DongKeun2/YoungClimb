@@ -312,9 +312,10 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 좋아요
     @Override
-    public Boolean boardLikeCancle(Long boardId, String email) {
+    public BoardLikeDto boardLikeCancle(Long boardId, String email) {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
+        BoardLikeDto boardLikeDto = new BoardLikeDto();
         Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member,2).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
@@ -337,13 +338,20 @@ public class BoardServiceImpl implements BoardService {
                 noticeRepository.save(noticeBuild);
             }
 
-            return true;
+            List<BoardLike> boardLikes = boardLikeRepository.findAllByBoard(board);
+            boardLikeDto.setIsLike(Boolean.TRUE);
+            boardLikeDto.setLike(boardLikes.size());
+
+            return boardLikeDto;
         } else {
             if (board.getMember() != member) {
                 noticeRepository.delete(notice);
             }
             boardLikeRepository.deleteByBoardAndMember(board, member);
-            return false;
+            List<BoardLike> boardLikes = boardLikeRepository.findAllByBoard(board);
+            boardLikeDto.setIsLike(Boolean.FALSE);
+            boardLikeDto.setLike(boardLikes.size());
+            return boardLikeDto;
         }
 
     }
