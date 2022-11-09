@@ -12,6 +12,7 @@ import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -63,7 +64,9 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDto> boardDtos = new ArrayList<>();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
+//        List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
+        Page<Board> boards = boardRepository.findAll(pageable);
+
         for (Board board : boards) {
 
             // 게시글 DTO 세팅
