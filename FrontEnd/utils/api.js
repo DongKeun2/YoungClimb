@@ -38,10 +38,10 @@ const api = {
     PROFILE_URL +
     EDIT_URL +
     `/${data.nickname}` +
-    `/${data.intro}` +
-    `/${data.height}` +
-    `/${data.shoeSize}` +
-    `/${data.wingspan}`,
+    `/${data.intro ? data.intro : ' '}` +
+    `/${data.height ? data.height : ' '}` +
+    `/${data.shoeSize ? data.shoeSize : ' '}` +
+    `/${data.wingspan ? data.wingspan : ' '}`,
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,
