@@ -34,7 +34,12 @@ const api = {
   checkNickname: () => API_BASE_URL + USER_URL + NICKNAME_URL,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   profile: nickname => API_BASE_URL + USER_URL + `/${nickname}`,
-  profileCreate: () => API_BASE_URL + USER_URL + PROFILE_URL,
+  profileCreate: data =>
+    API_BASE_URL +
+    USER_URL +
+    PROFILE_URL +
+    `/${data.intro ? data.intro : ' '}` +
+    `/${data.nickname}`,
   profileEdit: data =>
     API_BASE_URL +
     USER_URL +

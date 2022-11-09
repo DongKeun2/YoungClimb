@@ -179,7 +179,7 @@ function BoardTab({navigation}) {
                 label="선택 없음"
                 value=""
               />
-              {centerInfo.map((item, idx) => (
+              {centerInfo?.map((item, idx) => (
                 <Picker.Item
                   key={idx}
                   style={styles.pickerLabel}

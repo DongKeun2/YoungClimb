@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -10,13 +10,7 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 
 import Input from '../../components/Input';
-import {
-  changeSignupForm,
-  checkEmail,
-  checkNickname,
-  changeIsCheckTerms,
-  signup,
-} from '../../utils/slices/AccountsSlice';
+import {changeSignupForm, signup} from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
 

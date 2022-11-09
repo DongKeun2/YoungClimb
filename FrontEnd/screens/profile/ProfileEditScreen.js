@@ -151,11 +151,8 @@ function ProfileEditScreen({navigation}) {
       alert('닉네임을 확인해주세요.');
       return;
     }
-    console.log('저장된 uri', imageUri?.assets[0]);
     const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
-
-    console.log(type);
     const uri = imageUri?.assets[0]?.uri.replace(/\r?\n?/g, '').trim();
 
     let formData = new FormData();
@@ -165,6 +162,7 @@ function ProfileEditScreen({navigation}) {
       name: imageUri?.assets[0]?.fileName,
       type: type,
     };
+    formData.append('file', imgFile);
 
     const data = {
       nickname: editForm.nickname.value,
@@ -174,12 +172,10 @@ function ProfileEditScreen({navigation}) {
       wingspan: editForm.wingspan.value,
     };
 
-    formData.append(
-      'key',
-      new Blob([JSON.stringify(data)], {type: 'application/json'}),
-    );
-
-    formData.append('file', imgFile);
+    // formData.append(
+    //   'key',
+    //   new Blob([JSON.stringify(data)], {type: 'application/json'}),
+    // );
 
     dispatch(profileEdit({data, formData}));
   }
@@ -215,9 +211,6 @@ function ProfileEditScreen({navigation}) {
               dispatch(changeUploadImg(''));
             }}>
             <Text style={styles.link}>프로필 사진 제거</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={reset}>
-            <Text style={styles.link}>변경사항 초기화</Text>
           </TouchableOpacity>
 
           <View style={styles.nicknameBox}>
@@ -308,6 +301,9 @@ function ProfileEditScreen({navigation}) {
               </TouchableOpacity>
             </View>
           </View>
+          <TouchableOpacity style={styles.logout} onPress={reset}>
+            <Text style={styles.link}>변경사항 초기화</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.logout}
             onPress={() => dispatch(logout())}>
@@ -429,7 +425,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   logout: {
-    marginVertical: 30,
+    marginTop: 20,
   },
   inputForm: {
     width: '80%',

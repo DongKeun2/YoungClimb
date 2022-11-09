@@ -45,7 +45,7 @@ const checkEmail = createAsyncThunk(
   async (data, {rejectWithValue}) => {
     console.log('이메일 확인', data);
     try {
-      const res = await axios.post(api.checkEmail(), data, getConfig());
+      const res = await axios.post(api.checkEmail(), data, {});
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -83,18 +83,23 @@ const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
 
 const profileCreate = createAsyncThunk(
   'profileCreate',
-  async (formdata, {rejectWithValue}) => {
+  async ({data, formdata}, {rejectWithValue}) => {
     console.log('회원가입 후 프로필, 자기소개 입력', formdata);
 
-    const headers = {
-      'content-type': 'multipart/form-data',
-    };
     try {
-      const res = await axios.post(api.profileCreate(), formdata, headers);
-      console.log('프로필 입력 성공', res.data);
+      const res = await axios({
+        method: 'POST',
+        url: api.profileCreate(data),
+        data: formdata,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: await getHeader(),
+        },
+      });
+      console.log('프로필 생성 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('프로필 입력 실패', err);
+      console.log('프로필 생성 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -104,9 +109,14 @@ const profileEdit = createAsyncThunk(
   'profileEdit',
   async ({data, formData}, {rejectWithValue}) => {
     try {
-      const res = await axios.post(api.profileEdit(data), formData, {
+      console.log('요청 url', api.profileEdit(data));
+      console.log(formData);
+      const res = await axios({
+        method: 'POST',
+        url: api.profileEdit(data),
+        data: formData,
         headers: {
-          contentType: 'multipart/form-data',
+          'Content-Type': 'multipart/form-data',
           Authorization: await getHeader(),
         },
       });
@@ -299,13 +309,16 @@ export const AccountsSlice = createSlice({
       state.loginState = false;
     },
     [signup.fulfilled]: (state, action) => {
+      state.currentUser = action.payload.user;
       console.log('회원가입 성공');
     },
     [signup.rejected]: (state, action) => {
       console.log('회원가입 실패');
     },
     [checkEmail.fulfilled]: (state, action) => {
-      console.log(action.payload);
+      if (action.payload === false) {
+        alert('사용 불가능한 이메일입니다.');
+      }
       state.isCheckEmail = action.payload;
     },
     [checkEmail.rejected]: (state, action) => {
@@ -313,6 +326,9 @@ export const AccountsSlice = createSlice({
       console.log(action.payload);
     },
     [checkNickname.fulfilled]: (state, action) => {
+      if (action.payload === false) {
+        alert('사용 불가능한 닉네임입니다.');
+      }
       state.isCheckNickname = action.payload;
     },
     [checkNickname.rejected]: (state, action) => {
