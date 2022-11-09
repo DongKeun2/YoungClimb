@@ -104,7 +104,7 @@ public class MemberController {
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
     @PostMapping(value = "/profile/edit",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> editProfile(@RequestPart(value = "memberInfo", required = false) MemberInfo memberInfo, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> editProfile(@RequestPart(value = "key", required = false) MemberInfo memberInfo, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
         System.out.println(memberInfo);
         System.out.println(file);
         try {
