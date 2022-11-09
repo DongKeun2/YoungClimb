@@ -11,9 +11,6 @@ import java.time.LocalDateTime;
 public class CommentCreate {
 
     Long boardId;
-
-    Long memberId;
-
     String content;
 
     Long paraentId;
