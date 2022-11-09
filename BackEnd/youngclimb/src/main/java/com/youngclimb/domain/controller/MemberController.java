@@ -9,6 +9,7 @@ import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -102,7 +103,7 @@ public class MemberController {
     }
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
-    @PostMapping("/profile/edit")
+    @PostMapping(value = "/profile/edit",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> editProfile(@RequestPart(value = "memberInfo", required = false) MemberInfo memberInfo, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
         System.out.println(memberInfo);
         System.out.println(file);
