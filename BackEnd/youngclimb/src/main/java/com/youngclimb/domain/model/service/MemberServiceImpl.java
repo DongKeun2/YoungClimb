@@ -80,6 +80,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = Member.builder()
+                .memberProfileImg("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png")
                 .email(joinMember.getEmail())
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
@@ -97,9 +98,14 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo user = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
                 .height(member.getHeight())
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
+                .rank("Y1")
+                .exp(0)
+                .expleft(20)
+                .upto(0)
                 .build();
 
         MemberRankExp memberRankExp = MemberRankExp.builder()
@@ -276,11 +282,12 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
+                .image(loginMember.getMemberProfileImg())
                 .height(loginMember.getHeight())
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (expLeft * 100 / memberRankExp.getRank().getQual()))
+                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
