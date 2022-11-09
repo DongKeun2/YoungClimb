@@ -20,6 +20,9 @@ const EDIT_URL = '/edit';
 
 const BOARD_URL = '/board';
 const DETAIL_URL = '/detail';
+const HOME_URL = '/home';
+const LIKE_URL = '/like';
+const SCRAP_URL = '/scrap';
 
 const api = {
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
@@ -43,7 +46,11 @@ const api = {
   search: () => API_BASE_URL + SEARCH_URL + BOARD_URL,
   detail: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DETAIL_URL,
 
+  homeFeed: pageNumber => API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,
+  feedComment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}`,
   postAdd: () => API_BASE_URL + BOARD_URL,
+  feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
+  feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
 };
 
 export default api;
