@@ -144,7 +144,7 @@ function BoardTab({navigation}) {
       };
       dispatch(search(data)).then(() => {
         navigation.navigate('검색 결과', {
-          center: centerInfo[center - 1].name,
+          center: centerInfo[center - 1]?.name,
           wall,
           level,
           holdColor,

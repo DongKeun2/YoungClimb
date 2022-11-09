@@ -22,7 +22,7 @@ const followSubmit = createAsyncThunk(
   async (nickname, {rejectWithValue}) => {
     console.log(nickname, '를 팔로우');
     try {
-      const res = await axios.post(api.follow(nickname), {}, getConfig());
+      const res = await axios.post(api.follow(nickname), {}, await getConfig());
       console.log('팔로우 성공');
       console.log(res.data);
       return res.data;
@@ -38,7 +38,7 @@ const fetchFollowList = createAsyncThunk(
   async (nickname, {rejectWithValue}) => {
     console.log('팔로우 정보 요청', nickname);
     try {
-      const res = await axios.get(api.follow(nickname), getConfig());
+      const res = await axios.get(api.follow(nickname), await getConfig());
       console.log('팔로우 목록 결과', res.data);
       return res.data;
     } catch (err) {

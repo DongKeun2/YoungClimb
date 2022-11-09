@@ -1,6 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../api';
+import getConfig from '../headers';
 // import getConfig from '../headers';
 
 const postAdd = createAsyncThunk('post', async (data, {rejectWithValue}) => {
@@ -12,7 +13,23 @@ const postAdd = createAsyncThunk('post', async (data, {rejectWithValue}) => {
   }
 });
 
+const fetchDetail = createAsyncThunk(
+  'fetchDetail',
+  async (boardId, {rejectWithValue}) => {
+    console.log('게시글 상세 요청 보냄');
+    try {
+      const res = await axios.get(api.detail(boardId), await getConfig());
+      console.log('게시글 요청 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('게시글 요청 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
+  boardInfo: {},
   postInfo: {
     media: null,
     centerId: null,
@@ -45,10 +62,13 @@ export const PostSlice = createSlice({
     [postAdd.rejected]: state => {
       console.log('실패');
     },
+    [fetchDetail.fulfilled]: (state, action) => {
+      state.boardInfo = action.payload;
+    },
   },
 });
 
-export {postAdd};
+export {postAdd, fetchDetail};
 
 export const {changeUploadVideo, changeUploadVideoUri} = PostSlice.actions;
 
