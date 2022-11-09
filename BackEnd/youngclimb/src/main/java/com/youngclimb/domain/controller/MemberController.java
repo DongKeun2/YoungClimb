@@ -34,7 +34,7 @@ public class MemberController {
     @PostMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestBody MemberEmail email) {
         try {
-            if(email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
+            if (email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -46,7 +46,7 @@ public class MemberController {
     @PostMapping("/nickname")
     public ResponseEntity<?> checkNickname(@RequestBody MemberNickname nickname) {
         try {
-            if(nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
+            if (nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -91,9 +91,14 @@ public class MemberController {
 
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
-    @PostMapping("/profile")
-    public ResponseEntity<?> addProfile(@RequestPart(value = "memberInfo") MemberProfile memberProfile, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    @PostMapping("/profile/{intro}/{nickname}")
+    public ResponseEntity<?> addProfile(@PathVariable String intro, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+        if (intro.isBlank()) intro = null;
 
+        MemberProfile memberProfile = MemberProfile.builder()
+                .intro(intro)
+                .build();
+        System.out.println(memberProfile);
         try {
             memberService.addProfile(principal.getUsername(), memberProfile, file);
             return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
@@ -101,14 +106,25 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
-    @PostMapping(value = "/profile/edit",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> editProfile(@RequestPart(value = "memberInfo", required = false) MemberInfo memberInfo, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        System.out.println(memberInfo);
-        System.out.println(file);
+    @PostMapping("/profile/edit/{intro}/{height}/{shoeSize}/{wingspan}/{nickname}")
+    public ResponseEntity<?> editProfile(@PathVariable String intro, @PathVariable Integer height, @PathVariable Integer shoeSize, @PathVariable Integer wingspan, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+        if (intro.isBlank()) intro = null;
+        if (height.equals(0)) height = null;
+        if (shoeSize.equals(0)) shoeSize = null;
+        if (wingspan.equals(0)) wingspan = null;
+
+        MemberInfo memberInfo = MemberInfo.builder()
+                .nickname(nickname)
+                .intro(intro)
+                .height(height)
+                .shoeSize(shoeSize)
+                .wingspan(wingspan)
+                .build();
         try {
-//            memberService.editProfile(principal.getUsername(), memberInfo, file);
+            memberService.editProfile(principal.getUsername(), memberInfo, file);
             return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -116,11 +132,10 @@ public class MemberController {
     }
 
 
-
     // 로그아웃
     @ApiOperation(value = "logout: 로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout( @CurrentUser UserPrincipal principal, HttpServletRequest request) {
+    public ResponseEntity<?> logout(@CurrentUser UserPrincipal principal, HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7);
         memberService.logout(principal.getUsername(), accessToken);
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
