@@ -101,6 +101,7 @@ public class Member {
         if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
         if (memberInfo.getIntro() != null) this.profileContent = memberInfo.getIntro();
         if (memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
+        this.wingheight = this.height + this.wingspan;
 
 
         return this;
@@ -109,7 +110,7 @@ public class Member {
     // 프로필 사진 넣기
     public Member updateMemberImg(MemberProfile memberProfile) {
 
-        if (memberProfile.getIntro() != null) this.profileContent = memberProfile.intro;
+        if (memberProfile.getIntro() != null) this.profileContent = null;
         if (memberProfile.getImage() != null) this.memberProfileImg = memberProfile.image;
 
         return this;
