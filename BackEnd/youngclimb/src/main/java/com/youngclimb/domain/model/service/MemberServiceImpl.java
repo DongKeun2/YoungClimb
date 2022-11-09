@@ -170,6 +170,7 @@ public class MemberServiceImpl implements MemberService {
     public void editProfile(String email, MemberInfo memberInfo, @Nullable MultipartFile file) throws Exception {
         System.out.println(memberInfo);
 
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
