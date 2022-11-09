@@ -3,11 +3,6 @@ import axios from 'axios';
 import api from '../api';
 import getConfig from '../headers';
 
-import example1 from '../../assets/image/profile/example1.png';
-import example2 from '../../assets/image/profile/example2.png';
-import example3 from '../../assets/image/profile/example3.png';
-import example4 from '../../assets/image/profile/example4.png';
-
 const fetchUser = createAsyncThunk(
   'fetchUser',
   async (arg, {rejectWithValue}) => {

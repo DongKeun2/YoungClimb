@@ -7,6 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -93,44 +94,41 @@ function ProfileEditScreen({navigation}) {
       alert('닉네임을 확인해주세요.');
       return;
     }
-    console.log('저장된 uri', imageUri.assets[0].uri);
+    console.log('저장된 uri', imageUri?.assets[0]);
     const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
 
-    console.log(match);
     console.log(type);
+    const uri = imageUri?.assets[0]?.uri.replace(/\r?\n?/g, '').trim();
 
-    const formdata = new FormData();
-    formdata.append('file', {
-      uri: imageUri?.assets[0]?.uri,
+    let formData = new FormData();
+
+    const imgFile = {
+      uri: uri,
       name: imageUri?.assets[0]?.fileName,
-      type,
-    });
+      type: type,
+    };
 
-    const data = new Blob(
-      [
-        JSON.stringify({
-          email: currentUser.email,
-          nickname: editForm.intro.value,
-          intro: editForm.intro.value,
-          height: editForm.height.value,
-          shoeSize: editForm.shoeSize.value,
-          wingspan: editForm.wingspan.value,
-        }),
-      ],
-      {type: 'application/json'},
+    const data = {
+      nickname: editForm.nickname.value,
+      intro: editForm.intro.value,
+      heigh: editForm.height.value,
+      shoeSize: editForm.shoeSize.value,
+      wingspan: editForm.wingspan.value,
+    };
+
+    formData.append(
+      'key',
+      new Blob([JSON.stringify(data)], {type: 'application/json'}),
     );
 
-    console.log('유저 정보', currentUser);
+    formData.append('file', imgFile);
 
-    formdata.append('memberInfo', data);
-    dispatch(profileEdit(formdata)).then(() => {
-      console.log('저장된 uri', imageUri?.assets[0]?.filename);
-    });
+    dispatch(profileEdit({data, formData}));
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <>
       <CustomSubHeader
         rightTitle="완료"
         isProfile={true}
@@ -138,104 +136,119 @@ function ProfileEditScreen({navigation}) {
         navigation={navigation}
         request={onSubmitEdit}
       />
-      <View style={styles.inputContainer}>
-        {imageUri ? (
-          <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
-        ) : (
+      <ScrollView style={styles.container}>
+        <View style={styles.inputContainer}>
           <TouchableOpacity onPress={selectProfile}>
-            <Image source={avatar} />
+            {imageUri ? (
+              <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
+            ) : (
+              <UserAvatar
+                source={{
+                  uri: 'https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png',
+                }}
+                size={100}
+              />
+            )}
           </TouchableOpacity>
-        )}
-        <TouchableOpacity onPress={selectProfile}>
-          <Text style={styles.link}>프로필 사진 변경</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={selectProfile}>
+            <Text style={styles.link}>프로필 사진 변경</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(changeUploadImg(''));
+            }}>
+            <Text style={styles.link}>사진 초기화</Text>
+          </TouchableOpacity>
 
-        <View style={styles.nicknameBox}>
-          <Text style={styles.inputText}>닉네임</Text>
-          <View style={styles.inputBox}>
-            <Input
-              style={styles.input}
-              placeholder={'닉네임을 입력해주세요.'}
+          <View style={styles.nicknameBox}>
+            <Text style={styles.inputText}>닉네임</Text>
+            <View style={styles.inputBox}>
+              <Input
+                style={styles.input}
+                placeholder={'닉네임을 입력해주세요.'}
+                placeholderTextColor={'#ddd'}
+                width="78%"
+                value={editForm.nickname.value}
+                type={editForm.nickname.type}
+                onChangeText={value => updateInput('nickname', value)}
+              />
+              <CheckButton
+                type="nickname"
+                onPress={onCheckNickname}
+                buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
+                borderColor={!isCheckNickname && '#F34D7F'}
+                title={
+                  isCheckNickname ? (
+                    <Image source={checkIcon} />
+                  ) : (
+                    <Text style={styles.checkTitle}>확인</Text>
+                  )
+                }
+              />
+            </View>
+          </View>
+
+          <View style={styles.introBox}>
+            <Text style={styles.introText}>소개</Text>
+            <TextInput
+              style={styles.introInput}
+              placeholder={'소개를 작성해주세요 :)'}
               placeholderTextColor={'#ddd'}
-              width="78%"
-              value={editForm.nickname.value}
-              type={editForm.nickname.type}
-              onChangeText={value => updateInput('nickname', value)}
-            />
-            <CheckButton
-              type="nickname"
-              onPress={onCheckNickname}
-              buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
-              borderColor={!isCheckNickname && '#F34D7F'}
-              title={
-                isCheckNickname ? (
-                  <Image source={checkIcon} />
-                ) : (
-                  <Text style={styles.checkTitle}>확인</Text>
-                )
-              }
+              multiline={true}
+              textAlignVertical="top"
+              onChangeText={value => updateInput('intro', value)}
             />
           </View>
         </View>
 
-        <View style={styles.introBox}>
-          <Text style={styles.introText}>소개</Text>
-          <TextInput
-            style={styles.introInput}
-            placeholder={'소개를 작성해주세요 :)'}
-            placeholderTextColor={'#ddd'}
-            multiline={true}
-            textAlignVertical="top"
-            onChangeText={value => updateInput('intro', value)}
-          />
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputText}>키 (cm)</Text>
-        <Input
-          style={styles.input}
-          placeholder={'키를 입력해주세요.'}
-          placeholderTextColor={'#ddd'}
-          value={editForm.height.value.toString()}
-          type={editForm.height.type}
-          onChangeText={value => updateInput('height', value)}
-        />
-        <Text style={styles.inputText}>신발 사이즈 (mm)</Text>
-        <Input
-          style={styles.input}
-          placeholder={'신발 사이즈를 입력해주세요.'}
-          placeholderTextColor={'#ddd'}
-          value={editForm.shoeSize?.value.toString()}
-          type={editForm.shoeSize.type}
-          onChangeText={value => updateInput('shoeSize', value)}
-        />
-        <Text style={styles.inputText}>윙스팬 (cm)</Text>
-        <View style={styles.inputBox}>
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputText}>키 (cm)</Text>
           <Input
             style={styles.input}
-            placeholder={'윙스팬을 입력해주세요.'}
-            width="100%"
+            placeholder={'키를 입력해주세요.'}
             placeholderTextColor={'#ddd'}
-            value={editForm.wingspan.value.toString()}
-            type={editForm.wingspan.type}
-            onChangeText={value => updateInput('wingspan', value)}
+            value={editForm.height.value.toString()}
+            type={editForm.height.type}
+            onChangeText={value => updateInput('height', value)}
           />
+          <Text style={styles.inputText}>신발 사이즈 (mm)</Text>
+          <Input
+            style={styles.input}
+            placeholder={'신발 사이즈를 입력해주세요.'}
+            placeholderTextColor={'#ddd'}
+            value={editForm.shoeSize?.value.toString()}
+            type={editForm.shoeSize.type}
+            onChangeText={value => updateInput('shoeSize', value)}
+          />
+          <Text style={styles.inputText}>윙스팬 (cm)</Text>
+          <View style={styles.inputBox}>
+            <Input
+              style={styles.input}
+              placeholder={'윙스팬을 입력해주세요.'}
+              width="100%"
+              placeholderTextColor={'#ddd'}
+              value={editForm.wingspan.value.toString()}
+              type={editForm.wingspan.type}
+              onChangeText={value => updateInput('wingspan', value)}
+            />
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('윙스팬', {
+                  height: editForm.height.value,
+                  type: 'edit',
+                })
+              }>
+              <Image source={camera} style={styles.cameraIcon} />
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('윙스팬', {
-                height: editForm.height.value,
-                type: 'edit',
-              })
-            }>
-            <Image source={camera} style={styles.cameraIcon} />
+            style={styles.logout}
+            onPress={() => dispatch(logout())}>
+            <Text style={styles.link}>로그아웃</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      <TouchableOpacity onPress={() => dispatch(logout())}>
-        <Text style={styles.link}>로그아웃</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      </ScrollView>
+    </>
   );
 }
 
@@ -260,8 +273,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
   },
   title: {
     fontSize: 20,
@@ -317,6 +328,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   link: {
+    marginTop: 10,
     color: '#F34D7F',
   },
   checkBtn: {
@@ -341,6 +353,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 10,
     color: 'black',
+  },
+  logout: {
+    marginBottom: 30,
   },
 });
 

@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../api';
-import getConfig from '../headers';
+import getConfig, {getHeader} from '../headers';
 
 import {
   setAccessToken,
@@ -87,7 +87,7 @@ const profileCreate = createAsyncThunk(
     console.log('회원가입 후 프로필, 자기소개 입력', formdata);
 
     const headers = {
-      'Content-Type': 'multipart/form-data',
+      'content-type': 'multipart/form-data',
     };
     try {
       const res = await axios.post(api.profileCreate(), formdata, headers);
@@ -102,23 +102,28 @@ const profileCreate = createAsyncThunk(
 
 const profileEdit = createAsyncThunk(
   'profileEdit',
-  async (formdata, {rejectWithValue}) => {
-    console.log('수정 신청', formdata);
-    const header = {
-      'Content-Type': 'multipart/form-data; boundary=someArbitraryUniqueString',
-    };
+  async ({data, formData}, {rejectWithValue}) => {
     try {
-      const res = await axios({
-        method: 'post',
-        url: api.profileEdit(),
-        data: formdata,
-        headers: header,
+      const res = await axios.post(api.profileEdit(data), formData, {
+        headers: {
+          contentType: 'multipart/form-data',
+          Authorization: await getHeader(),
+        },
       });
+      // const res = await axios.post(api.profileEdit(), formData, {
+      //   headers: {
+      //     contentType: 'multipart/form-data',
+      //   },
+      //   transformRequest: (formData, headers) => {
+      //     console.log('hi', formData);
+      //     return formData;
+      //   },
+      // });
       alert('수정 완료');
       console.log('프로필 입력 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('수정 실패', err);
+      console.log('수정 실패  ', err);
       return rejectWithValue(err.response.data);
     }
   },

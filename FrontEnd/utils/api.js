@@ -1,3 +1,4 @@
+// const API_BASE_URL = 'http://10.0.2.2:8080';
 const API_BASE_URL = 'https://k7a701.p.ssafy.io/api';
 const WINGSPAN_URL = 'http://k7a701.p.ssafy.io:8000/api/wingspan/';
 
@@ -31,7 +32,16 @@ const api = {
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   profile: nickname => API_BASE_URL + USER_URL + `/${nickname}`,
   profileCreate: () => API_BASE_URL + USER_URL + PROFILE_URL,
-  profileEdit: () => API_BASE_URL + USER_URL + PROFILE_URL + EDIT_URL,
+  profileEdit: data =>
+    API_BASE_URL +
+    USER_URL +
+    PROFILE_URL +
+    EDIT_URL +
+    `/${data.nickname}` +
+    `/${data.intro}` +
+    `/${data.height}` +
+    `/${data.shoeSize}` +
+    `/${data.wingspan}`,
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,
