@@ -24,6 +24,8 @@ public class BoardCreate {
                 .content(content)
                 .createdDateTime(LocalDateTime.now())
                 .solvedDate(solvedDate)
+                .boardView(Long.valueOf(0))
+                .isDelete(0)
                 .build();
     }
 }
