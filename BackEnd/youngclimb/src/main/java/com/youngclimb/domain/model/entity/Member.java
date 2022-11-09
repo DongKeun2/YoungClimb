@@ -95,6 +95,7 @@ public class Member {
     // 프로필 수정
     public Member updateProfile(MemberInfo memberInfo) {
 
+        this.profileContent = memberInfo.getIntro();
         if (memberInfo.getNickname() != null) this.nickname = memberInfo.getNickname();
         if (memberInfo.getHeight() != null) this.height = memberInfo.getHeight();
         if (memberInfo.getWingspan() != null) this.wingspan = memberInfo.getWingspan();
