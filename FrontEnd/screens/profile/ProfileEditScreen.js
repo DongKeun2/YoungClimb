@@ -81,7 +81,6 @@ function ProfileEditScreen({navigation}) {
 
   const isFocused = useIsFocused();
   useEffect(() => {
-    dispatch(changeUploadImg(currentUser.image));
     dispatch(
       changeEditForm({
         name: 'nickname',
@@ -114,7 +113,7 @@ function ProfileEditScreen({navigation}) {
 
   function reset() {
     alert('초기화');
-    dispatch(changeUploadImg(currentUser.image));
+
     dispatch(
       changeEditForm({
         name: 'nickname',
@@ -192,8 +191,15 @@ function ProfileEditScreen({navigation}) {
       <ScrollView style={styles.container}>
         <View style={styles.inputContainer}>
           <TouchableOpacity onPress={selectProfile}>
-            {imageUri ? (
+            {imageUri?.assets[0] ? (
               <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
+            ) : currentUser?.image ? (
+              <UserAvatar
+                source={{
+                  uri: 'https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png',
+                }}
+                size={100}
+              />
             ) : (
               <UserAvatar
                 source={{
