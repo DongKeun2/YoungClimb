@@ -48,6 +48,19 @@ const fetchFollowList = createAsyncThunk(
   },
 );
 
+const checkNickname = createAsyncThunk(
+  'checkNickname',
+  async (data, {rejectWithValue}) => {
+    console.log('닉네임 확인', data);
+    try {
+      const res = await axios.post(api.checkNickname(), data, {});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   profileInfo: {},
   followInfo: {
@@ -79,7 +92,7 @@ export const ProfileSlice = createSlice({
   },
 });
 
-export {profile, followSubmit, fetchFollowList};
+export {profile, followSubmit, fetchFollowList, checkNickname};
 
 export const {setIsOpen, setIsClose, changeUploadImg} = ProfileSlice.actions;
 

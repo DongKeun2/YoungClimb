@@ -87,6 +87,7 @@ function UptoInfo({rank, upto}) {
   return (
     <View style={styles.iconBox}>
       {count.map(item => {
+        console.log('랭크', rank);
         if (item <= upto) {
           return (
             <View key={item} style={styles.subIcon}>

@@ -4,13 +4,11 @@ import {
   StyleSheet,
   View,
   Text,
-  Image,
   TouchableOpacity,
   TextInput,
   Dimensions,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {CommonActions} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import {
@@ -20,7 +18,6 @@ import {
 import CustomButton from '../../components/CustomBtn';
 import UserAvatar from '../../components/UserAvatar';
 
-import avatar from '../../assets/image/profile/avatar.png';
 import {getCurrentUser} from '../../utils/Token';
 
 const windowHeight = Dimensions.get('window').height;
@@ -30,6 +27,7 @@ function SuccessScreen({navigation}) {
 
   const [imageUri, setImageUri] = useState(undefined);
   const [intro, setIntro] = useState('');
+  const currentUser = useSelector(state => state.accounts.currentUser);
 
   const SelectProfile = () => {
     launchImageLibrary(
@@ -52,35 +50,31 @@ function SuccessScreen({navigation}) {
   };
 
   function onSubmitProfile(isSkip) {
-    const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.filename ?? '');
+    const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
+    const uri = imageUri?.assets[0]?.uri.replace(/\r?\n?/g, '').trim();
 
-    const formdata = new FormData();
-    formdata.append('image', {
-      uri: imageUri?.assets[0]?.uri,
-      name: imageUri?.assets[0]?.filename,
-      type,
-    });
+    let formData = new FormData();
 
-    // 임시 이메일로 설정
+    const imgFile = {
+      uri: uri,
+      name: imageUri?.assets[0]?.fileName,
+      type: type,
+    };
+    formData.append('file', imgFile);
 
     const data = {
       intro,
-      email: 'test1@young.climb',
+      nickname: currentUser.nickname,
     };
 
-    formdata.append(
-      'data',
-      new Blob([JSON.stringify(data)], {
-        type: 'application/json',
-      }),
-    );
     if (!isSkip) {
-      dispatch(profileCreate(formdata))
+      dispatch(profileCreate({data, formData}))
         .then(res => {
           // 스토어에 회원정보 입력 후 로그인 처리
-          getCurrentUser().then(currentUser =>
-            dispatch(fetchCurrentUser(currentUser)),
+          getCurrentUser().then(
+            currentUser => dispatch(fetchCurrentUser(currentUser)),
+            alert('성공요'),
           );
         })
         .catch(alert('실패요'));
@@ -100,7 +94,12 @@ function SuccessScreen({navigation}) {
           <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
         ) : (
           <TouchableOpacity onPress={SelectProfile}>
-            <Image source={avatar} />
+            <UserAvatar
+              source={{
+                uri: 'https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png',
+              }}
+              size={100}
+            />
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={SelectProfile}>
