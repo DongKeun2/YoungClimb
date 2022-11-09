@@ -105,7 +105,7 @@ public class BoardController {
     @PostMapping("/{boardId}/like")
     public ResponseEntity<?> boardLikeCancle(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            return new ResponseEntity<Boolean>(boardService.boardLikeCancle(boardId, principal.getUsername()), HttpStatus.OK);
+            return new ResponseEntity<BoardLikeDto>(boardService.boardLikeCancle(boardId, principal.getUsername()), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
