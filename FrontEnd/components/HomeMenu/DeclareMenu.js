@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, BackHandler } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, BackHandler, Alert } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
+import axios from 'axios'
+import api from '../../utils/api'
+import { getAccessToken } from '../../utils/Token'
+import getConfig from '../../utils/headers'
 
-const DeclareMenu = ({navigation,focusedContent}) => {
+const DeclareMenu = ({navigation,focusedContent,setModalVisible}) => {
   const [selected, setSelected] = useState(0)
   const [declareList, setDeclareList] = useState([
     { id: 1,
@@ -59,8 +63,49 @@ const DeclareMenu = ({navigation,focusedContent}) => {
   }
 
 
-  const onSubmit = () => {
+  const onSubmit =async () => {
     // axios 요청
+    try{
+      const res = await axios.post(api.report(focusedContent.id), {content:selected}, await getConfig())
+      if (res.data) {
+        
+        Alert.alert('신고 완료','해당 게시물이 성공적으로 신고되었습니다.',
+        [
+          {
+            text: 'ok',
+            onPress:() => {
+              setModalVisible(false)
+            },
+          },
+        ],
+        { cancelable: false },
+        )
+      }
+      else if (!res.data) {
+        Alert.alert('신고 실패','이미 신고한 게시물입니다.',
+        [
+          {
+            text: 'ok',
+            onPress:() => {
+              setModalVisible(false)
+            },
+          },
+        ],
+        { cancelable: false },
+        )
+      }
+    }catch{err=>
+      Alert.alert('신고 실패','유효하지 않은 요청입니다.',
+      [
+        {
+          text: 'ok',
+          onPress:() => {
+            setModalVisible(false)
+          },
+        },
+      ],
+      { cancelable: false },
+      )}
   }
   
   return (

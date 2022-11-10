@@ -3,13 +3,10 @@ import {
 	View,
 	Text,
 	TouchableOpacity,
-	BackHandler,
-	FlatList,
 	StyleSheet,
 	Image,
 	Linking
 } from 'react-native'
-import { useFocusEffect } from '@react-navigation/native';
 import { ScrollView } from 'react-native-gesture-handler';
 import CustomSubHeader from '../../components/CustomSubHeader';
 import ImgRollPic from '../../assets/image/map/ImgRollPic.svg'

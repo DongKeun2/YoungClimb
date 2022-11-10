@@ -19,15 +19,13 @@ const MenuMain = (props) => {
   const {parentnavigation, navigation, focusedContent, setModalVisible} = props
   
   useFocusEffect(()=>{
-    console.log(parentnavigation, navigation)
     BackHandler.removeEventListener('hardwareBackPress')
     const backAction = ()=>{
       setModalVisible(false)
       return true
     }
     const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction);
-    return() =>{backHandler.remove()
-      console.log('아웃');}
+    return() =>{backHandler.remove();}
   })
 
   return (

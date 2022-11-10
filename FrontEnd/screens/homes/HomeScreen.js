@@ -65,7 +65,7 @@ function HomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    dispatch(fetchHomeFeed(1));
+    dispatch(fetchHomeFeed(2));
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');
