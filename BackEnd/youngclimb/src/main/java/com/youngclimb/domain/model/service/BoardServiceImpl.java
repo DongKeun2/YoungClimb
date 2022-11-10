@@ -218,8 +218,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 동영상 저장
     @Override
-    public void saveImage(MultipartFile file) {
-        // 이미지 저장하기
+    public String saveImage(MultipartFile file) {
         if (file != null) {
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -230,14 +229,16 @@ public class BoardServiceImpl implements BoardService {
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
+            return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
         }
+
     }
 
     // 게시글 작성
     @Override
-    public void writeBoard(String email, BoardCreate boardCreate, MultipartFile file) {
+    public void writeBoard(String email, BoardCreate boardCreate) {
 
         // 게시글 저장하기
         Board board = boardCreate.toBoard();
@@ -256,21 +257,27 @@ public class BoardServiceImpl implements BoardService {
                 .build();
         categoryRepository.save(category);
 
-        // 이미지 저장하기
-        if (!file.isEmpty()) {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-            }
-            BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
-                    .build();
-            boardMediaRepository.save(boardMedia);
-        }
+//        // 이미지 저장하기
+//        if (!file.isEmpty()) {
+//            String fileName = createFileName(file.getOriginalFilename());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
+//            try (InputStream inputStream = file.getInputStream()) {
+//                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+//            } catch (IOException e) {
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+//            }
+//            BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
+//                    .build();
+//            boardMediaRepository.save(boardMedia);
+//        }
+
+        BoardMedia boardMedia = BoardMedia.builder()
+                .board(board).mediaPath(boardCreate.getMediaPath())
+                .build();
+
+        boardMediaRepository.save(boardMedia);
 
         // 유저 경험치 등급 저장하기
         // 게시물에서 등급 받아오기
