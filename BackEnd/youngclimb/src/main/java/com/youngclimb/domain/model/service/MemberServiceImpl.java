@@ -145,7 +145,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void addProfile(String email, MemberProfile memberProfile) throws Exception {
 
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 
 //        Member member = memberRepository.findByEmail(memberProfile.getEmail())
 //                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
