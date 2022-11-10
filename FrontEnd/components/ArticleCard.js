@@ -14,7 +14,7 @@ function ArticleCard({article, type}) {
       {type === 'search' ? (
         <View style={styles.createUserInfo}>
           <UserAvatar source={{uri: article.createUser.image}} size={20} />
-          <Text style={styles.text}>{article.createUser.nickname}</Text>
+          <Text style={styles.name}>{article.createUser.nickname}</Text>
           <HoldIcon
             width={15}
             height={15}
@@ -75,6 +75,10 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
+  },
+  name: {
+    color: 'black',
+    marginLeft: 5,
   },
   createUserInfo: {
     padding: 3,

@@ -87,8 +87,6 @@ function ProfileScreen({navigation, route}) {
   const boards = useSelector(state => state.profile.profileInfo?.boards);
   const scraps = useSelector(state => state.profile.profileInfo?.scraps);
 
-  const [params, setParams] = useState(route.params);
-
   const isFocused = useIsFocused();
   // YC에서 initialparams 지정
 
@@ -125,8 +123,8 @@ function ProfileScreen({navigation, route}) {
                     </Text>
                     <Text style={[styles.text, styles.profileSize]}>
                       {userInfo?.gender === 'M' ? '남성' : '여성'}{' '}
-                      {userInfo?.height ? `${userInfo.height}cm` : null}
-                      {userInfo?.shoeSize ? `${userInfo.shoeSize}mm` : null}
+                      {userInfo?.height ? `${userInfo.height}cm` : null}{' '}
+                      {userInfo?.shoeSize ? `${userInfo.shoeSize}mm` : null}{' '}
                       {userInfo?.wingspan
                         ? `윙스팬 ${userInfo.wingspan}cm`
                         : null}
