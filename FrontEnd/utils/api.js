@@ -23,6 +23,9 @@ const BOARD_URL = '/board';
 const HOME_URL = '/home';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
+
+const REELS_URL = '/reels';
+
 const REPORT_URL = '/report';
 
 const api = {
@@ -66,6 +69,8 @@ const api = {
   postAdd: () => API_BASE_URL + BOARD_URL,
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
+
+  reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
   report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
 };

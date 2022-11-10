@@ -123,6 +123,20 @@ const scrapBoard = createAsyncThunk(
   },
 );
 
+const fetchReels = createAsyncThunk(
+  'fetchReels',
+  async (pageNumber, {rejectWithValue}) => {
+    try {
+      const res = await axios.get(api.homeFeed(pageNumber), await getConfig());
+      console.log('릴스 요청 성공', res.data.length, res.data);
+      return res.data;
+    } catch (err) {
+      console.log('릴스 요청 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: [],
   boardInfoComment: {},
@@ -130,6 +144,7 @@ const initialState = {
   commentInfo: {},
   uploadVideo: null,
   uploadVideoUri: null,
+  reels: [],
 };
 
 export const PostSlice = createSlice({
@@ -167,6 +182,9 @@ export const PostSlice = createSlice({
     [scrapBoard.fulfilled]: (state, action) => {
       state.boardInfo.isScrap = action.payload;
     },
+    [fetchReels.fulfilled]: (state, action) => {
+      state.reels = action.payload;
+    },
   },
 });
 
@@ -179,6 +197,7 @@ export {
   fetchDetail,
   likeBoard,
   scrapBoard,
+  fetchReels,
 };
 
 export const {changeUploadVideo, changeUploadVideoUri} = PostSlice.actions;
