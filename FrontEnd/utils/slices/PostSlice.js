@@ -106,6 +106,23 @@ const likeBoard = createAsyncThunk(
   },
 );
 
+const scrapBoard = createAsyncThunk(
+  'scrapBoard',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.feedScrap(boardId),
+        {},
+        await getConfig(),
+      );
+      console.log('스크랩 성공', res.data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: [],
   boardInfoComment: {},
@@ -147,6 +164,9 @@ export const PostSlice = createSlice({
       state.boardInfo.isLiked = action.payload.isLike;
       state.boardInfo.like = action.payload.like;
     },
+    [scrapBoard.fulfilled]: (state, action) => {
+      state.boardInfo.isScrap = action.payload;
+    },
   },
 });
 
@@ -158,6 +178,7 @@ export {
   feedScrapSubmit,
   fetchDetail,
   likeBoard,
+  scrapBoard,
 };
 
 export const {changeUploadVideo, changeUploadVideoUri} = PostSlice.actions;

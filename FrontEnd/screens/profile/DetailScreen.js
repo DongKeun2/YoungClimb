@@ -18,7 +18,7 @@ import DeclareSheet from '../../components/DeclareSheet';
 import Comment from '../../components/Comment';
 
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
-import {fetchDetail, likeBoard} from '../../utils/slices/PostSlice';
+import {fetchDetail, likeBoard, scrapBoard} from '../../utils/slices/PostSlice';
 
 import avatar from '../../assets/image/initial/background.png';
 import MenuIcon from '../../assets/image/feed/menuIcon.svg';
@@ -75,6 +75,10 @@ function DetailScreen({navigation, route}) {
 
   function onClickHeart() {
     dispatch(likeBoard(route.params.id));
+  }
+
+  function onClickScrap() {
+    dispatch(scrapBoard(route.params.id));
   }
 
   return (
@@ -179,15 +183,13 @@ function DetailScreen({navigation, route}) {
                     {feed.like} 명이 좋아합니다.
                   </Text>
                 </View>
-                {feed.isScrap ? (
-                  <TouchableOpacity onPress={() => null}>
+                <TouchableOpacity onPress={onClickScrap}>
+                  {feed.isScrap ? (
                     <FillScrap style={{marginRight: 5}} />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity onPress={() => null}>
+                  ) : (
                     <EmptyScrap style={{marginRight: 5}} />
-                  </TouchableOpacity>
-                )}
+                  )}
+                </TouchableOpacity>
               </View>
               <View style={styles.iconText}>
                 <EyeIcon style={{marginRight: 5}} />
