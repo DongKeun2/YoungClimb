@@ -36,8 +36,9 @@ function ArticleCard({article, type}) {
       </View>
       <View style={styles.InfoBox}>
         <View style={styles.cardInfo}>
-          <Text style={styles.text}>{article.centerName}</Text>
-          <Text style={styles.text}>{article.wallName}</Text>
+          <Text style={styles.text}>
+            {article.centerName} {article.wallName}
+          </Text>
         </View>
         <View style={styles.cardInfo}>
           <Text style={styles.text}>[{article.difficulty}]</Text>

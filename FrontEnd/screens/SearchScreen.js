@@ -126,6 +126,7 @@ function BoardTab({navigation}) {
   const [wall, setWall] = useState('');
   const [level, setLevel] = useState('');
   const [holdColor, setHoldColor] = useState('');
+  const [wallName, setWallName] = useState('');
 
   function onSubmitSearch() {
     if (!center) {
@@ -144,6 +145,7 @@ function BoardTab({navigation}) {
           wall,
           level,
           holdColor,
+          wallName,
         });
       });
     }
@@ -203,7 +205,10 @@ function BoardTab({navigation}) {
                   ? styles.picker
                   : styles.nonePick
               }
-              onValueChange={(value, idx) => setWall(value)}>
+              onValueChange={(value, idx) => {
+                setWallName(centerInfo[center - 1].wallList[idx - 1].name);
+                setWall(value);
+              }}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
                 label={

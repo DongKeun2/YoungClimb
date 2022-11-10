@@ -10,7 +10,7 @@ import levelColorInfo from '../assets/info/CenterInfo';
 
 function SearchResultScreen({navigation, route}) {
   const center = route.params.center;
-  const wall = route.params.wall;
+  const wallName = route.params.wallName;
   const level = levelColorInfo[route.params.level - 1]?.color;
   const holdColor = route.params.holdColor;
   const boards = useSelector(state => state.search.boards);
@@ -18,15 +18,14 @@ function SearchResultScreen({navigation, route}) {
   return (
     <>
       <CustomSubHeader title="검색 결과" navigation={navigation} />
+      <View style={styles.filterBox}>
+        <Text style={styles.text}>
+          {center} {wallName}
+        </Text>
+        {level ? <LevelLabel color={level} /> : null}
+        {holdColor ? <HoldLabel color={holdColor} /> : null}
+      </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>
-        <View style={styles.filterBox}>
-          <Text style={styles.text}>
-            {center} {wall}
-          </Text>
-          {level ? <LevelLabel color={level} /> : null}
-          {holdColor ? <HoldLabel color={holdColor} /> : null}
-        </View>
-
         <View>
           {boards.length ? (
             <CardList boards={boards} navigation={navigation} />
@@ -84,7 +83,10 @@ const styles = StyleSheet.create({
   filterBox: {
     display: 'flex',
     flexDirection: 'row',
-    marginBottom: 20,
+    width: '100%',
+    backgroundColor: 'white',
+    paddingLeft: 30,
+    paddingBottom: 10,
   },
   articleContainer: {
     width: '100%',
