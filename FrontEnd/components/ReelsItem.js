@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {
   Dimensions,
@@ -25,19 +26,53 @@ import CommentIcon from '../assets/image/reels/commentIcon.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
+import {feedLikeSubmit, feedScrapSubmit} from '../utils/slices/PostSlice';
+
 function ReelsItem({item, navigation, isViewable, viewHeight}) {
+  const dispatch = useDispatch();
+
   const bottomTabBarHeight = useBottomTabBarHeight();
   const [isMuted, setIsMuted] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likePress, setLikePress] = useState(false);
+  const [isScrap, setIsScrap] = useState(false);
+  const [scrapPress, setScrapPress] = useState(false);
 
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
+
+  useEffect(() => {
+    setIsLiked(item.isLiked);
+    setIsScrap(item.isScrap);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
       return () => setIsMuted(true);
     }, []),
   );
+
+  const reelsLike = id => {
+    setLikePress(true);
+    dispatch(feedLikeSubmit(id))
+      .then(() => {
+        setIsLiked(!isLiked);
+        setLikePress(false);
+      })
+      .catch(() => setLikePress(false));
+  };
+
+  const reelsScrap = id => {
+    console.log('눌림');
+    setScrapPress(true);
+    dispatch(feedScrapSubmit(id))
+      .then(() => {
+        setIsScrap(!isScrap);
+        setScrapPress(false);
+      })
+      .catch(() => setScrapPress(false));
+  };
 
   return (
     <View
@@ -108,28 +143,28 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
       </View>
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
-        {item.isLiked ? (
-          <TouchableOpacity onPress={() => null}>
+        <TouchableOpacity
+          onPress={() => reelsLike(item.id)}
+          disabled={likePress}>
+          {isLiked ? (
             <FillHeart width={28} height={28} style={{marginBottom: 10}} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => null}>
+          ) : (
             <WhiteHeart width={28} height={28} style={{marginBottom: 10}} />
-          </TouchableOpacity>
-        )}
-        {item.isScrap ? (
-          <TouchableOpacity onPress={() => null}>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => reelsScrap(item.id)}
+          disabled={scrapPress}>
+          {isScrap ? (
             <FillScrap
               width={30}
               height={30}
               style={{marginBottom: 12, marginLeft: -0.8}}
             />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => null}>
+          ) : (
             <WhiteScrap width={28} height={28} style={{marginBottom: 12}} />
-          </TouchableOpacity>
-        )}
+          )}
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => null}>
           <CommentIcon width={26} height={24} style={{marginLeft: 0.5}} />
         </TouchableOpacity>
