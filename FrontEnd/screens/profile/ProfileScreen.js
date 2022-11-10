@@ -132,7 +132,11 @@ function ProfileScreen({navigation, route}) {
                   </View>
                 </View>
 
-                <FollowBtn follow={follow} nickname={userInfo?.nickname} />
+                <FollowBtn
+                  type="profile"
+                  follow={follow}
+                  nickname={userInfo?.nickname}
+                />
               </View>
 
               <View style={styles.introBox}>

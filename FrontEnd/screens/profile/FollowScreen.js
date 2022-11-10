@@ -83,6 +83,7 @@ function FollowScreen({navigation, route}) {
 
       <FollowList
         follows={type === 'following' ? followings : followers}
+        type={type}
         keyword={keyword}
         navigation={navigation}
       />
@@ -90,7 +91,7 @@ function FollowScreen({navigation, route}) {
   );
 }
 
-function FollowList({follows, keyword, navigation}) {
+function FollowList({follows, keyword, navigation, type}) {
   const searchResult = follows.filter(follow =>
     follow.nickname.includes(keyword),
   );
@@ -98,13 +99,22 @@ function FollowList({follows, keyword, navigation}) {
   return (
     <View style={styles.followContainer}>
       {searchResult.map((item, i) => {
-        return <FollowItem key={i} item={item} navigation={navigation} />;
+        return (
+          <FollowItem
+            key={i}
+            idx={i}
+            type={type}
+            item={item}
+            navigation={navigation}
+          />
+        );
       })}
     </View>
   );
 }
 
-function FollowItem({item, navigation}) {
+// 팔로우 버튼에 보내주는 follow 정보 api연결해야함 item.follow
+function FollowItem({item, navigation, type, idx}) {
   return (
     <>
       <View style={styles.followItem}>
@@ -120,14 +130,20 @@ function FollowItem({item, navigation}) {
           <View style={styles.profileBox}>
             <Text style={styles.nickname}>{item.nickname}</Text>
             <Text style={styles.text}>
-              {item.gender === 'M' ? '남성' : '여성'}
-              {item.height ? `${item.height}cm` : null}
-              {item.shoeSize ? `${item.shoeSize}mm` : null}
+              {item.gender === 'M' ? '남성' : '여성'}{' '}
+              {item.height ? `${item.height}cm` : null}{' '}
+              {item.shoeSize ? `${item.shoeSize}mm` : null}{' '}
               {item.wingspan ? `윙스팬 ${item.wingspan}cm` : null}
             </Text>
           </View>
         </TouchableOpacity>
-        <FollowBtn isFollow={true} />
+
+        <FollowBtn
+          idx={idx}
+          type={type}
+          follow={item.follow}
+          nickname={item.nickname}
+        />
       </View>
     </>
   );
