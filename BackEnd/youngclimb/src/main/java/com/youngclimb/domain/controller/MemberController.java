@@ -9,9 +9,7 @@ import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,8 +56,6 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginMember member, HttpServletResponse response) throws Exception {
         try {
-            // 헤더에 쿠키 붙이기
-//            response.addHeader("Set-Cookie", "accessToken="+memberService.login(member)+", path=/, MaxAge=7 * 24 * 60 * 60, SameSite=Lax, HttpOnly");
             return new ResponseEntity<LoginResDto>(memberService.login(member), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
