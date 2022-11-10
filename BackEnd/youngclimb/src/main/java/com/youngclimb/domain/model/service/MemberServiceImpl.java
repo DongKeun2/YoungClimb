@@ -406,6 +406,7 @@ public class MemberServiceImpl implements MemberService {
         for (Follow following : followingMembers) {
             Member followingMember = following.getFollowing();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followingMember).orElseThrow();
+            if (user.getMemberId() == followingMember.getMemberId()) continue;
 
             FollowMemberDto myFollowing = new FollowMemberDto();
 
@@ -425,6 +426,8 @@ public class MemberServiceImpl implements MemberService {
             Member followerMember = follower.getFollower();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
 
+            if (user.getMemberId() == followerMember.getMemberId()) continue;
+
             FollowMemberDto myFollower = new FollowMemberDto();
             myFollower.setNickname(followerMember.getNickname());
             myFollower.setGender(followerMember.getGender());
@@ -437,6 +440,8 @@ public class MemberServiceImpl implements MemberService {
 
             followers.add(myFollower);
         }
+
+
 
         followers.sort(new Comparator<FollowMemberDto>() {
             @Override
@@ -455,6 +460,38 @@ public class MemberServiceImpl implements MemberService {
                 return (b - a);
             }
         });
+
+        if (followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), member.getMemberId())) {
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(user).orElseThrow();
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(user.getNickname());
+            myFollowing.setGender(user.getGender());
+            myFollowing.setImage(user.getMemberProfileImg());
+            myFollowing.setHeight(user.getHeight());
+            myFollowing.setWingspan(user.getWingspan());
+            myFollowing.setShoeSize(user.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(false);
+
+            followers.add(0, myFollowing);
+        }
+
+        if (followRepository.existsByFollowerMemberIdAndFollowingMemberId(member.getMemberId(), user.getMemberId())) {
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(user).orElseThrow();
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(user.getNickname());
+            myFollowing.setGender(user.getGender());
+            myFollowing.setImage(user.getMemberProfileImg());
+            myFollowing.setHeight(user.getHeight());
+            myFollowing.setWingspan(user.getWingspan());
+            myFollowing.setShoeSize(user.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(false);
+
+            followings.add(0, myFollowing);
+        }
 
         followMemberList.setFollowers(followers);
         followMemberList.setFollowings(followings);
