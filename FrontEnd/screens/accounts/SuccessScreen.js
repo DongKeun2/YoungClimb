@@ -72,15 +72,13 @@ function SuccessScreen({navigation}) {
     };
 
     if (!isSkip) {
-      dispatch(profileCreate({data, formData, isPhoto}))
-        .then(res => {
-          // 스토어에 회원정보 입력 후 로그인 처리
-          getCurrentUser().then(
-            currentUser => dispatch(fetchCurrentUser(currentUser)),
-            alert('성공요'),
-          );
-        })
-        .catch(alert('프로필 입력에 실패하였습니다.'));
+      dispatch(profileCreate({data, formData, isPhoto})).then(res => {
+        // 스토어에 회원정보 입력 후 로그인 처리
+        getCurrentUser().then(
+          currentUser => dispatch(fetchCurrentUser(currentUser)),
+          alert('성공요'),
+        );
+      });
     } else {
       getCurrentUser().then(currentUser =>
         dispatch(fetchCurrentUser(currentUser)),

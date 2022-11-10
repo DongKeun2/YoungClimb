@@ -43,9 +43,9 @@ function SecondPage({navigation}) {
 
     // 건너뛰기 클릭 시 추가정보 제외하고 회원가입 신청
     if (!isSkip) {
-      data.height = signupForm.height.value;
-      data.shoeSize = signupForm.shoeSize.value;
-      data.wingspan = signupForm.wingspan.value;
+      data.height = signupForm.height.value ? signupForm.height.value : 0;
+      data.shoeSize = signupForm.shoeSize.value ? signupForm.shoeSize.value : 0;
+      data.wingspan = signupForm.wingspan.value ? signupForm.wingspan.value : 0;
     }
 
     dispatch(signup(data)).then(res => {
