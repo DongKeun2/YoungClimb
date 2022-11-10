@@ -76,10 +76,15 @@ public class JwtTokenProvider {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key).build()
                     .parseClaimsJws(accessToken).getBody();
-            System.out.println(claims.toString());
+            
+            if(claims.getExpiration().after(new Date())){
+                throw new ExpiredJwtException(null, claims, "AccessToken이 만료되었습니다");
+            }
+            
             return true;
 
         } catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
+            e.getClaims();
             System.out.println("AccessToken이 만료되었지롱");
             return false;
 
