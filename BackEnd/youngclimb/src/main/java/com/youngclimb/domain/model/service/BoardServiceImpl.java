@@ -65,62 +65,13 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByEmail(email).orElseThrow();
         List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
         for (Board board : boards) {
+            if(board.getIsDelete() != 0) continue;
+            if(board.getMember() == member) continue;
+            if(reportRepository.existsByBoardAndMember(board, member)) continue;
 
-            // 게시글 DTO 세팅
-            BoardDto boardDto = BoardDto.builder()
-                    .id(board.getBoardId())
-                    .solvedDate(board.getSolvedDate())
-                    .content(board.getContent())
-                    .like(boardLikeRepository.countByBoard(board))
-                    .view(boardScrapRepository.countByBoard(board))
-                    .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
-                    .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
-                    .commentNum(commentRepository.countByBoard(board))
-                    .build();
-
-            // 작성 유저 정보 세팅
-            Member writer = board.getMember();
-            CreateMember createUser = CreateMember.builder()
-                    .nickname(writer.getNickname())
-                    .image(writer.getMemberProfileImg())
-                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                    .build();
-
-            boardDto.setCreateUser(createUser);
-
-            LocalDateTime createdTime = board.getCreatedDateTime();
-
-            // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-            if (minus <= 10) {
-                timeText = "방금 전";
-            } else if (minus <= 60) {
-                timeText = minus + "분 전";
-            } else if (minus <= 1440) {
-                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-            }
-
-            boardDto.setCreatedAt(timeText);
-
-            // 게시글 미디어 path 세팅
-            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
-            boardDto.setMediaPath(boardMedia.getMediaPath());
-
-            // 카테고리 정보 세팅
-            Category category = categoryRepository.findByBoard(board).orElseThrow();
-            boardDto.setCenterId(category.getCenter().getId());
-            boardDto.setCenterName(category.getCenter().getName());
-            boardDto.setCenterLevelId(category.getCenterlevel().getId());
-            boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
-            boardDto.setWallId(category.getWall().getId());
-            boardDto.setWallName(category.getWall().getName());
-            boardDto.setDifficulty(category.getDifficulty());
-            boardDto.setHoldColor(category.getHoldColor());
-
+            // 게시글 Dto 세팅
+            BoardDto boardDto = this.startDto(board, member);
+            boardDto.setCreateUser(this.toCreateUser(board, member));
 
             // 댓글 DTO 1개 세팅
             List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
@@ -132,6 +83,7 @@ public class BoardServiceImpl implements BoardService {
                 boardDto.setCommentPreview(commentPreviewDto);
             }
 
+
             // List add
             boardDtos.add(boardDto);
         }
@@ -140,6 +92,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     // 게시글 상세정보
+    @Override
     public BoardDto readBoardDetail(Long boardId, String email) {
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
@@ -381,69 +334,20 @@ public class BoardServiceImpl implements BoardService {
             return boardLikeDto;
         }
 
+
     }
 
     // 게시글 - 댓글 상세보기
     @Override
     public BoardDetailDto readAllComments(Long boardId, String email) {
         BoardDetailDto boardDetailDto = new BoardDetailDto();
-
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
         // 게시글 DTO 세팅
         Board board = boardRepository.findById(boardId).orElseThrow();
-        Member writer = board.getMember();
-//        BoardDto boardDto = board.toBoardDto();
-        BoardDto boardDto = BoardDto.builder()
-                .id(board.getBoardId())
-                .solvedDate(board.getSolvedDate())
-                .content(board.getContent())
-                .like(boardLikeRepository.countByBoard(board))
-                .view(boardScrapRepository.countByBoard(board))
-                .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
-                .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
-                .commentNum(commentRepository.countByBoard(board))
-                .build();
 
-        Category category = categoryRepository.findByBoard(board).orElseThrow();
-        BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
-
-        CreateMember createUser = CreateMember.builder()
-                .nickname(writer.getNickname())
-                .image(writer.getMemberProfileImg())
-                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                .build();
-
-        boardDto.setCreateUser(createUser);
-        boardDto.setCenterId(category.getCenter().getId());
-        boardDto.setCenterName(category.getCenter().getName());
-        boardDto.setCenterLevelId(category.getCenterlevel().getId());
-        boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
-        boardDto.setWallId(category.getWall().getId());
-        boardDto.setWallName(category.getWall().getName());
-        boardDto.setDifficulty(category.getDifficulty());
-        boardDto.setHoldColor(category.getHoldColor());
-        boardDto.setMediaPath(boardMedia.getMediaPath());
-
-
-        // 작성날짜 세팅
-
-        LocalDateTime createdTime = board.getCreatedDateTime();
-        String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-        Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-        if (minus <= 10) {
-            timeText = "방금 전";
-        } else if (minus <= 60) {
-            timeText = minus + "분 전";
-        } else if (minus <= 1440) {
-            timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-        } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-            timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-        }
-
-        boardDto.setCreatedAt(timeText);
-
+        BoardDto boardDto = this.startDto(board, member);
+        boardDto.setCreateUser(this.toCreateUser(board, member));
 
         boardDetailDto.setBoardDto(boardDto);
 
@@ -452,44 +356,19 @@ public class BoardServiceImpl implements BoardService {
         List<CommentDto> commentDtos = new ArrayList<>();
         for (Comment comment : comments) {
 
-            if (comment.getParentId() == 0) {
-                // 댓글 작성자
-                Member cWriter = comment.getMember();
-                CreateMember cCreateMember = CreateMember.builder()
-                        .nickname(cWriter.getNickname())
-                        .image(cWriter.getMemberProfileImg())
-                        .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId()))
-                        .build();
+            CommentDto commentDto = this.toCommentDtos(comment, member);
 
-                // 댓글 세팅
-                CommentDto commentDto = comment.toCommentDto();
-                // 댓글 작성자 세팅
-                commentDto.setUser(cCreateMember);
-                // 댓글 좋아요 여부
-                commentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(comment, member));
+            // 대댓글 세팅
+            List<Comment> reComments = commentRepository.findByParentId(comment.getId());
+            List<CommentDto> reCommentDtos = new ArrayList<>();
+            for (Comment reComment : reComments) {
 
-                // 대댓글 세팅
-                List<Comment> reComments = commentRepository.findByParentId(comment.getId());
-                List<CommentDto> reCommentDtos = new ArrayList<>();
-                for (Comment reComment : reComments) {
-                    Member rcWriter = reComment.getMember();
-                    CreateMember rcCreateMember = CreateMember.builder()
-                            .nickname(rcWriter.getNickname())
-                            .image(rcWriter.getMemberProfileImg())
-                            .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                            .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(rcWriter.getMemberId(), member.getMemberId()))
-                            .build();
-
-                    CommentDto reCommentDto = reComment.toCommentDto();
-                    reCommentDto.setUser(rcCreateMember);
-                    reCommentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(reComment, member));
-                    reCommentDtos.add(reCommentDto);
-                }
-
-                commentDto.setReComment(reCommentDtos);
-                commentDtos.add(commentDto);
+                CommentDto reCommentDto = this.toCommentDtos(reComment, member);
+                reCommentDtos.add(reCommentDto);
             }
+
+            commentDto.setReComment(reCommentDtos);
+            commentDtos.add(commentDto);
         }
         boardDetailDto.setCommentDtos(commentDtos);
 
@@ -510,24 +389,10 @@ public class BoardServiceImpl implements BoardService {
                     .comment(comment)
                     .member(member)
                     .build();
+
             commentLikeRepository.save(commentLike);
-
-            if (comment.getMember() != member) {
-                Notice noticeBuild = Notice.builder()
-                        .type(4)
-                        .toMember(comment.getMember())
-                        .fromMember(member)
-                        .board(comment.getBoard())
-                        .createdDateTime(LocalDateTime.now())
-                        .build();
-                noticeRepository.save(noticeBuild);
-            }
-
             return true;
         } else {
-            if (comment.getMember() != member) {
-                noticeRepository.delete(notice);
-            }
             commentLikeRepository.deleteByCommentAndMember(comment, member);
             return false;
         }
@@ -543,22 +408,9 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-
         comment.setBoard(board);
         comment.setMember(member);
         commentRepository.save(comment);
-
-        // 알림 저장하기
-        if (board.getMember() != member) {
-            Notice noticeBuild = Notice.builder()
-                    .type(3)
-                    .toMember(board.getMember())
-                    .fromMember(member)
-                    .board(board)
-                    .createdDateTime(LocalDateTime.now())
-                    .build();
-            noticeRepository.save(noticeBuild);
-        }
     }
 
     // 대댓글 작성
@@ -572,19 +424,6 @@ public class BoardServiceImpl implements BoardService {
         comment.setMember(member);
         commentRepository.save(comment);
 
-        // 알림 저장하기
-        Comment parentComment = commentRepository.findById(comment.getParentId()).orElseThrow();
-
-        if (parentComment.getMember() != member) {
-            Notice noticeBuild = Notice.builder()
-                    .type(5)
-                    .toMember(parentComment.getMember())
-                    .fromMember(member)
-                    .board(board)
-                    .createdDateTime(LocalDateTime.now())
-                    .build();
-            noticeRepository.save(noticeBuild);
-        }
     }
 
 
@@ -593,97 +432,26 @@ public class BoardServiceImpl implements BoardService {
     public MemberDto getUserInfoByUserId(String userId, String loginEmail) {
 
         Member member = memberRepository.findByNickname(userId).orElseThrow();
-        System.out.println(loginEmail);
         Member loginMember = memberRepository.findByEmail(loginEmail).orElseThrow();
         MemberDto memberDto = new MemberDto();
 
         memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(loginMember.getMemberId(), member.getMemberId()));
-        UserDto userDto = new UserDto();
 
-        userDto.setImage(member.getMemberProfileImg());
-        userDto.setNickname(member.getNickname());
-        userDto.setGender(member.getGender());
-        userDto.setIntro(member.getProfileContent());
-        userDto.setHeight(member.getHeight());
-        userDto.setShoeSize(member.getShoeSize());
-        userDto.setWingspan(member.getWingspan());
-        userDto.setRank(memberRankExpRepository.findByMember(member).orElseThrow().getRank().getName());
-        userDto.setBoardNum(boardRepository.countByMember(member));
-        userDto.setFollowingNum(followRepository.countByFollower(member));
-        userDto.setFollowerNum(followRepository.countByFollowing(member));
-
-        memberDto.setUser(userDto);
+        memberDto.setUser(this.setUserDto(member));
 
         List<Board> boards = boardRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<BoardDto> boardDtos = new ArrayList<>();
 
         for (Board board : boards) {
-
-            // 게시글 DTO 세팅
-            BoardDto boardDto = BoardDto.builder()
-                    .id(board.getBoardId())
-                    .solvedDate(board.getSolvedDate())
-                    .content(board.getContent())
-                    .like(boardLikeRepository.countByBoard(board))
-                    .view(boardScrapRepository.countByBoard(board))
-                    .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
-                    .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
-                    .commentNum(commentRepository.countByBoard(board))
-                    .build();
-
-            // 작성 유저 정보 세팅
-            Member writer = board.getMember();
-            CreateMember createUser = CreateMember.builder()
-                    .nickname(writer.getNickname())
-                    .image(writer.getMemberProfileImg())
-                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                    .build();
-
-            boardDto.setCreateUser(createUser);
-
-            LocalDateTime createdTime = board.getCreatedDateTime();
-
-            // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-            if (minus <= 10) {
-                timeText = "방금 전";
-            } else if (minus <= 60) {
-                timeText = minus + "분 전";
-            } else if (minus <= 1440) {
-                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-            }
-
-            boardDto.setCreatedAt(timeText);
+            if(board.getIsDelete() != 0) continue;
+            // 게시물 Dto 세팅
+            BoardDto boardDto = this.startDto(board, member);
+            boardDto.setCreateUser(this.toCreateUser(board, member));
 
             // 게시글 미디어 path 세팅
             BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
             boardDto.setMediaPath(boardMedia.getMediaPath());
 
-            // 카테고리 정보 세팅
-            Category category = categoryRepository.findByBoard(board).orElseThrow();
-            boardDto.setCenterId(category.getCenter().getId());
-            boardDto.setCenterName(category.getCenter().getName());
-            boardDto.setCenterLevelId(category.getCenterlevel().getId());
-            boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
-            boardDto.setWallId(category.getWall().getId());
-            boardDto.setWallName(category.getWall().getName());
-            boardDto.setDifficulty(category.getDifficulty());
-            boardDto.setHoldColor(category.getHoldColor());
-
-
-            // 댓글 DTO 1개 세팅
-            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
-            if (!comments.isEmpty()) {
-                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                        .nickname(comments.get(0).getMember().getNickname())
-                        .comment(comments.get(0).getContent())
-                        .build();
-                boardDto.setCommentPreview(commentPreviewDto);
-            }
             // List add
             boardDtos.add(boardDto);
         }
@@ -693,72 +461,17 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDto> scrapDtos = new ArrayList<>();
 
         for (BoardScrap scrap : scraps) {
+            if(scrap.getBoard().getIsDelete() != 0) continue;
+            if(scrap.getBoard().getMember() == member) continue;
+            if(reportRepository.existsByBoardAndMember(scrap.getBoard(), member)) continue;
 
-            // 게시글 DTO 세팅
-            BoardDto scrapDto = BoardDto.builder()
-                    .id(scrap.getBoard().getBoardId())
-                    .solvedDate(scrap.getBoard().getSolvedDate())
-                    .content(scrap.getBoard().getContent())
-                    .like(boardLikeRepository.countByBoard(scrap.getBoard()))
-                    .view(boardScrapRepository.countByBoard(scrap.getBoard()))
-                    .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
-                    .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
-                    .commentNum(commentRepository.countByBoard(scrap.getBoard()))
-                    .build();
-
-            // 작성 유저 정보 세팅
-            Member writer = scrap.getBoard().getMember();
-            CreateMember createUser = CreateMember.builder()
-                    .nickname(writer.getNickname())
-                    .image(writer.getMemberProfileImg())
-                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                    .build();
-
-            scrapDto.setCreateUser(createUser);
-
-            LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
-
-            // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-            if (minus <= 10) {
-                timeText = "방금 전";
-            } else if (minus <= 60) {
-                timeText = minus + "분 전";
-            } else if (minus <= 1440) {
-                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-            }
-
-            scrapDto.setCreatedAt(timeText);
+            BoardDto scrapDto = this.startScrapDto(scrap, member);
+            scrapDto.setCreateUser(this.toCreateScrapUser(scrap, member));
 
             // 게시글 미디어 path 세팅
             BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
             scrapDto.setMediaPath(boardMedia.getMediaPath());
 
-            // 카테고리 정보 세팅
-            Category category = categoryRepository.findByBoard(scrap.getBoard()).orElseThrow();
-            scrapDto.setCenterId(category.getCenter().getId());
-            scrapDto.setCenterName(category.getCenter().getName());
-            scrapDto.setCenterLevelId(category.getCenterlevel().getId());
-            scrapDto.setCenterLevelColor(category.getCenterlevel().getColor());
-            scrapDto.setWallId(category.getWall().getId());
-            scrapDto.setWallName(category.getWall().getName());
-            scrapDto.setDifficulty(category.getDifficulty());
-            scrapDto.setHoldColor(category.getHoldColor());
-
-
-            // 댓글 DTO 1개 세팅
-            List<Comment> comments = commentRepository.findAllByBoard(scrap.getBoard(), Sort.by(Sort.Direction.DESC, "createdDatetime"));
-            if (!comments.isEmpty()) {
-                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                        .nickname(comments.get(0).getMember().getNickname())
-                        .comment(comments.get(0).getContent())
-                        .build();
-                scrapDto.setCommentPreview(commentPreviewDto);
-            }
             // List add
             scrapDtos.add(scrapDto);
         }
@@ -824,5 +537,166 @@ public class BoardServiceImpl implements BoardService {
             return Boolean.FALSE;
         }
     }
+
+    // 게시글 DTO 세팅
+    public BoardDto startDto(Board board, Member member) {
+        // 게시글 DTO 초기화
+        BoardDto boardDto = BoardDto.builder()
+                .id(board.getBoardId())
+                .solvedDate(board.getSolvedDate())
+                .content(board.getContent())
+                .like(boardLikeRepository.countByBoard(board))
+                .view(boardScrapRepository.countByBoard(board))
+                .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
+                .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
+                .commentNum(commentRepository.countByBoard(board))
+                .build();
+
+        // 작성날짜 세팅
+        LocalDateTime createdTime = board.getCreatedDateTime();
+
+        String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+        Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+        if (minus <= 10) {
+            timeText = "방금 전";
+        } else if (minus <= 60) {
+            timeText = minus + "분 전";
+        } else if (minus <= 1440) {
+            timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+        } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+            timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+        }
+
+        boardDto.setCreatedAt(timeText);
+
+        // 카테고리 정보 세팅
+        Category category = categoryRepository.findByBoard(board).orElseThrow();
+        boardDto.setCenterId(category.getCenter().getId());
+        boardDto.setCenterName(category.getCenter().getName());
+        boardDto.setCenterLevelId(category.getCenterlevel().getId());
+        boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
+        boardDto.setWallId(category.getWall().getId());
+        boardDto.setWallName(category.getWall().getName());
+        boardDto.setDifficulty(category.getDifficulty());
+        boardDto.setHoldColor(category.getHoldColor());
+
+        return boardDto;
+    }
+
+    // 작성 유저 정보 세팅
+    public CreateMember toCreateUser(Board board, Member member) {
+        Member writer = board.getMember();
+        CreateMember createUser = CreateMember.builder()
+                .nickname(writer.getNickname())
+                .image(writer.getMemberProfileImg())
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
+                .build();
+        return createUser;
+    }
+
+    public CommentDto toCommentDtos(Comment comment, Member member) {
+
+        // 댓글 작성자
+        Member cWriter = comment.getMember();
+        CreateMember cCreateMember = CreateMember.builder()
+                .nickname(cWriter.getNickname())
+                .image(cWriter.getMemberProfileImg())
+                .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId()))
+                .build();
+
+        // 댓글 세팅
+        CommentDto commentDto = comment.toCommentDto();
+        // 댓글 작성자 세팅
+        commentDto.setUser(cCreateMember);
+        // 댓글 좋아요 여부
+        commentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(comment, member));
+
+        return commentDto;
+    }
+
+    public UserDto setUserDto(Member member) {
+        UserDto userDto = new UserDto();
+        userDto.setImage(member.getMemberProfileImg());
+        userDto.setNickname(member.getNickname());
+        userDto.setGender(member.getGender());
+        userDto.setIntro(member.getProfileContent());
+        userDto.setHeight(member.getHeight());
+        userDto.setShoeSize(member.getShoeSize());
+        userDto.setWingspan(member.getWingspan());
+        userDto.setRank(memberRankExpRepository.findByMember(member).orElseThrow().getRank().getName());
+        userDto.setBoardNum(boardRepository.countByMember(member));
+        userDto.setFollowingNum(followRepository.countByFollower(member));
+        userDto.setFollowerNum(followRepository.countByFollowing(member));
+        return userDto;
+    }
+
+    // 스크랩한 글 보여주기
+    public BoardDto startScrapDto(BoardScrap scrap, Member member) {
+        // 게시글 DTO 세팅
+        BoardDto scrapDto = BoardDto.builder()
+                .id(scrap.getBoard().getBoardId())
+                .solvedDate(scrap.getBoard().getSolvedDate())
+                .content(scrap.getBoard().getContent())
+                .like(boardLikeRepository.countByBoard(scrap.getBoard()))
+                .view(boardScrapRepository.countByBoard(scrap.getBoard()))
+                .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
+                .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
+                .commentNum(commentRepository.countByBoard(scrap.getBoard()))
+                .build();
+
+        LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
+
+        // 작성날짜 세팅
+        String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+        Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+        if (minus <= 10) {
+            timeText = "방금 전";
+        } else if (minus <= 60) {
+            timeText = minus + "분 전";
+        } else if (minus <= 1440) {
+            timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+        } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+            timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+        }
+
+        scrapDto.setCreatedAt(timeText);
+
+        // 게시글 미디어 path 세팅
+        BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
+        scrapDto.setMediaPath(boardMedia.getMediaPath());
+
+        // 카테고리 정보 세팅
+        Category category = categoryRepository.findByBoard(scrap.getBoard()).orElseThrow();
+        scrapDto.setCenterId(category.getCenter().getId());
+        scrapDto.setCenterName(category.getCenter().getName());
+        scrapDto.setCenterLevelId(category.getCenterlevel().getId());
+        scrapDto.setCenterLevelColor(category.getCenterlevel().getColor());
+        scrapDto.setWallId(category.getWall().getId());
+        scrapDto.setWallName(category.getWall().getName());
+        scrapDto.setDifficulty(category.getDifficulty());
+        scrapDto.setHoldColor(category.getHoldColor());
+
+        return scrapDto;
+    }
+
+    // 스크랩한 글 작성자 정보
+    // 작성 유저 정보 세팅
+    public CreateMember toCreateScrapUser(BoardScrap scrap, Member member) {
+        // 작성 유저 정보 세팅
+        Member writer = scrap.getBoard().getMember();
+        CreateMember createUser = CreateMember.builder()
+                .nickname(writer.getNickname())
+                .image(writer.getMemberProfileImg())
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
+                .build();
+        return createUser;
+    }
+
+
+
+
 
 }
