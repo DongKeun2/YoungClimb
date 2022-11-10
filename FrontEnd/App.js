@@ -20,11 +20,6 @@ export default function App() {
   //   //  remoteMessage.notification 메시지와 함께 보내진 추가 데이터
   //   //  remoteMessage.sentTime 보낸시간
   //   });
-
-  useEffect(()=>{
-    const token = getFcmToken()
-    console.log(token)
-  },[])
   
   return (
     <Provider store={store}>

@@ -32,7 +32,6 @@ import ActiveSearchIcon from '../assets/image/tab/activeSearch.svg';
 import ActiveProfileIcon from '../assets/image/tab/activeProfile.svg';
 
 import {
-  getAccessToken,
   getCurrentUser,
   removeAccessToken,
   removeCurrentUser,
@@ -40,7 +39,7 @@ import {
 import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
 import {fetchCenterInfo} from '../utils/slices/CenterSlice';
 
-import {requestPermission,StartPer, requestSinglePermission, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
+import {StartPer, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -91,7 +90,11 @@ export default function YoungClimb() {
       } catch (err){console.log(err)}
     }
     callRes()
-    
+    if(!login){
+
+    } else{
+      
+    }
 
 },[]);
 
