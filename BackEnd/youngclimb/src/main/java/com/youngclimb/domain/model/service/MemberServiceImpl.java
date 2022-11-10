@@ -143,29 +143,31 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 추가
     @Override
-    public void addProfile(String email, MemberProfile memberProfile, MultipartFile file) throws Exception {
+    public void addProfile(String email, MemberProfile memberProfile) throws Exception {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
 
 //        Member member = memberRepository.findByEmail(memberProfile.getEmail())
 //                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
 
-        // 프로필 사진 s3 저장
-        if (file == null) {
+//        // 프로필 사진 s3 저장
+//        if (file == null) {
+//            memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
+//        } else {
+//            String fileName = createFileName(file.getOriginalFilename());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
+//            System.out.println(fileName);
+//            try (InputStream inputStream = file.getInputStream()) {
+////                amazonS3.putObject(bucket+"/userProfile", fileName, inputStream, objectMetadata);
+//                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+//                memberProfile.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
+//            } catch (IOException e) {
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+//            }
+        if (memberProfile.getImage() == "") {
             memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
-        } else {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            System.out.println(fileName);
-            try (InputStream inputStream = file.getInputStream()) {
-//                amazonS3.putObject(bucket+"/userProfile", fileName, inputStream, objectMetadata);
-                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-                memberProfile.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-            }
         }
 
         // 프로필 수정
@@ -175,30 +177,33 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 수정
     @Override
-    public void editProfile(String email, MemberInfo memberInfo, @Nullable MultipartFile file) throws Exception {
+    public void editProfile(String email, MemberInfo memberInfo) throws Exception {
         System.out.println(memberInfo);
 
 
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
 //                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 
-        // 프로필 사진 s3 저장
-        if (file == null) {
-            System.out.println("사진이 없습니다.");
-        } else {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            System.out.println(fileName);
-            try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-                memberInfo.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-            }
+//        // 프로필 사진 s3 저장
+//        if (file == null) {
+//            System.out.println("사진이 없습니다.");
+//        } else {
+//            String fileName = createFileName(file.getOriginalFilename());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
+//            System.out.println(fileName);
+//            try (InputStream inputStream = file.getInputStream()) {
+//                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+//                memberInfo.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
+//            } catch (IOException e) {
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+//            }
+//        }
+
+        if (memberInfo.getImage() == "") {
+            memberInfo.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
         }
         member.updateProfile(memberInfo);
         memberRepository.save(member);
@@ -442,12 +447,11 @@ public class MemberServiceImpl implements MemberService {
         }
 
 
-
         followers.sort(new Comparator<FollowMemberDto>() {
             @Override
             public int compare(FollowMemberDto o1, FollowMemberDto o2) {
-                Integer a = (o1.getFollow())?1:0;
-                Integer b = (o2.getFollow())?1:0;
+                Integer a = (o1.getFollow()) ? 1 : 0;
+                Integer b = (o2.getFollow()) ? 1 : 0;
                 return (b - a);
             }
         });
@@ -455,8 +459,8 @@ public class MemberServiceImpl implements MemberService {
         followings.sort(new Comparator<FollowMemberDto>() {
             @Override
             public int compare(FollowMemberDto o1, FollowMemberDto o2) {
-                Integer a = (o1.getFollow())?1:0;
-                Integer b = (o2.getFollow())?1:0;
+                Integer a = (o1.getFollow()) ? 1 : 0;
+                Integer b = (o2.getFollow()) ? 1 : 0;
                 return (b - a);
             }
         });

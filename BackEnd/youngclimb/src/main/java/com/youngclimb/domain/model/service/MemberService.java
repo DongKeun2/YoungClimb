@@ -17,9 +17,9 @@ public interface MemberService {
     // 신체 정보 추가
 //    public void addBodyInfo(MemberInfo memberInfo) throws Exception;
     // 프로필 추가
-    public void addProfile(String email, MemberProfile memberProfile, MultipartFile file) throws Exception;
+    public void addProfile(String email, MemberProfile memberProfile) throws Exception;
     // 프로필 변경
-    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception;
+    public void editProfile(String email, MemberInfo memberInfo) throws Exception;
     // 사용자 비밀번호 검증
     public void verifyUser(String email, String password);
     // 비밀번호 수정
