@@ -13,6 +13,7 @@ import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -60,34 +61,115 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 읽기
     @Override
     public List<BoardDto> readAllBoard(String email, Pageable pageable) {
+        // 최종 Dto List
         List<BoardDto> boardDtos = new ArrayList<>();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
-        for (Board board : boards) {
-            if(board.getIsDelete() != 0) continue;
-            if(board.getMember() == member) continue;
-            if(reportRepository.existsByBoardAndMember(board, member)) continue;
+        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
+        Slice<Board> oldBoards = boardRepository.findAllByCreatedDateTimeBeforeOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
+
+        List<BoardDto> recentFollowrBoardDtos = new ArrayList<>();
+        List<BoardDto> recentOtherBoardDtos = new ArrayList<>();
+
+//        List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
+
+
+
+        // 2주 이내 게시글
+        for (Board board : recentBoards) {
+            if (board.getIsDelete() != 0) continue;
+            if (reportRepository.existsByBoardAndMember(board, member)) continue;
+
+            // 팔로우한 경우
+            if (followRepository.existsByFollowerAndFollowing(member, board.getMember())) {
+
+                // 게시글 Dto 세팅
+                BoardDto boardDto = this.startDto(board, member);
+                boardDto.setCreateUser(this.toCreateUser(board, member));
+
+                // 댓글 DTO 1개 세팅
+                List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+                if (!comments.isEmpty()) {
+                    for(Comment comment : comments) {
+                        if(comment.getParentId() == 0) {
+                            CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                                    .nickname(comment.getMember().getNickname())
+                                    .comment(comment.getContent())
+                                    .build();
+                            boardDto.setCommentPreview(commentPreviewDto);
+                            break;
+                        }
+                    }
+                }
+
+                // List add
+                recentFollowrBoardDtos.add(boardDto);
+            }
+            // 팔로우하지 않은 경우
+            else {
+                System.out.println("여기가 문제야");
+                System.out.println(board.getMember().getNickname());
+                if (board.getMember() == member) continue;
+                System.out.println("저기가 문제야");
+                // 게시글 Dto 세팅
+                BoardDto boardDto = this.startDto(board, member);
+                boardDto.setCreateUser(this.toCreateUser(board, member));
+
+                // 댓글 DTO 1개 세팅
+                List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+                if (!comments.isEmpty()) {
+                    for(Comment comment : comments) {
+                        if(comment.getParentId() == 0) {
+                            CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                                    .nickname(comment.getMember().getNickname())
+                                    .comment(comment.getContent())
+                                    .build();
+                            boardDto.setCommentPreview(commentPreviewDto);
+                            break;
+                        }
+                    }
+                }
+
+                // List add
+                recentOtherBoardDtos.add(boardDto);
+            }
+        }
+
+        boardDtos.addAll(recentFollowrBoardDtos);
+        boardDtos.addAll(recentOtherBoardDtos);
+
+        // 2주 이후 게시글
+
+        for (Board board : oldBoards) {
+            if (board.getIsDelete() != 0) continue;
+            if (board.getMember() == member) continue;
+            if (reportRepository.existsByBoardAndMember(board, member)) continue;
 
             // 게시글 Dto 세팅
             BoardDto boardDto = this.startDto(board, member);
             boardDto.setCreateUser(this.toCreateUser(board, member));
 
+            // 게시글 미디어 path 세팅
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+            boardDto.setMediaPath(boardMedia.getMediaPath());
+
             // 댓글 DTO 1개 세팅
             List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
             if (!comments.isEmpty()) {
-                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                        .nickname(comments.get(0).getMember().getNickname())
-                        .comment(comments.get(0).getContent())
-                        .build();
-                boardDto.setCommentPreview(commentPreviewDto);
+                for(Comment comment : comments) {
+                    if(comment.getParentId() == 0) {
+                        CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                                .nickname(comment.getMember().getNickname())
+                                .comment(comment.getContent())
+                                .build();
+                        boardDto.setCommentPreview(commentPreviewDto);
+                        break;
+                    }
+                }
             }
-
-
             // List add
-            boardDtos.add(boardDto);
+            recentOtherBoardDtos.add(boardDto);
         }
-
         return boardDtos;
     }
 
@@ -158,18 +240,21 @@ public class BoardServiceImpl implements BoardService {
         // 댓글 DTO 1개 세팅
         List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
         if (!comments.isEmpty()) {
-            CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                    .nickname(comments.get(0).getMember().getNickname())
-                    .comment(comments.get(0).getContent())
-                    .build();
-            boardDto.setCommentPreview(commentPreviewDto);
+            for(Comment comment : comments) {
+                if(comment.getParentId() == 0) {
+                    CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+                            .nickname(comment.getMember().getNickname())
+                            .comment(comment.getContent())
+                            .build();
+                    boardDto.setCommentPreview(commentPreviewDto);
+                    break;
+                }
+            }
         }
 
 
         return boardDto;
     }
-
-
 
 
     // 게시글 작성
@@ -237,10 +322,7 @@ public class BoardServiceImpl implements BoardService {
                 break;
             }
         }
-
         memberRankExpRepository.save(memberExp);
-
-
     }
 
     @Override
@@ -272,7 +354,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
         BoardLikeDto boardLikeDto = new BoardLikeDto();
-        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member,2).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member, 2).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
@@ -331,20 +413,21 @@ public class BoardServiceImpl implements BoardService {
         List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
         List<CommentDto> commentDtos = new ArrayList<>();
         for (Comment comment : comments) {
+            if(comment.getParentId() == 0) {
+                CommentDto commentDto = this.toCommentDtos(comment, member);
 
-            CommentDto commentDto = this.toCommentDtos(comment, member);
+                // 대댓글 세팅
+                List<Comment> reComments = commentRepository.findByParentId(comment.getId());
+                List<CommentDto> reCommentDtos = new ArrayList<>();
+                for (Comment reComment : reComments) {
 
-            // 대댓글 세팅
-            List<Comment> reComments = commentRepository.findByParentId(comment.getId());
-            List<CommentDto> reCommentDtos = new ArrayList<>();
-            for (Comment reComment : reComments) {
+                    CommentDto reCommentDto = this.toCommentDtos(reComment, member);
+                    reCommentDtos.add(reCommentDto);
+                }
 
-                CommentDto reCommentDto = this.toCommentDtos(reComment, member);
-                reCommentDtos.add(reCommentDto);
+                commentDto.setReComment(reCommentDtos);
+                commentDtos.add(commentDto);
             }
-
-            commentDto.setReComment(reCommentDtos);
-            commentDtos.add(commentDto);
         }
         boardDetailDto.setCommentDtos(commentDtos);
 
@@ -356,6 +439,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(comment.getMember(), member,4).orElse(null);
 
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
@@ -366,8 +450,24 @@ public class BoardServiceImpl implements BoardService {
                     .build();
 
             commentLikeRepository.save(commentLike);
+
+            if (comment.getMember() != member) {
+                Notice noticeBuild = Notice.builder()
+                        .type(4)
+                        .toMember(comment.getMember())
+                        .fromMember(member)
+                        .board(comment.getBoard())
+                        .createdDateTime(LocalDateTime.now())
+                        .build();
+                noticeRepository.save(noticeBuild);
+            }
             return true;
         } else {
+
+            if (comment.getMember() != member) {
+                noticeRepository.delete(notice);
+            }
+
             commentLikeRepository.deleteByCommentAndMember(comment, member);
             return false;
         }
@@ -386,6 +486,19 @@ public class BoardServiceImpl implements BoardService {
         comment.setBoard(board);
         comment.setMember(member);
         commentRepository.save(comment);
+
+        // 알림 저장하기
+        if (board.getMember() != member) {
+            Notice noticeBuild = Notice.builder()
+                    .type(3)
+                    .toMember(board.getMember())
+                    .fromMember(member)
+                    .board(board)
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
+            noticeRepository.save(noticeBuild);
+        }
+
     }
 
     // 대댓글 작성
@@ -398,6 +511,19 @@ public class BoardServiceImpl implements BoardService {
         comment.setBoard(board);
         comment.setMember(member);
         commentRepository.save(comment);
+
+        // 알림 저장하기
+        if (comment.getMember() != member) {
+            Notice noticeBuild = Notice.builder()
+                    .type(5)
+                    .toMember(comment.getMember())
+                    .fromMember(member)
+                    .board(board)
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
+            noticeRepository.save(noticeBuild);
+        }
+
 
     }
 
@@ -418,7 +544,7 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDto> boardDtos = new ArrayList<>();
 
         for (Board board : boards) {
-            if(board.getIsDelete() != 0) continue;
+            if (board.getIsDelete() != 0) continue;
             // 게시물 Dto 세팅
             BoardDto boardDto = this.startDto(board, member);
             boardDto.setCreateUser(this.toCreateUser(board, member));
@@ -436,9 +562,9 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDto> scrapDtos = new ArrayList<>();
 
         for (BoardScrap scrap : scraps) {
-            if(scrap.getBoard().getIsDelete() != 0) continue;
-            if(scrap.getBoard().getMember() == member) continue;
-            if(reportRepository.existsByBoardAndMember(scrap.getBoard(), member)) continue;
+            if (scrap.getBoard().getIsDelete() != 0) continue;
+            if (scrap.getBoard().getMember() == member) continue;
+            if (reportRepository.existsByBoardAndMember(scrap.getBoard(), member)) continue;
 
             BoardDto scrapDto = this.startScrapDto(scrap, member);
             scrapDto.setCreateUser(this.toCreateScrapUser(scrap, member));
@@ -521,7 +647,7 @@ public class BoardServiceImpl implements BoardService {
                 .solvedDate(board.getSolvedDate())
                 .content(board.getContent())
                 .like(boardLikeRepository.countByBoard(board))
-                .view(boardScrapRepository.countByBoard(board))
+                .view(board.getBoardView())
                 .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
                 .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
                 .commentNum(commentRepository.countByBoard(board))
@@ -541,7 +667,9 @@ public class BoardServiceImpl implements BoardService {
         } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
             timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
         }
-
+        System.out.println(createdTime);
+        System.out.println(LocalDateTime.now());
+        System.out.println(minus);
         boardDto.setCreatedAt(timeText);
 
         // 카테고리 정보 세팅
@@ -615,7 +743,7 @@ public class BoardServiceImpl implements BoardService {
                 .solvedDate(scrap.getBoard().getSolvedDate())
                 .content(scrap.getBoard().getContent())
                 .like(boardLikeRepository.countByBoard(scrap.getBoard()))
-                .view(boardScrapRepository.countByBoard(scrap.getBoard()))
+                .view(scrap.getBoard().getBoardView())
                 .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
                 .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
                 .commentNum(commentRepository.countByBoard(scrap.getBoard()))
@@ -669,9 +797,6 @@ public class BoardServiceImpl implements BoardService {
                 .build();
         return createUser;
     }
-
-
-
 
 
 }
