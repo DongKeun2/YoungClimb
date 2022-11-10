@@ -130,10 +130,6 @@ function BoardTab({navigation}) {
   function onSubmitSearch() {
     if (!center) {
       return alert('지점을 선택해주세요');
-    } else if (!level) {
-      return alert('난이도를 선택해주세요.');
-    } else if (!holdColor) {
-      return alert('홀드 색상을 선택해주세요.');
     } else {
       const data = {
         center,
@@ -169,7 +165,8 @@ function BoardTab({navigation}) {
           </Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
+              dropdownIconRippleColor="#F34D7F" // 드롭다운 버튼 클릭시 테두리 색깔
               dropdownIconColor="black"
               selectedValue={center}
               style={center ? styles.picker : styles.nonePick}
@@ -195,15 +192,27 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>구역</Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={wall}
-              enabled={center ? true : false}
-              style={wall ? styles.picker : styles.nonePick}
+              enabled={
+                center && centerInfo[center - 1]?.wallList.length ? true : false
+              }
+              style={
+                wall && centerInfo[center - 1]?.wallList.length
+                  ? styles.picker
+                  : styles.nonePick
+              }
               onValueChange={(value, idx) => setWall(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
+                label={
+                  center
+                    ? centerInfo[center - 1]?.wallList.length
+                      ? '선택 없음'
+                      : '해당 지점 선택 불가'
+                    : '지점을 먼저 선택해주세요'
+                }
                 value=""
               />
               {center
@@ -221,17 +230,14 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>
-            난이도<Text style={{color: '#F34D7F'}}> *</Text>
-          </Text>
+          <Text style={styles.text}>난이도</Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={level}
               enabled={center ? true : false}
               style={level ? styles.picker : styles.nonePick}
-              itemStyle={styles.item}
               onValueChange={(value, idx) => setLevel(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
@@ -243,7 +249,7 @@ function BoardTab({navigation}) {
                     <Picker.Item
                       key={idx}
                       style={styles.pickerLabel}
-                      label={item.color}
+                      label={`${item.color} (${item.levelRank})`}
                       value={item.id}
                     />
                   ))
@@ -253,12 +259,10 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>
-            홀드 색상<Text style={{color: '#F34D7F'}}> *</Text>
-          </Text>
+          <Text style={styles.text}>홀드 색상</Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={holdColor}
               enabled={center ? true : false}
@@ -311,7 +315,12 @@ function BoardTab({navigation}) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={onSubmitSearch} style={styles.button}>
+      <TouchableOpacity
+        onPress={center ? onSubmitSearch : null}
+        style={[
+          styles.button,
+          {backgroundColor: center ? '#F34D7F' : '#C4C4C4'},
+        ]}>
         <SearchBtnIcon />
         <Text style={styles.btnText}>검색</Text>
       </TouchableOpacity>
@@ -488,6 +497,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginVertical: 8,
   },
   textBox: {},
   text: {
@@ -495,35 +505,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   pickerItem: {
-    width: '70%',
-    borderBottomWidth: 1,
+    width: '80%',
+    borderBottomWidth: 0.2,
     borderColor: 'black',
   },
   picker: {
     width: '100%',
     color: 'black',
+    backgroundColor: 'white',
   },
   nonePick: {
+    width: '100%',
     color: '#ADADAD',
+    backgroundColor: 'white',
   },
   pickerPlaceHold: {
     backgroundColor: 'white',
     color: '#ADADAD',
-    fontSize: 14,
+    fontSize: 13,
   },
   pickerLabel: {
     backgroundColor: 'white',
     color: 'black',
-    fontSize: 14,
+    fontSize: 13,
   },
   checkGroup: {
     display: 'flex',
     flexDirection: 'row',
-    margin: 10,
   },
   checkText: {
     color: 'black',
-    fontSize: 14,
+    fontSize: 13,
     backgroundColor: 'white',
   },
   button: {

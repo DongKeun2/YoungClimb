@@ -7,7 +7,6 @@ import SearchResultScreen from '../screens/SearchResultScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import FollowScreen from '../screens/profile/FollowScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
-import PostScreen from '../screens/homes/PostScreen';
 
 const Stack = createStackNavigator();
 
