@@ -18,7 +18,7 @@ import DeclareSheet from '../../components/DeclareSheet';
 import Comment from '../../components/Comment';
 
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
-import {fetchDetail} from '../../utils/slices/PostSlice';
+import {fetchDetail, likeBoard} from '../../utils/slices/PostSlice';
 
 import avatar from '../../assets/image/initial/background.png';
 import MenuIcon from '../../assets/image/feed/menuIcon.svg';
@@ -72,6 +72,10 @@ function DetailScreen({navigation, route}) {
       dispatch(fetchDetail(route.params.id)).then(() => setIsLoading(false));
     }
   }, [dispatch, isFocused]);
+
+  function onClickHeart() {
+    dispatch(likeBoard(route.params.id));
+  }
 
   return (
     <>
@@ -164,15 +168,13 @@ function DetailScreen({navigation, route}) {
             <View style={styles.popularInfo}>
               <View style={styles.likeGroup}>
                 <View style={styles.iconText}>
-                  {feed.isLiked ? (
-                    <TouchableOpacity onPress={() => null}>
+                  <TouchableOpacity onPress={onClickHeart}>
+                    {feed.isLiked ? (
                       <FillHeart style={{marginRight: 5}} />
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity onPress={() => null}>
+                    ) : (
                       <EmptyHeart style={{marginRight: 5}} />
-                    </TouchableOpacity>
-                  )}
+                    )}
+                  </TouchableOpacity>
                   <Text style={styles.feedTextStyle}>
                     {feed.like} 명이 좋아합니다.
                   </Text>

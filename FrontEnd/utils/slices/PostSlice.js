@@ -89,6 +89,23 @@ const fetchDetail = createAsyncThunk(
   },
 );
 
+const likeBoard = createAsyncThunk(
+  'likeBoard',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.feedLike(boardId),
+        {},
+        await getConfig(),
+      );
+      console.log('좋아요 성공', res.data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: [],
   boardInfoComment: {},
@@ -126,6 +143,10 @@ export const PostSlice = createSlice({
     [fetchFeedComment.fulfilled]: (state, action) => {
       state.boardInfoComment = action.payload;
     },
+    [likeBoard.fulfilled]: (state, action) => {
+      state.boardInfo.isLiked = action.payload.isLike;
+      state.boardInfo.like = action.payload.like;
+    },
   },
 });
 
@@ -136,6 +157,7 @@ export {
   feedLikeSubmit,
   feedScrapSubmit,
   fetchDetail,
+  likeBoard,
 };
 
 export const {changeUploadVideo, changeUploadVideoUri} = PostSlice.actions;
