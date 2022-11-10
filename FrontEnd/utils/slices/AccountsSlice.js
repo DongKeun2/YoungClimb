@@ -81,38 +81,42 @@ const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
   }
 });
 
+const saveImage = createAsyncThunk(
+  'saveImage',
+  async (formData, {rejectWithValue}) => {
+    try {
+      const res = await axios({
+        method: 'POST',
+        url: api.saveImage(),
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: await getHeader(),
+        },
+      });
+      console.log('사진 저장 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('사진 저장 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const profileCreate = createAsyncThunk(
   'profileCreate',
-  async ({data, formData, isPhoto}, {rejectWithValue}) => {
+  async (data, {rejectWithValue}) => {
     console.log('회원가입 후 프로필 자기소개 입력', data);
-    console.log('폼데이터 여부', isPhoto, formData);
-    console.log('프로필 입력 url', api.profileCreate(data));
     try {
-      if (isPhoto) {
-        const res = await axios({
-          method: 'POST',
-          url: api.profileCreate(data),
-          data: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: await getHeader(),
-          },
-        });
-        console.log('프로필 생성 성공', res.data);
-        return res.data;
-      } else {
-        const res = await axios({
-          method: 'POST',
-          url: api.profileCreate(data),
-          // data: formData,
-          headers: {
-            // 'Content-Type': 'multipart/form-data',
-            Authorization: await getHeader(),
-          },
-        });
-        console.log('사진없이 프로필 생성 성공', res.data);
-        return res.data;
-      }
+      const res = await axios.post(
+        api.profileCreate(),
+        data,
+        await getConfig(),
+      );
+      console.log('프로필 생성 성공', res.data);
+      setAccessToken(res.data.accessToken);
+      setCurrentUser(res.data.user);
+      return res.data;
     } catch (err) {
       console.log('프로필 생성 실패', err);
       return rejectWithValue(err.response.data);
@@ -122,37 +126,15 @@ const profileCreate = createAsyncThunk(
 
 const profileEdit = createAsyncThunk(
   'profileEdit',
-  async ({data, formData, isPhoto}, {rejectWithValue}) => {
+  async (data, {rejectWithValue}) => {
+    console.log('수정 요청', data);
     try {
-      console.log('요청 url', api.profileEdit(data));
-      console.log('요청 data', formData);
-      if (isPhoto) {
-        const res = await axios({
-          method: 'POST',
-          url: api.profileEdit(data),
-          data: formData,
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: await getHeader(),
-          },
-        });
-        alert('수정 완료');
-        console.log('프로필 수정 성공', res.data);
-        return res.data;
-      } else {
-        const res = await axios({
-          method: 'POST',
-          url: api.profileEdit(data),
-          // data: formData,
-          headers: {
-            // 'Content-Type': 'multipart/form-data',
-            Authorization: await getHeader(),
-          },
-        });
-        alert('수정 완료');
-        console.log('프로필 수정 성공', res.data);
-        return res.data;
-      }
+      const res = await axios.post(api.profileEdit(), data, await getConfig());
+      alert('수정 완료');
+      console.log('프로필 수정 성공', res.data);
+      setAccessToken(res.data.accessToken);
+      setCurrentUser(res.data.user);
+      return res.data;
     } catch (err) {
       alert('수정 실패');
       console.log(err);
@@ -275,7 +257,7 @@ export const AccountsSlice = createSlice({
   initialState,
   reducers: {
     fetchCurrentUser: (state, action) => {
-      console.log('state에 붙이는 정보', action.payload);
+      console.log('새로고침 유저 정보', action.payload);
       state.currentUser = action.payload;
       state.loginState = true;
     },
@@ -366,6 +348,13 @@ export const AccountsSlice = createSlice({
     [logout.rejected]: state => {
       state.loginState = false;
     },
+    [profileCreate.fulfilled]: (state, action) => {
+      state.loginState = true;
+      state.currentUser = action.payload.user;
+    },
+    [profileEdit.fulfilled]: (state, action) => {
+      state.currentUser = action.payload.user;
+    },
   },
 });
 
@@ -378,6 +367,7 @@ export {
   checkEmail,
   checkNickname,
   profileEdit,
+  saveImage,
 };
 
 export const {
