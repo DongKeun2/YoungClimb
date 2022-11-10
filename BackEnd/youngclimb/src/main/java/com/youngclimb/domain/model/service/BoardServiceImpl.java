@@ -214,7 +214,26 @@ public class BoardServiceImpl implements BoardService {
 
 
         return boardDto;
-}
+    }
+
+    // 동영상 저장
+    @Override
+    public void saveImage(MultipartFile file) {
+        // 이미지 저장하기
+        if (file != null) {
+            String fileName = createFileName(file.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(file.getSize());
+            objectMetadata.setContentType(file.getContentType());
+            try (InputStream inputStream = file.getInputStream()) {
+                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
+        }
+    }
 
     // 게시글 작성
     @Override
@@ -286,6 +305,7 @@ public class BoardServiceImpl implements BoardService {
 
 
     }
+
     // 게시글 삭제하기
     @Override
     public void deleteBoard(String email, Long boardId) {
@@ -316,7 +336,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
         BoardLikeDto boardLikeDto = new BoardLikeDto();
-        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member,2).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member, 2).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
@@ -474,7 +494,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(comment.getMember(), member,4).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(comment.getMember(), member, 4).orElse(null);
 
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
