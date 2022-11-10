@@ -316,60 +316,12 @@ public class BoardServiceImpl implements BoardService {
 
         for (BoardScrap scrap : scraps) {
 
-            // 게시글 DTO 세팅
-            BoardDto scrapDto = BoardDto.builder()
-                    .id(scrap.getBoard().getBoardId())
-                    .solvedDate(scrap.getBoard().getSolvedDate())
-                    .content(scrap.getBoard().getContent())
-                    .like(boardLikeRepository.countByBoard(scrap.getBoard()))
-                    .view(boardScrapRepository.countByBoard(scrap.getBoard()))
-                    .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
-                    .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
-                    .commentNum(commentRepository.countByBoard(scrap.getBoard()))
-                    .build();
-
-            // 작성 유저 정보 세팅
-            Member writer = scrap.getBoard().getMember();
-            CreateMember createUser = CreateMember.builder()
-                    .nickname(writer.getNickname())
-                    .image(writer.getMemberProfileImg())
-                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                    .build();
-
-            scrapDto.setCreateUser(createUser);
-
-            LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
-
-            // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
-            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-            if (minus <= 10) {
-                timeText = "방금 전";
-            } else if (minus <= 60) {
-                timeText = minus + "분 전";
-            } else if (minus <= 1440) {
-                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
-            }
-
-            scrapDto.setCreatedAt(timeText);
+            BoardDto scrapDto = this.startScrapDto(scrap, member);
+            scrapDto.setCreateUser(this.toCreateScrapUser(scrap, member));
 
             // 게시글 미디어 path 세팅
             BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
             scrapDto.setMediaPath(boardMedia.getMediaPath());
-
-            // 카테고리 정보 세팅
-            Category category = categoryRepository.findByBoard(scrap.getBoard()).orElseThrow();
-            scrapDto.setCenterId(category.getCenter().getId());
-            scrapDto.setCenterName(category.getCenter().getName());
-            scrapDto.setCenterLevelId(category.getCenterlevel().getId());
-            scrapDto.setCenterLevelColor(category.getCenterlevel().getColor());
-            scrapDto.setWallId(category.getWall().getId());
-            scrapDto.setWallName(category.getWall().getName());
-            scrapDto.setDifficulty(category.getDifficulty());
-            scrapDto.setHoldColor(category.getHoldColor());
 
             // List add
             scrapDtos.add(scrapDto);
@@ -514,6 +466,7 @@ public class BoardServiceImpl implements BoardService {
 
         return commentDto;
     }
+
     public UserDto setUserDto(Member member) {
         UserDto userDto = new UserDto();
         userDto.setImage(member.getMemberProfileImg());
@@ -530,22 +483,23 @@ public class BoardServiceImpl implements BoardService {
         return userDto;
     }
 
-    public BoardDto startDto(Board board, Member member) {
-        // 게시글 DTO 초기화
-        BoardDto boardDto = BoardDto.builder()
-                .id(board.getBoardId())
-                .solvedDate(board.getSolvedDate())
-                .content(board.getContent())
-                .like(boardLikeRepository.countByBoard(board))
-                .view(boardScrapRepository.countByBoard(board))
-                .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
-                .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
-                .commentNum(commentRepository.countByBoard(board))
+    // 스크랩한 글 보여주기
+    public BoardDto startScrapDto(BoardScrap scrap, Member member) {
+        // 게시글 DTO 세팅
+        BoardDto scrapDto = BoardDto.builder()
+                .id(scrap.getBoard().getBoardId())
+                .solvedDate(scrap.getBoard().getSolvedDate())
+                .content(scrap.getBoard().getContent())
+                .like(boardLikeRepository.countByBoard(scrap.getBoard()))
+                .view(boardScrapRepository.countByBoard(scrap.getBoard()))
+                .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
+                .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
+                .commentNum(commentRepository.countByBoard(scrap.getBoard()))
                 .build();
 
-        // 작성날짜 세팅
-        LocalDateTime createdTime = board.getCreatedDateTime();
+        LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
 
+        // 작성날짜 세팅
         String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
         Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
         if (minus <= 10) {
@@ -558,21 +512,41 @@ public class BoardServiceImpl implements BoardService {
             timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
         }
 
-        boardDto.setCreatedAt(timeText);
+        scrapDto.setCreatedAt(timeText);
+
+        // 게시글 미디어 path 세팅
+        BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
+        scrapDto.setMediaPath(boardMedia.getMediaPath());
 
         // 카테고리 정보 세팅
-        Category category = categoryRepository.findByBoard(board).orElseThrow();
-        boardDto.setCenterId(category.getCenter().getId());
-        boardDto.setCenterName(category.getCenter().getName());
-        boardDto.setCenterLevelId(category.getCenterlevel().getId());
-        boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
-        boardDto.setWallId(category.getWall().getId());
-        boardDto.setWallName(category.getWall().getName());
-        boardDto.setDifficulty(category.getDifficulty());
-        boardDto.setHoldColor(category.getHoldColor());
+        Category category = categoryRepository.findByBoard(scrap.getBoard()).orElseThrow();
+        scrapDto.setCenterId(category.getCenter().getId());
+        scrapDto.setCenterName(category.getCenter().getName());
+        scrapDto.setCenterLevelId(category.getCenterlevel().getId());
+        scrapDto.setCenterLevelColor(category.getCenterlevel().getColor());
+        scrapDto.setWallId(category.getWall().getId());
+        scrapDto.setWallName(category.getWall().getName());
+        scrapDto.setDifficulty(category.getDifficulty());
+        scrapDto.setHoldColor(category.getHoldColor());
 
-        return boardDto;
+        return scrapDto;
     }
+
+    // 스크랩한 글 작성자 정보
+    // 작성 유저 정보 세팅
+    public CreateMember toCreateScrapUser(BoardScrap scrap, Member member) {
+        // 작성 유저 정보 세팅
+        Member writer = scrap.getBoard().getMember();
+        CreateMember createUser = CreateMember.builder()
+                .nickname(writer.getNickname())
+                .image(writer.getMemberProfileImg())
+                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
+                .build();
+        return createUser;
+    }
+
+
 
 
 
