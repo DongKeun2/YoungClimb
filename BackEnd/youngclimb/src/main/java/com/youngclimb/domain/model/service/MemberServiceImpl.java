@@ -143,7 +143,7 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 추가
     @Override
-    public void addProfile(String email, MemberProfile memberProfile) throws Exception {
+    public LoginResDto addProfile(String email, MemberProfile memberProfile) throws Exception {
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
@@ -173,11 +173,67 @@ public class MemberServiceImpl implements MemberService {
         // 프로필 수정
         member.updateMemberImg(memberProfile);
         memberRepository.save(member);
+
+        MemberRankExp memberRankExp = memberRankExpRepository.findByMember(member).orElseThrow();
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .build();
+
+
+//        memberRankExp.getRank().getProblem();
+
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+
+
+        int problemLeft = 0;
+        switch (memberRankExp.getRank().getProblem()) {
+            case "V0":
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0() : 3;
+                break;
+            case "V1":
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1() : 3;
+                break;
+            case "V3":
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3() : 3;
+                break;
+            case "V5":
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5() : 3;
+                break;
+            case "V6":
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6() : 3;
+                break;
+            case "V7":
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7() : 3;
+                break;
+            default:
+                problemLeft = 0;
+                break;
+        }
+
+        long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
+
+        LoginMemberInfo loginMem = LoginMemberInfo.builder()
+                .nickname(member.getNickname())
+                .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
+                .height(member.getHeight())
+                .shoeSize(member.getShoeSize())
+                .wingspan(member.getWingspan())
+                .rank(memberRankExp.getRank().getName())
+                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .expleft(expLeft)
+                .upto(problemLeft)
+                .build();
+        loginResDto.setUser(loginMem);
+
+        return loginResDto;
     }
 
     // 프로필 수정
     @Override
-    public void editProfile(String email, MemberInfo memberInfo) throws Exception {
+    public LoginResDto editProfile(String email, MemberInfo memberInfo) throws Exception {
         System.out.println(memberInfo);
 
 
@@ -207,6 +263,62 @@ public class MemberServiceImpl implements MemberService {
         }
         member.updateProfile(memberInfo);
         memberRepository.save(member);
+
+        MemberRankExp memberRankExp = memberRankExpRepository.findByMember(member).orElseThrow();
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .build();
+
+
+//        memberRankExp.getRank().getProblem();
+
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+
+
+        int problemLeft = 0;
+        switch (memberRankExp.getRank().getProblem()) {
+            case "V0":
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0() : 3;
+                break;
+            case "V1":
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1() : 3;
+                break;
+            case "V3":
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3() : 3;
+                break;
+            case "V5":
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5() : 3;
+                break;
+            case "V6":
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6() : 3;
+                break;
+            case "V7":
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7() : 3;
+                break;
+            default:
+                problemLeft = 0;
+                break;
+        }
+
+        long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
+
+        LoginMemberInfo loginMem = LoginMemberInfo.builder()
+                .nickname(member.getNickname())
+                .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
+                .height(member.getHeight())
+                .shoeSize(member.getShoeSize())
+                .wingspan(member.getWingspan())
+                .rank(memberRankExp.getRank().getName())
+                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .expleft(expLeft)
+                .upto(problemLeft)
+                .build();
+        loginResDto.setUser(loginMem);
+
+        return loginResDto;
     }
 
     private String createFileName(String fileName) {
@@ -240,8 +352,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public LoginResDto login(LoginMember member) {
-        Member loginMember = memberRepository.findByEmail(member.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", member.getEmail()));
+        Member loginMember = memberRepository.findByEmail(member.getEmail()).orElseThrow();
         if (!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }

@@ -95,8 +95,8 @@ public class MemberController {
     public ResponseEntity<?> addProfile(@RequestBody MemberProfile memberProfile, @CurrentUser UserPrincipal principal) throws Exception {
 
         try {
-            memberService.addProfile(principal.getUsername(), memberProfile);
-            return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
+            ;
+            return new ResponseEntity<LoginResDto>(memberService.addProfile(principal.getUsername(), memberProfile), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
@@ -108,8 +108,7 @@ public class MemberController {
     public ResponseEntity<?> editProfile(@RequestBody MemberInfo memberInfo, @CurrentUser UserPrincipal principal) throws Exception {
 
         try {
-            memberService.editProfile(principal.getUsername(), memberInfo);
-            return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
+            return new ResponseEntity<LoginResDto>(memberService.editProfile(principal.getUsername(), memberInfo), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
