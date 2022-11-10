@@ -93,7 +93,7 @@ public class MemberController {
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
     @PostMapping("/profile/{intro}/{nickname}")
     public ResponseEntity<?> addProfile(@PathVariable String intro, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        if (intro.isBlank()) intro = null;
+        if (intro.isBlank()) intro = "";
 
         MemberProfile memberProfile = MemberProfile.builder()
                 .intro(intro)

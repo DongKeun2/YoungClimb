@@ -16,6 +16,8 @@ public interface BoardService {
 
     public BoardDto readBoardDetail(Long boardId, String email);
 
+    // 이미지 저장
+    public void saveImage(MultipartFile file);
     // 게시물 작성
     public void writeBoard(String email ,BoardCreate boardCreate, MultipartFile file);
     // 게시글 삭제
