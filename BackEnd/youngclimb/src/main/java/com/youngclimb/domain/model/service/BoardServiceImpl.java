@@ -72,6 +72,8 @@ public class BoardServiceImpl implements BoardService {
             // 게시글 Dto 세팅
             BoardDto boardDto = this.startDto(board, member);
             boardDto.setCreateUser(this.toCreateUser(board, member));
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+            boardDto.setMediaPath(boardMedia.getMediaPath());
 
             // 댓글 DTO 1개 세팅
             List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
