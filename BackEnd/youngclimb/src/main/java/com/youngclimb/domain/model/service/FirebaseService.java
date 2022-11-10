@@ -13,14 +13,16 @@ public class FirebaseService {
     @Transactional
     public void sendNotification(Member member, String title, String body, String route) {
 
-        if(member.get == null)
+        if(member.getFcmToken() == null) {
             return;
+        }
+
 
         Notification notification = new Notification(title, body);
 
         Message message = Message.builder()
                 .setNotification(notification)
-                .setToken(user.getFcm())
+                .setToken(member.getFcmToken())
                 .putData("route", route)
                 .build();
 

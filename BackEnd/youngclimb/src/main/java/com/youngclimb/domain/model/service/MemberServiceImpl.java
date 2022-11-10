@@ -229,6 +229,9 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
+        loginMember.setFcmToken(member.getFcmToken());
+        memberRepository.save(loginMember);
+
         MemberRankExp memberRankExp = memberRankExpRepository.findByMember(loginMember).orElseThrow();
 
         LoginResDto loginResDto = LoginResDto.builder()
