@@ -15,14 +15,20 @@ import CustomSubHeader from '../../components/CustomSubHeader';
 import ImgRollPic from '../../assets/image/map/ImgRollPic.svg'
 import ExpandDown from '../../assets/image/map/ExpandDown.svg'
 import ExpandUp from '../../assets/image/map/ExpandUp.svg'
+import Location from '../../assets/image/map/Location.svg'
 import { levelColorDict, holdColorDict } from '../../assets/info/ColorInfo';
 import axios from 'axios';
 import api from '../../utils/api';
+import MyLocationImg from '../../assets/image/map/MyLocation.png'
+
+import NaverMapView, {Marker, Align} from "react-native-nmap";
+
 
 
 export default function StoreDetail({route, navigation}){
 	const {Id} = route.params;
 	const [detailInfo, setDetailInfo] = useState({
+		wall:false,
 		name: '',
 		phoneNumber:'',
 	address: '',
@@ -64,34 +70,26 @@ centerPriceList: [{
 
 	useEffect(
 		()=>{
-			BackHandler.addEventListener('hardwareBackPress', ()=>{
-				navigation.goBack()
-				return true
-			})
-			console.log(route.params.Id)
 			const source = axios.CancelToken.source();
 			axios.get(api.center(route.params.Id), {cancelToken: source.token})
 			.then(res=>{
 				setDetailInfo(res.data)
-				console.log(res)
 			})
 			.catch(err=>{
 				console.log(err)
 				setNoData(true)
 			})
-
-
 		return () => {
-			BackHandler.removeEventListener('hardwareBackPress')
 			source.cancel();
 		}
 		},[]
 	)
 
 	useEffect(()=>{
+		console.log(detailInfo)
 		const todayInfo = detailInfo.centerTimeList.filter(info=>info.day === day)[0]
 		if (todayInfo){
-			setTodayTimeInfo(`${dayDict[day]}  ${todayInfo.timeStart} - ${todayInfo.timeEnd}`)
+			setTodayTimeInfo(`${dayDict[day]}  ${todayInfo.timeStart.slice(0,5)} - ${todayInfo.timeEnd.slice(0,5)}`)
 		}
 
 	},[detailInfo])
@@ -107,14 +105,8 @@ centerPriceList: [{
 				:
 
 				<ScrollView
-					// onScroll={()=>{Animated.event(
-					// 	[{nativeEvent:{contentOffset: {y:scrollA}}}]
-					// 	, {useNativeDriver:true}
-					// )}}
-					// scrollEventThrottle={16}
 					showsVerticalScrollIndicator={false}
-					style={{width:'100%', backgroundColor:'white'}}
-
+					style={{width:'100%', backgroundColor:'white', paddingBottom:50}}
 				>
 					<Image 
 						style={styles.image}
@@ -129,13 +121,17 @@ centerPriceList: [{
 							{/* 이름 */}
 							<Text style={styles.nameFont}>{detailInfo.name}</Text>
 							{/* 3d벽 버튼 */}
-							<TouchableOpacity 
-							style={{...styles.wallBtn, backgroundColor:'white'}}
-							onPress={()=> navigation.navigate('3D벽', {Id:detailInfo.centerNumber})}
-							>
-								<ImgRollPic style={{height:20}}/>
-								<Text style={{color: 'black', fontWeight:'bold'}}>3D</Text>
-							</TouchableOpacity>
+							{detailInfo.wall?
+								<TouchableOpacity 
+								style={{...styles.wallBtn, backgroundColor:'white'}}
+								onPress={()=> navigation.navigate('3D벽', {Id: Id})}
+								>
+									<ImgRollPic style={{height:20}}/>
+									<Text style={{color: 'black', fontWeight:'bold'}}>3D</Text>
+								</TouchableOpacity>
+							:
+							<></>
+						}
 						</View>
 						{/* 연락처 */}
 						<View style={styles.infoFlex}>
@@ -163,7 +159,7 @@ centerPriceList: [{
 											<Text 
 												key={idx}
 												style={info.day===day ? styles.detailFocus:styles.detailfont}>
-												{dayDict[info.day]}  {info.timeStart} - {info.timeEnd}
+												{dayDict[info.day]}  {info.timeStart.slice(0,5)} - {info.timeEnd.slice(0,5)}
 											</Text>
 										)
 									})
@@ -245,7 +241,7 @@ centerPriceList: [{
 						{/* 난이도 grid */}
 						<Text style={{...styles.subTitle, marginTop:10, marginBottom:5}}>난이도</Text>
 						<View style={{width:'100%', height:25, flexDirection:'row'}}>
-							{detailInfo.centerLevelList.map((item, idx) => {
+							{detailInfo.centerLevelList?.map((item, idx) => {
 								return(
 									<View key={item.color} style={{marginHorizontal:'0.1%',height:25, width:`${100/detailInfo.centerLevelList.length - 0.2}%`, backgroundColor:levelColorDict[item.color]}}></View>
 								)
@@ -255,9 +251,19 @@ centerPriceList: [{
 						<View style={{height:15, borderBottomColor:'#929292',borderBottomWidth:0.2}}></View>
 						{/* 주소 */}
 						{/* 지도 */}
+						<View style={{flexDirection:'row', marginTop:12, marginBottom:10}}>
+							<Location style={{marginTop:1}}/>
+							<Text style={{...styles.subTitle, marginLeft:5}}>{detailInfo.address}</Text>
+						</View>
+							<NaverMapView style={{width: '100%', height: 300}}
+          			zoomControl ={true}
+								center={{latitude:detailInfo.latitude,longitude:detailInfo.longitude, zoom: 13}}
+							>
+								<Marker coordinate={{latitude:detailInfo.latitude,longitude:detailInfo.longitude}} image={MyLocationImg}/>
+							</NaverMapView>
 					</View>
-					<View style={{height:50, width:'100%'}}></View>
 
+					<View style={{height:50, width:'100%'}}></View>
 				</ScrollView>
 				}
 		</>

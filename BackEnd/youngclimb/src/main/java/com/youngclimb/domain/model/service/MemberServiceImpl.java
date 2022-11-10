@@ -6,6 +6,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
+import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -21,6 +22,8 @@ import javax.persistence.EntityExistsException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +44,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRankExpRepository memberRankExpRepository;
     private final RankRepository rankRepository;
     private final MemberProblemRepository memberProblemRepository;
+    private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
 
 
@@ -139,7 +143,7 @@ public class MemberServiceImpl implements MemberService {
 
         // 프로필 사진 s3 저장
         if (file == null) {
-            System.out.println("사진이 없습니다.");
+            memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
         } else {
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
@@ -339,8 +343,9 @@ public class MemberServiceImpl implements MemberService {
 
     // 팔로잉하기/취소하기
     public Boolean addCancelFollow(String followingNickname, String followerEmail) {
-        Member follower = memberRepository.findByEmail(followerEmail).orElseThrow();
         Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
+        Member follower = memberRepository.findByEmail(followerEmail).orElseThrow();
+        Notice notice = noticeRepository.findByToMemberAndFromMember(following, follower).orElse(null);
 
         if (follower.getMemberId() == following.getMemberId()) {
             return Boolean.FALSE;
@@ -355,8 +360,19 @@ public class MemberServiceImpl implements MemberService {
                     .build();
             followRepository.save(followBuild);
 
+            Notice noticeBuild = Notice.builder()
+                    .toMember(following)
+                    .fromMember(follower)
+                    .type(1)
+                    .board(null)
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
+            noticeRepository.save(noticeBuild);
+
+
             return Boolean.TRUE;
         } else {
+            noticeRepository.delete(notice);
             followRepository.delete(follow);
             return Boolean.FALSE;
         }
@@ -395,7 +411,6 @@ public class MemberServiceImpl implements MemberService {
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
 
             FollowMemberDto myFollower = new FollowMemberDto();
-
             myFollower.setNickname(followerMember.getNickname());
             myFollower.setGender(followerMember.getGender());
             myFollower.setImage(followerMember.getMemberProfileImg());
@@ -412,5 +427,45 @@ public class MemberServiceImpl implements MemberService {
 
         return followMemberList;
     }
+
+    // 알림 목록 읽기
+    public List<NoticeDto> readNotice(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        List<Notice> noticeList = noticeRepository.findAllByToMember(member);
+        List<NoticeDto> noticeDtos = new ArrayList<>();
+
+        for (Notice notice : noticeList) {
+            NoticeDto noticeDto = new NoticeDto();
+            LocalDateTime createdTime = notice.getCreatedDateTime();
+
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+            if (minus <= 10) {
+                timeText = "방금 전";
+            } else if (minus <= 60) {
+                timeText = minus + "분 전";
+            } else if (minus <= 1440) {
+                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            }
+
+            if (notice.getType() == 1) {
+                noticeDto.setBoardId(null);
+            } else {
+                noticeDto.setBoardId(notice.getBoard().getBoardId());
+            }
+
+            noticeDto.setProfileImage(notice.getFromMember().getMemberProfileImg());
+            noticeDto.setNickname(notice.getFromMember().getNickname());
+            noticeDto.setType(notice.getType());
+            noticeDto.setCreatedAt(timeText);
+
+            noticeDtos.add(noticeDto);
+        }
+
+        return noticeDtos;
+    }
+
 
 }

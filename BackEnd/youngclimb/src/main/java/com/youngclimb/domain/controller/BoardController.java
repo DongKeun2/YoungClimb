@@ -57,6 +57,7 @@ public class BoardController {
             return exceptionHandling(e);
         }
     }
+
     // 게시글 댓글 조회(본문 + 댓글 리스트)
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
     @GetMapping("/{boardId}")
@@ -69,6 +70,18 @@ public class BoardController {
             } else {
                 return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
             }
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 게시글 상세 조회
+    @ApiOperation(value = "readBoardDetail : 게시글 정보 조회")
+    @GetMapping("/{boardId}/detail")
+    public ResponseEntity<?> readBoardDetail(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
+        try {
+            BoardDto boardDto = boardService.readBoardDetail(boardId, principal.getUsername());
+            return new ResponseEntity<BoardDto>(boardDto, HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
@@ -139,7 +152,6 @@ public class BoardController {
         }
     }
 
-    // 게시글 검색
 
     // 게시글 신고
     @ApiOperation(value = "boardReport : 게시글 신고하기")

@@ -19,5 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findAllByNicknameContains(String nickname);
 
+    List<Member> findAllByWingheightBetween(Integer startLength, Integer endLength);
+
     Optional<Member> findByMemberId(Long memberId);
 }
