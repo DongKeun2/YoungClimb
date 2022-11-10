@@ -30,7 +30,7 @@ function SearchResultScreen({navigation, route}) {
           {boards.length ? (
             <CardList boards={boards} navigation={navigation} />
           ) : (
-            <Text style={styles.text}>검색 결과 없음</Text>
+            <Text style={styles.noSearchText}>검색 결과 없음</Text>
           )}
         </View>
       </ScrollView>
@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  noSearchText: {color: 'black', padding: 30},
 });
 
 export default SearchResultScreen;
