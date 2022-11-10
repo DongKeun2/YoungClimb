@@ -6,16 +6,16 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  TextInput,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
-import Input from '../../components/Input';
 import {changeSignupForm, signup} from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
 
 import logo from '../../assets/image/main/signup.png';
-import camera from '../../assets/image/main/camera.png';
+import Camera from '../../assets/image/main/camera.svg';
 import BackIcon from '../../assets/image/header/backIcon.svg';
 
 const windowHeight = Dimensions.get('window').height;
@@ -43,9 +43,9 @@ function SecondPage({navigation}) {
 
     // 건너뛰기 클릭 시 추가정보 제외하고 회원가입 신청
     if (!isSkip) {
-      data.height = signupForm.height.value;
-      data.shoeSize = signupForm.shoeSize.value;
-      data.wingspan = signupForm.wingspan.value;
+      data.height = signupForm.height.value ? signupForm.height.value : 0;
+      data.shoeSize = signupForm.shoeSize.value ? signupForm.shoeSize.value : 0;
+      data.wingspan = signupForm.wingspan.value ? signupForm.wingspan.value : 0;
     }
 
     dispatch(signup(data)).then(res => {
@@ -82,38 +82,47 @@ function SecondPage({navigation}) {
         </Text>
       </View>
       <View style={styles.inputContainer}>
-        <Input
-          style={styles.input}
-          placeholder="키(cm)"
-          placeholderTextColor={'#ddd'}
-          value={signupForm.height.value}
-          maxLength={3}
-          type={signupForm.height.type}
-          onChangeText={value => updateInput('height', value)}
-        />
-        <Input
-          style={styles.input}
-          placeholder="신발(mm)"
-          placeholderTextColor={'#ddd'}
-          maxLength={3}
-          value={signupForm.shoeSize.value}
-          type={signupForm.shoeSize.type}
-          onChangeText={value => updateInput('shoeSize', value)}
-        />
-        <View style={styles.inputBox}>
-          <Input
+        <View style={styles.inputForm}>
+          <Text style={styles.inputText}>키 (cm)</Text>
+          <TextInput
             style={styles.input}
-            placeholder="윙스팬(cm)"
-            width="100%"
+            placeholder="키를 입력해주세요."
+            placeholderTextColor={'#ddd'}
+            value={signupForm.height.value}
+            maxLength={3}
+            type={signupForm.height.type}
+            onChangeText={value => updateInput('height', value)}
+          />
+        </View>
+        <View style={styles.inputForm}>
+          <Text style={styles.inputText}>신발 (mm)</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="신발 사이즈를 입력해주세요."
             placeholderTextColor={'#ddd'}
             maxLength={3}
-            value={signupForm.wingspan.value}
-            type={signupForm.wingspan.type}
-            onChangeText={value => updateInput('wingspan', value)}
+            value={signupForm.shoeSize.value}
+            type={signupForm.shoeSize.type}
+            onChangeText={value => updateInput('shoeSize', value)}
           />
-          <TouchableOpacity onPress={goWingspan}>
-            <Image source={camera} style={styles.cameraIcon} />
-          </TouchableOpacity>
+        </View>
+        <View style={styles.inputForm}>
+          <Text style={styles.inputText}>윙스팬 (cm)</Text>
+          <View style={styles.inputBox}>
+            <TextInput
+              style={styles.input}
+              placeholder="윙스팬을 입력해주세요."
+              width="100%"
+              placeholderTextColor={'#ddd'}
+              maxLength={3}
+              value={signupForm.wingspan.value}
+              type={signupForm.wingspan.type}
+              onChangeText={value => updateInput('wingspan', value)}
+            />
+            <TouchableOpacity onPress={goWingspan}>
+              <Camera style={styles.cameraIcon} width={30} height={30} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
       <View style={styles.btnGroup}>
@@ -175,12 +184,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    width: '80%',
-    height: 60,
+    width: '60%',
   },
   input: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    fontSize: 14,
+    color: 'black',
+    width: '65%',
+    padding: 5,
+    marginTop: 30,
   },
   button: {
     width: '45%',
@@ -212,6 +223,21 @@ const styles = StyleSheet.create({
   beforeText: {
     color: 'black',
     fontSize: 16,
+  },
+  inputForm: {
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#464646',
+  },
+  inputText: {
+    color: '#525050',
+    justifyContent: 'center',
+    width: '35%',
+    marginTop: 30,
   },
 });
 

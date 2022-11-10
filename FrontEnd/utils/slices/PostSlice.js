@@ -79,11 +79,45 @@ const fetchDetail = createAsyncThunk(
   async (boardId, {rejectWithValue}) => {
     console.log('게시글 상세 요청 보냄');
     try {
-      const res = await axios.get(api.detail(boardId), await getConfig());
+      const res = await axios.get(api.feedComment(boardId), await getConfig());
       console.log('게시글 요청 성공', res.data);
       return res.data;
     } catch (err) {
       console.log('게시글 요청 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const likeBoard = createAsyncThunk(
+  'likeBoard',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.feedLike(boardId),
+        {},
+        await getConfig(),
+      );
+      console.log('좋아요 성공', res.data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const scrapBoard = createAsyncThunk(
+  'scrapBoard',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.feedScrap(boardId),
+        {},
+        await getConfig(),
+      );
+      console.log('스크랩 성공', res.data);
+      return res.data;
+    } catch (err) {
       return rejectWithValue(err.response.data);
     }
   },
@@ -107,6 +141,7 @@ const initialState = {
   boards: [],
   boardInfoComment: {},
   boardInfo: {},
+  commentInfo: {},
   uploadVideo: null,
   uploadVideoUri: null,
   reels: [],
@@ -131,13 +166,21 @@ export const PostSlice = createSlice({
       console.log('실패');
     },
     [fetchDetail.fulfilled]: (state, action) => {
-      state.boardInfo = action.payload;
+      state.boardInfo = action.payload.boardDto;
+      state.commentInfo = action.payload.commentDtos;
     },
     [fetchHomeFeed.fulfilled]: (state, action) => {
       state.boards = action.payload;
     },
     [fetchFeedComment.fulfilled]: (state, action) => {
       state.boardInfoComment = action.payload;
+    },
+    [likeBoard.fulfilled]: (state, action) => {
+      state.boardInfo.isLiked = action.payload.isLike;
+      state.boardInfo.like = action.payload.like;
+    },
+    [scrapBoard.fulfilled]: (state, action) => {
+      state.boardInfo.isScrap = action.payload;
     },
     [fetchReels.fulfilled]: (state, action) => {
       state.reels = action.payload;
@@ -152,6 +195,8 @@ export {
   feedLikeSubmit,
   feedScrapSubmit,
   fetchDetail,
+  likeBoard,
+  scrapBoard,
   fetchReels,
 };
 

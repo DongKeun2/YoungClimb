@@ -20,7 +20,6 @@ const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
 
 const BOARD_URL = '/board';
-const DETAIL_URL = '/detail';
 const HOME_URL = '/home';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
@@ -63,7 +62,6 @@ const api = {
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
   search: () => API_BASE_URL + SEARCH_URL + BOARD_URL,
-  detail: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DETAIL_URL,
 
   homeFeed: pageNumber =>
     API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,

@@ -10,7 +10,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
@@ -24,10 +23,8 @@ import {
 } from '../../utils/slices/AccountsSlice';
 import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
-import avatar from '../../assets/image/profile/avatar.png';
 import Camera from '../../assets/image/main/camera.svg';
 import checkIcon from '../../assets/image/main/done.png';
-import camera from '../../assets/image/main/camera.png';
 import {useIsFocused} from '@react-navigation/native';
 
 function ProfileEditScreen({navigation}) {
@@ -43,6 +40,7 @@ function ProfileEditScreen({navigation}) {
     if (name === 'nickname') {
       setIsCheckNickname(false);
     }
+    console.log(name, value);
     dispatch(changeEditForm({name, value}));
   }
 
@@ -155,13 +153,16 @@ function ProfileEditScreen({navigation}) {
     const uri = imageUri?.assets[0]?.uri.replace(/\r?\n?/g, '').trim();
 
     let formData = new FormData();
-
-    const imgFile = {
-      uri: uri,
-      name: imageUri?.assets[0]?.fileName,
-      type: type,
-    };
-    formData.append('file', imgFile);
+    let isPhoto = false;
+    if (imageUri) {
+      isPhoto = true;
+      const imgFile = {
+        uri: uri,
+        name: imageUri?.assets[0]?.fileName,
+        type: type,
+      };
+      formData.append('file', imgFile);
+    }
 
     const data = {
       nickname: editForm.nickname.value,
@@ -175,8 +176,9 @@ function ProfileEditScreen({navigation}) {
     //   'key',
     //   new Blob([JSON.stringify(data)], {type: 'application/json'}),
     // );
-
-    dispatch(profileEdit({data, formData}));
+    console.log(data);
+    console.log('사진여부', isPhoto);
+    dispatch(profileEdit({data, formData, isPhoto}));
   }
 
   return (
@@ -188,18 +190,13 @@ function ProfileEditScreen({navigation}) {
         navigation={navigation}
         request={onSubmitEdit}
       />
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.inputContainer}>
           <TouchableOpacity onPress={selectProfile}>
-            {imageUri?.assets[0] ? (
+            {imageUri ? (
               <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
             ) : currentUser?.image ? (
-              <UserAvatar
-                source={{
-                  uri: 'https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png',
-                }}
-                size={100}
-              />
+              <UserAvatar source={{uri: currentUser.image}} size={100} />
             ) : (
               <UserAvatar
                 source={{
@@ -214,7 +211,7 @@ function ProfileEditScreen({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              dispatch(changeUploadImg(''));
+              dispatch(changeUploadImg(null));
             }}>
             <Text style={styles.link}>프로필 사진 제거</Text>
           </TouchableOpacity>
@@ -288,7 +285,7 @@ function ProfileEditScreen({navigation}) {
             <Text style={styles.inputText}>윙스팬 (cm)</Text>
             <View style={styles.inputBox}>
               <TextInput
-                style={styles.input}
+                style={styles.wingspanInput}
                 placeholder={'윙스팬을 입력해주세요.'}
                 placeholderTextColor={'#ddd'}
                 value={editForm.wingspan.value.toString()}
@@ -443,9 +440,16 @@ const styles = StyleSheet.create({
     borderBottomColor: '#464646',
   },
   input: {
-    fontSize: 16,
+    fontSize: 13,
     color: 'black',
     width: '65%',
+    padding: 5,
+    marginTop: 30,
+  },
+  wingspanInput: {
+    fontSize: 13,
+    color: 'black',
+    width: '80%',
     padding: 5,
     marginTop: 30,
   },
