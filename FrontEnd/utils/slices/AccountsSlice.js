@@ -83,21 +83,36 @@ const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
 
 const profileCreate = createAsyncThunk(
   'profileCreate',
-  async ({data, formData}, {rejectWithValue}) => {
-    console.log('회원가입 후 프로필 자기소개 입력', formData);
-
+  async ({data, formData, isPhoto}, {rejectWithValue}) => {
+    console.log('회원가입 후 프로필 자기소개 입력', data);
+    console.log('폼데이터 여부', isPhoto, formData);
+    console.log('프로필 입력 url', api.profileCreate(data));
     try {
-      const res = await axios({
-        method: 'POST',
-        url: api.profileCreate(data),
-        data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: await getHeader(),
-        },
-      });
-      console.log('프로필 생성 성공', res.data);
-      return res.data;
+      if (isPhoto) {
+        const res = await axios({
+          method: 'POST',
+          url: api.profileCreate(data),
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: await getHeader(),
+          },
+        });
+        console.log('프로필 생성 성공', res.data);
+        return res.data;
+      } else {
+        const res = await axios({
+          method: 'POST',
+          url: api.profileCreate(data),
+          // data: formData,
+          headers: {
+            // 'Content-Type': 'multipart/form-data',
+            Authorization: await getHeader(),
+          },
+        });
+        console.log('사진없이 프로필 생성 성공', res.data);
+        return res.data;
+      }
     } catch (err) {
       console.log('프로필 생성 실패', err);
       return rejectWithValue(err.response.data);
@@ -289,7 +304,6 @@ export const AccountsSlice = createSlice({
     changeEditForm: (state, action) => {
       console.log(action.payload);
       if (action.payload.value === 0) {
-        console.log('잘못된곳');
         state.editForm[action.payload.name].value = '';
       } else if (
         !action.payload.reset &&
@@ -297,13 +311,10 @@ export const AccountsSlice = createSlice({
           action.payload.name === 'shoeSize' ||
           action.payload.name === 'wingspan')
       ) {
-        console.log('여기아님');
         state.editForm[action.payload.name].value =
           action.payload.value.replace(/[^0-9]/g, '');
       } else {
-        console.log('여기임');
         state.editForm[action.payload.name].value = action.payload.value;
-        console.log(state.editForm[action.payload.name].value);
       }
     },
     changeIsCheckTerms: (state, action) => {

@@ -43,7 +43,6 @@ function SuccessScreen({navigation}) {
           return;
         }
         setImageUri(res);
-        // dispatch(changeUploadImg(res));
       },
     );
     console.log('프로필 사진 변경');
@@ -55,21 +54,25 @@ function SuccessScreen({navigation}) {
     const uri = imageUri?.assets[0]?.uri.replace(/\r?\n?/g, '').trim();
 
     let formData = new FormData();
+    let isPhoto = false;
 
-    const imgFile = {
-      uri: uri,
-      name: imageUri?.assets[0]?.fileName,
-      type: type,
-    };
-    formData.append('file', imgFile);
+    if (imageUri) {
+      isPhoto = true;
+      const imgFile = {
+        uri: uri,
+        name: imageUri?.assets[0]?.fileName,
+        type: type,
+      };
+      formData.append('file', imgFile);
+    }
 
     const data = {
-      intro,
+      intro: intro,
       nickname: currentUser.nickname,
     };
 
     if (!isSkip) {
-      dispatch(profileCreate({data, formData}))
+      dispatch(profileCreate({data, formData, isPhoto}))
         .then(res => {
           // 스토어에 회원정보 입력 후 로그인 처리
           getCurrentUser().then(
@@ -77,7 +80,11 @@ function SuccessScreen({navigation}) {
             alert('성공요'),
           );
         })
-        .catch(alert('실패요'));
+        .catch(alert('프로필 입력에 실패하였습니다.'));
+    } else {
+      getCurrentUser().then(currentUser =>
+        dispatch(fetchCurrentUser(currentUser)),
+      );
     }
   }
 
@@ -104,6 +111,12 @@ function SuccessScreen({navigation}) {
         )}
         <TouchableOpacity onPress={SelectProfile}>
           <Text style={styles.link}>프로필 사진 선택</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => {
+            setImageUri(undefined);
+          }}>
+          <Text style={styles.link}>프로필 사진 제거</Text>
         </TouchableOpacity>
         <TextInput
           style={styles.input}
