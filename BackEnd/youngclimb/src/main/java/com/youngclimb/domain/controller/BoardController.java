@@ -56,7 +56,7 @@ public class BoardController {
     // 게시물 작성
     @ApiOperation(value = "writeBoard : 글 작성하기")
     @PostMapping
-    public ResponseEntity<?> writeBoard(@RequestPart BoardCreate boardCreate, @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> writeBoard(@RequestBody BoardCreate boardCreate, @CurrentUser UserPrincipal principal) throws Exception {
         try {
             boardService.writeBoard(principal.getUsername() ,boardCreate);
             return new ResponseEntity<Void>(HttpStatus.OK);
