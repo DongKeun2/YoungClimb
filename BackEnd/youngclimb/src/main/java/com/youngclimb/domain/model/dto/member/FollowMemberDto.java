@@ -12,4 +12,5 @@ public class FollowMemberDto {
     Integer shoeSize;
     Integer wingspan;
     String rank;
+    Boolean follow;
 }

@@ -390,8 +390,9 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 팔로잉 팔로워 목록 읽기
-    public FollowMemberList listFollow(String nickname) {
+    public FollowMemberList listFollow(String nickname, String email) {
         Member member = memberRepository.findByNickname(nickname).orElseThrow();
+        Member user = memberRepository.findByEmail(email).orElseThrow();
         FollowMemberList followMemberList = new FollowMemberList();
 
         List<FollowMemberDto> follwings = new ArrayList<>();
@@ -413,6 +414,7 @@ public class MemberServiceImpl implements MemberService {
             myFollowing.setWingspan(followingMember.getWingspan());
             myFollowing.setShoeSize(followingMember.getShoeSize());
             myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followingMember.getMemberId()));
 
             follwings.add(myFollowing);
         }
@@ -429,6 +431,7 @@ public class MemberServiceImpl implements MemberService {
             myFollower.setWingspan(followerMember.getWingspan());
             myFollower.setShoeSize(followerMember.getShoeSize());
             myFollower.setRank(memberRankExp.getRank().getName());
+            myFollower.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followerMember.getMemberId()));
 
             follwers.add(myFollower);
         }
