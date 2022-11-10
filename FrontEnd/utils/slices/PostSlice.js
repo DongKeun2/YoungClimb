@@ -79,7 +79,7 @@ const fetchDetail = createAsyncThunk(
   async (boardId, {rejectWithValue}) => {
     console.log('게시글 상세 요청 보냄');
     try {
-      const res = await axios.get(api.detail(boardId), await getConfig());
+      const res = await axios.get(api.feedComment(boardId), await getConfig());
       console.log('게시글 요청 성공', res.data);
       return res.data;
     } catch (err) {
@@ -93,6 +93,7 @@ const initialState = {
   boards: [],
   boardInfoComment: {},
   boardInfo: {},
+  commentInfo: {},
   uploadVideo: null,
   uploadVideoUri: null,
 };
@@ -116,7 +117,8 @@ export const PostSlice = createSlice({
       console.log('실패');
     },
     [fetchDetail.fulfilled]: (state, action) => {
-      state.boardInfo = action.payload;
+      state.boardInfo = action.payload.boardDto;
+      state.commentInfo = action.payload.commentDtos;
     },
     [fetchHomeFeed.fulfilled]: (state, action) => {
       state.boards = action.payload;
