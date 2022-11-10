@@ -92,6 +92,7 @@ function ProfileScreen({navigation, route}) {
 
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
+    setIsLoading(true);
     if (isFocused) {
       dispatch(profile(route.params.nickname)).then(() => setIsLoading(false));
     }

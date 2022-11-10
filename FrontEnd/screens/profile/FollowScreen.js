@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import {TextInput} from 'react-native-gesture-handler';
 import {useSelector} from 'react-redux';
@@ -22,72 +23,98 @@ function FollowScreen({navigation, route}) {
   const dispatch = useDispatch();
 
   const [type, setType] = useState('');
-
   const [keyword, setKeyword] = useState('');
 
+  const isFocused = useIsFocused();
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     setType(route.params.type);
-    dispatch(fetchFollowList(route.params.nickname));
-  }, [dispatch, route]);
+    setIsLoading(true);
+    if (isFocused) {
+      dispatch(fetchFollowList(route.params.nickname)).then(() => {
+        setIsLoading(false);
+      });
+    }
+  }, [dispatch, route, isFocused]);
 
   const followings = useSelector(state => state.profile.followInfo?.followings);
   const followers = useSelector(state => state.profile.followInfo?.followers);
 
   return (
-    <ScrollView style={styles.container}>
-      <CustomSubHeader title={route.params.nickname} navigation={navigation} />
+    <>
+      {isLoading ? null : (
+        <>
+          <CustomSubHeader
+            title={route.params.nickname}
+            navigation={navigation}
+          />
+          <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}>
+            {type === 'following' ? (
+              <View style={styles.tabBox}>
+                <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
+                  <Text
+                    style={[
+                      styles.tabFont,
+                      {fontWeight: 'bold', color: 'white'},
+                    ]}>
+                    팔로잉({followings?.length})
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    setType('follower');
+                  }}
+                  style={styles.tabBtn}>
+                  <Text style={styles.tabFont}>
+                    팔로워({followers?.length})
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : (
+              <View style={styles.tabBox}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setType('following');
+                  }}
+                  style={styles.tabBtn}>
+                  <Text style={styles.tabFont}>
+                    팔로잉({followings?.length})
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
+                  <Text
+                    style={[
+                      styles.tabFont,
+                      {fontWeight: 'bold', color: 'white'},
+                    ]}>
+                    팔로워({followers?.length})
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            <View style={styles.searchBox}>
+              <TextInput
+                style={styles.searchInput}
+                placeholder="닉네임을 검색하세요."
+                placeholderTextColor={'#ADADAD'}
+                value={keyword}
+                onChangeText={value => setKeyword(value)}
+              />
+              <Image style={styles.searchIcon} source={searchIcon} />
+            </View>
 
-      {type === 'following' ? (
-        <View style={styles.tabBox}>
-          <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
-            <Text
-              style={[styles.tabFont, {fontWeight: 'bold', color: 'white'}]}>
-              팔로잉({followings?.length})
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setType('follower');
-            }}
-            style={styles.tabBtn}>
-            <Text style={styles.tabFont}>팔로워({followers?.length})</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.tabBox}>
-          <TouchableOpacity
-            onPress={() => {
-              setType('following');
-            }}
-            style={styles.tabBtn}>
-            <Text style={styles.tabFont}>팔로잉({followings?.length})</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
-            <Text
-              style={[styles.tabFont, {fontWeight: 'bold', color: 'white'}]}>
-              팔로워({followers?.length})
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <FollowList
+              follows={type === 'following' ? followings : followers}
+              type={type}
+              keyword={keyword}
+              navigation={navigation}
+            />
+          </ScrollView>
+        </>
       )}
-      <View style={styles.searchBox}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="닉네임을 검색하세요."
-          placeholderTextColor={'#ADADAD'}
-          value={keyword}
-          onChangeText={value => setKeyword(value)}
-        />
-        <Image style={styles.searchIcon} source={searchIcon} />
-      </View>
-
-      <FollowList
-        follows={type === 'following' ? followings : followers}
-        type={type}
-        keyword={keyword}
-        navigation={navigation}
-      />
-    </ScrollView>
+    </>
   );
 }
 

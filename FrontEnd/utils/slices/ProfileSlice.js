@@ -6,6 +6,7 @@ import getConfig from '../headers';
 const profile = createAsyncThunk(
   'profile',
   async (nickname, {rejectWithValue}) => {
+    console.log('프로필 요청', nickname);
     try {
       const res = await axios.get(api.profile(nickname), await getConfig());
       console.log('프로필 요청 성공', res.data);
