@@ -57,9 +57,9 @@ export const checkMultiplePermissions = async(permissions)=> {
   try{
     let isPermissionGranted = false;
     for (const index in permissions) {
-      console.log(permissions[index])
+      // console.log(permissions[index])
       await PermissionsAndroid.check(permissions[index]).then((res)=>{
-        console.log(res,'res')
+        // console.log(res,'res')
         if (res ===true) {
           isPermissionGranted =true
         } else{
@@ -95,7 +95,7 @@ export async function checkPermission(permission) {
 export async function requestSinglePermission(permission,message) {
   try{
     const granted = await PermissionsAndroid.request(permission);
-    console.log(granted)
+    // console.log(granted)
     if (granted === RESULTS.GRANTED){
       return true
     } 

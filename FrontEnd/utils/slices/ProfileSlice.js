@@ -6,6 +6,7 @@ import getConfig from '../headers';
 const profile = createAsyncThunk(
   'profile',
   async (nickname, {rejectWithValue}) => {
+    console.log('프로필 요청', nickname);
     try {
       const res = await axios.get(api.profile(nickname), await getConfig());
       console.log('프로필 요청 성공', res.data);
@@ -48,6 +49,19 @@ const fetchFollowList = createAsyncThunk(
   },
 );
 
+const checkNickname = createAsyncThunk(
+  'checkNickname',
+  async (data, {rejectWithValue}) => {
+    console.log('닉네임 확인', data);
+    try {
+      const res = await axios.post(api.checkNickname(), data, {});
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   profileInfo: {},
   followInfo: {
@@ -64,14 +78,22 @@ export const ProfileSlice = createSlice({
     changeUploadImg: (state, action) => {
       state.uploadImg = action.payload;
     },
+    profileFollow: (state, action) => {
+      state.profileInfo.follow = action.payload;
+    },
+    followingFollow: (state, action) => {
+      state.followInfo.followings[action.payload.idx].follow =
+        action.payload.follow;
+    },
+    followerFollow: (state, action) => {
+      state.followInfo.followers[action.payload.idx].follow =
+        action.payload.follow;
+    },
   },
   extraReducers: {
     [profile.fulfilled]: (state, action) => {
       console.log('요청성공', action.payload);
       state.profileInfo = action.payload;
-    },
-    [followSubmit.fulfilled]: (state, action) => {
-      state.profileInfo.follow = action.payload;
     },
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followInfo = action.payload;
@@ -79,8 +101,9 @@ export const ProfileSlice = createSlice({
   },
 });
 
-export {profile, followSubmit, fetchFollowList};
+export {profile, followSubmit, fetchFollowList, checkNickname};
 
-export const {setIsOpen, setIsClose, changeUploadImg} = ProfileSlice.actions;
+export const {changeUploadImg, profileFollow, followingFollow, followerFollow} =
+  ProfileSlice.actions;
 
 export default ProfileSlice.reducer;

@@ -48,7 +48,6 @@ function ProfileStack({navigation, route}) {
       <Stack.Screen name="프로필 설정" component={ProfileEditScreen} />
       <Stack.Screen name="팔로우" component={FollowScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
-      <Stack.Screen name="댓글" component={PostScreen} />
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
       <Stack.Screen name="윙스팬" component={WingspanScreen} />
     </Stack.Navigator>
