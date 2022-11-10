@@ -91,16 +91,11 @@ public class MemberController {
 
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
-    @PostMapping("/profile/{intro}/{nickname}")
-    public ResponseEntity<?> addProfile(@PathVariable String intro, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        if (intro.isBlank()) intro = "";
+    @PostMapping("/profile")
+    public ResponseEntity<?> addProfile(@RequestBody MemberProfile memberProfile, @CurrentUser UserPrincipal principal) throws Exception {
 
-        MemberProfile memberProfile = MemberProfile.builder()
-                .intro(intro)
-                .build();
-        System.out.println(memberProfile);
         try {
-            memberService.addProfile(principal.getUsername(), memberProfile, file);
+            memberService.addProfile(principal.getUsername(), memberProfile);
             return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -109,22 +104,11 @@ public class MemberController {
 
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
-    @PostMapping("/profile/edit/{intro}/{height}/{shoeSize}/{wingspan}/{nickname}")
-    public ResponseEntity<?> editProfile(@PathVariable String intro, @PathVariable Integer height, @PathVariable Integer shoeSize, @PathVariable Integer wingspan, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        if (intro.isBlank()) intro = null;
-        if (height.equals(0)) height = null;
-        if (shoeSize.equals(0)) shoeSize = null;
-        if (wingspan.equals(0)) wingspan = null;
+    @PostMapping("/profile/edit")
+    public ResponseEntity<?> editProfile(@RequestBody MemberInfo memberInfo, @CurrentUser UserPrincipal principal) throws Exception {
 
-        MemberInfo memberInfo = MemberInfo.builder()
-                .nickname(nickname)
-                .intro(intro)
-                .height(height)
-                .shoeSize(shoeSize)
-                .wingspan(wingspan)
-                .build();
         try {
-            memberService.editProfile(principal.getUsername(), memberInfo, file);
+            memberService.editProfile(principal.getUsername(), memberInfo);
             return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
