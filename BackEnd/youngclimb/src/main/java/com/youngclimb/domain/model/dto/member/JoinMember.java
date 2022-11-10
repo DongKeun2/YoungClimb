@@ -12,5 +12,6 @@ public class JoinMember {
     public Integer height = 0;
     public Integer shoeSize = 0;
     public Integer wingspan = 0;
+    public String fcmToekn = null;
 
 }

@@ -6,5 +6,5 @@ import lombok.Data;
 public class LoginMember {
     public String email;
     public String password;
-    public String fcmToken;
+    public String fcmToken = null;
 }

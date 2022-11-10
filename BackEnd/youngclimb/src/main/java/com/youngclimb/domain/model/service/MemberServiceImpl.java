@@ -93,6 +93,7 @@ public class MemberServiceImpl implements MemberService {
                 .wingspan(joinMember.getWingspan())
                 .wingheight(joinMember.getHeight() + joinMember.getWingspan())
                 .role(UserRole.USER)
+                .fcmToken(joinMember.getFcmToekn())
                 .build();
         if (member == null) System.out.println("멤버 빌드 실패");
         memberRepository.save(member);
