@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
+import com.youngclimb.domain.model.dto.center.CenterDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -26,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -395,8 +397,8 @@ public class MemberServiceImpl implements MemberService {
         Member user = memberRepository.findByEmail(email).orElseThrow();
         FollowMemberList followMemberList = new FollowMemberList();
 
-        List<FollowMemberDto> follwings = new ArrayList<>();
-        List<FollowMemberDto> follwers = new ArrayList<>();
+        List<FollowMemberDto> followings = new ArrayList<>();
+        List<FollowMemberDto> followers = new ArrayList<>();
 
         List<Follow> followingMembers = followRepository.findAllByFollower(member);
         List<Follow> followerMembers = followRepository.findAllByFollowing(member);
@@ -416,7 +418,7 @@ public class MemberServiceImpl implements MemberService {
             myFollowing.setRank(memberRankExp.getRank().getName());
             myFollowing.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followingMember.getMemberId()));
 
-            follwings.add(myFollowing);
+            followings.add(myFollowing);
         }
 
         for (Follow follower : followerMembers) {
@@ -433,11 +435,29 @@ public class MemberServiceImpl implements MemberService {
             myFollower.setRank(memberRankExp.getRank().getName());
             myFollower.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followerMember.getMemberId()));
 
-            follwers.add(myFollower);
+            followers.add(myFollower);
         }
 
-        followMemberList.setFollowers(follwers);
-        followMemberList.setFollowings(follwings);
+        followers.sort(new Comparator<FollowMemberDto>() {
+            @Override
+            public int compare(FollowMemberDto o1, FollowMemberDto o2) {
+                Integer a = (o1.getFollow())?1:0;
+                Integer b = (o2.getFollow())?1:0;
+                return (b - a);
+            }
+        });
+
+        followings.sort(new Comparator<FollowMemberDto>() {
+            @Override
+            public int compare(FollowMemberDto o1, FollowMemberDto o2) {
+                Integer a = (o1.getFollow())?1:0;
+                Integer b = (o2.getFollow())?1:0;
+                return (b - a);
+            }
+        });
+
+        followMemberList.setFollowers(followers);
+        followMemberList.setFollowings(followings);
 
         return followMemberList;
     }
