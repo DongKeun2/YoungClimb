@@ -1,8 +1,8 @@
 import 'react-native-gesture-handler';
 
-import React, {useRef, useState, useEffect} from 'react';
-// import {ImageBackground, Animated, View} from 'react-native';
-import {useSelector} from 'react-redux';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
+import { Platform, PermissionsAndroid, Linking } from 'react-native';
+import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -20,7 +20,6 @@ import StoreStack from '../stack/StoreStack';
 import RandomScreen from './RandomScreen';
 import ProfileStack from '../stack/ProfileStack';
 
-import background from '../assets/image/initial/background.png';
 import MapIcon from '../assets/image/tab/map.svg';
 import ReelsIcon from '../assets/image/tab/reels.svg';
 import HomeIcon from '../assets/image/tab/home.svg';
@@ -32,62 +31,95 @@ import ActiveHomeIcon from '../assets/image/tab/activeHome.svg';
 import ActiveSearchIcon from '../assets/image/tab/activeSearch.svg';
 import ActiveProfileIcon from '../assets/image/tab/activeProfile.svg';
 
+import {
+  getAccessToken,
+  getCurrentUser,
+  removeAccessToken,
+  removeCurrentUser,
+} from '../utils/Token';
+import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
+import {fetchCenterInfo} from '../utils/slices/CenterSlice';
+
+import {requestPermission,StartPer, requestSinglePermission, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 export default function YoungClimb() {
+  const dispatch = useDispatch();
   const [loading, setIsLoading] = useState(true);
 
   const login = useSelector(state => state.accounts.loginState);
 
-  // const fadeAnim = useRef(new Animated.Value(1)).current;
+  useEffect(() => {
+    const permissionList = [
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      // PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
+      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+      // PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+     ]
+    const permissionDict = {
+      'android.permission.CAMERA': '카메라',
+      'android.permission.ACCESS_FINE_LOCATION': '위치',
+      'android.permission.READ_EXTERNAL_STORAGE': '저장공간',
+    }
+    const neverCallList = []
+    const callRes = async()=> {
+      try{
+        const result = await checkMultiplePermissions(permissionList)
+        if (!login && !result) {
+            await AsyncAlert('Young Climb 앱 권한 설정', '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요', 
+            async ()=> { 
+              try{
+              for (const per of permissionList) {
+                const result = await StartPer(per)
+                if (result === per) {
+                  neverCallList.push(per)
+                }
+              }
+            } catch(err){console.log(err)}
+          })
+          }
+        if (neverCallList.length){
+          let txt = '' 
+          neverCallList.forEach((content)=>{
+            txt += permissionDict[content] + `\n`
+          })
+          AsyncAlert('권한 요청 거부된 요청','다음의 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다. \n \n'+txt,Linking.openSettings)
+        }
+      } catch (err){console.log(err)}
+    }
+    callRes()
+    
 
-  // const fadeIn = () => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 1,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  // };
-
-  // const fadeOut = async () => {
-  //   Animated.timing(fadeAnim, {
-  //     toValue: 0,
-  //     duration: 1000,
-  //     useNativeDriver: true,
-  //   }).start();
-  //   return true;
-  // };
+},[]);
 
   useEffect(() => {
+    console.log('앱 새로고침');
+    dispatch(fetchCenterInfo());
+
+    getCurrentUser().then(res => {
+      if (res) {
+        console.log('로그인됨', res);
+        dispatch(fetchCurrentUser(res));
+      } else {
+        console.log('비로그인상태임');
+        removeAccessToken();
+        removeCurrentUser();
+      }
+    });
+
     setTimeout(() => {
       setIsLoading(false);
     }, 3000);
-  });
-
-  // useEffect(() => {
-  //   // fadeIn();
-  //   setTimeout(() => {
-  //     fadeOut().then(() => {
-  //       setIsLoading(false);
-  //     });
-  //   }, 2500);
-  // });
+  }, [dispatch]);
 
   return (
     <>
       {loading ? (
         <InitialScreen />
       ) : (
-        // <Animated.View
-        //   style={{
-        //     opacity: fadeAnim,
-        //   }}>
-        //   <ImageBackground
-        //     source={background}
-        //     style={{width: '100%', height: '100%'}}
-        //   />
-        // </Animated.View>
         <NavigationContainer>
           {login ? (
             <Tab.Navigator

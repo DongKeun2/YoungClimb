@@ -5,9 +5,11 @@ import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import UserAvatar from './UserAvatar';
 import Recomment from './Recomment';
 
-import avatar from '../assets/image/initial/background.png';
 import EmptyHeart from '../assets/image/feed/emptyHeart.svg';
 import FillHeart from '../assets/image/feed/fillHeart.svg';
+import HoldIcon from '../assets/image/hold/hold.svg';
+
+import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
 function Comment({comment, navigation}) {
   const [isViewRecomment, setIsViewRecomment] = useState(false);
@@ -18,19 +20,29 @@ function Comment({comment, navigation}) {
 
   return (
     <View style={styles.commentContainer}>
-      <UserAvatar source={avatar} rank={comment.user.rank} size={32} />
+      <UserAvatar
+        source={{uri: comment.user.image}}
+        rank={comment.user.rank}
+        size={32}
+      />
       <View style={styles.commentInfo}>
-        <View style={styles.commentMain}>
-          <Text style={{...styles.commentTextStyle, fontWeight: '600'}}>
-            {comment.user.nickname}
+        <View style={{...styles.commentMain, marginBottom: 3}}>
+          <View style={{...styles.iconText, alignItems: 'center'}}>
             <Text
               style={{
                 ...styles.commentTextStyle,
-                fontWeight: 'normal',
+                fontWeight: '600',
+                marginRight: 5,
               }}>
-              {'  ' + comment.content}
+              {comment.user.nickname}
             </Text>
-          </Text>
+            <HoldIcon
+              width={15}
+              height={15}
+              color={YCLevelColorDict[comment.user.rank]}
+            />
+          </View>
+          <Text style={styles.commentTextStyle}>{comment.content}</Text>
         </View>
         <View style={styles.commentSub}>
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
@@ -97,6 +109,10 @@ const styles = StyleSheet.create({
   commentTextStyle: {
     color: 'black',
     fontSize: 14,
+  },
+  iconText: {
+    display: 'flex',
+    flexDirection: 'row',
   },
 });
 

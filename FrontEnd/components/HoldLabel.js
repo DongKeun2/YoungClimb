@@ -1,16 +1,19 @@
 import React from 'react';
 import {StyleSheet, View, Text} from 'react-native';
 
+import {holdColorDict} from '../assets/info/ColorInfo';
+
 function HoldLabel({color}) {
   return (
     <View style={styles.labelContainer}>
-      <View
-        style={[
-          styles.label,
-          {backgroundColor: levelItem[color].backgroundColor},
-        ]}>
-        <Text style={[styles.font, {color: levelItem[color].fontColor}]}>
-          {levelItem[color].name}
+      <View style={[styles.label, {backgroundColor: holdColorDict[color]}]}>
+        <Text
+          style={
+            color === '흰색' || color === '노랑'
+              ? [styles.font, {color: 'black'}]
+              : [styles.font, {color: 'white'}]
+          }>
+          {color} 홀드
         </Text>
       </View>
     </View>
@@ -25,6 +28,7 @@ const styles = StyleSheet.create({
   },
   label: {
     borderRadius: 3,
+    elevation: 0.8,
   },
   font: {
     marginVertical: 1,
@@ -34,33 +38,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
-const levelItem = {
-  red: {
-    name: '빨강 홀드',
-    backgroundColor: '#F05D5D',
-    fontColor: 'white',
-  },
-  blue: {
-    name: '파랑 홀드',
-    backgroundColor: '#3B4BA0',
-    fontColor: 'white',
-  },
-  yellow: {
-    name: '노랑 홀드',
-    backgroundColor: '#F3F352',
-    fontColor: '#535353',
-  },
-  black: {
-    name: '검정 홀드',
-    backgroundColor: 'black',
-    fontColor: 'white',
-  },
-  pink: {
-    name: '분홍 홀드',
-    backgroundColor: '#EC33B8',
-    fontColor: 'white',
-  },
-};
 
 export default HoldLabel;

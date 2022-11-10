@@ -12,7 +12,7 @@ import {
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const BottomSheet = (props) => {
-	const { modalVisible, setModalVisible, setMapView, navigation, climbingLocations } = props;
+	const { modalVisible, setModalVisible, navigation, climbingLocations } = props;
 	const [modalStat, setModalStat] = useState('half')
 	const screenHeight = Dimensions.get("screen").height;
 	const screenWidth = Dimensions.get("screen").width;
@@ -96,7 +96,14 @@ const BottomSheet = (props) => {
 			setModalVisible(false);
 			setModalStat('closed')
 		})
-    setMapView('100%')
+	}
+
+	const refactorDis = (dis) =>{
+		if (dis >= 1000) {
+			return String((dis/1000).toFixed(1))+'km' 
+		} else {
+			return String(dis)+'m'
+		}
 	}
 
 	const renderItem = ({item}) =>{
@@ -109,7 +116,7 @@ const BottomSheet = (props) => {
 				>
 				<View style={{...styles.detailContainer}}>
 					<Text style={styles.renderItemName}>{item.name}</Text>	
-					<Text style={styles.renderItemDetail}>{item.distance}</Text>
+					<Text style={styles.renderItemDetail}>{refactorDis(item.distance)}</Text>
 				</View>
 					<Text style={styles.renderItemDetail}>{item.address}</Text>
 			</TouchableOpacity>
@@ -201,7 +208,7 @@ const styles = StyleSheet.create({
 	},
 	overlay: {
     // height:'50%',
-    zIndex:1,
+    zIndex:2,
 		flex: 1,
 		justifyContent: "flex-end",
 		// backgroundColor: "rgba(0, 0, 0, 0.4)"
@@ -220,6 +227,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "white",
 		borderTopLeftRadius: 10,
 		borderTopRightRadius: 10,
+		zIndex:2
 	}
 })
 

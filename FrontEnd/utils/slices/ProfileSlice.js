@@ -3,32 +3,32 @@ import axios from 'axios';
 import api from '../api';
 import getConfig from '../headers';
 
-import sampleImg from '../../assets/image/main/wingspanExample.png';
-import example1 from '../../assets/image/profile/example1.png';
-import example2 from '../../assets/image/profile/example2.png';
-import example3 from '../../assets/image/profile/example3.png';
-import example4 from '../../assets/image/profile/example4.png';
-import avatar from '../../assets/image/profile/avatar.png';
-
 const profile = createAsyncThunk(
   'profile',
   async (nickname, {rejectWithValue}) => {
+    console.log('프로필 요청', nickname);
     try {
-      const res = await axios.get(api.profile(nickname), getConfig());
+      const res = await axios.get(api.profile(nickname), await getConfig());
+      console.log('프로필 요청 성공', res.data);
       return res.data;
     } catch (err) {
+      console.log('프로필 요청 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
 );
 
-const follow = createAsyncThunk(
-  'follow',
+const followSubmit = createAsyncThunk(
+  'followSubmit',
   async (nickname, {rejectWithValue}) => {
+    console.log(nickname, '를 팔로우');
     try {
-      const res = await axios.post(api.follow(nickname), {}, getConfig());
+      const res = await axios.post(api.follow(nickname), {}, await getConfig());
+      console.log('팔로우 성공');
+      console.log(res.data);
       return res.data;
     } catch (err) {
+      console.log('팔로우 실패');
       return rejectWithValue(err.response.data);
     }
   },
@@ -37,8 +37,24 @@ const follow = createAsyncThunk(
 const fetchFollowList = createAsyncThunk(
   'fetchFollowList',
   async (nickname, {rejectWithValue}) => {
+    console.log('팔로우 정보 요청', nickname);
     try {
-      const res = await axios.get(api.follow(nickname), getConfig());
+      const res = await axios.get(api.follow(nickname), await getConfig());
+      console.log('팔로우 목록 결과', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('팔로우 목록 실패');
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const checkNickname = createAsyncThunk(
+  'checkNickname',
+  async (data, {rejectWithValue}) => {
+    console.log('닉네임 확인', data);
+    try {
+      const res = await axios.post(api.checkNickname(), data, {});
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -47,303 +63,37 @@ const fetchFollowList = createAsyncThunk(
 );
 
 const initialState = {
-  profileInfo: {
-    isMine: false,
-    isFollow: false,
-    user: {
-      image: sampleImg,
-      nickname: '닉네임입니다',
-      gender: 'M',
-      intro: '안녕하세요ㅎㅎ',
-      height: 177,
-      shoeSize: 270,
-      wingspan: 190,
-      rank: 'Y4',
-      exp: 70,
-      boardNum: 12,
-      followingNum: 33,
-      followerNum: 35,
-    },
-
-    boards: [
-      {
-        id: 1,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example1,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: 'red',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 4,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example2,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: 'red',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 2,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example3,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: 'blue',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 3,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example4,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: 'blue',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-    ],
-    scraps: [
-      {
-        id: 4,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example2,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: 'red',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 2,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example3,
-        wallId: 5,
-        difficulty: 'V1',
-        centerLevelColor: 'red',
-        centerName: '더클라임 양재점',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-      {
-        id: 1,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example1,
-        wallId: 5,
-        difficulty: 'V1',
-        centerName: '더클라임 양재점',
-        centerLevelColor: 'red',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-
-      {
-        id: 3,
-        createUser: '나는 문어',
-        createdAt: '2022-10-28',
-        centerId: 1,
-        centerLevelId: 3,
-        mediaId: example4,
-        wallId: 5,
-        difficulty: 'V1',
-        centerName: '더클라임 양재점',
-        centerLevelColor: 'red',
-        wallName: 'A구역',
-        holdColor: 'red',
-        solvedDate: '2022-10-27',
-        content: '하하하',
-        like: 20,
-        view: 30,
-        isFollow: false,
-        isLiked: true,
-        isScrap: true,
-        commentNum: 20,
-        commentPreview: {nickname: '나는 오징어', content: '오...'},
-      },
-    ],
-  },
+  profileInfo: {},
   followInfo: {
-    followings: [
-      {
-        image: avatar,
-        nickname: '나의 팔로워1',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '나의 팔로워2',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '나의 팔로워3',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '나의 팔로워4',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '나의 팔로워5',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-    ],
-    followers: [
-      {
-        image: avatar,
-        nickname: '팔로우해주세요',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-      {
-        image: avatar,
-        nickname: '제발요',
-        height: 180,
-        shoeSize: 260,
-        wingspan: 190,
-        rank: 2,
-        gender: 'M',
-      },
-    ],
+    followings: [],
+    followers: [],
   },
-  isOpen: false,
+  uploadImg: null,
 };
 
 export const ProfileSlice = createSlice({
   name: 'profile',
   initialState,
   reducers: {
-    setIsOpen: state => {
-      state.isOpen = !state.isOpen;
+    changeUploadImg: (state, action) => {
+      state.uploadImg = action.payload;
     },
-    setIsClose: state => {
-      state.isOpen = false;
+    profileFollow: (state, action) => {
+      state.profileInfo.follow = action.payload;
+    },
+    followingFollow: (state, action) => {
+      state.followInfo.followings[action.payload.idx].follow =
+        action.payload.follow;
+    },
+    followerFollow: (state, action) => {
+      state.followInfo.followers[action.payload.idx].follow =
+        action.payload.follow;
     },
   },
   extraReducers: {
     [profile.fulfilled]: (state, action) => {
+      console.log('요청성공', action.payload);
       state.profileInfo = action.payload;
-    },
-    [follow.fulfilled]: (state, action) => {
-      state.profileInfo.isFollow = action.payload;
     },
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followInfo = action.payload;
@@ -351,8 +101,9 @@ export const ProfileSlice = createSlice({
   },
 });
 
-export {profile, follow, fetchFollowList};
+export {profile, followSubmit, fetchFollowList, checkNickname};
 
-export const {setIsOpen, setIsClose} = ProfileSlice.actions;
+export const {changeUploadImg, profileFollow, followingFollow, followerFollow} =
+  ProfileSlice.actions;
 
 export default ProfileSlice.reducer;

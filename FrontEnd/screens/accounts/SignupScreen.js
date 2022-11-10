@@ -43,12 +43,10 @@ function SignupScreen({navigation}) {
 
   // 정보 입력 완료 시 다음 페이지 이동
   function goNextPage() {
-    if (
-      false
-      // !isCheckNickname ||
-      // !isCheckEmail
-    ) {
-      // alert('정보를 입력하세요.');
+    if (!isCheckNickname) {
+      alert('닉네임을 확인해주세요.');
+    } else if (!isCheckEmail) {
+      alert('이메일을 확인해주세요.');
     } else if (!isCheckTerms) {
       alert('약관에 동의해주세요.');
     } else if (passwordError) {
@@ -101,8 +99,12 @@ function SignupScreen({navigation}) {
     }
   }
   function onCheckNickname() {
-    const data = {nickname: signupForm.nickname.value};
-    dispatch(checkNickname(data));
+    if (signupForm.nickname.value) {
+      const data = {nickname: signupForm.nickname.value};
+      dispatch(checkNickname(data));
+    } else {
+      alert('닉네임을 입력해주세요.');
+    }
   }
 
   return (
@@ -225,7 +227,7 @@ function SignupScreen({navigation}) {
         </TouchableOpacity>
         <TouchableOpacity style={styles.next} onPress={goNextPage}>
           <Text style={styles.nextText}>다음</Text>
-          <NextIcon style={{marginLeft: 5, marginRight: 5}} />
+          <NextIcon color="black" style={{marginLeft: 5, marginRight: 5}} />
         </TouchableOpacity>
       </View>
     </View>
