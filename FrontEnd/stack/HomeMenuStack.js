@@ -28,7 +28,7 @@ const HomeMenuStack = (props) =>{
         {props => <MenuMain {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} setModalVisible={setModalVisible} />}
       </Stack.Screen>
       <Stack.Screen name="신고" options={{headerShown:false}}>
-        {props => <DeclareMenu {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} />}
+        {props => <DeclareMenu {...props} parentnavigation={parentnavigation} focusedContent={focusedContent}  setModalVisible={setModalVisible}/>}
       </Stack.Screen>
       <Stack.Screen name="표시이유" options={{headerShown:false}}>
         {props => <ReasonShown {...props} parentnavigation={parentnavigation} focusedContent={focusedContent} />}
