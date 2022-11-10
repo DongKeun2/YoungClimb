@@ -111,7 +111,7 @@ public class Member {
     // 프로필 사진 넣기
     public Member updateMemberImg(MemberProfile memberProfile) {
 
-        if (memberProfile.getIntro() != null) this.profileContent = null;
+        if (memberProfile.getIntro() == null) this.profileContent = "";
         if (memberProfile.getImage() != null) this.memberProfileImg = memberProfile.image;
 
         return this;

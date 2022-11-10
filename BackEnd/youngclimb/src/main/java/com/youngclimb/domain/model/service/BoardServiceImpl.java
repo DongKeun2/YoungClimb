@@ -148,8 +148,6 @@ public class BoardServiceImpl implements BoardService {
             // 게시글 Dto 세팅
             BoardDto boardDto = this.startDto(board, member);
             boardDto.setCreateUser(this.toCreateUser(board, member));
-
-            // 게시글 미디어 path 세팅
             BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
             boardDto.setMediaPath(boardMedia.getMediaPath());
 
@@ -234,7 +232,7 @@ public class BoardServiceImpl implements BoardService {
         boardDto.setWallId(category.getWall().getId());
         boardDto.setWallName(category.getWall().getName());
         boardDto.setDifficulty(category.getDifficulty());
-        boardDto.setHoldColor(category.getHoldColor());
+        boardDto.setHoldColor(category.getHoldcolor());
 
 
         // 댓글 DTO 1개 세팅
@@ -256,10 +254,29 @@ public class BoardServiceImpl implements BoardService {
         return boardDto;
     }
 
+    // 동영상 저장
+    @Override
+    public String saveImage(MultipartFile file) {
+        if (file != null) {
+            String fileName = createFileName(file.getOriginalFilename());
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(file.getSize());
+            objectMetadata.setContentType(file.getContentType());
+            try (InputStream inputStream = file.getInputStream()) {
+                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (IOException e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+            }
+            return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
+        } else {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
+        }
+
+    }
 
     // 게시글 작성
     @Override
-    public void writeBoard(String email, BoardCreate boardCreate, MultipartFile file) {
+    public void writeBoard(String email, BoardCreate boardCreate) {
 
         // 게시글 저장하기
         Board board = boardCreate.toBoard();
@@ -273,26 +290,32 @@ public class BoardServiceImpl implements BoardService {
                 .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
                 .wall(wallRepository.findById(boardCreate.getWallId()).orElseThrow())
                 .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
-                .holdColor(boardCreate.getHoldColor())
+                .holdcolor(boardCreate.getHoldColor())
                 .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
                 .build();
         categoryRepository.save(category);
 
-        // 이미지 저장하기
-        if (!file.isEmpty()) {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-            }
-            BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
-                    .build();
-            boardMediaRepository.save(boardMedia);
-        }
+//        // 이미지 저장하기
+//        if (!file.isEmpty()) {
+//            String fileName = createFileName(file.getOriginalFilename());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
+//            try (InputStream inputStream = file.getInputStream()) {
+//                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+//            } catch (IOException e) {
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+//            }
+//            BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
+//                    .build();
+//            boardMediaRepository.save(boardMedia);
+//        }
+
+        BoardMedia boardMedia = BoardMedia.builder()
+                .board(board).mediaPath(boardCreate.getMediaPath())
+                .build();
+
+        boardMediaRepository.save(boardMedia);
 
         // 유저 경험치 등급 저장하기
         // 게시물에서 등급 받아오기
@@ -325,6 +348,7 @@ public class BoardServiceImpl implements BoardService {
         memberRankExpRepository.save(memberExp);
     }
 
+    // 게시글 삭제하기
     @Override
     public void deleteBoard(String email, Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow();
@@ -681,7 +705,7 @@ public class BoardServiceImpl implements BoardService {
         boardDto.setWallId(category.getWall().getId());
         boardDto.setWallName(category.getWall().getName());
         boardDto.setDifficulty(category.getDifficulty());
-        boardDto.setHoldColor(category.getHoldColor());
+        boardDto.setHoldColor(category.getHoldcolor());
 
         return boardDto;
     }
@@ -779,7 +803,7 @@ public class BoardServiceImpl implements BoardService {
         scrapDto.setWallId(category.getWall().getId());
         scrapDto.setWallName(category.getWall().getName());
         scrapDto.setDifficulty(category.getDifficulty());
-        scrapDto.setHoldColor(category.getHoldColor());
+        scrapDto.setHoldColor(category.getHoldcolor());
 
         return scrapDto;
     }

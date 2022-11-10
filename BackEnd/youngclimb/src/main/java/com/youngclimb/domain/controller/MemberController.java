@@ -93,7 +93,7 @@ public class MemberController {
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
     @PostMapping("/profile/{intro}/{nickname}")
     public ResponseEntity<?> addProfile(@PathVariable String intro, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        if (intro.isBlank()) intro = null;
+        if (intro.isBlank()) intro = "";
 
         MemberProfile memberProfile = MemberProfile.builder()
                 .intro(intro)
@@ -160,9 +160,9 @@ public class MemberController {
 
     @ApiOperation(value = "팔로잉, 팔로워 목록 읽기")
     @GetMapping("/{nickname}/follow")
-    public ResponseEntity<?> listFollow(@PathVariable String nickname) {
+    public ResponseEntity<?> listFollow(@PathVariable String nickname, @CurrentUser UserPrincipal principal) {
         try {
-            FollowMemberList followMemberList = memberService.listFollow(nickname);
+            FollowMemberList followMemberList = memberService.listFollow(nickname, principal.getUsername());
             if (followMemberList != null) {
                 return new ResponseEntity<FollowMemberList>(followMemberList, HttpStatus.OK);
             } else {
@@ -206,6 +206,19 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
+    // 이미지 저장
+    @ApiOperation(value = "saveImage: 이미지 저장하기")
+    @PostMapping("/save/image")
+    public ResponseEntity<?> saveImage(@RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+        try {
+            return new ResponseEntity<>(boardService.saveImage(file), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
 
 
     // 토큰 재발급

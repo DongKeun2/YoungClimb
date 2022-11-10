@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +46,15 @@ public class SearchServiceImpl implements SearchService {
                             .rank(memberRankExpRepository.findByMember(recommend.getFollowing()).orElseThrow().getRank().getName())
                             .build();
 
+
                     memberPics.add(memberPic);
                 }
             }
         }
+        Set<MemberPic> memberPicSet = new HashSet<MemberPic>(memberPics);
+        List<MemberPic> newMemberPics = new ArrayList<MemberPic>(memberPicSet);
 
-        return memberPics;
+        return newMemberPics;
     }
 
     @Override
@@ -84,8 +85,37 @@ public class SearchServiceImpl implements SearchService {
         String holdColor = boardSearchDto.getHoldColor();
         boolean isSimilar = boardSearchDto.getIsSimilar();
 
+        List<Category> categories;
 
-        List<Category> categories = categoryRepository.findAllByCenterIdOrWallIdAndCenterlevelIdAndHoldColor(centerId, wallId, levelId, holdColor);
+        if (wallId == null) {
+            if (levelId == null) {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterId(centerId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndHoldcolor(centerId, holdColor);
+                }
+            } else {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelId(centerId, levelId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelIdAndHoldcolor(centerId, levelId, holdColor);
+                }
+            }
+        } else {
+            if (levelId == null) {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterIdAndWallId(centerId, wallId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndHoldcolorAndWallId(centerId, holdColor, wallId);
+                }
+            } else {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelIdAndWallId(centerId, levelId, wallId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelIdAndHoldcolorAndWallId(centerId, levelId, holdColor, wallId);
+                }
+            }
+        }
 
         if (!isSimilar) {
             categories.sort(new Comparator<Category>() {
@@ -157,7 +187,7 @@ public class SearchServiceImpl implements SearchService {
             boardDto.setWallId(category.getWall().getId());
             boardDto.setWallName(category.getWall().getName());
             boardDto.setDifficulty(category.getDifficulty());
-            boardDto.setHoldColor(category.getHoldColor());
+            boardDto.setHoldColor(category.getHoldcolor());
 
 
             // 댓글 DTO 1개 세팅
