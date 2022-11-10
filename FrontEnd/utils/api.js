@@ -20,11 +20,13 @@ const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
 
 const BOARD_URL = '/board';
-const DETAIL_URL = '/detail';
 const HOME_URL = '/home';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
-const REPORT_URL ='/report'
+
+const REELS_URL = '/reels';
+
+const REPORT_URL = '/report';
 
 const api = {
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
@@ -60,7 +62,6 @@ const api = {
 
   searchUser: () => API_BASE_URL + SEARCH_URL + USER_URL,
   search: () => API_BASE_URL + SEARCH_URL + BOARD_URL,
-  detail: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DETAIL_URL,
 
   homeFeed: pageNumber =>
     API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,
@@ -69,7 +70,9 @@ const api = {
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
 
-  report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL
+  reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
+
+  report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
 };
 
 export default api;

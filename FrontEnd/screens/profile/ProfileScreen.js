@@ -92,6 +92,7 @@ function ProfileScreen({navigation, route}) {
 
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
+    setIsLoading(true);
     if (isFocused) {
       dispatch(profile(route.params.nickname)).then(() => setIsLoading(false));
     }
@@ -132,7 +133,11 @@ function ProfileScreen({navigation, route}) {
                   </View>
                 </View>
 
-                <FollowBtn follow={follow} nickname={userInfo?.nickname} />
+                <FollowBtn
+                  type="profile"
+                  follow={follow}
+                  nickname={userInfo?.nickname}
+                />
               </View>
 
               <View style={styles.introBox}>

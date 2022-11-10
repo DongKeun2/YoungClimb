@@ -23,7 +23,6 @@ function SearchStack() {
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
       <Stack.Screen name="팔로우" component={FollowScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
-      <Stack.Screen name="댓글" component={PostScreen} />
     </Stack.Navigator>
   );
 }
