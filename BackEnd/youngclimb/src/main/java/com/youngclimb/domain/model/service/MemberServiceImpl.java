@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.util.annotation.Nullable;
 
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
@@ -79,6 +80,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = Member.builder()
+                .memberProfileImg("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png")
                 .email(joinMember.getEmail())
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
@@ -96,9 +98,14 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo user = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
                 .height(member.getHeight())
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
+                .rank("Y1")
+                .exp(0)
+                .expleft(20)
+                .upto(0)
                 .build();
 
         MemberRankExp memberRankExp = MemberRankExp.builder()
@@ -110,7 +117,7 @@ public class MemberServiceImpl implements MemberService {
 
         MemberProblem memberProblem = MemberProblem.builder()
                 .member(member)
-                .vB(0).v1(0).v2(0).v3(0).v4(0).v5(0).v6(0).v7(0).v8(0)
+                .vB(0).v0(0).v1(0).v2(0).v3(0).v4(0).v5(0).v6(0).v7(0).v8(0)
                 .build();
         memberProblemRepository.save(memberProblem);
 
@@ -166,7 +173,10 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 수정
     @Override
-    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception {
+    public void editProfile(String email, MemberInfo memberInfo, @Nullable MultipartFile file) throws Exception {
+        System.out.println(memberInfo);
+
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
@@ -272,11 +282,12 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
+                .image(loginMember.getMemberProfileImg())
                 .height(loginMember.getHeight())
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (expLeft * 100 / memberRankExp.getRank().getQual()))
+                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -345,7 +356,7 @@ public class MemberServiceImpl implements MemberService {
     public Boolean addCancelFollow(String followingNickname, String followerEmail) {
         Member following = memberRepository.findByNickname(followingNickname).orElseThrow();
         Member follower = memberRepository.findByEmail(followerEmail).orElseThrow();
-        Notice notice = noticeRepository.findByToMemberAndFromMember(following, follower).orElse(null);
+        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(following, follower, 1).orElse(null);
 
         if (follower.getMemberId() == following.getMemberId()) {
             return Boolean.FALSE;
