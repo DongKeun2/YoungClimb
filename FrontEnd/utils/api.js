@@ -18,6 +18,7 @@ const CENTERS_URL = '/center';
 
 const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
+const SAVE_URL = '/save';
 
 const BOARD_URL = '/board';
 const HOME_URL = '/home';
@@ -27,6 +28,7 @@ const SCRAP_URL = '/scrap';
 const REELS_URL = '/reels';
 
 const REPORT_URL = '/report';
+const IMAGE_URL = '/image';
 
 const api = {
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
@@ -37,22 +39,11 @@ const api = {
   checkNickname: () => API_BASE_URL + USER_URL + NICKNAME_URL,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   profile: nickname => API_BASE_URL + USER_URL + `/${nickname}`,
-  profileCreate: data =>
-    API_BASE_URL +
-    USER_URL +
-    PROFILE_URL +
-    `/${data.intro ? data.intro : ' '}` +
-    `/${data.nickname}`,
-  profileEdit: data =>
-    API_BASE_URL +
-    USER_URL +
-    PROFILE_URL +
-    EDIT_URL +
-    `/${data.intro ? data.intro : ' '}` +
-    `/${data.height ? data.height : '0'}` +
-    `/${data.shoeSize ? data.shoeSize : '0'}` +
-    `/${data.wingspan ? data.wingspan : '0'}` +
-    `/${data.nickname}`,
+
+  saveImage: () => API_BASE_URL + USER_URL + SAVE_URL + IMAGE_URL,
+  profileCreate: () => API_BASE_URL + USER_URL + PROFILE_URL,
+  profileEdit: () => API_BASE_URL + USER_URL + PROFILE_URL + EDIT_URL,
+
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
   wingspan: () => WINGSPAN_URL,

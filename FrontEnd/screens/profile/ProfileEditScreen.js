@@ -20,6 +20,7 @@ import {
   changeEditForm,
   profileEdit,
   logout,
+  saveImage,
 } from '../../utils/slices/AccountsSlice';
 import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
@@ -33,6 +34,7 @@ function ProfileEditScreen({navigation}) {
 
   const imageUri = useSelector(state => state.profile.uploadImg);
   const [isCheckNickname, setIsCheckNickname] = useState(true);
+  const [isChange, setIsChange] = useState(false);
 
   const editForm = useSelector(state => state.accounts.editForm);
 
@@ -72,6 +74,7 @@ function ProfileEditScreen({navigation}) {
           return;
         }
         dispatch(changeUploadImg(res));
+        setIsChange(true);
       },
     );
     console.log('프로필 사진 변경');
@@ -79,6 +82,8 @@ function ProfileEditScreen({navigation}) {
 
   const isFocused = useIsFocused();
   useEffect(() => {
+    setIsChange(false);
+    dispatch(changeUploadImg(null));
     dispatch(
       changeEditForm({
         name: 'nickname',
@@ -111,6 +116,9 @@ function ProfileEditScreen({navigation}) {
 
   function reset() {
     alert('초기화');
+
+    dispatch(changeUploadImg(null));
+    setIsChange(false);
 
     dispatch(
       changeEditForm({
@@ -170,15 +178,21 @@ function ProfileEditScreen({navigation}) {
       heigh: editForm.height.value,
       shoeSize: editForm.shoeSize.value,
       wingspan: editForm.wingspan.value,
+      image: currentUser.image,
     };
 
-    // formData.append(
-    //   'key',
-    //   new Blob([JSON.stringify(data)], {type: 'application/json'}),
-    // );
     console.log(data);
     console.log('사진여부', isPhoto);
-    dispatch(profileEdit({data, formData, isPhoto}));
+    if (isPhoto) {
+      dispatch(saveImage(formData)).then(res => {
+        console.log('사진 저장 결과', res.payload);
+        dispatch(profileEdit({...data, image: res.payload}));
+      });
+    } else if (isChange) {
+      dispatch(profileEdit({...data, image: ''}));
+    } else {
+      dispatch(profileEdit(data));
+    }
   }
 
   return (
@@ -193,10 +207,10 @@ function ProfileEditScreen({navigation}) {
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.inputContainer}>
           <TouchableOpacity onPress={selectProfile}>
-            {imageUri ? (
-              <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
-            ) : currentUser?.image ? (
+            {currentUser?.image && !isChange ? (
               <UserAvatar source={{uri: currentUser.image}} size={100} />
+            ) : isChange && imageUri ? (
+              <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
             ) : (
               <UserAvatar
                 source={{
@@ -211,6 +225,7 @@ function ProfileEditScreen({navigation}) {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
+              setIsChange(true);
               dispatch(changeUploadImg(null));
             }}>
             <Text style={styles.link}>프로필 사진 제거</Text>
@@ -251,6 +266,7 @@ function ProfileEditScreen({navigation}) {
               placeholderTextColor={'#ddd'}
               multiline={true}
               textAlignVertical="top"
+              value={editForm.intro.value}
               onChangeText={value => updateInput('intro', value)}
             />
           </View>
