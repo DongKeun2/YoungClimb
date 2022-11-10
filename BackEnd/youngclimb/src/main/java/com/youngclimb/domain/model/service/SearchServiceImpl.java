@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +46,15 @@ public class SearchServiceImpl implements SearchService {
                             .rank(memberRankExpRepository.findByMember(recommend.getFollowing()).orElseThrow().getRank().getName())
                             .build();
 
+
                     memberPics.add(memberPic);
                 }
             }
         }
+        Set<MemberPic> memberPicSet = new HashSet<MemberPic>(memberPics);
+        List<MemberPic> newMemberPics = new ArrayList<MemberPic>(memberPicSet);
 
-        return memberPics;
+        return newMemberPics;
     }
 
     @Override
