@@ -18,4 +18,5 @@ public class LoginMemberInfo {
     long expleft;
     //(다음 랭크를 위한 푼 문제 수 0~3)
     int upto;
+    String image;
 }

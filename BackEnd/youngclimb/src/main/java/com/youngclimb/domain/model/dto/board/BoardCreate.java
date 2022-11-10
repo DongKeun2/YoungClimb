@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class BoardCreate {
     Integer centerId;
     Integer centerLevelId;
-    Long mediaId;
+    String mediaPath;
     Integer wallId;
     String level;
     String holdColor;

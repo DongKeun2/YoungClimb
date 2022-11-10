@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
 
+    Boolean existsByBoardAndMember(Board board, Member member);
 
     Optional<Report> findByBoardAndMember(Board board, Member member);
 

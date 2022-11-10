@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
+import com.youngclimb.domain.model.dto.center.CenterDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.util.annotation.Nullable;
 
 import javax.persistence.EntityExistsException;
 import java.io.IOException;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -79,6 +82,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = Member.builder()
+                .memberProfileImg("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png")
                 .email(joinMember.getEmail())
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
@@ -96,9 +100,14 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo user = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
                 .height(member.getHeight())
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
+                .rank("Y1")
+                .exp(0)
+                .expleft(20)
+                .upto(0)
                 .build();
 
         MemberRankExp memberRankExp = MemberRankExp.builder()
@@ -166,7 +175,10 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 수정
     @Override
-    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception {
+    public void editProfile(String email, MemberInfo memberInfo, @Nullable MultipartFile file) throws Exception {
+        System.out.println(memberInfo);
+
+
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
@@ -275,11 +287,12 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
+                .image(loginMember.getMemberProfileImg())
                 .height(loginMember.getHeight())
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (expLeft * 100 / memberRankExp.getRank().getQual()))
+                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -382,12 +395,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 팔로잉 팔로워 목록 읽기
-    public FollowMemberList listFollow(String nickname) {
+    public FollowMemberList listFollow(String nickname, String email) {
         Member member = memberRepository.findByNickname(nickname).orElseThrow();
+        Member user = memberRepository.findByEmail(email).orElseThrow();
         FollowMemberList followMemberList = new FollowMemberList();
 
-        List<FollowMemberDto> follwings = new ArrayList<>();
-        List<FollowMemberDto> follwers = new ArrayList<>();
+        List<FollowMemberDto> followings = new ArrayList<>();
+        List<FollowMemberDto> followers = new ArrayList<>();
 
         List<Follow> followingMembers = followRepository.findAllByFollower(member);
         List<Follow> followerMembers = followRepository.findAllByFollowing(member);
@@ -395,6 +409,7 @@ public class MemberServiceImpl implements MemberService {
         for (Follow following : followingMembers) {
             Member followingMember = following.getFollowing();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followingMember).orElseThrow();
+            if (user.getMemberId() == followingMember.getMemberId()) continue;
 
             FollowMemberDto myFollowing = new FollowMemberDto();
 
@@ -405,13 +420,16 @@ public class MemberServiceImpl implements MemberService {
             myFollowing.setWingspan(followingMember.getWingspan());
             myFollowing.setShoeSize(followingMember.getShoeSize());
             myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followingMember.getMemberId()));
 
-            follwings.add(myFollowing);
+            followings.add(myFollowing);
         }
 
         for (Follow follower : followerMembers) {
             Member followerMember = follower.getFollower();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
+
+            if (user.getMemberId() == followerMember.getMemberId()) continue;
 
             FollowMemberDto myFollower = new FollowMemberDto();
             myFollower.setNickname(followerMember.getNickname());
@@ -421,12 +439,65 @@ public class MemberServiceImpl implements MemberService {
             myFollower.setWingspan(followerMember.getWingspan());
             myFollower.setShoeSize(followerMember.getShoeSize());
             myFollower.setRank(memberRankExp.getRank().getName());
+            myFollower.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followerMember.getMemberId()));
 
-            follwers.add(myFollower);
+            followers.add(myFollower);
         }
 
-        followMemberList.setFollowers(follwers);
-        followMemberList.setFollowings(follwings);
+
+
+        followers.sort(new Comparator<FollowMemberDto>() {
+            @Override
+            public int compare(FollowMemberDto o1, FollowMemberDto o2) {
+                Integer a = (o1.getFollow())?1:0;
+                Integer b = (o2.getFollow())?1:0;
+                return (b - a);
+            }
+        });
+
+        followings.sort(new Comparator<FollowMemberDto>() {
+            @Override
+            public int compare(FollowMemberDto o1, FollowMemberDto o2) {
+                Integer a = (o1.getFollow())?1:0;
+                Integer b = (o2.getFollow())?1:0;
+                return (b - a);
+            }
+        });
+
+        if (followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), member.getMemberId())) {
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(user).orElseThrow();
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(user.getNickname());
+            myFollowing.setGender(user.getGender());
+            myFollowing.setImage(user.getMemberProfileImg());
+            myFollowing.setHeight(user.getHeight());
+            myFollowing.setWingspan(user.getWingspan());
+            myFollowing.setShoeSize(user.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(false);
+
+            followers.add(0, myFollowing);
+        }
+
+        if (followRepository.existsByFollowerMemberIdAndFollowingMemberId(member.getMemberId(), user.getMemberId())) {
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(user).orElseThrow();
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(user.getNickname());
+            myFollowing.setGender(user.getGender());
+            myFollowing.setImage(user.getMemberProfileImg());
+            myFollowing.setHeight(user.getHeight());
+            myFollowing.setWingspan(user.getWingspan());
+            myFollowing.setShoeSize(user.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(false);
+
+            followings.add(0, myFollowing);
+        }
+
+        followMemberList.setFollowers(followers);
+        followMemberList.setFollowings(followings);
 
         return followMemberList;
     }

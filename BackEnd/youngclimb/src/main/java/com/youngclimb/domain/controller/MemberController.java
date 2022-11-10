@@ -9,13 +9,16 @@ import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -31,7 +34,7 @@ public class MemberController {
     @PostMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestBody MemberEmail email) {
         try {
-            if(email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
+            if (email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -43,7 +46,7 @@ public class MemberController {
     @PostMapping("/nickname")
     public ResponseEntity<?> checkNickname(@RequestBody MemberNickname nickname) {
         try {
-            if(nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
+            if (nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -88,8 +91,14 @@ public class MemberController {
 
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
-    @PostMapping("/profile")
-    public ResponseEntity<?> addProfile(@RequestPart MemberProfile memberProfile, @RequestPart(required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    @PostMapping("/profile/{intro}/{nickname}")
+    public ResponseEntity<?> addProfile(@PathVariable String intro, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+        if (intro.isBlank()) intro = "";
+
+        MemberProfile memberProfile = MemberProfile.builder()
+                .intro(intro)
+                .build();
+        System.out.println(memberProfile);
         try {
             memberService.addProfile(principal.getUsername(), memberProfile, file);
             return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
@@ -97,24 +106,36 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
-    @PostMapping("/profile/edit")
-    public ResponseEntity<?> editProfile(@RequestPart MemberInfo memberInfo, @RequestPart(required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    @PostMapping("/profile/edit/{intro}/{height}/{shoeSize}/{wingspan}/{nickname}")
+    public ResponseEntity<?> editProfile(@PathVariable String intro, @PathVariable Integer height, @PathVariable Integer shoeSize, @PathVariable Integer wingspan, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+        if (intro.isBlank()) intro = null;
+        if (height.equals(0)) height = null;
+        if (shoeSize.equals(0)) shoeSize = null;
+        if (wingspan.equals(0)) wingspan = null;
+
+        MemberInfo memberInfo = MemberInfo.builder()
+                .nickname(nickname)
+                .intro(intro)
+                .height(height)
+                .shoeSize(shoeSize)
+                .wingspan(wingspan)
+                .build();
         try {
             memberService.editProfile(principal.getUsername(), memberInfo, file);
             return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<String>("오류가 발생했습니다", HttpStatus.BAD_REQUEST);
+            return exceptionHandling(e);
         }
     }
-
 
 
     // 로그아웃
     @ApiOperation(value = "logout: 로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout( @CurrentUser UserPrincipal principal, HttpServletRequest request) {
+    public ResponseEntity<?> logout(@CurrentUser UserPrincipal principal, HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7);
         memberService.logout(principal.getUsername(), accessToken);
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
@@ -139,9 +160,9 @@ public class MemberController {
 
     @ApiOperation(value = "팔로잉, 팔로워 목록 읽기")
     @GetMapping("/{nickname}/follow")
-    public ResponseEntity<?> listFollow(@PathVariable String nickname) {
+    public ResponseEntity<?> listFollow(@PathVariable String nickname, @CurrentUser UserPrincipal principal) {
         try {
-            FollowMemberList followMemberList = memberService.listFollow(nickname);
+            FollowMemberList followMemberList = memberService.listFollow(nickname, principal.getUsername());
             if (followMemberList != null) {
                 return new ResponseEntity<FollowMemberList>(followMemberList, HttpStatus.OK);
             } else {
@@ -185,6 +206,19 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
+    // 이미지 저장
+    @ApiOperation(value = "saveImage: 이미지 저장하기")
+    @PostMapping("/save/image")
+    public ResponseEntity<?> saveImage(@RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+        try {
+            return new ResponseEntity<>(boardService.saveImage(file), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
 
 
     // 토큰 재발급

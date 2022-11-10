@@ -1,5 +1,6 @@
 package com.youngclimb.domain.model.service;
 
+import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,7 +33,7 @@ public interface MemberService {
     // 팔로우 추가, 제거
     Boolean addCancelFollow(String followingNickname, String followerEmail);
     // 팔로잉 팔로워 목록 읽기
-    public FollowMemberList listFollow(String nickname);
+    public FollowMemberList listFollow(String nickname, String email);
     // 알림 목록 읽기
     public List<NoticeDto> readNotice(String email);
 }
