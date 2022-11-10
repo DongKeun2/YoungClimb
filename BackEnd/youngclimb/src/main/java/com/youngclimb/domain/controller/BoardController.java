@@ -39,18 +39,26 @@ public class BoardController {
         }
     }
 
+    // 동영상 저장
+    @ApiOperation(value = "saveImage: 이미지 저장하기")
+    @PostMapping("/save/image")
+    public ResponseEntity<?> saveImage(
+            @RequestPart(name = "file", required = false) MultipartFile file
+    ) throws Exception {
+        try {
+            return new ResponseEntity<>(boardService.saveImage(file), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
     // 게시물 작성
     @ApiOperation(value = "writeBoard : 글 작성하기")
     @PostMapping
-    public ResponseEntity<?> writeBoard(
-//            			@RequestBody BoardCreate boardCreate
-            @RequestPart BoardCreate boardCreate
-            , @RequestPart(name = "file", required = false) MultipartFile file
-//			,@RequestParam(name = "file", required = false) MultipartFile file
-            , @CurrentUser UserPrincipal principal
-    ) throws Exception {
+    public ResponseEntity<?> writeBoard(@RequestPart BoardCreate boardCreate, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            boardService.writeBoard(principal.getUsername() ,boardCreate, file);
+            boardService.writeBoard(principal.getUsername() ,boardCreate);
             return new ResponseEntity<Void>(HttpStatus.OK);
 
         } catch (Exception e) {
