@@ -83,14 +83,14 @@ const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
 
 const profileCreate = createAsyncThunk(
   'profileCreate',
-  async ({data, formdata}, {rejectWithValue}) => {
-    console.log('회원가입 후 프로필, 자기소개 입력', formdata);
+  async ({data, formData}, {rejectWithValue}) => {
+    console.log('회원가입 후 프로필 자기소개 입력', formData);
 
     try {
       const res = await axios({
         method: 'POST',
         url: api.profileCreate(data),
-        data: formdata,
+        data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: await getHeader(),
@@ -107,33 +107,40 @@ const profileCreate = createAsyncThunk(
 
 const profileEdit = createAsyncThunk(
   'profileEdit',
-  async ({data, formData}, {rejectWithValue}) => {
+  async ({data, formData, isPhoto}, {rejectWithValue}) => {
     try {
       console.log('요청 url', api.profileEdit(data));
-      console.log(formData);
-      const res = await axios({
-        method: 'POST',
-        url: api.profileEdit(data),
-        data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: await getHeader(),
-        },
-      });
-      // const res = await axios.post(api.profileEdit(), formData, {
-      //   headers: {
-      //     contentType: 'multipart/form-data',
-      //   },
-      //   transformRequest: (formData, headers) => {
-      //     console.log('hi', formData);
-      //     return formData;
-      //   },
-      // });
-      alert('수정 완료');
-      console.log('프로필 입력 성공', res.data);
-      return res.data;
+      console.log('요청 data', formData);
+      if (isPhoto) {
+        const res = await axios({
+          method: 'POST',
+          url: api.profileEdit(data),
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: await getHeader(),
+          },
+        });
+        alert('수정 완료');
+        console.log('프로필 수정 성공', res.data);
+        return res.data;
+      } else {
+        const res = await axios({
+          method: 'POST',
+          url: api.profileEdit(data),
+          // data: formData,
+          headers: {
+            // 'Content-Type': 'multipart/form-data',
+            Authorization: await getHeader(),
+          },
+        });
+        alert('수정 완료');
+        console.log('프로필 수정 성공', res.data);
+        return res.data;
+      }
     } catch (err) {
-      console.log('수정 실패  ', err);
+      alert('수정 실패');
+      console.log(err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -280,16 +287,23 @@ export const AccountsSlice = createSlice({
       }
     },
     changeEditForm: (state, action) => {
-      if (
+      console.log(action.payload);
+      if (action.payload.value === 0) {
+        console.log('잘못된곳');
+        state.editForm[action.payload.name].value = '';
+      } else if (
         !action.payload.reset &&
         (action.payload.name === 'height' ||
           action.payload.name === 'shoeSize' ||
           action.payload.name === 'wingspan')
       ) {
+        console.log('여기아님');
         state.editForm[action.payload.name].value =
           action.payload.value.replace(/[^0-9]/g, '');
       } else {
+        console.log('여기임');
         state.editForm[action.payload.name].value = action.payload.value;
+        console.log(state.editForm[action.payload.name].value);
       }
     },
     changeIsCheckTerms: (state, action) => {
