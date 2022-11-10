@@ -117,7 +117,7 @@ public class ReelsServiceImpl implements ReelsService {
                 boardDto.setWallId(category.getWall().getId());
                 boardDto.setWallName(category.getWall().getName());
                 boardDto.setDifficulty(category.getDifficulty());
-                boardDto.setHoldColor(category.getHoldColor());
+                boardDto.setHoldColor(category.getHoldcolor());
 
 
                 // 댓글 DTO 1개 세팅
@@ -198,7 +198,7 @@ public class ReelsServiceImpl implements ReelsService {
             boardDto.setWallId(category.getWall().getId());
             boardDto.setWallName(category.getWall().getName());
             boardDto.setDifficulty(category.getDifficulty());
-            boardDto.setHoldColor(category.getHoldColor());
+            boardDto.setHoldColor(category.getHoldcolor());
 
 
             // 댓글 DTO 1개 세팅
