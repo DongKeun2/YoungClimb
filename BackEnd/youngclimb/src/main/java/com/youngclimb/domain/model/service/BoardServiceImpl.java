@@ -154,7 +154,7 @@ public class BoardServiceImpl implements BoardService {
         boardDto.setWallId(category.getWall().getId());
         boardDto.setWallName(category.getWall().getName());
         boardDto.setDifficulty(category.getDifficulty());
-        boardDto.setHoldColor(category.getHoldColor());
+        boardDto.setHoldColor(category.getHoldcolor());
 
 
         // 댓글 DTO 1개 세팅
@@ -207,7 +207,7 @@ public class BoardServiceImpl implements BoardService {
                 .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
                 .wall(wallRepository.findById(boardCreate.getWallId()).orElseThrow())
                 .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
-                .holdColor(boardCreate.getHoldColor())
+                .holdcolor(boardCreate.getHoldColor())
                 .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
                 .build();
         categoryRepository.save(category);
@@ -580,7 +580,7 @@ public class BoardServiceImpl implements BoardService {
         boardDto.setWallId(category.getWall().getId());
         boardDto.setWallName(category.getWall().getName());
         boardDto.setDifficulty(category.getDifficulty());
-        boardDto.setHoldColor(category.getHoldColor());
+        boardDto.setHoldColor(category.getHoldcolor());
 
         return boardDto;
     }
@@ -678,7 +678,7 @@ public class BoardServiceImpl implements BoardService {
         scrapDto.setWallId(category.getWall().getId());
         scrapDto.setWallName(category.getWall().getName());
         scrapDto.setDifficulty(category.getDifficulty());
-        scrapDto.setHoldColor(category.getHoldColor());
+        scrapDto.setHoldColor(category.getHoldcolor());
 
         return scrapDto;
     }
