@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 
 import React, {useRef, useState, useEffect, useCallback} from 'react';
-import { Platform, PermissionsAndroid, Linking } from 'react-native';
+import {Platform, PermissionsAndroid, Linking} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -36,11 +36,18 @@ import {
   getCurrentUser,
   removeAccessToken,
   removeCurrentUser,
+  removeRefreshToken,
 } from '../utils/Token';
 import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
 import {fetchCenterInfo} from '../utils/slices/CenterSlice';
 
-import {requestPermission,StartPer, requestSinglePermission, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
+import {
+  requestPermission,
+  StartPer,
+  requestSinglePermission,
+  AsyncAlert,
+  checkMultiplePermissions,
+} from '../utils/permissions.js';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -58,42 +65,52 @@ export default function YoungClimb() {
       // PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
       // PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-     ]
+    ];
     const permissionDict = {
       'android.permission.CAMERA': '카메라',
       'android.permission.ACCESS_FINE_LOCATION': '위치',
       'android.permission.READ_EXTERNAL_STORAGE': '저장공간',
-    }
-    const neverCallList = []
-    const callRes = async()=> {
-      try{
-        const result = await checkMultiplePermissions(permissionList)
+    };
+    const neverCallList = [];
+    const callRes = async () => {
+      try {
+        const result = await checkMultiplePermissions(permissionList);
         if (!login && !result) {
-            await AsyncAlert('Young Climb 앱 권한 설정', '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요', 
-            async ()=> { 
-              try{
-              for (const per of permissionList) {
-                const result = await StartPer(per)
-                if (result === per) {
-                  neverCallList.push(per)
+          await AsyncAlert(
+            'Young Climb 앱 권한 설정',
+            '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요',
+            async () => {
+              try {
+                for (const per of permissionList) {
+                  const result = await StartPer(per);
+                  if (result === per) {
+                    neverCallList.push(per);
+                  }
                 }
+              } catch (err) {
+                console.log(err);
               }
-            } catch(err){console.log(err)}
-          })
-          }
-        if (neverCallList.length){
-          let txt = '' 
-          neverCallList.forEach((content)=>{
-            txt += permissionDict[content] + `\n`
-          })
-          AsyncAlert('권한 요청 거부된 요청','다음의 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다. \n \n'+txt,Linking.openSettings)
+            },
+          );
         }
-      } catch (err){console.log(err)}
-    }
-    callRes()
-    
-
-},[]);
+        if (neverCallList.length) {
+          let txt = '';
+          neverCallList.forEach(content => {
+            txt += permissionDict[content] + '\n';
+          });
+          AsyncAlert(
+            '권한 요청 거부된 요청',
+            '다음의 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다. \n \n' +
+              txt,
+            Linking.openSettings,
+          );
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    callRes();
+  }, []);
 
   useEffect(() => {
     console.log('앱 새로고침');
@@ -106,6 +123,7 @@ export default function YoungClimb() {
       } else {
         console.log('비로그인상태임');
         removeAccessToken();
+        removeRefreshToken();
         removeCurrentUser();
       }
     });
