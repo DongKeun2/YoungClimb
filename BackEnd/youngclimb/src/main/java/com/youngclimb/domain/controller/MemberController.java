@@ -9,9 +9,7 @@ import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,8 +56,6 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginMember member, HttpServletResponse response) throws Exception {
         try {
-            // 헤더에 쿠키 붙이기
-//            response.addHeader("Set-Cookie", "accessToken="+memberService.login(member)+", path=/, MaxAge=7 * 24 * 60 * 60, SameSite=Lax, HttpOnly");
             return new ResponseEntity<LoginResDto>(memberService.login(member), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -91,17 +87,12 @@ public class MemberController {
 
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
-    @PostMapping("/profile/{intro}/{nickname}")
-    public ResponseEntity<?> addProfile(@PathVariable String intro, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        if (intro.isBlank()) intro = "";
+    @PostMapping("/profile")
+    public ResponseEntity<?> addProfile(@RequestBody MemberProfile memberProfile, @CurrentUser UserPrincipal principal) throws Exception {
 
-        MemberProfile memberProfile = MemberProfile.builder()
-                .intro(intro)
-                .build();
-        System.out.println(memberProfile);
         try {
-            memberService.addProfile(principal.getUsername(), memberProfile, file);
-            return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
+            ;
+            return new ResponseEntity<LoginResDto>(memberService.addProfile(principal.getUsername(), memberProfile), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
@@ -109,23 +100,11 @@ public class MemberController {
 
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
-    @PostMapping("/profile/edit/{intro}/{height}/{shoeSize}/{wingspan}/{nickname}")
-    public ResponseEntity<?> editProfile(@PathVariable String intro, @PathVariable Integer height, @PathVariable Integer shoeSize, @PathVariable Integer wingspan, @PathVariable String nickname, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        if (intro.isBlank()) intro = null;
-        if (height.equals(0)) height = null;
-        if (shoeSize.equals(0)) shoeSize = null;
-        if (wingspan.equals(0)) wingspan = null;
+    @PostMapping("/profile/edit")
+    public ResponseEntity<?> editProfile(@RequestBody MemberInfo memberInfo, @CurrentUser UserPrincipal principal) throws Exception {
 
-        MemberInfo memberInfo = MemberInfo.builder()
-                .nickname(nickname)
-                .intro(intro)
-                .height(height)
-                .shoeSize(shoeSize)
-                .wingspan(wingspan)
-                .build();
         try {
-            memberService.editProfile(principal.getUsername(), memberInfo, file);
-            return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
+            return new ResponseEntity<LoginResDto>(memberService.editProfile(principal.getUsername(), memberInfo), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }

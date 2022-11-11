@@ -37,7 +37,7 @@ public class Category {
     private CenterLevel centerlevel;
     // 홀드 색깔
     @Column(name = "category_hold_color")
-    private String holdColor;
+    private String holdcolor;
     // 규정 난이도
     @Column(name = "category_difficulty")
     private String difficulty;
