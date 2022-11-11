@@ -3,12 +3,24 @@ import {
   View,
   Text,
   Image,
-  StyleSheet
+  StyleSheet,
+  BackHandler
 } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 import Time from '../../assets/image/menu/Time.svg'
 
 const ReasonShown = ({navigation, focusedContent}) => {
-  console.log(focusedContent, 'reason')
+  useFocusEffect(()=>{
+    BackHandler.removeEventListener('hardwareBackPress',backAction)
+    const backAction = ()=>{
+      navigation.navigate('메뉴메인')
+      return true
+    }
+    BackHandler.addEventListener('hardwareBackPress',backAction);
+    return () =>{ BackHandler.removeEventListener('hardwareBackPress',backAction)
+  }
+  })
+
   return (
     <>
     {focusedContent.isRecommend ? 

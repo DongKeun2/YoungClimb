@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet,BackHandler } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 
 import ProfileSVG from '../../assets/image/menu/profile.svg'
 import Post from '../../assets/image/menu/Post.svg'
@@ -7,7 +8,17 @@ import Statistics from '../../assets/image/menu/Statistics.svg'
 import HoldIcon from '../../assets/image/hold/hold.svg'
 
 const ContentInfo = ({navigation, focusedContent}) => {
-  console.log(focusedContent, 'info')
+
+  useFocusEffect(()=>{
+    BackHandler.removeEventListener('hardwareBackPress')
+    const backAction = ()=>{
+      navigation.navigate('메뉴메인')
+      return true
+    }
+    const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction);
+    return () =>{backHandler.remove();}
+  })
+  
   return (
     <View style={{paddingHorizontal:20, paddingVertical:15}}>
       {/* 작성자 - 이름, rank */}

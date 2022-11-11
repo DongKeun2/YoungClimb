@@ -7,18 +7,22 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
 
 import {postAdd} from '../../utils/slices/PostSlice';
 
 import {holdList} from '../../assets/info/ColorInfo';
+import centerNameInfo from '../../assets/info/CenterNameInfo';
 import CalendarIcon from '../../assets/image/feed/calendarIcon.svg';
+import CloseIcon from '../../assets/image/header/closeIcon.svg';
 
 function PostAddInfoScreen({navigation}) {
   const dispatch = useDispatch();
@@ -39,6 +43,12 @@ function PostAddInfoScreen({navigation}) {
     setWall('');
     setLevel('');
     setHoldColor('');
+  }
+
+  function clearCenter(e) {
+    if (!e) {
+      onChangeCenter('');
+    }
   }
 
   const showDatePicker = () => {
@@ -84,13 +94,46 @@ function PostAddInfoScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
       <CustomSubHeader title="정보 입력" navigation={navigation} />
-      <KeyboardAwareScrollView  style={styles.selectContainer}>
+      <View style={styles.selectContainer}>
+      {/* <KeyboardAwareScrollView
+        style={styles.selectContainer}
+        showsVerticalScrollIndicator={false}> */}
         <View style={styles.box}>
           <Text style={styles.text}>
             지점<Text style={{color: '#F34D7F'}}> *</Text>
           </Text>
-          <View style={styles.pickerItem}>
-            <Picker
+          <View style={{...styles.pickerItem, zIndex: 3}}>
+            <AutocompleteDropdown
+              clearOnFocus={false}
+              closeOnBlur={true}
+              closeOnSubmit={true}
+              showChevron={false}
+              suggestionsListMaxHeight={260}
+              onSelectItem={item => {
+                item && onChangeCenter(item.id);
+              }}
+              onChangeText={e => clearCenter(e)}
+              onClear={e => clearCenter(e)}
+              dataSet={centerNameInfo}
+              textInputProps={{
+                placeholder: '지점을 입력해주세요',
+                placeholderTextColor: '#a7a7a7',
+                style: {color: 'black', fontSize: 14, marginLeft: 2},
+              }}
+              inputContainerStyle={{
+                backgroundColor: 'white',
+              }}
+              ClearIconComponent={
+                <CloseIcon width={16} style={{marginTop: 3, marginRight: 5}} />
+              }
+              EmptyResultComponent={
+                <Text style={{...styles.text, padding: 16}}>
+                  검색 지점이 존재하지 않습니다.
+                </Text>
+              }
+              emptyResultTextStyle={{color: 'black'}}
+            />
+            {/* <Picker
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={center}
@@ -99,7 +142,7 @@ function PostAddInfoScreen({navigation}) {
               <Picker.Item
                 style={styles.pickerPlaceHold}
                 label="선택 없음"
-                value=""
+                value="" 1
               />
               {centerInfo.map((item, id) => (
                 <Picker.Item
@@ -109,7 +152,7 @@ function PostAddInfoScreen({navigation}) {
                   value={item.id}
                 />
               ))}
-            </Picker>
+            </Picker> */}
           </View>
         </View>
 
@@ -211,7 +254,7 @@ function PostAddInfoScreen({navigation}) {
           <Text style={styles.text}>
             풀이 날짜<Text style={{color: '#F34D7F'}}> *</Text>
           </Text>
-          <TouchableOpacity style={styles.dateBox} onPress={showDatePicker}>
+          <TouchableOpacity style={{...styles.dateBox, zIndex: -1}} onPress={showDatePicker}>
             {solvedDate ? (
               <Text style={styles.text}>
                 {solvedDate.getFullYear() +
@@ -244,13 +287,13 @@ function PostAddInfoScreen({navigation}) {
             onChangeText={value => setContent(value)}
           />
         </View>
-      </KeyboardAwareScrollView>
-
-      <TouchableOpacity onPress={onPostAdd} style={styles.button}>
-        <Text style={{color: 'white', fontSize: 18, fontWeight: '600'}}>
-          업로드
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={onPostAdd} style={styles.button}>
+          <Text style={{color: 'white', fontSize: 18, fontWeight: '600'}}>
+            업로드
+          </Text>
+        </TouchableOpacity>
+      {/* </KeyboardAwareScrollView> */}
+      </View>
     </SafeAreaView>
   );
 }
@@ -318,8 +361,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    width: '80%',
-    height: 40,
+    width: '100%',
+    height: 50,
     backgroundColor: '#F34D7F',
     marginTop: 30,
     marginBottom: 100,
