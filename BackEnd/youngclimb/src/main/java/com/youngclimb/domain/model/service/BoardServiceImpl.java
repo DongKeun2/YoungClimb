@@ -263,7 +263,6 @@ public class BoardServiceImpl implements BoardService {
         if (file != null) {
             System.out.println(file.getOriginalFilename());
             System.out.println(file.getContentType());
-            System.out.println(file.getInputStream());
 
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
