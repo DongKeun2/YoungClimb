@@ -10,8 +10,8 @@ import messaging from '@react-native-firebase/messaging';
 import {getFcmToken} from './utils/fcm/fcmGetToken'
 
 enableScreens();
-
 export default function App() {
+
   // messaging().setBackgroundMessageHandler(async (remoteMessage) => {
   //   //  여기에 로직을 작성한다.
   //   //  remoteMessage.data로 메세지에 접근가능

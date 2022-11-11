@@ -41,6 +41,8 @@ import {fetchCenterInfo} from '../utils/slices/CenterSlice';
 
 import {StartPer, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
 
+import { handleInitialFCM, onRefreshFCMToken } from '../utils/fcm/fcmGetToken';
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
@@ -84,34 +86,36 @@ export default function YoungClimb() {
           let txt = '' 
           neverCallList.forEach((content)=>{
             txt += permissionDict[content] + `\n`
-          })
+          }) 
           AsyncAlert('권한 요청 거부된 요청','다음의 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다. \n \n'+txt,Linking.openSettings)
         }
       } catch (err){console.log(err)}
     }
     callRes()
+    
     if(!login){
-
+      // 로그인 되어있지 않은 상태면 fcmToken 받아와서 async에 저장
+      handleInitialFCM()
     } else{
-      
+      onRefreshFCMToken()
     }
 
 },[]);
 
   useEffect(() => {
-    console.log('앱 새로고침');
-    dispatch(fetchCenterInfo());
+  //   console.log('앱 새로고침');
+  //   dispatch(fetchCenterInfo());
 
-    getCurrentUser().then(res => {
-      if (res) {
-        console.log('로그인됨', res);
-        dispatch(fetchCurrentUser(res));
-      } else {
-        console.log('비로그인상태임');
-        removeAccessToken();
-        removeCurrentUser();
-      }
-    });
+  //   getCurrentUser().then(res => {
+  //     if (res) {
+  //       console.log('로그인됨', res);
+  //       dispatch(fetchCurrentUser(res));
+  //     } else {
+  //       console.log('비로그인상태임');
+  //       removeAccessToken();
+  //       removeCurrentUser();
+  //     }
+  //   });
 
     setTimeout(() => {
       setIsLoading(false);
