@@ -14,6 +14,7 @@ import {launchImageLibrary} from 'react-native-image-picker';
 import {
   profileCreate,
   fetchCurrentUser,
+  saveImage,
 } from '../../utils/slices/AccountsSlice';
 import CustomButton from '../../components/CustomBtn';
 import UserAvatar from '../../components/UserAvatar';
@@ -68,17 +69,30 @@ function SuccessScreen({navigation}) {
 
     const data = {
       intro: intro,
-      nickname: currentUser.nickname,
+      image: '',
     };
 
     if (!isSkip) {
-      dispatch(profileCreate({data, formData, isPhoto})).then(res => {
-        // 스토어에 회원정보 입력 후 로그인 처리
-        getCurrentUser().then(
-          currentUser => dispatch(fetchCurrentUser(currentUser)),
-          alert('성공요'),
-        );
-      });
+      if (isPhoto) {
+        dispatch(saveImage(formData)).then(res => {
+          dispatch(profileCreate({...data, image: res.payload})).then(res => {
+            // 스토어에 회원정보 입력 후 로그인 처리
+            console.log('누가 먼저냐');
+            getCurrentUser().then(
+              currentUser => dispatch(fetchCurrentUser(currentUser)),
+              alert('성공요'),
+            );
+          });
+        });
+      } else {
+        dispatch(profileCreate(data)).then(res => {
+          // 스토어에 회원정보 입력 후 로그인 처리
+          getCurrentUser().then(
+            currentUser => dispatch(fetchCurrentUser(currentUser)),
+            alert('성공요'),
+          );
+        });
+      }
     } else {
       getCurrentUser().then(currentUser =>
         dispatch(fetchCurrentUser(currentUser)),

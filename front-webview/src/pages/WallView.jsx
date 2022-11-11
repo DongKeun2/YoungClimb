@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect } from 'react'
 import {useParams, useNavigate} from 'react-router-dom'
-import Test from './Test'
+import Walls from './Walls'
 
 const WallView = () => {
   const params = useParams()
@@ -16,7 +16,7 @@ const WallView = () => {
 
   return (
     <div>
-      <Test centerId={centerId} wallId={wallId}></Test>
+      <Walls centerId={centerId} wallId={wallId}/>
     </div>
   )
 }
