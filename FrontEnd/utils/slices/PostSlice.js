@@ -1,7 +1,7 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../api';
-import getConfig from '../headers';
+import getConfig, {getHeader} from '../headers';
 
 const fetchHomeFeed = createAsyncThunk(
   'fetchHomeFeed',
@@ -33,9 +33,11 @@ const fetchFeedComment = createAsyncThunk(
 
 const postAdd = createAsyncThunk('post', async (data, {rejectWithValue}) => {
   try {
-    const res = await axios.post(api.postAdd(), data, {});
+    const res = await axios.post(api.postAdd(), data, await getConfig());
+    console.log('게시글 성공');
     return res.data;
   } catch (err) {
+    console.log('게시글 실패', err);
     return rejectWithValue(err.response.data);
   }
 });
@@ -123,6 +125,37 @@ const scrapBoard = createAsyncThunk(
   },
 );
 
+const getVideoPath = createAsyncThunk(
+  'getVideoPath',
+  async (formData, {rejectWithValue}) => {
+    try {
+      const res = await axios({
+        method: 'POST',
+        url: api.videoToUrl(),
+        data: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: await getHeader(),
+        },
+      });
+      // const res = await axios.post(api.videoToUrl(), formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data',
+      //     Authorization: await getHeader(),
+      //     // transformRequest: (data, headers) => {
+      //     //   return formData;
+      //     // },
+      //   },
+      // });
+      console.log('동영상 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('동영상 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const fetchReels = createAsyncThunk(
   'fetchReels',
   async (pageNumber, {rejectWithValue}) => {
@@ -143,7 +176,7 @@ const initialState = {
   boardInfo: {},
   commentInfo: {},
   uploadVideo: null,
-  uploadVideoUri: null,
+  videoPath: '',
   reels: [],
 };
 
@@ -153,9 +186,6 @@ export const PostSlice = createSlice({
   reducers: {
     changeUploadVideo: (state, action) => {
       state.uploadVideo = action.payload;
-    },
-    changeUploadVideoUri: (state, action) => {
-      state.uploadVideoUri = action.payload;
     },
   },
   extraReducers: {
@@ -182,6 +212,9 @@ export const PostSlice = createSlice({
     [scrapBoard.fulfilled]: (state, action) => {
       state.boardInfo.isScrap = action.payload;
     },
+    [getVideoPath.fulfilled]: (state, action) => {
+      state.videoPath = action.payload;
+    },
     [fetchReels.fulfilled]: (state, action) => {
       state.reels = action.payload;
     },
@@ -197,9 +230,10 @@ export {
   fetchDetail,
   likeBoard,
   scrapBoard,
+  getVideoPath,
   fetchReels,
 };
 
-export const {changeUploadVideo, changeUploadVideoUri} = PostSlice.actions;
+export const {changeUploadVideo} = PostSlice.actions;
 
 export default PostSlice.reducer;
