@@ -288,7 +288,7 @@ public class BoardServiceImpl implements BoardService {
         Category category = Category.builder()
                 .board(board)
                 .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
-                .wall(wallRepository.findById(boardCreate.getWallId()).orElseThrow())
+                .wall(wallRepository.findById(boardCreate.getWallId()).orElse(new Wall()))
                 .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
                 .holdcolor(boardCreate.getHoldColor())
                 .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
