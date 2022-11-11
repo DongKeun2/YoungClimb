@@ -95,12 +95,13 @@ public class Member {
     // 프로필 수정
     public Member updateProfile(MemberInfo memberInfo) {
 
-        if (memberInfo.getNickname() != "") this.nickname = memberInfo.getNickname();
+        if (memberInfo.getNickname() != "" && memberInfo.getNickname() != null)
+            this.nickname = memberInfo.getNickname();
         if (memberInfo.getHeight() != null) this.height = memberInfo.getHeight();
         if (memberInfo.getWingspan() != null) this.wingspan = memberInfo.getWingspan();
         if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
-        this.profileContent = memberInfo.getIntro();
-        if (memberInfo.getImage() != "") this.memberProfileImg = memberInfo.getImage();
+        if (memberInfo.getIntro() != null) this.profileContent = memberInfo.getIntro();
+        if (memberInfo.getImage() != "" && memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
         this.wingheight = this.height + this.wingspan;
 
 
@@ -110,8 +111,9 @@ public class Member {
     // 프로필 사진 넣기
     public Member updateMemberImg(MemberProfile memberProfile) {
 
-        this.profileContent = memberProfile.intro;
-        if (memberProfile.getImage() != "") this.memberProfileImg = memberProfile.image;
+        if (memberProfile.getIntro() != null) this.profileContent = memberProfile.intro;
+        if (memberProfile.getImage() != "" && memberProfile.getImage() != null)
+            this.memberProfileImg = memberProfile.image;
 
         return this;
     }

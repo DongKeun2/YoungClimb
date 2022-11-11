@@ -214,6 +214,17 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
@@ -222,7 +233,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -301,6 +312,16 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
@@ -309,7 +330,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -389,6 +410,16 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
@@ -397,7 +428,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
