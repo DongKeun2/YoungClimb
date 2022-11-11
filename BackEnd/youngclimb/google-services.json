@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "312248990611",
-    "project_id": "youngclimb-17919",
-    "storage_bucket": "youngclimb-17919.appspot.com"
+    "project_number": "25055327796",
+    "project_id": "youngclimb-d3de9",
+    "storage_bucket": "youngclimb-d3de9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:312248990611:android:d6ed9a04bcde68ed504666",
+        "mobilesdk_app_id": "1:25055327796:android:0d54e12830cfec541c3c61",
         "android_client_info": {
-          "package_name": "com.youngclimb"
+          "package_name": "com.frontend"
         }
       },
       "oauth_client": [
         {
-          "client_id": "312248990611-8feuk7par35vqjpoeot4sv770fdqo9lh.apps.googleusercontent.com",
+          "client_id": "25055327796-p4hp5sp8cv5c2lpu1qbnftlr6cs77d97.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDmmGZVVnVZvrFR7AzT2tbvSUmt7l9OYoE"
+          "current_key": "AIzaSyAIpi9TkFp3fI68rU7xXEMXDl87EBe0kBo"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "312248990611-8feuk7par35vqjpoeot4sv770fdqo9lh.apps.googleusercontent.com",
+              "client_id": "25055327796-p4hp5sp8cv5c2lpu1qbnftlr6cs77d97.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -4,6 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.common.redis.RedisService;
@@ -96,6 +99,7 @@ public class MemberServiceImpl implements MemberService {
                 .wingspan(joinMember.getWingspan())
                 .wingheight(joinMember.getHeight() + joinMember.getWingspan())
                 .role(UserRole.USER)
+                .fcmToken(joinMember.getFcmToekn())
                 .build();
         if (member == null) System.out.println("멤버 빌드 실패");
         memberRepository.save(member);
@@ -369,6 +373,7 @@ public class MemberServiceImpl implements MemberService {
 
     }
 
+
     public TokenDto reIssue(String email) {
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(jwtTokenProvider.createAccessToken(email))
@@ -379,12 +384,17 @@ public class MemberServiceImpl implements MemberService {
         return tokenDto;
     }
 
+
+    // 로그인 요청
     @Override
     public LoginResDto login(LoginMember member) {
         Member loginMember = memberRepository.findByEmail(member.getEmail()).orElseThrow();
         if (!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
+
+        loginMember.setFcmToken(member.getFcmToken());
+        memberRepository.save(loginMember);
 
         MemberRankExp memberRankExp = memberRankExpRepository.findByMember(loginMember).orElseThrow();
 
@@ -453,6 +463,11 @@ public class MemberServiceImpl implements MemberService {
     // 로그아웃
     @Override
     public void logout(String email, String accessToken) {
+
+        // FCM 토큰 삭제
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        member.setFcmToken(null);
+        memberRepository.save(member);
 
         jwtTokenProvider.logout(email, accessToken);
     }
@@ -533,6 +548,25 @@ public class MemberServiceImpl implements MemberService {
                     .createdDateTime(LocalDateTime.now())
                     .build();
             noticeRepository.save(noticeBuild);
+
+            // 푸쉬 알림 보내기
+            try {
+                if (following.getFcmToken() != null) {
+                    Notification notification = new Notification("",
+                            follower.getNickname() + "님이 팔로우를 시작하였습니다.");
+
+                    Message message = Message.builder()
+                            .setNotification(notification)
+                            .setToken(following.getFcmToken())
+                            .build();
+
+                    FirebaseMessaging.getInstance().send(message);
+                }
+            } catch (Exception e){
+                following.setFcmToken(null);
+                memberRepository.save(following);
+            }
+
 
 
             return Boolean.TRUE;
