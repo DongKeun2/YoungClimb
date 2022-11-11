@@ -418,6 +418,11 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void logout(String email, String accessToken) {
 
+        // FCM 토큰 삭제
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        member.setFcmToken(null);
+        memberRepository.save(member);
+
         jwtTokenProvider.logout(email, accessToken);
     }
 
