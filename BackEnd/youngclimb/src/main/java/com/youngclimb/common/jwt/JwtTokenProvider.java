@@ -41,10 +41,10 @@ public class JwtTokenProvider {
 
     // refresh token 생성
     public String createRefreshToken(String email) {
-        Long tokenValidTime = 1000L * 60 * 60 * 25; // 하루
+        Long tokenValidTime = 1000L * 60 * 60 * 24 ; // 하루
 
         String refreshToken = this.createToken(email, tokenValidTime);
-        redisService.setValues(email, refreshToken, Duration.ofMillis(tokenValidTime));
+        redisService.setValues("RT "+email, refreshToken, Duration.ofMillis(tokenValidTime));
         return refreshToken;
     }
 
@@ -80,11 +80,11 @@ public class JwtTokenProvider {
             return true;
 
         } catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
-            System.out.println("만료된 토큰이지롱");
+            System.out.println("AccessToken이 만료되었지롱");
             return false;
 
         } catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
-            System.out.println("변조된 토큰이지롱");
+            System.out.println("변조된 AccessToken이지롱");
             return false;
         }
     }
@@ -123,16 +123,16 @@ public class JwtTokenProvider {
     }
 
     public void checkRefreshToken(String email, String refreshToken) {
-        String redisRT = redisService.getValues(email);
+        String redisRT = redisService.getValues("RT "+email);
         if (!refreshToken.equals(redisRT)) {
-            throw new BadRequestException("토큰이 만료되었습니다!");
+            throw new BadRequestException("RefreshToken이 만료되었습니다!");
         }
     }
 
     public void logout(String email, String accessToken) {
         Long expiredAccessTokenTime = getJwtContents(accessToken).getExpiration().getTime() - new Date().getTime();
         redisService.setValues(blackListATPrefix + accessToken, email, Duration.ofMillis(expiredAccessTokenTime));
-        redisService.deleteValues(email);
+        redisService.deleteValues("RT "+email);
 
     }
 }
