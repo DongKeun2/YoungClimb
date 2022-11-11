@@ -7,9 +7,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ScrollView,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
@@ -20,28 +20,45 @@ import {
   changeEditForm,
   profileEdit,
   logout,
+  saveImage,
 } from '../../utils/slices/AccountsSlice';
-import {changeUploadImg} from '../../utils/slices/ProfileSlice';
+import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
-import avatar from '../../assets/image/profile/avatar.png';
+import Camera from '../../assets/image/main/camera.svg';
 import checkIcon from '../../assets/image/main/done.png';
-import camera from '../../assets/image/main/camera.png';
+import {useIsFocused} from '@react-navigation/native';
 
 function ProfileEditScreen({navigation}) {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.accounts.currentUser);
 
   const imageUri = useSelector(state => state.profile.uploadImg);
-  const [isCheckNickname, setIsCheckNickname] = useState(false);
+  const [isCheckNickname, setIsCheckNickname] = useState(true);
+  const [isChange, setIsChange] = useState(false);
 
   const editForm = useSelector(state => state.accounts.editForm);
 
   function updateInput(name, value) {
+    if (name === 'nickname') {
+      setIsCheckNickname(false);
+    }
+    console.log(name, value);
     dispatch(changeEditForm({name, value}));
   }
 
-  function checkNickname(nickname) {
-    setIsCheckNickname(!isCheckNickname);
+  function onCheckNickname() {
+    if (editForm.nickname.value === currentUser.nickname) {
+      setIsCheckNickname(true);
+    } else if (editForm.nickname.value) {
+      const data = {nickname: editForm.nickname.value};
+      dispatch(checkNickname(data)).then(res => {
+        if (res.type === 'checkNickname/fulfilled') {
+          setIsCheckNickname(res.payload);
+        }
+      });
+    } else {
+      alert('닉네임을 입력해주세요.');
+    }
   }
 
   const selectProfile = () => {
@@ -57,59 +74,129 @@ function ProfileEditScreen({navigation}) {
           return;
         }
         dispatch(changeUploadImg(res));
+        setIsChange(true);
       },
     );
     console.log('프로필 사진 변경');
   };
 
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    setIsChange(false);
+    dispatch(changeUploadImg(null));
+    dispatch(
+      changeEditForm({
+        name: 'nickname',
+        value: currentUser.nickname,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'height', value: currentUser.height, reset: true}),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'shoeSize',
+        value: currentUser.shoeSize,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'wingspan',
+        value: currentUser.wingspan,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
+    );
+    console.log('프로필 설정 입장');
+  }, [dispatch, currentUser, isFocused]);
+
+  function reset() {
+    alert('초기화');
+
+    dispatch(changeUploadImg(null));
+    setIsChange(false);
+
+    dispatch(
+      changeEditForm({
+        name: 'nickname',
+        value: currentUser.nickname,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'height', value: currentUser.height, reset: true}),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'shoeSize',
+        value: currentUser.shoeSize,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({
+        name: 'wingspan',
+        value: currentUser.wingspan,
+        reset: true,
+      }),
+    );
+    dispatch(
+      changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
+    );
+    setIsCheckNickname(true);
+  }
+
   // 서브헤더 우측 완료버튼 이벤트
   function onSubmitEdit() {
-    console.log('저장된 uri', imageUri.assets[0].uri);
+    if (!isCheckNickname) {
+      alert('닉네임을 확인해주세요.');
+      return;
+    }
     const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
+    const uri = imageUri?.assets[0]?.uri.replace(/\r?\n?/g, '').trim();
 
-    console.log(match);
-    console.log(type);
+    let formData = new FormData();
+    let isPhoto = false;
+    if (imageUri) {
+      isPhoto = true;
+      const imgFile = {
+        uri: uri,
+        name: imageUri?.assets[0]?.fileName,
+        type: type,
+      };
+      formData.append('file', imgFile);
+    }
 
-    const formdata = new FormData();
-    formdata.append('file', {
-      uri: imageUri?.assets[0]?.uri,
-      name: imageUri?.assets[0]?.fileName,
-      type,
-    });
+    const data = {
+      nickname: editForm.nickname.value,
+      intro: editForm.intro.value,
+      heigh: editForm.height.value,
+      shoeSize: editForm.shoeSize.value,
+      wingspan: editForm.wingspan.value,
+      image: currentUser.image,
+    };
 
-    const data = new Blob(
-      [
-        JSON.stringify({
-          email: currentUser.email,
-          nickname: editForm.intro.value,
-          intro: editForm.intro.value,
-          height: editForm.height.value,
-          shoeSize: editForm.shoeSize.value,
-          wingspan: editForm.wingspan.value,
-        }),
-      ],
-      {type: 'application/json'},
-    );
-
-    console.log('유저 정보', currentUser);
-    // const data = {
-    //   email: 'hello@young.climb',
-    //   nickname: editForm.intro.value,
-    //   intro: editForm.intro.value,
-    //   height: editForm.height.value,
-    //   shoeSize: editForm.shoeSize.value,
-    //   wingspan: editForm.wingspan.value,
-    // };
-
-    formdata.append('memberInfo', data);
-    dispatch(profileEdit(formdata)).then(() => {
-      console.log('저장된 uri', imageUri?.assets[0]?.filename);
-    });
+    console.log(data);
+    console.log('사진여부', isPhoto);
+    if (isPhoto) {
+      dispatch(saveImage(formData)).then(res => {
+        console.log('사진 저장 결과', res.payload);
+        dispatch(profileEdit({...data, image: res.payload}));
+      });
+    } else if (isChange) {
+      dispatch(profileEdit({...data, image: ''}));
+    } else {
+      dispatch(profileEdit(data));
+    }
   }
 
   return (
-    <View style={styles.container}>
+    <>
       <CustomSubHeader
         rightTitle="완료"
         isProfile={true}
@@ -117,110 +204,133 @@ function ProfileEditScreen({navigation}) {
         navigation={navigation}
         request={onSubmitEdit}
       />
-      <View style={styles.inputContainer}>
-        {imageUri ? (
-          <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
-        ) : (
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.inputContainer}>
           <TouchableOpacity onPress={selectProfile}>
-            <Image source={avatar} />
+            {currentUser?.image && !isChange ? (
+              <UserAvatar source={{uri: currentUser.image}} size={100} />
+            ) : isChange && imageUri ? (
+              <UserAvatar source={{uri: imageUri?.assets[0]?.uri}} size={100} />
+            ) : (
+              <UserAvatar
+                source={{
+                  uri: 'https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png',
+                }}
+                size={100}
+              />
+            )}
           </TouchableOpacity>
-        )}
-        <TouchableOpacity onPress={selectProfile}>
-          <Text style={styles.link}>프로필 사진 변경</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={selectProfile}>
+            <Text style={styles.link}>프로필 사진 변경</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setIsChange(true);
+              dispatch(changeUploadImg(null));
+            }}>
+            <Text style={styles.link}>프로필 사진 제거</Text>
+          </TouchableOpacity>
 
-        <View style={styles.nicknameBox}>
-          <Text style={styles.inputText}>닉네임</Text>
-          <View style={styles.inputBox}>
-            <Input
-              style={styles.input}
-              placeholder={currentUser.nickname}
+          <View style={styles.nicknameBox}>
+            <Text style={styles.nicknameLabel}>닉네임</Text>
+            <View style={styles.nicknameInputBox}>
+              <Input
+                placeholder={'닉네임을 입력해주세요.'}
+                placeholderTextColor={'#ddd'}
+                width="78%"
+                value={editForm.nickname.value}
+                type={editForm.nickname.type}
+                onChangeText={value => updateInput('nickname', value)}
+              />
+              <CheckButton
+                type="nickname"
+                onPress={onCheckNickname}
+                buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
+                borderColor={!isCheckNickname && '#F34D7F'}
+                title={
+                  isCheckNickname ? (
+                    <Image source={checkIcon} />
+                  ) : (
+                    <Text style={styles.checkTitle}>확인</Text>
+                  )
+                }
+              />
+            </View>
+          </View>
+
+          <View style={styles.introBox}>
+            <Text style={styles.introText}>소개</Text>
+            <TextInput
+              style={styles.introInput}
+              placeholder={'소개를 작성해주세요 :)'}
               placeholderTextColor={'#ddd'}
-              width="78%"
-              value={editForm.nickname.value}
-              type={editForm.nickname.type}
-              onChangeText={value => updateInput('nickname', value)}
-            />
-            <CheckButton
-              type="nickname"
-              onPress={checkNickname}
-              buttonColor={isCheckNickname ? '#F34D7F' : 'white'}
-              borderColor={!isCheckNickname && '#F34D7F'}
-              title={
-                isCheckNickname ? (
-                  <Image source={checkIcon} />
-                ) : (
-                  <Text style={styles.checkTitle}>확인</Text>
-                )
-              }
+              multiline={true}
+              textAlignVertical="top"
+              value={editForm.intro.value}
+              onChangeText={value => updateInput('intro', value)}
             />
           </View>
         </View>
 
-        <View style={styles.introBox}>
-          <Text style={styles.introText}>소개</Text>
-          <TextInput
-            style={styles.introInput}
-            placeholder={
-              currentUser?.intro ? currentUser.intro : '소개를 작성해주세요 :)'
-            }
-            placeholderTextColor={'#ddd'}
-            multiline={true}
-            textAlignVertical="top"
-            onChangeText={value => updateInput('intro', value)}
-          />
-        </View>
-      </View>
-
-      <View style={styles.inputContainer}>
-        <Text style={styles.inputText}>키</Text>
-        <Input
-          style={styles.input}
-          placeholder={currentUser?.height ? `${currentUser.height}` : '키(cm)'}
-          placeholderTextColor={'#ddd'}
-          value={editForm.height.value}
-          type={editForm.height.type}
-          onChangeText={value => updateInput('height', value)}
-        />
-        <Text style={styles.inputText}>신발 사이즈</Text>
-        <Input
-          style={styles.input}
-          placeholder={
-            currentUser?.shoeSize ? `${currentUser.shoeSize}` : '신발(mm)'
-          }
-          placeholderTextColor={'#ddd'}
-          value={editForm.shoeSize.value}
-          type={editForm.shoeSize.type}
-          onChangeText={value => updateInput('shoeSize', value)}
-        />
-        <Text style={styles.inputText}>윙스팬</Text>
-        <View style={styles.inputBox}>
-          <Input
-            style={styles.input}
-            placeholder={
-              currentUser?.wingspan ? `${currentUser.wingspan}` : '윙스팬(cm)'
-            }
-            width="100%"
-            placeholderTextColor={'#ddd'}
-            value={editForm.wingspan.value}
-            type={editForm.wingspan.type}
-            onChangeText={value => updateInput('wingspan', value)}
-          />
+        <View style={styles.inputContainer}>
+          <View style={styles.inputForm}>
+            <Text style={styles.inputText}>키 (cm)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={'키를 입력해주세요.'}
+              placeholderTextColor={'#ddd'}
+              value={editForm.height.value.toString()}
+              maxLength={3}
+              type={editForm.height.type}
+              onChangeText={value => updateInput('height', value)}
+            />
+          </View>
+          <View style={styles.inputForm}>
+            <Text style={styles.inputText}>신발 (mm)</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={'신발 사이즈를 입력해주세요.'}
+              placeholderTextColor={'#ddd'}
+              value={editForm.shoeSize?.value.toString()}
+              maxLength={3}
+              type={editForm.shoeSize.type}
+              onChangeText={value => updateInput('shoeSize', value)}
+            />
+          </View>
+          <View style={styles.inputForm}>
+            <Text style={styles.inputText}>윙스팬 (cm)</Text>
+            <View style={styles.inputBox}>
+              <TextInput
+                style={styles.wingspanInput}
+                placeholder={'윙스팬을 입력해주세요.'}
+                placeholderTextColor={'#ddd'}
+                value={editForm.wingspan.value.toString()}
+                maxLength={3}
+                type={editForm.wingspan.type}
+                onChangeText={value => updateInput('wingspan', value)}
+              />
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('윙스팬', {
+                    height: editForm.height.value,
+                    type: 'edit',
+                  })
+                }>
+                <Camera style={styles.cameraIcon} width={30} height={30} />
+              </TouchableOpacity>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.logout} onPress={reset}>
+            <Text style={styles.link}>변경사항 초기화</Text>
+          </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('윙스팬', {
-                height: editForm.height.value,
-                type: 'edit',
-              })
-            }>
-            <Image source={camera} style={styles.cameraIcon} />
+            style={styles.logout}
+            onPress={() => dispatch(logout())}>
+            <Text style={styles.link}>로그아웃</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      <TouchableOpacity onPress={() => dispatch(logout())}>
-        <Text style={styles.link}>로그아웃</Text>
-      </TouchableOpacity>
-    </View>
+      </ScrollView>
+    </>
   );
 }
 
@@ -245,8 +355,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
   },
   title: {
     fontSize: 20,
@@ -259,20 +367,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputText: {
-    color: 'black',
+    color: '#525050',
+    justifyContent: 'center',
+    width: '35%',
+    marginTop: 30,
+  },
+  nicknameBox: {
     justifyContent: 'center',
     width: '80%',
-    marginTop: 30,
-    marginBottom: -20,
   },
-  nicknameBox: {},
-  nicknameLabel: {fontSize: 12},
+  nicknameLabel: {fontSize: 14, marginBottom: -20, color: 'black'},
   inputBox: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    width: '80%',
+    width: '60%',
+  },
+  nicknameInputBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   introBox: {width: '85%', marginTop: 20},
   introInput: {
@@ -282,6 +399,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     padding: 5,
     height: 74,
+    color: 'black',
   },
   btnGroup: {
     width: '80%',
@@ -294,10 +412,12 @@ const styles = StyleSheet.create({
     width: '45%',
   },
   text: {
-    margin: 10,
+    fontSize: 12,
+    marginBottom: 10,
     color: 'black',
   },
   link: {
+    marginTop: 10,
     color: '#F34D7F',
   },
   checkBtn: {
@@ -315,13 +435,39 @@ const styles = StyleSheet.create({
   },
   cameraIcon: {
     position: 'absolute',
-    right: 0,
+    right: -10,
     top: -30,
   },
   introText: {
     fontSize: 12,
     marginBottom: 10,
     color: 'black',
+  },
+  logout: {
+    marginTop: 20,
+  },
+  inputForm: {
+    width: '80%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#464646',
+  },
+  input: {
+    fontSize: 13,
+    color: 'black',
+    width: '65%',
+    padding: 5,
+    marginTop: 30,
+  },
+  wingspanInput: {
+    fontSize: 13,
+    color: 'black',
+    width: '80%',
+    padding: 5,
+    marginTop: 30,
   },
 });
 

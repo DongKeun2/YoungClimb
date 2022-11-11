@@ -1,8 +1,14 @@
 import React, {useState, useRef} from 'react';
-import {Dimensions, View, FlatList, StyleSheet} from 'react-native';
+import {Dimensions, StatusBar, View, FlatList, StyleSheet} from 'react-native';
 import ReelsItem from './ReelsItem';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
 function ReelsList({reels, navigation}) {
+  const viewHeight =
+    Dimensions.get('screen').height - Dimensions.get('window').height > 60
+      ? Dimensions.get('window').height
+      : Dimensions.get('window').height - StatusBar.currentHeight;
+  const bottomTabBarHeight = useBottomTabBarHeight();
   const [visablePostIndex, setVisablePostIndex] = useState(0);
 
   const onViewRef = useRef(({viewableItems}) => {
@@ -31,9 +37,10 @@ function ReelsList({reels, navigation}) {
             item={item}
             navigation={navigation}
             isViewable={index === visablePostIndex}
+            viewHeight={viewHeight}
           />
         )}
-        snapToInterval={Dimensions.get('window').height - 50}
+        snapToInterval={viewHeight - bottomTabBarHeight}
         snapToAlignment="start"
         showsVerticalScrollIndicator={false}
       />

@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
-import com.youngclimb.domain.model.dto.center.CenterDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -49,6 +48,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberProblemRepository memberProblemRepository;
     private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
+
 
 
     // 이메일 중복 체크
@@ -214,6 +214,17 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
@@ -222,7 +233,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -301,6 +312,16 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
@@ -309,7 +330,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -333,7 +354,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void verifyUser(String email, String password) {
-
     }
 
     @Override
@@ -343,7 +363,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void deleteMember(String email) {
-
 
     }
 
@@ -360,9 +379,6 @@ public class MemberServiceImpl implements MemberService {
                 .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
                 .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
                 .build();
-
-
-//        memberRankExp.getRank().getProblem();
 
         MemberProblem memberProblem = memberProblemRepository.findByMember(loginMember).orElseThrow();
 
@@ -394,6 +410,16 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
@@ -402,7 +428,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
