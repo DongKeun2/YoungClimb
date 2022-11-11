@@ -35,8 +35,8 @@ public class JwtTokenProvider {
     // access token 생성
     public String createAccessToken(String email) {
 //        Long tokenValidTime = 1000L * 60 * 3; // 3분
-//        Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
-        Long tokenValidTime = 1000L * 30; // 30초 (test용)
+        Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
+//        Long tokenValidTime = 1000L * 30; // 30초 (test용)
         return this.createToken(email, tokenValidTime, "accessToken");
     }
 
