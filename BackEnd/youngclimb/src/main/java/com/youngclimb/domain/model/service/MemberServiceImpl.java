@@ -6,6 +6,8 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
+import com.youngclimb.common.redis.RedisService;
+import com.youngclimb.domain.model.dto.TokenDto;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
@@ -48,6 +50,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberProblemRepository memberProblemRepository;
     private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
+    private final RedisService redisService;
 
 
 
@@ -229,6 +232,16 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void deleteMember(String email) {
 
+    }
+
+    public TokenDto reIssue(String email) {
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(email))
+                .refreshToken(redisService.getValues("RT "+email))
+                .build();
+
+        System.out.println("액세스 토큰이 재발급 되었습니다");
+        return tokenDto;
     }
 
     @Override

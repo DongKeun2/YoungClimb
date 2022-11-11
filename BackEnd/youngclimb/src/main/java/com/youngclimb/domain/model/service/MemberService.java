@@ -1,6 +1,6 @@
 package com.youngclimb.domain.model.service;
 
-import com.youngclimb.common.security.UserPrincipal;
+import com.youngclimb.domain.model.dto.TokenDto;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface MemberService {
+
+    // 액세스 토큰 재발급
+    public TokenDto reIssue(String email);
     // 이메일 중복 체크
     public boolean checkEmailDuplicate(MemberEmail email);
     // 아이디 중복 체크

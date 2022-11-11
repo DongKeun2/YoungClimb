@@ -24,6 +24,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = jwtTokenProvider.resolveToken(request);
         // 토큰 유효성 검사
         if(accessToken != null && jwtTokenProvider.checkClaim(accessToken)){
+            String requestURI = request.getRequestURI();
             // 토큰이 유효하면 토큰으로부터 유저 정보 받아오기
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             // SecurityContext에 Authentication 객체를 저장
@@ -32,6 +33,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 	            UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
                 System.out.println("스프링 필터에서 걸린거야");
                 System.out.println(userDetails.getUsername());
+
         }
 
         filterChain.doFilter(request, response);
