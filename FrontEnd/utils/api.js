@@ -24,8 +24,6 @@ const BOARD_URL = '/board';
 const HOME_URL = '/home';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
-const SAVE_URL = '/save';
-const IMAGE_URL = '/image';
 
 const REELS_URL = '/reels';
 
