@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   SafeAreaView,
@@ -24,10 +24,16 @@ import centerNameInfo from '../../assets/info/CenterNameInfo';
 import CalendarIcon from '../../assets/image/feed/calendarIcon.svg';
 import CloseIcon from '../../assets/image/header/closeIcon.svg';
 
+import {getVideoPath} from '../../utils/slices/PostSlice';
+
 function PostAddInfoScreen({navigation}) {
   const dispatch = useDispatch();
 
   const centerInfo = useSelector(state => state.center.centerInfo);
+
+  const uploadVideo = useSelector(state => state.post.uploadVideo);
+  // const videoPath = useSelector(state => state.post.videoPath);
+  const videoPath = 'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/258683be-f3b5-477d-abaa-9d99dfb6d35b.mp4';
 
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
@@ -37,6 +43,24 @@ function PostAddInfoScreen({navigation}) {
   const [content, setContent] = useState('');
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+
+  // const changeVideoToPath = () => {
+  //   let formData = new FormData();
+  //   const videoFile = {
+  //     uri: uploadVideo.assets[0].uri,
+  //     name: uploadVideo.assets[0].fileName,
+  //     type: uploadVideo.assets[0].type,
+  //   };
+  //   formData.append('file', videoFile);
+  //   console.log('접근 성공', formData);
+  //   dispatch(getVideoPath(formData)).then(() => {
+  //     console.log('변환된 url : ', videoPath);
+  //   });
+  // };
+
+  // useEffect(() => {
+  //   changeVideoToPath();
+  // }, []);
 
   function onChangeCenter(value) {
     setCenter(value);
@@ -74,7 +98,6 @@ function PostAddInfoScreen({navigation}) {
     } else if (!solvedDate) {
       return alert('풀이 날짜를 선택해주세요');
     } else {
-      const formdata = new FormData();
       const data = {
         centerId: center,
         wallId: wall,
@@ -82,11 +105,12 @@ function PostAddInfoScreen({navigation}) {
         holdColor: holdColor,
         solvedDate: solvedDate,
         content: content,
-        memberId: 1, // 임시
+        mediaPath: videoPath, // 임시
       };
       console.log(data);
       dispatch(postAdd(data)).then(() => {
         alert('생성완료');
+        navigation.popToTop();
       });
     }
   }
@@ -95,7 +119,7 @@ function PostAddInfoScreen({navigation}) {
     <SafeAreaView style={styles.container}>
       <CustomSubHeader title="정보 입력" navigation={navigation} />
       <View style={styles.selectContainer}>
-      {/* <KeyboardAwareScrollView
+        {/* <KeyboardAwareScrollView
         style={styles.selectContainer}
         showsVerticalScrollIndicator={false}> */}
         <View style={styles.box}>
@@ -254,7 +278,9 @@ function PostAddInfoScreen({navigation}) {
           <Text style={styles.text}>
             풀이 날짜<Text style={{color: '#F34D7F'}}> *</Text>
           </Text>
-          <TouchableOpacity style={{...styles.dateBox, zIndex: -1}} onPress={showDatePicker}>
+          <TouchableOpacity
+            style={{...styles.dateBox, zIndex: -1}}
+            onPress={showDatePicker}>
             {solvedDate ? (
               <Text style={styles.text}>
                 {solvedDate.getFullYear() +
@@ -292,7 +318,7 @@ function PostAddInfoScreen({navigation}) {
             업로드
           </Text>
         </TouchableOpacity>
-      {/* </KeyboardAwareScrollView> */}
+        {/* </KeyboardAwareScrollView> */}
       </View>
     </SafeAreaView>
   );

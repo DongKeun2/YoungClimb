@@ -8,11 +8,11 @@ import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
 import FollowScreen from '../screens/profile/FollowScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
 import WingspanScreen from '../screens/accounts/WingspanScreen';
-import PostScreen from '../screens/homes/PostScreen';
+import ChoiceVideoScreen from '../screens/postadd/ChoiceVideoScreen';
+import PostAddInfoScreen from '../screens/postadd/PostAddInfoScreen';
 
 import ProfileDrawer from './ProfileDrawer';
 
-import PostAddStack from './PostAddStack';
 import {getCurrentUser} from '../utils/Token';
 import {useSelector} from 'react-redux';
 
@@ -44,7 +44,8 @@ function ProfileStack({navigation, route}) {
           nickname,
         }}
       />
-      <Stack.Screen name="게시글 생성" component={PostAddStack} />
+      <Stack.Screen name="게시글 생성" component={ChoiceVideoScreen} />
+      <Stack.Screen name="정보 입력" component={PostAddInfoScreen} />
       <Stack.Screen name="프로필 설정" component={ProfileEditScreen} />
       <Stack.Screen name="팔로우" component={FollowScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
