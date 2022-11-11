@@ -14,25 +14,19 @@ import Declare from '../../assets/image/menu/Declare.svg'
 import Bookmark from '../../assets/image/menu//Bookmark.svg'
 import FeatherPen from '../../assets/image/menu/FeatherPen.svg'
 
-const MenuMain = (props) => {
-  console.log(props,'main')
-  const {navigation, focusedContent, setModalVisible} = props
 
-  const backAction = () => {
+const MenuMain = (props) => {
+  const {parentnavigation, navigation, focusedContent, setModalVisible} = props
+  
+  useFocusEffect(()=>{
+    BackHandler.removeEventListener('hardwareBackPress')
+    const backAction = ()=>{
       setModalVisible(false)
       return true
     }
-  
-
-  useEffect(()=>{
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-    return () => {
-      backHandler.remove();
-    };
-  },[])  
+    const backHandler = BackHandler.addEventListener('hardwareBackPress',backAction);
+    return() =>{backHandler.remove();}
+  })
 
   return (
     <View style={styles.container}>

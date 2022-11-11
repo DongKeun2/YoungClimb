@@ -43,12 +43,10 @@ function SignupScreen({navigation}) {
 
   // 정보 입력 완료 시 다음 페이지 이동
   function goNextPage() {
-    if (
-      false
-      // !isCheckNickname ||
-      // !isCheckEmail
-    ) {
-      // alert('정보를 입력하세요.');
+    if (!isCheckNickname) {
+      alert('닉네임을 확인해주세요.');
+    } else if (!isCheckEmail) {
+      alert('이메일을 확인해주세요.');
     } else if (!isCheckTerms) {
       alert('약관에 동의해주세요.');
     } else if (passwordError) {

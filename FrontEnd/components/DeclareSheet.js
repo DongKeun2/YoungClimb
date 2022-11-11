@@ -27,18 +27,26 @@ const DeclareSheet = (props) => {
     });
 
 		useEffect(()=>{
+			BackHandler.removeEventListener('hardwareBackPress')
+			// let backAction
 			if (focusedPage ==='메뉴메인'){
 				setPageSize(200)
 				setPageTitle('')
+				// backAction = ()=>{setModalVisible(false)}
 			} else if (focusedPage === '게시물정보') {
 			  setPageSize(360)
 				setPageTitle('게시물 상세 정보')
+				// backAction = ()=>{navigation.navigate('메뉴메인')}
 			} else if (focusedPage === '표시이유') {
 			  setPageSize(220)
+				// backAction = ()=>{navigation.navigate('메뉴메인')}
 			} else if (focusedPage === '신고') {
 			  setPageSize(320)
 				setPageTitle('신고하기')
+				// backAction = ()=>{navigation.navigate('메뉴메인')}
 			}
+			// BackHandler.addEventListener('hardwareBackPress',backAction);
+			// return BackHandler.removeEventListener('hardwareBackPress')
 		},[focusedPage])
 
     const resetBottomSheet = Animated.timing(panY, {
@@ -98,7 +106,7 @@ const DeclareSheet = (props) => {
 							<Text style={{color:'#323232', fontSize: 15, fontWeight:'600',textAlign:'center', width:'100%', position:'absolute',  top: 24}}>{pageTitle}</Text>
 						</Animated.View>
 					<View style={{width:'100%', height:pageSize}}>
-						<HomeMenuStack style={{height:300, with:'100%'}} setModalVisible={setModalVisible} focusedContent={focusedContent} setFocusedPage={setFocusedPage} navigation={navigation} route={route}/>  
+						<HomeMenuStack style={{height:300, with:'100%'}} setModalVisible={setModalVisible} focusedContent={focusedContent} setFocusedPage={setFocusedPage} parentnavigation={navigation} parentroute={route}/>  
 					</View>
 				</Animated.View>
 			</>

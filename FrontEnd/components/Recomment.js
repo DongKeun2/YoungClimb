@@ -4,7 +4,6 @@ import {Text, StyleSheet, View} from 'react-native';
 
 import UserAvatar from './UserAvatar';
 
-import avatar from '../assets/image/initial/background.png';
 import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
@@ -12,7 +11,7 @@ import {YCLevelColorDict} from '../assets/info/ColorInfo';
 function Recomment({recomment}) {
   return (
     <View style={styles.recommentContainer}>
-      <UserAvatar source={avatar} size={32} />
+      <UserAvatar source={{uri: recomment.user.image}} size={32} />
       <View style={styles.recommentInfo}>
         <View style={styles.recommentMain}>
           <View style={{...styles.iconText, alignItems: 'center'}}>

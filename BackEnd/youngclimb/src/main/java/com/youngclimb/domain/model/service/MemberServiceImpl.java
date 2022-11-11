@@ -9,6 +9,8 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
+import com.youngclimb.common.redis.RedisService;
+import com.youngclimb.domain.model.dto.TokenDto;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
@@ -51,6 +53,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberProblemRepository memberProblemRepository;
     private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
+    private final RedisService redisService;
 
 
 
@@ -218,6 +221,17 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
@@ -226,7 +240,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -305,6 +319,16 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
@@ -313,7 +337,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -348,6 +372,18 @@ public class MemberServiceImpl implements MemberService {
     public void deleteMember(String email) {
 
     }
+
+
+    public TokenDto reIssue(String email) {
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(email))
+                .refreshToken(redisService.getValues("RT "+email))
+                .build();
+
+        System.out.println("액세스 토큰이 재발급 되었습니다");
+        return tokenDto;
+    }
+
 
     // 로그인 요청
     @Override
@@ -397,6 +433,16 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
@@ -405,7 +451,7 @@ public class MemberServiceImpl implements MemberService {
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();

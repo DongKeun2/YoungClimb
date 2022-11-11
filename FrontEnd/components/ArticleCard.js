@@ -14,7 +14,7 @@ function ArticleCard({article, type}) {
       {type === 'search' ? (
         <View style={styles.createUserInfo}>
           <UserAvatar source={{uri: article.createUser.image}} size={20} />
-          <Text style={styles.text}>{article.createUser.nickname}</Text>
+          <Text style={styles.name}>{article.createUser.nickname}</Text>
           <HoldIcon
             width={15}
             height={15}
@@ -36,8 +36,9 @@ function ArticleCard({article, type}) {
       </View>
       <View style={styles.InfoBox}>
         <View style={styles.cardInfo}>
-          <Text style={styles.text}>{article.centerName}</Text>
-          <Text style={styles.text}>{article.wallName}</Text>
+          <Text style={styles.text}>
+            {article.centerName} {article.wallName}
+          </Text>
         </View>
         <View style={styles.cardInfo}>
           <Text style={styles.text}>[{article.difficulty}]</Text>
@@ -75,6 +76,10 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
+  },
+  name: {
+    color: 'black',
+    marginLeft: 5,
   },
   createUserInfo: {
     padding: 3,
