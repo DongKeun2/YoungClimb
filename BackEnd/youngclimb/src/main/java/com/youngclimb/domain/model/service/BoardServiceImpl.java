@@ -4,6 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.youngclimb.domain.model.dto.board.*;
 import com.youngclimb.domain.model.dto.member.CreateMember;
 import com.youngclimb.domain.model.dto.member.MemberDto;
@@ -404,6 +407,24 @@ public class BoardServiceImpl implements BoardService {
             boardLikeDto.setIsLike(Boolean.TRUE);
             boardLikeDto.setLike(boardLikes.size());
 
+            // 푸쉬 알림 보내기
+            try {
+                if (board.getMember().getFcmToken() != null) {
+                    Notification notification = new Notification("",
+                            member.getNickname() + "님이 게시물을 좋아합니다.");
+
+                    Message message = Message.builder()
+                            .setNotification(notification)
+                            .setToken(board.getMember().getFcmToken())
+                            .build();
+
+                    FirebaseMessaging.getInstance().send(message);
+                }
+            } catch (Exception e){
+                board.getMember().setFcmToken(null);
+                memberRepository.save(board.getMember());
+            }
+
             return boardLikeDto;
         } else {
             if (board.getMember() != member) {
@@ -485,6 +506,24 @@ public class BoardServiceImpl implements BoardService {
                         .build();
                 noticeRepository.save(noticeBuild);
             }
+
+            // 푸쉬 알림 보내기
+            try {
+                if (comment.getMember().getFcmToken() != null) {
+                    Notification notification = new Notification("",
+                            member.getNickname() + "님이 댓글을 좋아합니다.");
+
+                    Message message = Message.builder()
+                            .setNotification(notification)
+                            .setToken(comment.getMember().getFcmToken())
+                            .build();
+
+                    FirebaseMessaging.getInstance().send(message);
+                }
+            } catch (Exception e){
+                comment.getMember().setFcmToken(null);
+                memberRepository.save(comment.getMember());
+            }
             return true;
         } else {
 
@@ -523,6 +562,24 @@ public class BoardServiceImpl implements BoardService {
             noticeRepository.save(noticeBuild);
         }
 
+        // 푸쉬 알림 보내기
+        try {
+            if (board.getMember().getFcmToken() != null) {
+                Notification notification = new Notification("",
+                        member.getNickname() + "님이 게시물에 댓글을 작성하였습니다.");
+
+                Message message = Message.builder()
+                        .setNotification(notification)
+                        .setToken(board.getMember().getFcmToken())
+                        .build();
+
+                FirebaseMessaging.getInstance().send(message);
+            }
+        } catch (Exception e){
+            board.getMember().setFcmToken(null);
+            memberRepository.save(board.getMember());
+        }
+
     }
 
     // 대댓글 작성
@@ -546,6 +603,24 @@ public class BoardServiceImpl implements BoardService {
                     .createdDateTime(LocalDateTime.now())
                     .build();
             noticeRepository.save(noticeBuild);
+        }
+
+        // 푸쉬 알림 보내기
+        try {
+            if (comment.getMember().getFcmToken() != null) {
+                Notification notification = new Notification("",
+                        member.getNickname() + "님이 대댓글을 작성하였습니다.");
+
+                Message message = Message.builder()
+                        .setNotification(notification)
+                        .setToken(comment.getMember().getFcmToken())
+                        .build();
+
+                FirebaseMessaging.getInstance().send(message);
+            }
+        } catch (Exception e){
+            comment.getMember().setFcmToken(null);
+            memberRepository.save(comment.getMember());
         }
 
 

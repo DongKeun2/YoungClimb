@@ -61,9 +61,17 @@ public class Member {
     //윙스팬+키
     @Column(name = "member_wingheight")
     private Integer wingheight;
+    // FCM토큰
+    @Column(name = "member_fcm_token")
+    private String fcmToken;
     // 프로필 이미지
 //    @OneToOne(mappedBy = "member")
 //    private MemberProfileImg memberProfileImg;
+
+    // FCM토큰 저장
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 
     // 비밀번호 암호화
     public Member hashPw(PasswordEncoder passwordEncoder) {
