@@ -7,10 +7,7 @@ import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
 import CustomSubHeader from '../../components/CustomSubHeader';
 
-import {
-  changeUploadVideo,
-  changeUploadVideoUri,
-} from '../../utils/slices/PostSlice';
+import {changeUploadVideo} from '../../utils/slices/PostSlice';
 
 import gallery from '../../assets/image/main/whiteGallery.png';
 
@@ -18,11 +15,21 @@ function ChoiceVideoScreen({navigation}) {
   const dispatch = useDispatch();
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
-  const uploadVideoUri = useSelector(state => state.post.uploadVideoUri);
+  // {
+  //   "assets": [{
+  //     "bitrate": 2022398,
+  //     "duration": 11,
+  //     "fileName": "1000000666",
+  //     "fileSize": 2928265,
+  //     "height": 720,
+  //     "type": "video/mp4",
+  //     "uri": "content://media/external/video/media/1000000666",
+  //     "width": 720
+  //   }]
+  // }
 
   useEffect(() => {
     dispatch(changeUploadVideo(null));
-    dispatch(changeUploadVideoUri(null));
   }, []);
 
   const onVideoGallery = () => {
@@ -37,10 +44,8 @@ function ChoiceVideoScreen({navigation}) {
         if (res.didCancel) {
           return;
         }
-        console.log(res.assets[0].uri);
-        let uri = 'file://' + res.assets[0].uri.substring(9);
+        console.log(res);
         dispatch(changeUploadVideo(res));
-        dispatch(changeUploadVideoUri(res.assets[0].uri));
       },
     );
   };
@@ -53,10 +58,10 @@ function ChoiceVideoScreen({navigation}) {
         navigation={navigation}
         isVideo={true}
       />
-      {uploadVideo && uploadVideoUri ? (
+      {uploadVideo ? (
         <View style={styles.videoBox}>
           <Video
-            source={{uri: uploadVideoUri}}
+            source={{uri: uploadVideo.assets[0].uri}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}

@@ -24,6 +24,8 @@ const BOARD_URL = '/board';
 const HOME_URL = '/home';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
+const SAVE_URL = '/save';
+const IMAGE_URL = '/image';
 
 const REELS_URL = '/reels';
 
@@ -57,6 +59,7 @@ const api = {
   homeFeed: pageNumber =>
     API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,
   feedComment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}`,
+  videoToUrl: () => API_BASE_URL + BOARD_URL + SAVE_URL + IMAGE_URL,
   postAdd: () => API_BASE_URL + BOARD_URL,
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
