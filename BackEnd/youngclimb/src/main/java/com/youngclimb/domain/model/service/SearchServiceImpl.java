@@ -160,7 +160,7 @@ public class SearchServiceImpl implements SearchService {
             LocalDateTime createdTime = category.getBoard().getCreatedDateTime();
 
             // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
             if (minus <= 10) {
                 timeText = "방금 전";
@@ -169,7 +169,7 @@ public class SearchServiceImpl implements SearchService {
             } else if (minus <= 1440) {
                 timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
             } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             }
 
             boardDto.setCreatedAt(timeText);
