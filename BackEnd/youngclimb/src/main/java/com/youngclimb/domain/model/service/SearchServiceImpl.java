@@ -117,11 +117,12 @@ public class SearchServiceImpl implements SearchService {
             }
         }
 
+        // 나와 비슷한 사람을 보지 않으면 시간 순 정렬, 나와 비슷한 사람을 보고싶으면 비슷한 사람부터
         if (!isSimilar) {
             categories.sort(new Comparator<Category>() {
                 @Override
                 public int compare(Category o1, Category o2) {
-                    return o1.getBoard().getCreatedDateTime().compareTo(o2.getBoard().getCreatedDateTime());
+                    return o2.getBoard().getCreatedDateTime().compareTo(o1.getBoard().getCreatedDateTime());
                 }
             });
         } else {
@@ -160,7 +161,7 @@ public class SearchServiceImpl implements SearchService {
             LocalDateTime createdTime = category.getBoard().getCreatedDateTime();
 
             // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
             if (minus <= 10) {
                 timeText = "방금 전";
@@ -169,7 +170,7 @@ public class SearchServiceImpl implements SearchService {
             } else if (minus <= 1440) {
                 timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
             } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             }
 
             boardDto.setCreatedAt(timeText);
