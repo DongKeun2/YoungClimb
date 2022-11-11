@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,14 +23,20 @@ import java.security.Principal;
 public class ReelsController {
     private final ReelsService reelsService;
 
-    // 이메일 중복 확인
-    @ApiOperation(value = "checkEmail: 이메일 중복 확인")
+    // 릴스 제공
+    @ApiOperation(value = "serveReels: 릴스 제공")
     @GetMapping
-    public ResponseEntity<?> serveReels(@PageableDefault(size = 5) Pageable pageable, @CurrentUser UserPrincipal principal) {
+    public ResponseEntity<?> serveReels(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) {
         try {
             return ResponseEntity.status(200).body(reelsService.serveReels(principal.getUsername(), pageable));
         } catch (Exception e) {
-            return ResponseEntity.status(400).body("에러가 발생했습니다");
+            return exceptionHandling(e);
         }
+    }
+
+    // 예외 처리
+    private ResponseEntity<String> exceptionHandling(Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

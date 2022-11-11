@@ -36,7 +36,7 @@ public class ReelsServiceImpl implements ReelsService {
         Integer wingheight = user.getWingheight();
 
         List<Member> similarMembers = memberRepository.findAllByWingheightBetween(wingheight - 10, wingheight + 10);
-        similarMembers.remove(user);
+
 
         similarMembers.sort(new Comparator<Member>() {
             @Override
@@ -45,106 +45,17 @@ public class ReelsServiceImpl implements ReelsService {
             }
         });
 
-        List<Member> members = new ArrayList<>();
 
         if (similarMembers.size() > 20) {
-            members = similarMembers.subList(0,20);
-        } else {
-            members = similarMembers;
+            similarMembers = similarMembers.subList(0, 20);
         }
 
+        similarMembers.removeIf(member -> member.getMemberId() == user.getMemberId());
 
+        List<Board> boards = boardRepository.findByMemberInOrBoardViewGreaterThan(similarMembers, 100L, pageable);
 
-        for (Member member : members) {
-            List<Board> boards = boardRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
+        for (Board board : boards) {
 
-            if (boards.isEmpty()) {
-                continue;
-            }
-
-                for (Board board : boards) {
-
-                    // 게시글 DTO 세팅
-                    BoardDto boardDto = BoardDto.builder()
-                            .id(board.getBoardId())
-                            .solvedDate(board.getSolvedDate())
-                            .content(board.getContent())
-                            .like(boardLikeRepository.countByBoard(board))
-                            .view(boardScrapRepository.countByBoard(board))
-                        .isLiked(boardLikeRepository.existsByBoardAndMember(board, user))
-                        .isScrap(boardScrapRepository.existsByBoardAndMember(board, user))
-                        .commentNum(commentRepository.countByBoard(board))
-                        .build();
-
-                // 작성 유저 정보 세팅
-                Member writer = board.getMember();
-                CreateMember createUser = CreateMember.builder()
-                        .nickname(writer.getNickname())
-                        .image(writer.getMemberProfileImg())
-                        .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), user.getMemberId()))
-                        .build();
-
-                boardDto.setCreateUser(createUser);
-
-                LocalDateTime createdTime = board.getCreatedDateTime();
-
-                // 작성날짜 세팅
-                String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-                Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-                if (minus <= 10) {
-                    timeText = "방금 전";
-                } else if (minus <= 60) {
-                    timeText = minus + "분 전";
-                } else if (minus <= 1440) {
-                    timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-                } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                    timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
-                }
-
-                boardDto.setCreatedAt(timeText);
-
-                // 게시글 미디어 path 세팅
-                BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
-                boardDto.setMediaPath(boardMedia.getMediaPath());
-
-                // 카테고리 정보 세팅
-                Category category = categoryRepository.findByBoard(board).orElseThrow();
-                boardDto.setCenterId(category.getCenter().getId());
-                boardDto.setCenterName(category.getCenter().getName());
-                boardDto.setCenterLevelId(category.getCenterlevel().getId());
-                boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
-                boardDto.setWallId(category.getWall().getId());
-                boardDto.setWallName(category.getWall().getName());
-                boardDto.setDifficulty(category.getDifficulty());
-                boardDto.setHoldColor(category.getHoldcolor());
-
-
-                // 댓글 DTO 1개 세팅
-                List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
-                if (!comments.isEmpty()) {
-                    CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                            .nickname(comments.get(0).getMember().getNickname())
-                            .comment(comments.get(0).getContent())
-                            .build();
-                    boardDto.setCommentPreview(commentPreviewDto);
-                }
-
-                // List add
-                boardDtos.add(boardDto);
-            }
-
-        }
-
-
-        if (boardDtos.size() > 60) {
-            boardDtos = boardDtos.subList(0,60);
-        }
-
-
-        List<Board> popularBoards = boardRepository.findByBoardViewGreaterThanOrderByBoardViewDesc(100L);
-
-        for (Board board : popularBoards) {
             // 게시글 DTO 세팅
             BoardDto boardDto = BoardDto.builder()
                     .id(board.getBoardId())
@@ -155,6 +66,7 @@ public class ReelsServiceImpl implements ReelsService {
                     .isLiked(boardLikeRepository.existsByBoardAndMember(board, user))
                     .isScrap(boardScrapRepository.existsByBoardAndMember(board, user))
                     .commentNum(commentRepository.countByBoard(board))
+                    .createdDateTime(board.getCreatedDateTime())
                     .build();
 
             // 작성 유저 정보 세팅
@@ -171,7 +83,7 @@ public class ReelsServiceImpl implements ReelsService {
             LocalDateTime createdTime = board.getCreatedDateTime();
 
             // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
             if (minus <= 10) {
                 timeText = "방금 전";
@@ -180,7 +92,7 @@ public class ReelsServiceImpl implements ReelsService {
             } else if (minus <= 1440) {
                 timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
             } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             }
 
             boardDto.setCreatedAt(timeText);
@@ -200,24 +112,178 @@ public class ReelsServiceImpl implements ReelsService {
             boardDto.setDifficulty(category.getDifficulty());
             boardDto.setHoldColor(category.getHoldcolor());
 
-
-            // 댓글 DTO 1개 세팅
-            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
-            if (!comments.isEmpty()) {
-                CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                        .nickname(comments.get(0).getMember().getNickname())
-                        .comment(comments.get(0).getContent())
-                        .build();
-                boardDto.setCommentPreview(commentPreviewDto);
-            }
-
             // List add
             boardDtos.add(boardDto);
         }
 
+
+//        for (Member member : members) {
+//            if (user.getMemberId() == member.getMemberId()) continue;
+//
+//            List<Board> boards = boardRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
+//
+//            if (boards.isEmpty()) {
+//                continue;
+//            }
+//
+//            for (Board board : boards) {
+//
+//                // 게시글 DTO 세팅
+//                BoardDto boardDto = BoardDto.builder()
+//                        .id(board.getBoardId())
+//                        .solvedDate(board.getSolvedDate())
+//                        .content(board.getContent())
+//                        .like(boardLikeRepository.countByBoard(board))
+//                        .view(boardScrapRepository.countByBoard(board))
+//                        .isLiked(boardLikeRepository.existsByBoardAndMember(board, user))
+//                        .isScrap(boardScrapRepository.existsByBoardAndMember(board, user))
+//                        .commentNum(commentRepository.countByBoard(board))
+//                        .createdDateTime(board.getCreatedDateTime())
+//                        .build();
+//
+//                // 작성 유저 정보 세팅
+//                Member writer = board.getMember();
+//                CreateMember createUser = CreateMember.builder()
+//                        .nickname(writer.getNickname())
+//                        .image(writer.getMemberProfileImg())
+//                        .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+//                        .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), user.getMemberId()))
+//                        .build();
+//
+//                boardDto.setCreateUser(createUser);
+//
+//                LocalDateTime createdTime = board.getCreatedDateTime();
+//
+//                // 작성날짜 세팅
+//                String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+//                Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+//                if (minus <= 10) {
+//                    timeText = "방금 전";
+//                } else if (minus <= 60) {
+//                    timeText = minus + "분 전";
+//                } else if (minus <= 1440) {
+//                    timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+//                } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+//                    timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+//                }
+//
+//                boardDto.setCreatedAt(timeText);
+//
+//                // 게시글 미디어 path 세팅
+//                BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+//                boardDto.setMediaPath(boardMedia.getMediaPath());
+//
+//                // 카테고리 정보 세팅
+//                Category category = categoryRepository.findByBoard(board).orElseThrow();
+//                boardDto.setCenterId(category.getCenter().getId());
+//                boardDto.setCenterName(category.getCenter().getName());
+//                boardDto.setCenterLevelId(category.getCenterlevel().getId());
+//                boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
+//                boardDto.setWallId(category.getWall().getId());
+//                boardDto.setWallName(category.getWall().getName());
+//                boardDto.setDifficulty(category.getDifficulty());
+//                boardDto.setHoldColor(category.getHoldcolor());
+//
+//
+//                // 댓글 DTO 1개 세팅
+//                List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+//                if (!comments.isEmpty()) {
+//                    CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
+//                            .nickname(comments.get(0).getMember().getNickname())
+//                            .comment(comments.get(0).getContent())
+//                            .build();
+//                    boardDto.setCommentPreview(commentPreviewDto);
+//                }
+//
+//                // List add
+//                boardDtos.add(boardDto);
+//            }
+//
+//        }
+
+
+//        if (boardDtos.size() > 60) {
+//            boardDtos = boardDtos.subList(0, 60);
+//        }
+//
+//
+//        List<Board> popularBoards = boardRepository.findByBoardViewGreaterThanOrderByBoardViewDesc(100L);
+//
+//        for (Board board : popularBoards) {
+//            if (board.getMember().getMemberId() == user.getMemberId()) continue;
+//
+//            // 게시글 DTO 세팅
+//            BoardDto boardDto = BoardDto.builder()
+//                    .id(board.getBoardId())
+//                    .solvedDate(board.getSolvedDate())
+//                    .content(board.getContent())
+//                    .like(boardLikeRepository.countByBoard(board))
+//                    .view(boardScrapRepository.countByBoard(board))
+//                    .isLiked(boardLikeRepository.existsByBoardAndMember(board, user))
+//                    .isScrap(boardScrapRepository.existsByBoardAndMember(board, user))
+//                    .commentNum(commentRepository.countByBoard(board))
+//                    .build();
+//
+//            // 작성 유저 정보 세팅
+//            Member writer = board.getMember();
+//            CreateMember createUser = CreateMember.builder()
+//                    .nickname(writer.getNickname())
+//                    .image(writer.getMemberProfileImg())
+//                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
+//                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), user.getMemberId()))
+//                    .build();
+//
+//            boardDto.setCreateUser(createUser);
+//
+//            LocalDateTime createdTime = board.getCreatedDateTime();
+//
+//            // 작성날짜 세팅
+//            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+//            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+//            if (minus <= 10) {
+//                timeText = "방금 전";
+//            } else if (minus <= 60) {
+//                timeText = minus + "분 전";
+//            } else if (minus <= 1440) {
+//                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+//            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+//                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+//            }
+//
+//            boardDto.setCreatedAt(timeText);
+//
+//            // 게시글 미디어 path 세팅
+//            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+//            boardDto.setMediaPath(boardMedia.getMediaPath());
+//
+//            // 카테고리 정보 세팅
+//            Category category = categoryRepository.findByBoard(board).orElseThrow();
+//            boardDto.setCenterId(category.getCenter().getId());
+//            boardDto.setCenterName(category.getCenter().getName());
+//            boardDto.setCenterLevelId(category.getCenterlevel().getId());
+//            boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
+//            boardDto.setWallId(category.getWall().getId());
+//            boardDto.setWallName(category.getWall().getName());
+//            boardDto.setDifficulty(category.getDifficulty());
+//            boardDto.setHoldColor(category.getHoldcolor());
+//            boardDto.setCreatedDateTime(board.getCreatedDateTime());
+//
+//
+//            // List add
+//            boardDtos.add(boardDto);
+//        }
+
         if (boardDtos.size() > 100) {
-            boardDtos = boardDtos.subList(0,100);
+            boardDtos = boardDtos.subList(0, 100);
         }
+
+//         시간 순 정렬
+//        boardDtos.sort(new Comparator<BoardDto>() {
+//            @Override
+//            public int compare(BoardDto o1, BoardDto o2) {
+//                return o2.getCreatedDateTime().compareTo(o1.getCreatedDateTime());
+//            }
+//        });
 
         return boardDtos;
     }

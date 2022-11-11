@@ -117,11 +117,12 @@ public class SearchServiceImpl implements SearchService {
             }
         }
 
+        // 나와 비슷한 사람을 보지 않으면 시간 순 정렬, 나와 비슷한 사람을 보고싶으면 비슷한 사람부터
         if (!isSimilar) {
             categories.sort(new Comparator<Category>() {
                 @Override
                 public int compare(Category o1, Category o2) {
-                    return o1.getBoard().getCreatedDateTime().compareTo(o2.getBoard().getCreatedDateTime());
+                    return o2.getBoard().getCreatedDateTime().compareTo(o1.getBoard().getCreatedDateTime());
                 }
             });
         } else {

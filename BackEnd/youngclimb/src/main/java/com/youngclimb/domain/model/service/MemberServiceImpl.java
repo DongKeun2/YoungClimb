@@ -234,9 +234,6 @@ public class MemberServiceImpl implements MemberService {
     // 프로필 수정
     @Override
     public LoginResDto editProfile(String email, MemberInfo memberInfo) throws Exception {
-        System.out.println(memberInfo);
-
-
         Member member = memberRepository.findByEmail(email).orElseThrow();
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
 //                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
