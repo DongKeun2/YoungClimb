@@ -99,7 +99,7 @@ public class Member {
         if (memberInfo.getHeight() != null) this.height = memberInfo.getHeight();
         if (memberInfo.getWingspan() != null) this.wingspan = memberInfo.getWingspan();
         if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
-        if (memberInfo.getIntro() != "") this.profileContent = memberInfo.getIntro();
+        this.profileContent = memberInfo.getIntro();
         if (memberInfo.getImage() != "") this.memberProfileImg = memberInfo.getImage();
         this.wingheight = this.height + this.wingspan;
 
