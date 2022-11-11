@@ -261,7 +261,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public String saveImage(MultipartFile file) {
         if (file != null) {
-            System.out.println(file);
+            System.out.println(file.getOriginalFilename());
+            System.out.println(file.getContentType());
+            System.out.println(file.getInputStream());
+
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
