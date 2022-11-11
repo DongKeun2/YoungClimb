@@ -1,18 +1,13 @@
 package com.youngclimb.domain.model.service;
 
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.Notification;
-import com.youngclimb.domain.model.entity.FcmToken;
 import com.youngclimb.domain.model.entity.Member;
-import com.youngclimb.domain.model.repository.FcmTokenRepository;
 import com.youngclimb.domain.model.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,31 +16,28 @@ public class FirebaseServiceImpl implements FirebaseService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    private FirebaseMessaging instance;
+
     private final MemberRepository memberRepository;
-    private final FcmTokenRepository fcmTokenRepository;
+
 
     // Token 저장
     public void saveFcmToken(String email, String token) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        FcmToken fcmToken = fcmTokenRepository.findByContentAndMember(token, member).orElse(null);
 
-        if (fcmToken == null) {
-            FcmToken fcmTokenBuild = FcmToken.builder()
-                    .content(token)
-                    .member(member)
-                    .build();
-
-            fcmTokenRepository.save(fcmTokenBuild);
-        }
+        member.setFcmToken(token);
+        memberRepository.save(member);
     }
+
 
     // Token 삭제
     public void deleteFcmToken(String email, String token) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        FcmToken fcmToken = fcmTokenRepository.findByContentAndMember(token, member).orElse(null);
+        member.setFcmToken(null);
 
-        fcmTokenRepository.delete(fcmToken);
+        memberRepository.delete(member);
     }
+
 //    @Async
 //    @Transactional
 //    public void sendNotification(Member member, String title, String body, String route) {
