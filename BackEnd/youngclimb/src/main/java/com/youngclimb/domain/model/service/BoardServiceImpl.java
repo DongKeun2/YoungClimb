@@ -261,16 +261,18 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public String saveImage(MultipartFile file) {
         if (file != null) {
-            System.out.println(file.getOriginalFilename());
             System.out.println(file.getContentType());
 
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
+            System.out.println("여기까진 되고");
             try (InputStream inputStream = file.getInputStream()) {
+                System.out.println("이거 보내지나?");
                 amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
+                System.out.println("파일 변환 실패");
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
             return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
