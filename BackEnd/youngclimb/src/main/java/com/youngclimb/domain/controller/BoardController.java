@@ -23,17 +23,27 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    // 전체 게시글 조회
-    @ApiOperation(value = "readAllBoard: 전체 게시글 조회")
+    // 최근 게시글 조회
+    @ApiOperation(value = "readRecentBoard: 최근 게시글 조회")
     @GetMapping("/home")
-    public ResponseEntity<?> readAllBoard(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal ) throws Exception {
+    public ResponseEntity<?> readRecentBoard(@PageableDefault(sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            List<BoardDto> boardDtos = boardService.readAllBoard(principal.getUsername(), pageable);
-            if (boardDtos != null) {
-                return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-            }
+            List<BoardDto> boardDtos = boardService.readRecentBoard(principal.getUsername(), pageable);
+            return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 추가 게시글 조회
+    @ApiOperation(value = "readOldBoard: 추가 게시글 조회")
+    @GetMapping("/home/add")
+    public ResponseEntity<?> readOldBoard(@PageableDefault(sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) throws Exception {
+        try {
+            List<BoardDto> boardDtos = boardService.readOldBoard(principal.getUsername(), pageable);
+            return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
+
         } catch (Exception e) {
             return exceptionHandling(e);
         }
@@ -58,7 +68,7 @@ public class BoardController {
     @PostMapping
     public ResponseEntity<?> writeBoard(@RequestBody BoardCreate boardCreate, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            boardService.writeBoard(principal.getUsername() ,boardCreate);
+            boardService.writeBoard(principal.getUsername(), boardCreate);
             return new ResponseEntity<Void>(HttpStatus.OK);
 
         } catch (Exception e) {
@@ -69,7 +79,7 @@ public class BoardController {
     // 게시물 삭제
     @ApiOperation(value = "deleteBoard : 글 삭제하기")
     @PostMapping("/{boardId}/delete")
-    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId,@CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
             boardService.deleteBoard(principal.getUsername(), boardId);
             return new ResponseEntity<Void>(HttpStatus.OK);
@@ -96,17 +106,6 @@ public class BoardController {
         }
     }
 
-    // 게시글 상세 조회
-    @ApiOperation(value = "readBoardDetail : 게시글 정보 조회")
-    @GetMapping("/{boardId}/detail")
-    public ResponseEntity<?> readBoardDetail(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
-        try {
-            BoardDto boardDto = boardService.readBoardDetail(boardId, principal.getUsername());
-            return new ResponseEntity<BoardDto>(boardDto, HttpStatus.OK);
-        } catch (Exception e) {
-            return exceptionHandling(e);
-        }
-    }
 
     // 게시글 좋아요/취소
     @ApiOperation(value = "BoardLike : 좋아요 클릭")
@@ -164,7 +163,7 @@ public class BoardController {
     // 게시물 스크랩/취소
     @ApiOperation(value = "upBoardScrap : 스크랩 클릭")
     @PostMapping("/{boardId}/scrap")
-    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId,  @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
             return new ResponseEntity<Boolean>(boardService.boardScrapCancle(boardId, principal.getUsername()), HttpStatus.OK);
 
