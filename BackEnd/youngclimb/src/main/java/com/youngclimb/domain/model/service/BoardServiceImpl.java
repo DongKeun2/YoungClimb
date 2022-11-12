@@ -375,7 +375,9 @@ public class BoardServiceImpl implements BoardService {
 
     private String getFileExtension(String fileName) {
         try {
-            return fileName.substring(fileName.lastIndexOf("."));
+            System.out.println(fileName);
+            System.out.println(fileName.indexOf("."));
+            return fileName.substring(0, fileName.indexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다");
         }
