@@ -32,11 +32,10 @@ function PostAddInfoScreen({navigation}) {
   const centerInfo = useSelector(state => state.center.centerInfo);
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
-  // const videoPath = useSelector(state => state.post.videoPath);
-  const videoPath = 'https://s3.ap-northeast-2.amazonaws.com/youngclimb/boardImg/258683be-f3b5-477d-abaa-9d99dfb6d35b.mp4';
+  const videoPath = useSelector(state => state.post.videoPath);
 
   const [center, setCenter] = useState('');
-  const [wall, setWall] = useState('');
+  const [wall, setWall] = useState(0);
   const [level, setLevel] = useState('');
   const [holdColor, setHoldColor] = useState('');
   const [solvedDate, setSolvedDate] = useState(null);
@@ -44,23 +43,24 @@ function PostAddInfoScreen({navigation}) {
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  // const changeVideoToPath = () => {
-  //   let formData = new FormData();
-  //   const videoFile = {
-  //     uri: uploadVideo.assets[0].uri,
-  //     name: uploadVideo.assets[0].fileName,
-  //     type: uploadVideo.assets[0].type,
-  //   };
-  //   formData.append('file', videoFile);
-  //   console.log('접근 성공', formData);
-  //   dispatch(getVideoPath(formData)).then(() => {
-  //     console.log('변환된 url : ', videoPath);
-  //   });
-  // };
+  const changeVideoToPath = async () => {
+    let formData = new FormData();
+    const videoFile = {
+      uri: uploadVideo.assets[0].uri,
+      name: uploadVideo.assets[0].fileName + '.mp4',
+      type: uploadVideo.assets[0].type,
+    };
+    console.log(videoFile);
+    formData.append('file', videoFile);
 
-  // useEffect(() => {
-  //   changeVideoToPath();
-  // }, []);
+    dispatch(getVideoPath(formData)).then(() => {
+      console.log('변환된 url : ', videoPath);
+    });
+  };
+
+  useEffect(() => {
+    changeVideoToPath();
+  }, []);
 
   function onChangeCenter(value) {
     setCenter(value);
@@ -105,12 +105,16 @@ function PostAddInfoScreen({navigation}) {
         holdColor: holdColor,
         solvedDate: solvedDate,
         content: content,
-        mediaPath: videoPath, // 임시
+        mediaPath: videoPath,
       };
       console.log(data);
-      dispatch(postAdd(data)).then(() => {
-        alert('생성완료');
-        navigation.popToTop();
+      dispatch(postAdd(data)).then(res => {
+        if (res.type === 'postAdd/fulfilled') {
+          alert('성공적으로 생성되었습니다');
+          navigation.popToTop();
+        } else {
+          alert('다시 시도해주세요');
+        }
       });
     }
   }

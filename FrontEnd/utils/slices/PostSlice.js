@@ -31,7 +31,7 @@ const fetchFeedComment = createAsyncThunk(
   },
 );
 
-const postAdd = createAsyncThunk('post', async (data, {rejectWithValue}) => {
+const postAdd = createAsyncThunk('postAdd', async (data, {rejectWithValue}) => {
   try {
     const res = await axios.post(api.postAdd(), data, await getConfig());
     console.log('게시글 성공');
@@ -129,25 +129,12 @@ const getVideoPath = createAsyncThunk(
   'getVideoPath',
   async (formData, {rejectWithValue}) => {
     try {
-      const res = await axios({
-        method: 'POST',
-        url: api.videoToUrl(),
-        data: formData,
+      const res = await axios.post(api.videoToUrl(), formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: await getHeader(),
         },
       });
-      // const res = await axios.post(api.videoToUrl(), formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     Authorization: await getHeader(),
-      //     // transformRequest: (data, headers) => {
-      //     //   return formData;
-      //     // },
-      //   },
-      // });
-      console.log('동영상 성공', res.data);
       return res.data;
     } catch (err) {
       console.log('동영상 실패', err);

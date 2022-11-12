@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable no-undef */ // for Platform.OS
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
@@ -15,18 +14,6 @@ function ChoiceVideoScreen({navigation}) {
   const dispatch = useDispatch();
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
-  // {
-  //   "assets": [{
-  //     "bitrate": 2022398,
-  //     "duration": 11,
-  //     "fileName": "1000000666",
-  //     "fileSize": 2928265,
-  //     "height": 720,
-  //     "type": "video/mp4",
-  //     "uri": "content://media/external/video/media/1000000666",
-  //     "width": 720
-  //   }]
-  // }
 
   useEffect(() => {
     dispatch(changeUploadVideo(null));
@@ -38,7 +25,8 @@ function ChoiceVideoScreen({navigation}) {
         mediaType: 'video',
         maxWidth: 512,
         maxHeight: 512,
-        includeBase64: Platform.OS === 'android',
+        includeBase64: false,
+        videoQuality: 'low',
       },
       res => {
         if (res.didCancel) {

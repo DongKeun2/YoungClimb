@@ -159,9 +159,9 @@ function HomeFeed({
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
-            repeat={true}
+            repeat={false}
             controls={false}
-            paused={!isViewable}
+            paused={true}
             muted={isMuted}
           />
         </TouchableOpacity>
