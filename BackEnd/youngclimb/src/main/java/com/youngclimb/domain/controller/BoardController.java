@@ -75,7 +75,6 @@ public class BoardController {
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
     @GetMapping("/{boardId}")
     public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
-        Long userId = 1L;
         try {
             BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, principal.getUsername());
             if (boardDetailDto != null) {
