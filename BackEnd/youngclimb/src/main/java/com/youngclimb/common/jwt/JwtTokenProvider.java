@@ -1,6 +1,5 @@
 package com.youngclimb.common.jwt;
 
-import com.youngclimb.common.exception.BadRequestException;
 import com.youngclimb.common.redis.RedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -36,20 +35,20 @@ public class JwtTokenProvider {
     public String createAccessToken(String email) {
 //        Long tokenValidTime = 1000L * 60 * 3; // 3분
         Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
-        return this.createToken(email, tokenValidTime);
+//        Long tokenValidTime = 1000L * 30; // 30초 (testy6용)
+        return this.createToken(email, tokenValidTime, "accessToken");
     }
 
     // refresh token 생성
     public String createRefreshToken(String email) {
-        Long tokenValidTime = 1000L * 60 * 60 * 25; // 하루
-
-        String refreshToken = this.createToken(email, tokenValidTime);
-        redisService.setValues(email, refreshToken, Duration.ofMillis(tokenValidTime));
+        Long tokenValidTime = 1000 * 60 * 60 * 24L; // 하루
+        String refreshToken = this.createToken(email, tokenValidTime, "refreshToken");
+        redisService.setValues("RT " + email, refreshToken, Duration.ofMillis(tokenValidTime));
         return refreshToken;
     }
 
     // 토큰 생성
-    public String createToken(String email, Long tokenValidTime) {
+    public String createToken(String email, Long tokenValidTime, String type) {
 
         Date now = new Date();
         Claims claims = Jwts.claims()
@@ -57,34 +56,58 @@ public class JwtTokenProvider {
                 .setIssuedAt(now) //생성일 설정
                 .setExpiration(new Date(now.getTime() + tokenValidTime)); //만료일 설정
 
-        claims.put("role", "USER"); //담고 싶은 값
 
-        return Jwts.builder()
-                .setHeaderParam("typ", "JWT")
-                .setClaims(claims)
-                .signWith(key, SignatureAlgorithm.HS256)
-                .compact();
+        if (type.equals("accessToken")) {
+            claims.put("role", "USER"); // 유저 타입 저장
+            claims.put("type", "accessToken");
+            return Jwts.builder()
+                    .setHeaderParam("typ", "jwt")
+                    .setClaims(claims)
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .compact();
+        } else {
+            claims.put("type", "refreshToken");
+            return Jwts.builder()
+                    .setHeaderParam("typ", "jwt")
+                    .setClaims(claims)
+                    .signWith(key, SignatureAlgorithm.HS256)
+                    .compact();
+        }
     }
 
     // 토큰 유효성 검사
-    public boolean checkClaim(String accessToken) {
+    public boolean checkClaim(String token) {
         try {
 //            String expiredAT = redisService.getValues(blackListATPrefix + jwt);
 //            if (expiredAT != null) {
-//                throw new ExpiredJwtException(null, null, null);
+//                throw new ExpiredJwtException(null, null, null
+//                );
 //            }
+
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key).build()
-                    .parseClaimsJws(accessToken).getBody();
-            System.out.println(claims.toString());
+                    .parseClaimsJws(token).getBody();
+
+            if (claims.getExpiration().before(new Date())) {
+                throw new ExpiredJwtException(null, claims, "AccessToken이 만료되었습니다");
+            }
+
+            if(claims.get("type").equals("refreshToken")) {
+                System.out.println("리프레쉬 토큰이 들어왔습니다.");
+               return this.checkRefreshToken(claims.getSubject(), token);
+            };
+                System.out.println("여기서 안터지니?");
             return true;
 
-        } catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
-            System.out.println("만료된 토큰이지롱");
-            return false;
-
-        } catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
-            System.out.println("변조된 토큰이지롱");
+        }
+//        catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
+//            e.getClaims();
+//            System.out.println("AccessToken이 만료되었지롱");
+//            return false;
+//
+//        }
+        catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
+            System.out.println("변조된 AccessToken이지롱");
             return false;
         }
     }
@@ -122,17 +145,24 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
-    public void checkRefreshToken(String email, String refreshToken) {
-        String redisRT = redisService.getValues(email);
-        if (!refreshToken.equals(redisRT)) {
-            throw new BadRequestException("토큰이 만료되었습니다!");
+    public boolean checkRefreshToken(String email, String refreshToken) throws ExpiredJwtException {
+        String redisRT = redisService.getValues("RT " + email);
+        if (redisRT == null) {
+            System.out.println("RefreshToken이 만료되었습니다!");
+            throw new ExpiredJwtException(null, null, "RefreshToken이 만료되었습니다!");
         }
+
+        if(redisService.getTTL("RT "+email) <= (60 * 60 * 24 * 3) ) {
+            this.createRefreshToken(email);
+        }
+        System.out.println("리프레시 토큰이 확인되었습니다.");
+        return true;
     }
 
     public void logout(String email, String accessToken) {
         Long expiredAccessTokenTime = getJwtContents(accessToken).getExpiration().getTime() - new Date().getTime();
         redisService.setValues(blackListATPrefix + accessToken, email, Duration.ofMillis(expiredAccessTokenTime));
-        redisService.deleteValues(email);
+        redisService.deleteValues("RT " + email);
 
     }
 }

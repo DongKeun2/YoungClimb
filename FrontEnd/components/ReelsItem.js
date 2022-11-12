@@ -1,6 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
+import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {
   Dimensions,
   View,
@@ -16,7 +18,6 @@ import LevelLabel from './LevelLabel';
 
 import avatar from '../assets/image/initial/background.png';
 import HoldIcon from '../assets/image/hold/hold.svg';
-import FollowIcon from '../assets/image/reels/followIcon.svg';
 import WhiteScrap from '../assets/image/reels/whiteScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
 import WhiteHeart from '../assets/image/reels/whiteHeart.svg';
@@ -25,12 +26,26 @@ import CommentIcon from '../assets/image/reels/commentIcon.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-function ReelsItem({item, navigation, isViewable}) {
+import {feedLikeSubmit, feedScrapSubmit} from '../utils/slices/PostSlice';
+
+function ReelsItem({item, navigation, isViewable, viewHeight}) {
+  const dispatch = useDispatch();
+
+  const bottomTabBarHeight = useBottomTabBarHeight();
   const [isMuted, setIsMuted] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
+  const [likePress, setLikePress] = useState(false);
+  const [isScrap, setIsScrap] = useState(false);
+  const [scrapPress, setScrapPress] = useState(false);
 
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
+
+  useEffect(() => {
+    setIsLiked(item.isLiked);
+    setIsScrap(item.isScrap);
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -38,37 +53,53 @@ function ReelsItem({item, navigation, isViewable}) {
     }, []),
   );
 
+  const reelsLike = id => {
+    setLikePress(true);
+    dispatch(feedLikeSubmit(id))
+      .then(() => {
+        setIsLiked(!isLiked);
+        setLikePress(false);
+      })
+      .catch(() => setLikePress(false));
+  };
+
+  const reelsScrap = id => {
+    console.log('눌림');
+    setScrapPress(true);
+    dispatch(feedScrapSubmit(id))
+      .then(() => {
+        setIsScrap(!isScrap);
+        setScrapPress(false);
+      })
+      .catch(() => setScrapPress(false));
+  };
+
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        height: viewHeight - bottomTabBarHeight,
+      }}>
       {/* 릴스 게시물 정보 */}
       <View style={styles.reelsInfo}>
         <View style={styles.userGroup}>
           <View style={styles.iconText}>
             <UserAvatar source={avatar} size={36} />
-            <View style={{marginLeft: 8, marginBottom: 2}}>
-              <View style={styles.iconText}>
-                <Text
-                  style={{
-                    ...styles.reelsTextStyle,
-                    fontSize: 16,
-                    fontWeight: '600',
-                    marginRight: 5,
-                  }}>
-                  {item.createUser.nickname}
-                </Text>
-                <HoldIcon
-                  width={18}
-                  height={18}
-                  color={YCLevelColorDict[item.createUser.rank]}
-                />
-                {/* {!item.createUser.isFollow ? (
-                  <TouchableOpacity
-                    style={{marginLeft: 3}}
-                    onPress={() => null}>
-                    <FollowIcon width={28} height={28} />
-                  </TouchableOpacity>
-                ) : null} */}
-              </View>
+            <View style={{...styles.iconText, marginLeft: 8, marginBottom: 2}}>
+              <Text
+                style={{
+                  ...styles.reelsTextStyle,
+                  fontSize: 16,
+                  fontWeight: '600',
+                  marginRight: 5,
+                }}>
+                {item.createUser.nickname}
+              </Text>
+              <HoldIcon
+                width={18}
+                height={18}
+                color={YCLevelColorDict[item.createUser.rank]}
+              />
             </View>
           </View>
         </View>
@@ -92,7 +123,7 @@ function ReelsItem({item, navigation, isViewable}) {
       <View
         style={{
           width: Dimensions.get('window').width,
-          height: Dimensions.get('window').height - 50,
+          height: viewHeight - bottomTabBarHeight,
         }}>
         <TouchableOpacity
           style={styles.videoBox}
@@ -112,28 +143,28 @@ function ReelsItem({item, navigation, isViewable}) {
       </View>
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
-        {item.isLiked ? (
-          <TouchableOpacity onPress={() => null}>
+        <TouchableOpacity
+          onPress={() => reelsLike(item.id)}
+          disabled={likePress}>
+          {isLiked ? (
             <FillHeart width={28} height={28} style={{marginBottom: 10}} />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => null}>
+          ) : (
             <WhiteHeart width={28} height={28} style={{marginBottom: 10}} />
-          </TouchableOpacity>
-        )}
-        {item.isScrap ? (
-          <TouchableOpacity onPress={() => null}>
+          )}
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => reelsScrap(item.id)}
+          disabled={scrapPress}>
+          {isScrap ? (
             <FillScrap
               width={30}
               height={30}
               style={{marginBottom: 12, marginLeft: -0.8}}
             />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => null}>
+          ) : (
             <WhiteScrap width={28} height={28} style={{marginBottom: 12}} />
-          </TouchableOpacity>
-        )}
+          )}
+        </TouchableOpacity>
         <TouchableOpacity onPress={() => null}>
           <CommentIcon width={26} height={24} style={{marginLeft: 0.5}} />
         </TouchableOpacity>
@@ -144,7 +175,6 @@ function ReelsItem({item, navigation, isViewable}) {
 
 const styles = StyleSheet.create({
   container: {
-    height: Dimensions.get('window').height - 50,
     width: Dimensions.get('window').width,
     backgroundColor: 'black',
     display: 'flex',

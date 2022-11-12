@@ -4,8 +4,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.Notification;
 import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
+import com.youngclimb.common.redis.RedisService;
+import com.youngclimb.domain.model.dto.TokenDto;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import com.youngclimb.domain.model.entity.*;
@@ -26,6 +31,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -47,6 +53,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberProblemRepository memberProblemRepository;
     private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
+    private final RedisService redisService;
+
 
 
     // 이메일 중복 체크
@@ -80,6 +88,7 @@ public class MemberServiceImpl implements MemberService {
         }
 
         Member member = Member.builder()
+                .memberProfileImg("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png")
                 .email(joinMember.getEmail())
                 .pw(passwordEncoder.encode(joinMember.getPassword()))
                 .nickname(joinMember.getNickname())
@@ -90,6 +99,7 @@ public class MemberServiceImpl implements MemberService {
                 .wingspan(joinMember.getWingspan())
                 .wingheight(joinMember.getHeight() + joinMember.getWingspan())
                 .role(UserRole.USER)
+                .fcmToken(joinMember.getFcmToekn())
                 .build();
         if (member == null) System.out.println("멤버 빌드 실패");
         memberRepository.save(member);
@@ -97,9 +107,14 @@ public class MemberServiceImpl implements MemberService {
         LoginMemberInfo user = LoginMemberInfo.builder()
                 .nickname(member.getNickname())
                 .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
                 .height(member.getHeight())
                 .shoeSize(member.getShoeSize())
                 .wingspan(member.getWingspan())
+                .rank("Y1")
+                .exp(0)
+                .expleft(20)
+                .upto(0)
                 .build();
 
         MemberRankExp memberRankExp = MemberRankExp.builder()
@@ -135,64 +150,200 @@ public class MemberServiceImpl implements MemberService {
 
     // 프로필 추가
     @Override
-    public void addProfile(String email, MemberProfile memberProfile, MultipartFile file) throws Exception {
+    public LoginResDto addProfile(String email, MemberProfile memberProfile) throws Exception {
 
-        Member member = memberRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 
 //        Member member = memberRepository.findByEmail(memberProfile.getEmail())
 //                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
 
-        // 프로필 사진 s3 저장
-        if (file == null) {
+//        // 프로필 사진 s3 저장
+//        if (file == null) {
+//            memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
+//        } else {
+//            String fileName = createFileName(file.getOriginalFilename());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
+//            System.out.println(fileName);
+//            try (InputStream inputStream = file.getInputStream()) {
+////                amazonS3.putObject(bucket+"/userProfile", fileName, inputStream, objectMetadata);
+//                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+//                memberProfile.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
+//            } catch (IOException e) {
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+//            }
+        if (memberProfile.getImage() == "") {
             memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
-        } else {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            System.out.println(fileName);
-            try (InputStream inputStream = file.getInputStream()) {
-//                amazonS3.putObject(bucket+"/userProfile", fileName, inputStream, objectMetadata);
-                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-                memberProfile.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-            }
         }
 
         // 프로필 수정
         member.updateMemberImg(memberProfile);
         memberRepository.save(member);
+
+        MemberRankExp memberRankExp = memberRankExpRepository.findByMember(member).orElseThrow();
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .build();
+
+
+//        memberRankExp.getRank().getProblem();
+
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+
+
+        int problemLeft = 0;
+        switch (memberRankExp.getRank().getProblem()) {
+            case "V0":
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0() : 3;
+                break;
+            case "V1":
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1() : 3;
+                break;
+            case "V3":
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3() : 3;
+                break;
+            case "V5":
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5() : 3;
+                break;
+            case "V6":
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6() : 3;
+                break;
+            case "V7":
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7() : 3;
+                break;
+            default:
+                problemLeft = 0;
+                break;
+        }
+
+        long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
+
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
+
+        LoginMemberInfo loginMem = LoginMemberInfo.builder()
+                .nickname(member.getNickname())
+                .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
+                .height(member.getHeight())
+                .shoeSize(member.getShoeSize())
+                .wingspan(member.getWingspan())
+                .rank(memberRankExp.getRank().getName())
+                .exp(exp)
+                .expleft(expLeft)
+                .upto(problemLeft)
+                .build();
+        loginResDto.setUser(loginMem);
+
+        return loginResDto;
     }
 
     // 프로필 수정
     @Override
-    public void editProfile(String email, MemberInfo memberInfo, @Nullable MultipartFile file) throws Exception {
-        System.out.println(memberInfo);
-
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
+    public LoginResDto editProfile(String email, MemberInfo memberInfo) throws Exception {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
 //        Member member = memberRepository.findByEmail(memberInfo.getEmail())
 //                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
 
-        // 프로필 사진 s3 저장
-        if (file == null) {
-            System.out.println("사진이 없습니다.");
-        } else {
-            String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
-            System.out.println(fileName);
-            try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-                memberInfo.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
-            } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-            }
+//        // 프로필 사진 s3 저장
+//        if (file == null) {
+//            System.out.println("사진이 없습니다.");
+//        } else {
+//            String fileName = createFileName(file.getOriginalFilename());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
+//            System.out.println(fileName);
+//            try (InputStream inputStream = file.getInputStream()) {
+//                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+//                memberInfo.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
+//            } catch (IOException e) {
+//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
+//            }
+//        }
+
+        if (memberInfo.getImage() == "") {
+            memberInfo.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
         }
         member.updateProfile(memberInfo);
         memberRepository.save(member);
+
+        MemberRankExp memberRankExp = memberRankExpRepository.findByMember(member).orElseThrow();
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .build();
+
+
+//        memberRankExp.getRank().getProblem();
+
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+
+
+        int problemLeft = 0;
+        switch (memberRankExp.getRank().getProblem()) {
+            case "V0":
+                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0() : 3;
+                break;
+            case "V1":
+                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1() : 3;
+                break;
+            case "V3":
+                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3() : 3;
+                break;
+            case "V5":
+                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5() : 3;
+                break;
+            case "V6":
+                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6() : 3;
+                break;
+            case "V7":
+                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7() : 3;
+                break;
+            default:
+                problemLeft = 0;
+                break;
+        }
+
+        long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
+
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
+        LoginMemberInfo loginMem = LoginMemberInfo.builder()
+                .nickname(member.getNickname())
+                .intro(member.getProfileContent())
+                .image(member.getMemberProfileImg())
+                .height(member.getHeight())
+                .shoeSize(member.getShoeSize())
+                .wingspan(member.getWingspan())
+                .rank(memberRankExp.getRank().getName())
+                .exp(exp)
+                .expleft(expLeft)
+                .upto(problemLeft)
+                .build();
+        loginResDto.setUser(loginMem);
+
+        return loginResDto;
     }
 
     private String createFileName(String fileName) {
@@ -210,7 +361,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public void verifyUser(String email, String password) {
-
     }
 
     @Override
@@ -221,16 +371,30 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public void deleteMember(String email) {
 
-
     }
 
+
+    public TokenDto reIssue(String email) {
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(email))
+                .refreshToken(redisService.getValues("RT "+email))
+                .build();
+
+        System.out.println("액세스 토큰이 재발급 되었습니다");
+        return tokenDto;
+    }
+
+
+    // 로그인 요청
     @Override
     public LoginResDto login(LoginMember member) {
-        Member loginMember = memberRepository.findByEmail(member.getEmail())
-                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", member.getEmail()));
+        Member loginMember = memberRepository.findByEmail(member.getEmail()).orElseThrow();
         if (!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
+
+        loginMember.setFcmToken(member.getFcmToken());
+        memberRepository.save(loginMember);
 
         MemberRankExp memberRankExp = memberRankExpRepository.findByMember(loginMember).orElseThrow();
 
@@ -238,9 +402,6 @@ public class MemberServiceImpl implements MemberService {
                 .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
                 .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
                 .build();
-
-
-//        memberRankExp.getRank().getProblem();
 
         MemberProblem memberProblem = memberProblemRepository.findByMember(loginMember).orElseThrow();
 
@@ -272,14 +433,25 @@ public class MemberServiceImpl implements MemberService {
 
         long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
 
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
         LoginMemberInfo loginMem = LoginMemberInfo.builder()
                 .nickname(loginMember.getNickname())
                 .intro(loginMember.getProfileContent())
+                .image(loginMember.getMemberProfileImg())
                 .height(loginMember.getHeight())
                 .shoeSize(loginMember.getShoeSize())
                 .wingspan(loginMember.getWingspan())
                 .rank(memberRankExp.getRank().getName())
-                .exp((int) (expLeft * 100 / memberRankExp.getRank().getQual()))
+                .exp(exp)
                 .expleft(expLeft)
                 .upto(problemLeft)
                 .build();
@@ -291,6 +463,11 @@ public class MemberServiceImpl implements MemberService {
     // 로그아웃
     @Override
     public void logout(String email, String accessToken) {
+
+        // FCM 토큰 삭제
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        member.setFcmToken(null);
+        memberRepository.save(member);
 
         jwtTokenProvider.logout(email, accessToken);
     }
@@ -372,6 +549,25 @@ public class MemberServiceImpl implements MemberService {
                     .build();
             noticeRepository.save(noticeBuild);
 
+            // 푸쉬 알림 보내기
+            try {
+                if (following.getFcmToken() != null) {
+                    Notification notification = new Notification("",
+                            follower.getNickname() + "님이 팔로우를 시작하였습니다.");
+
+                    Message message = Message.builder()
+                            .setNotification(notification)
+                            .setToken(following.getFcmToken())
+                            .build();
+
+                    FirebaseMessaging.getInstance().send(message);
+                }
+            } catch (Exception e){
+                following.setFcmToken(null);
+                memberRepository.save(following);
+            }
+
+
 
             return Boolean.TRUE;
         } else {
@@ -382,12 +578,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 팔로잉 팔로워 목록 읽기
-    public FollowMemberList listFollow(String nickname) {
+    public FollowMemberList listFollow(String nickname, String email) {
         Member member = memberRepository.findByNickname(nickname).orElseThrow();
+        Member user = memberRepository.findByEmail(email).orElseThrow();
         FollowMemberList followMemberList = new FollowMemberList();
 
-        List<FollowMemberDto> follwings = new ArrayList<>();
-        List<FollowMemberDto> follwers = new ArrayList<>();
+        List<FollowMemberDto> followings = new ArrayList<>();
+        List<FollowMemberDto> followers = new ArrayList<>();
 
         List<Follow> followingMembers = followRepository.findAllByFollower(member);
         List<Follow> followerMembers = followRepository.findAllByFollowing(member);
@@ -395,6 +592,7 @@ public class MemberServiceImpl implements MemberService {
         for (Follow following : followingMembers) {
             Member followingMember = following.getFollowing();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followingMember).orElseThrow();
+            if (user.getMemberId() == followingMember.getMemberId()) continue;
 
             FollowMemberDto myFollowing = new FollowMemberDto();
 
@@ -405,13 +603,16 @@ public class MemberServiceImpl implements MemberService {
             myFollowing.setWingspan(followingMember.getWingspan());
             myFollowing.setShoeSize(followingMember.getShoeSize());
             myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followingMember.getMemberId()));
 
-            follwings.add(myFollowing);
+            followings.add(myFollowing);
         }
 
         for (Follow follower : followerMembers) {
             Member followerMember = follower.getFollower();
             MemberRankExp memberRankExp = memberRankExpRepository.findByMember(followerMember).orElseThrow();
+
+            if (user.getMemberId() == followerMember.getMemberId()) continue;
 
             FollowMemberDto myFollower = new FollowMemberDto();
             myFollower.setNickname(followerMember.getNickname());
@@ -421,12 +622,64 @@ public class MemberServiceImpl implements MemberService {
             myFollower.setWingspan(followerMember.getWingspan());
             myFollower.setShoeSize(followerMember.getShoeSize());
             myFollower.setRank(memberRankExp.getRank().getName());
+            myFollower.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), followerMember.getMemberId()));
 
-            follwers.add(myFollower);
+            followers.add(myFollower);
         }
 
-        followMemberList.setFollowers(follwers);
-        followMemberList.setFollowings(follwings);
+
+        followers.sort(new Comparator<FollowMemberDto>() {
+            @Override
+            public int compare(FollowMemberDto o1, FollowMemberDto o2) {
+                Integer a = (o1.getFollow()) ? 1 : 0;
+                Integer b = (o2.getFollow()) ? 1 : 0;
+                return (b - a);
+            }
+        });
+
+        followings.sort(new Comparator<FollowMemberDto>() {
+            @Override
+            public int compare(FollowMemberDto o1, FollowMemberDto o2) {
+                Integer a = (o1.getFollow()) ? 1 : 0;
+                Integer b = (o2.getFollow()) ? 1 : 0;
+                return (b - a);
+            }
+        });
+
+        if (followRepository.existsByFollowerMemberIdAndFollowingMemberId(user.getMemberId(), member.getMemberId())) {
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(user).orElseThrow();
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(user.getNickname());
+            myFollowing.setGender(user.getGender());
+            myFollowing.setImage(user.getMemberProfileImg());
+            myFollowing.setHeight(user.getHeight());
+            myFollowing.setWingspan(user.getWingspan());
+            myFollowing.setShoeSize(user.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(false);
+
+            followers.add(0, myFollowing);
+        }
+
+        if (followRepository.existsByFollowerMemberIdAndFollowingMemberId(member.getMemberId(), user.getMemberId())) {
+            MemberRankExp memberRankExp = memberRankExpRepository.findByMember(user).orElseThrow();
+            FollowMemberDto myFollowing = new FollowMemberDto();
+
+            myFollowing.setNickname(user.getNickname());
+            myFollowing.setGender(user.getGender());
+            myFollowing.setImage(user.getMemberProfileImg());
+            myFollowing.setHeight(user.getHeight());
+            myFollowing.setWingspan(user.getWingspan());
+            myFollowing.setShoeSize(user.getShoeSize());
+            myFollowing.setRank(memberRankExp.getRank().getName());
+            myFollowing.setFollow(false);
+
+            followings.add(0, myFollowing);
+        }
+
+        followMemberList.setFollowers(followers);
+        followMemberList.setFollowings(followings);
 
         return followMemberList;
     }

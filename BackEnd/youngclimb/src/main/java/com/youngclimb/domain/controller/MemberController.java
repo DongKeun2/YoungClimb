@@ -9,9 +9,7 @@ import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,7 +32,7 @@ public class MemberController {
     @PostMapping("/email")
     public ResponseEntity<?> checkEmail(@RequestBody MemberEmail email) {
         try {
-            if(email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
+            if (email.getEmail().equals(null)) return ResponseEntity.status(400).body("빈 이메일입니다.");
             return ResponseEntity.status(200).body(memberService.checkEmailDuplicate(email));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -46,7 +44,7 @@ public class MemberController {
     @PostMapping("/nickname")
     public ResponseEntity<?> checkNickname(@RequestBody MemberNickname nickname) {
         try {
-            if(nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
+            if (nickname.getNickname().equals(null)) return ResponseEntity.status(400).body("빈 닉네임입니다.");
             return ResponseEntity.status(200).body(memberService.checkNicknameDuplicate(nickname));
         } catch (Exception e) {
             return ResponseEntity.status(400).body("에러가 발생했습니다");
@@ -58,11 +56,19 @@ public class MemberController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginMember member, HttpServletResponse response) throws Exception {
         try {
-            // 헤더에 쿠키 붙이기
-//            response.addHeader("Set-Cookie", "accessToken="+memberService.login(member)+", path=/, MaxAge=7 * 24 * 60 * 60, SameSite=Lax, HttpOnly");
             return new ResponseEntity<LoginResDto>(memberService.login(member), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
+        }
+    }
+
+    @ApiOperation(value = "reIssue: 액세스토큰 재발급")
+    @PostMapping("/reIssue")
+    public ResponseEntity<?> reIssue(@CurrentUser UserPrincipal user) throws Exception {
+        try {
+        return new ResponseEntity<>(memberService.reIssue(user.getUsername()), HttpStatus.OK);
+        } catch (Exception e) {
+           return exceptionHandling(e);
         }
     }
 
@@ -92,35 +98,33 @@ public class MemberController {
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
     @PostMapping("/profile")
-    public ResponseEntity<?> addProfile(@RequestPart(value = "memberInfo") MemberProfile memberProfile, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> addProfile(@RequestBody MemberProfile memberProfile, @CurrentUser UserPrincipal principal) throws Exception {
 
         try {
-            memberService.addProfile(principal.getUsername(), memberProfile, file);
-            return new ResponseEntity<String>("프로필이 설정되었습니다", HttpStatus.OK);
+            ;
+            return new ResponseEntity<LoginResDto>(memberService.addProfile(principal.getUsername(), memberProfile), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
     }
+
     // 프로필 변경
     @ApiOperation(value = "editProfile: 프로필 정보 수정")
-    @PostMapping(value = "/profile/edit",consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> editProfile(@RequestPart(value = "key", required = false) MemberInfo memberInfo, @RequestPart(value = "file", required = false) MultipartFile file, @CurrentUser UserPrincipal principal) throws Exception {
-        System.out.println(memberInfo);
-        System.out.println(file);
+    @PostMapping("/profile/edit")
+    public ResponseEntity<?> editProfile(@RequestBody MemberInfo memberInfo, @CurrentUser UserPrincipal principal) throws Exception {
+
         try {
-//            memberService.editProfile(principal.getUsername(), memberInfo, file);
-            return new ResponseEntity<String>("프로필이 변경되었습니다", HttpStatus.OK);
+            return new ResponseEntity<LoginResDto>(memberService.editProfile(principal.getUsername(), memberInfo), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
     }
-
 
 
     // 로그아웃
     @ApiOperation(value = "logout: 로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<?> logout( @CurrentUser UserPrincipal principal, HttpServletRequest request) {
+    public ResponseEntity<?> logout(@CurrentUser UserPrincipal principal, HttpServletRequest request) {
         String accessToken = request.getHeader("Authorization").substring(7);
         memberService.logout(principal.getUsername(), accessToken);
         return new ResponseEntity<String>("로그아웃 완료", HttpStatus.OK);
@@ -145,9 +149,9 @@ public class MemberController {
 
     @ApiOperation(value = "팔로잉, 팔로워 목록 읽기")
     @GetMapping("/{nickname}/follow")
-    public ResponseEntity<?> listFollow(@PathVariable String nickname) {
+    public ResponseEntity<?> listFollow(@PathVariable String nickname, @CurrentUser UserPrincipal principal) {
         try {
-            FollowMemberList followMemberList = memberService.listFollow(nickname);
+            FollowMemberList followMemberList = memberService.listFollow(nickname, principal.getUsername());
             if (followMemberList != null) {
                 return new ResponseEntity<FollowMemberList>(followMemberList, HttpStatus.OK);
             } else {
@@ -191,6 +195,19 @@ public class MemberController {
             return exceptionHandling(e);
         }
     }
+
+    // 이미지 저장
+    @ApiOperation(value = "saveImage: 이미지 저장하기")
+    @PostMapping("/save/image")
+    public ResponseEntity<?> saveImage(@RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
+        try {
+            return new ResponseEntity<>(boardService.saveImage(file), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
 
 
     // 토큰 재발급

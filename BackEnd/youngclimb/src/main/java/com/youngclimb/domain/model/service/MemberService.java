@@ -1,5 +1,6 @@
 package com.youngclimb.domain.model.service;
 
+import com.youngclimb.domain.model.dto.TokenDto;
 import com.youngclimb.domain.model.dto.board.NoticeDto;
 import com.youngclimb.domain.model.dto.member.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -7,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface MemberService {
+
+    // 액세스 토큰 재발급
+    public TokenDto reIssue(String email);
     // 이메일 중복 체크
     public boolean checkEmailDuplicate(MemberEmail email);
     // 아이디 중복 체크
@@ -16,9 +20,9 @@ public interface MemberService {
     // 신체 정보 추가
 //    public void addBodyInfo(MemberInfo memberInfo) throws Exception;
     // 프로필 추가
-    public void addProfile(String email, MemberProfile memberProfile, MultipartFile file) throws Exception;
+    public LoginResDto addProfile(String email, MemberProfile memberProfile) throws Exception;
     // 프로필 변경
-    public void editProfile(String email, MemberInfo memberInfo, MultipartFile file) throws Exception;
+    public LoginResDto editProfile(String email, MemberInfo memberInfo) throws Exception;
     // 사용자 비밀번호 검증
     public void verifyUser(String email, String password);
     // 비밀번호 수정
@@ -32,7 +36,7 @@ public interface MemberService {
     // 팔로우 추가, 제거
     Boolean addCancelFollow(String followingNickname, String followerEmail);
     // 팔로잉 팔로워 목록 읽기
-    public FollowMemberList listFollow(String nickname);
+    public FollowMemberList listFollow(String nickname, String email);
     // 알림 목록 읽기
     public List<NoticeDto> readNotice(String email);
 }

@@ -5,7 +5,6 @@ import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import UserAvatar from './UserAvatar';
 import Recomment from './Recomment';
 
-import avatar from '../assets/image/initial/background.png';
 import EmptyHeart from '../assets/image/feed/emptyHeart.svg';
 import FillHeart from '../assets/image/feed/fillHeart.svg';
 import HoldIcon from '../assets/image/hold/hold.svg';
@@ -21,7 +20,11 @@ function Comment({comment, navigation}) {
 
   return (
     <View style={styles.commentContainer}>
-      <UserAvatar source={avatar} rank={comment.user.rank} size={32} />
+      <UserAvatar
+        source={{uri: comment.user.image}}
+        rank={comment.user.rank}
+        size={32}
+      />
       <View style={styles.commentInfo}>
         <View style={{...styles.commentMain, marginBottom: 3}}>
           <View style={{...styles.iconText, alignItems: 'center'}}>

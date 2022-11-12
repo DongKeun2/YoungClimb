@@ -61,9 +61,17 @@ public class Member {
     //윙스팬+키
     @Column(name = "member_wingheight")
     private Integer wingheight;
+    // FCM토큰
+    @Column(name = "member_fcm_token")
+    private String fcmToken;
     // 프로필 이미지
 //    @OneToOne(mappedBy = "member")
 //    private MemberProfileImg memberProfileImg;
+
+    // FCM토큰 저장
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
 
     // 비밀번호 암호화
     public Member hashPw(PasswordEncoder passwordEncoder) {
@@ -95,12 +103,14 @@ public class Member {
     // 프로필 수정
     public Member updateProfile(MemberInfo memberInfo) {
 
-        if (memberInfo.getNickname() != null) this.nickname = memberInfo.getNickname();
+        if (memberInfo.getNickname() != "" && memberInfo.getNickname() != null)
+            this.nickname = memberInfo.getNickname();
         if (memberInfo.getHeight() != null) this.height = memberInfo.getHeight();
         if (memberInfo.getWingspan() != null) this.wingspan = memberInfo.getWingspan();
         if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
         if (memberInfo.getIntro() != null) this.profileContent = memberInfo.getIntro();
-        if (memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
+        if (memberInfo.getImage() != "" && memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
+        this.wingheight = this.height + this.wingspan;
 
 
         return this;
@@ -110,7 +120,8 @@ public class Member {
     public Member updateMemberImg(MemberProfile memberProfile) {
 
         if (memberProfile.getIntro() != null) this.profileContent = memberProfile.intro;
-        if (memberProfile.getImage() != null) this.memberProfileImg = memberProfile.image;
+        if (memberProfile.getImage() != "" && memberProfile.getImage() != null)
+            this.memberProfileImg = memberProfile.image;
 
         return this;
     }

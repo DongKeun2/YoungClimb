@@ -14,9 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +46,15 @@ public class SearchServiceImpl implements SearchService {
                             .rank(memberRankExpRepository.findByMember(recommend.getFollowing()).orElseThrow().getRank().getName())
                             .build();
 
+
                     memberPics.add(memberPic);
                 }
             }
         }
+        Set<MemberPic> memberPicSet = new HashSet<MemberPic>(memberPics);
+        List<MemberPic> newMemberPics = new ArrayList<MemberPic>(memberPicSet);
 
-        return memberPics;
+        return newMemberPics;
     }
 
     @Override
@@ -84,14 +85,44 @@ public class SearchServiceImpl implements SearchService {
         String holdColor = boardSearchDto.getHoldColor();
         boolean isSimilar = boardSearchDto.getIsSimilar();
 
+        List<Category> categories;
 
-        List<Category> categories = categoryRepository.findAllByCenterIdOrWallIdAndCenterlevelIdAndHoldColor(centerId, wallId, levelId, holdColor);
+        if (wallId == null) {
+            if (levelId == null) {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterId(centerId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndHoldcolor(centerId, holdColor);
+                }
+            } else {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelId(centerId, levelId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelIdAndHoldcolor(centerId, levelId, holdColor);
+                }
+            }
+        } else {
+            if (levelId == null) {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterIdAndWallId(centerId, wallId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndHoldcolorAndWallId(centerId, holdColor, wallId);
+                }
+            } else {
+                if (holdColor == "") {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelIdAndWallId(centerId, levelId, wallId);
+                } else {
+                    categories = categoryRepository.findAllByCenterIdAndCenterlevelIdAndHoldcolorAndWallId(centerId, levelId, holdColor, wallId);
+                }
+            }
+        }
 
+        // 나와 비슷한 사람을 보지 않으면 시간 순 정렬, 나와 비슷한 사람을 보고싶으면 비슷한 사람부터
         if (!isSimilar) {
             categories.sort(new Comparator<Category>() {
                 @Override
                 public int compare(Category o1, Category o2) {
-                    return o1.getBoard().getCreatedDateTime().compareTo(o2.getBoard().getCreatedDateTime());
+                    return o2.getBoard().getCreatedDateTime().compareTo(o1.getBoard().getCreatedDateTime());
                 }
             });
         } else {
@@ -130,7 +161,7 @@ public class SearchServiceImpl implements SearchService {
             LocalDateTime createdTime = category.getBoard().getCreatedDateTime();
 
             // 작성날짜 세팅
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
             if (minus <= 10) {
                 timeText = "방금 전";
@@ -139,7 +170,7 @@ public class SearchServiceImpl implements SearchService {
             } else if (minus <= 1440) {
                 timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
             } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             }
 
             boardDto.setCreatedAt(timeText);
@@ -157,7 +188,7 @@ public class SearchServiceImpl implements SearchService {
             boardDto.setWallId(category.getWall().getId());
             boardDto.setWallName(category.getWall().getName());
             boardDto.setDifficulty(category.getDifficulty());
-            boardDto.setHoldColor(category.getHoldColor());
+            boardDto.setHoldColor(category.getHoldcolor());
 
 
             // 댓글 DTO 1개 세팅
