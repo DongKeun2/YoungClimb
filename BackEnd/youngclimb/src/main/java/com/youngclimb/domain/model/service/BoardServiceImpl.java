@@ -265,6 +265,7 @@ public class BoardServiceImpl implements BoardService {
 
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
+            System.out.println(file.getSize());
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
             System.out.println("여기까진 되고");
