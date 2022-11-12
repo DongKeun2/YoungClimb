@@ -110,10 +110,8 @@ public class BoardServiceImpl implements BoardService {
             }
             // 팔로우하지 않은 경우
             else {
-                System.out.println("여기가 문제야");
-                System.out.println(board.getMember().getNickname());
                 if (board.getMember() == member) continue;
-                System.out.println("저기가 문제야");
+
                 // 게시글 Dto 세팅
                 BoardDto boardDto = this.startDto(board, member);
                 boardDto.setCreateUser(this.toCreateUser(board, member));
@@ -261,19 +259,13 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public String saveImage(MultipartFile file) {
         if (file != null) {
-            System.out.println(file.getContentType());
-
             String fileName = createFileName(file.getOriginalFilename());
             ObjectMetadata objectMetadata = new ObjectMetadata();
-            System.out.println(file.getSize());
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
-            System.out.println("여기까진 되고");
             try (InputStream inputStream = file.getInputStream()) {
-                System.out.println("이거 보내지나?");
                 amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
-                System.out.println("파일 변환 실패");
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
             return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
@@ -375,8 +367,6 @@ public class BoardServiceImpl implements BoardService {
 
     private String getFileExtension(String fileName) {
         try {
-            System.out.println(fileName);
-            System.out.println(fileName.indexOf("."));
             return fileName.substring(0, fileName.indexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다");
@@ -774,9 +764,6 @@ public class BoardServiceImpl implements BoardService {
         } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
             timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
         }
-        System.out.println(createdTime);
-        System.out.println(LocalDateTime.now());
-        System.out.println(minus);
         boardDto.setCreatedAt(timeText);
 
         // 카테고리 정보 세팅
