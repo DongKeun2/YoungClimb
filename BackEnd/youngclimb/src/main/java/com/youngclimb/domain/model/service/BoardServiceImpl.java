@@ -334,7 +334,7 @@ public class BoardServiceImpl implements BoardService {
                 CommentDto commentDto = this.toCommentDtos(comment, member);
 
                 // 대댓글 세팅
-                List<Comment> reComments = commentRepository.findByParentId(comment.getId());
+                List<Comment> reComments = commentRepository.findByParentId(comment.getId(), Sort.by(Sort.Direction.DESC, "id"));
                 List<CommentDto> reCommentDtos = new ArrayList<>();
                 for (Comment reComment : reComments) {
 
