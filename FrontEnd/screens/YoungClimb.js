@@ -1,7 +1,10 @@
 import 'react-native-gesture-handler';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import messaging from '@react-native-firebase/messaging';
+
 import React, {useRef, useState, useEffect, useCallback} from 'react';
-import { Platform, PermissionsAndroid, Linking } from 'react-native';
+import { Platform, PermissionsAndroid, Linking, Alert } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -38,10 +41,10 @@ import {
 } from '../utils/Token';
 import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
 import {fetchCenterInfo} from '../utils/slices/CenterSlice';
-
 import {StartPer, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
 
 import { handleInitialFCM, onRefreshFCMToken } from '../utils/fcm/fcmGetToken';
+import { changeNewNoti } from '../utils/slices/notificationSlice';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -51,6 +54,20 @@ export default function YoungClimb() {
   const [loading, setIsLoading] = useState(true);
 
   const login = useSelector(state => state.accounts.loginState);
+  useEffect(()=>{
+    messaging().setBackgroundMessageHandler(async remoteMessage => {
+      await AsyncStorage.setItem('newNoti','true')
+      dispatch(changeNewNoti(true))
+
+    });
+
+    messaging().onMessage(async remoteMessage => {
+      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      await AsyncStorage.setItem('newNoti','true')
+      dispatch(changeNewNoti(true))
+    })
+
+  },[])
 
   useEffect(() => {
     const permissionList = [
@@ -103,19 +120,19 @@ export default function YoungClimb() {
 },[]);
 
   useEffect(() => {
-  //   console.log('앱 새로고침');
-  //   dispatch(fetchCenterInfo());
+    console.log('앱 새로고침');
+    dispatch(fetchCenterInfo());
 
-  //   getCurrentUser().then(res => {
-  //     if (res) {
-  //       console.log('로그인됨', res);
-  //       dispatch(fetchCurrentUser(res));
-  //     } else {
-  //       console.log('비로그인상태임');
-  //       removeAccessToken();
-  //       removeCurrentUser();
-  //     }
-  //   });
+    getCurrentUser().then(res => {
+      if (res) {
+        console.log('로그인됨', res);
+        dispatch(fetchCurrentUser(res));
+      } else {
+        console.log('비로그인상태임');
+        removeAccessToken();
+        removeCurrentUser();
+      }
+    });
 
     setTimeout(() => {
       setIsLoading(false);
