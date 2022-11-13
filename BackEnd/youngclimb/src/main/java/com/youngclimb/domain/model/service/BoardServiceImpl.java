@@ -622,6 +622,26 @@ public class BoardServiceImpl implements BoardService {
         CommentDto commentDto = comment.toCommentDto();
         // 댓글 작성자 세팅
         commentDto.setUser(cCreateMember);
+
+        // 작성날짜 세팅
+        LocalDateTime createdTime = comment.getCreatedDatetime();
+
+        String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+        Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
+        if (minus <= 10) {
+            timeText = "방금 전";
+        } else if (minus <= 60) {
+            timeText = minus + "분 전";
+        } else if (minus <= 1440) {
+            timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
+        } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
+            timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
+        }
+        commentDto.setCreatedAt(timeText);
+
+
+
+
         // 댓글 좋아요 여부
         commentDto.setIsLiked(commentLikeRepository.existsByCommentAndMember(comment, member));
 

@@ -1,5 +1,6 @@
 package com.youngclimb.common.config;
 
+import com.youngclimb.common.jwt.CustomAuthenticationEntryPoint;
 import com.youngclimb.common.jwt.JWTAuthenticationFilter;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +12,15 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -30,13 +38,13 @@ public class SecurityConfig {
 
     // 인증 또는 인가에 대한 설정
     @Bean
-    protected SecurityFilterChain filterChain(HttpSecurity http) throws  Exception {
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // 로그인
         http.httpBasic().disable()
                 .cors()
                 .and()
                 .csrf().disable()
-                .exceptionHandling();
+                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
         http.authorizeRequests()
                 .antMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg", "/**/*.jpg", "/**/*.html",
@@ -44,7 +52,7 @@ public class SecurityConfig {
                 .permitAll() // 특정 URL을 설정하며, permitAll은 해당 URL의 접근을 인증없이 허용한다는 의미
                 // user - 로그인, 회원가입, 아이디 찾기, 비밀번호 찾기
 //			    .antMatchers("/**").permitAll()	// 개발 기간 동안 모든 사이트 허용
-                .antMatchers("/api/user/signup", "/api/user/login", "/api/user/email", "/api/user/nickname", "/api/user/reIssue", "/api/user/save/image",
+                .antMatchers("/api/user/signup", "/api/user/login", "/api/user/email", "/api/user/nickname", "/api/user/save/image",
                         "/api/board/save/image", "/api/center", "/api/center/*", "/api/download").permitAll()
                 .antMatchers("/v3/api-docs", "/swagger-ui", "/swagger-resources/**").permitAll()
                 .anyRequest().authenticated();
