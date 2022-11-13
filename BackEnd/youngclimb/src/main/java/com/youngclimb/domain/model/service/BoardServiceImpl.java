@@ -398,15 +398,15 @@ public class BoardServiceImpl implements BoardService {
 
     // 댓글 작성
     @Override
-    public void writeComment(CommentCreate commentCreate, String email) {
+    public void writeComment(CommentCreate commentCreate, Long boardId, String email) {
 
         // 댓글 저장하기
         Comment comment = commentCreate.toComment();
-        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        comment.setBoard(board);
-        comment.setMember(member);
+
+        comment.setMemberandBoard(member, board);
         commentRepository.save(comment);
 
         // 알림 저장하기
@@ -433,13 +433,14 @@ public class BoardServiceImpl implements BoardService {
 
     // 대댓글 작성
     @Override
-    public void writeRecomment(CommentCreate commentCreate, String email) {
+    public void writeRecomment(CommentCreate commentCreate,Long boardId, Long commentId, String email) {
+
         Comment comment = commentCreate.toComment();
-        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        comment.setBoard(board);
-        comment.setMember(member);
+        comment.setMemberandBoard(member, board);
+        comment.setParentId(commentId);
         commentRepository.save(comment);
 
         // 알림 저장하기
