@@ -394,6 +394,11 @@ public class MemberServiceImpl implements MemberService {
             throw new IllegalArgumentException("잘못된 비밀번호입니다.");
         }
 
+        // 중복로그인 체크
+        if(redisService.getValues("RT " + member.getEmail()) != null) {
+            throw new EntityExistsException("이미 로그인한 사용자입니다.");
+        }
+
         loginMember.setFcmToken(member.getFcmToken());
         memberRepository.save(loginMember);
 
