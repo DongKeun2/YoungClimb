@@ -43,14 +43,13 @@ public class Comment {
     @Column(name = "comment_is_deleted")
     private Boolean isDeleted;
 
-    public Comment setMember(Member member) {
+    public void setMemberandBoard(Member member, Board board) {
         this.member = member;
-        return this;
+        this.board = board;
     }
 
-    public Comment setBoard(Board board) {
-        this.board = board;
-        return this;
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
 
