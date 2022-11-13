@@ -148,10 +148,28 @@ const fetchReels = createAsyncThunk(
   async (pageNumber, {rejectWithValue}) => {
     try {
       const res = await axios.get(api.homeFeed(pageNumber), await getConfig());
-      console.log('릴스 요청 성공', res.data.length, res.data);
+      console.log('릴스 요청 성공', res.data.boardDtos.length, res.data);
       return res.data;
     } catch (err) {
       console.log('릴스 요청 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const commentAdd = createAsyncThunk(
+  'commentAdd',
+  async (data, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.comment(data.boardId),
+        data.comment,
+        await getConfig(),
+      );
+      console.log('댓글 성공');
+      return res.data;
+    } catch (err) {
+      console.log('댓글 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -238,6 +256,7 @@ export {
   getVideoPath,
   fetchReels,
   commentLikeSubmit,
+  commentAdd,
 };
 
 export const {changeUploadVideo} = PostSlice.actions;

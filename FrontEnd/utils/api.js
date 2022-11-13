@@ -62,6 +62,8 @@ const api = {
   postAdd: () => API_BASE_URL + BOARD_URL,
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
+
+  comment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL,
   commentLike: commentId => API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
 
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,

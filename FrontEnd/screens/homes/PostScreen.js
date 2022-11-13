@@ -8,6 +8,7 @@ import UserAvatar from '../../components/UserAvatar';
 import HoldLabel from '../../components/HoldLabel';
 import LevelLabel from '../../components/LevelLabel';
 import Comment from '../../components/Comment';
+import CommentInput from '../../components/CommentInput';
 
 import HoldIcon from '../../assets/image/hold/hold.svg';
 
@@ -31,66 +32,69 @@ function PostScreen({navigation, route}) {
     <SafeAreaView style={styles.container}>
       <CustomSubHeader title="댓글" navigation={navigation} />
       {board ? (
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.headerBox}>
-            {/* 피드 상단 헤더 */}
-            <View style={styles.feedHeader}>
-              <View style={styles.headerTop}>
-                <View style={styles.iconText}>
-                  <UserAvatar
-                    source={{uri: board.createUser.image}}
-                    size={36}
-                  />
-                  <View style={styles.headerTextGroup}>
-                    <View style={{...styles.iconText, alignItems: 'center'}}>
-                      <Text
-                        style={{
-                          ...styles.feedTextStyle,
-                          fontSize: 16,
-                          fontWeight: '600',
-                          marginRight: 5,
-                        }}>
-                        {board.createUser.nickname}
+        <>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            <View style={styles.headerBox}>
+              {/* 피드 상단 헤더 */}
+              <View style={styles.feedHeader}>
+                <View style={styles.headerTop}>
+                  <View style={styles.iconText}>
+                    <UserAvatar
+                      source={{uri: board.createUser.image}}
+                      size={36}
+                    />
+                    <View style={styles.headerTextGroup}>
+                      <View style={{...styles.iconText, alignItems: 'center'}}>
+                        <Text
+                          style={{
+                            ...styles.feedTextStyle,
+                            fontSize: 16,
+                            fontWeight: '600',
+                            marginRight: 5,
+                          }}>
+                          {board.createUser.nickname}
+                        </Text>
+                        <HoldIcon
+                          width={18}
+                          height={18}
+                          color={YCLevelColorDict[board.createUser.rank]}
+                        />
+                      </View>
+                      <Text style={{...styles.feedTextStyle, fontSize: 12}}>
+                        {board.createdAt}
                       </Text>
-                      <HoldIcon
-                        width={18}
-                        height={18}
-                        color={YCLevelColorDict[board.createUser.rank]}
-                      />
                     </View>
-                    <Text style={{...styles.feedTextStyle, fontSize: 12}}>
-                      {board.createdAt}
-                    </Text>
                   </View>
                 </View>
-              </View>
-              <View style={styles.wallInfo}>
-                <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                  {board.centerName}
-                </Text>
-                {board.wallName ? (
+                <View style={styles.wallInfo}>
                   <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                    {board.wallName}
+                    {board.centerName}
                   </Text>
-                ) : null}
-                <Text style={{...styles.feedTextStyle, marginRight: 3}}>
-                  {board.difficulty}
-                </Text>
-                <LevelLabel color={board.centerLevelColor} />
-                <HoldLabel color={board.holdColor} />
+                  {board.wallName ? (
+                    <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                      {board.wallName}
+                    </Text>
+                  ) : null}
+                  <Text style={{...styles.feedTextStyle, marginRight: 3}}>
+                    {board.difficulty}
+                  </Text>
+                  <LevelLabel color={board.centerLevelColor} />
+                  <HoldLabel color={board.holdColor} />
+                </View>
+              </View>
+              {/* 본문 */}
+              <View style={styles.contentSummary}>
+                <Text style={styles.contentPreview}>{board.content}</Text>
               </View>
             </View>
-            {/* 본문 */}
-            <View style={styles.contentSummary}>
-              <Text style={styles.contentPreview}>{board.content}</Text>
-            </View>
-          </View>
-          {comments?.map((comment, idx) => {
-            return (
-              <Comment key={idx} comment={comment} navigation={navigation} />
-            );
-          })}
-        </ScrollView>
+            {comments?.map((comment, idx) => {
+              return (
+                <Comment key={idx} comment={comment} navigation={navigation} />
+              );
+            })}
+          </ScrollView>
+          <CommentInput boardId={board.id} navigation={navigation} />
+        </>
       ) : (
         <View style={styles.container} />
       )}

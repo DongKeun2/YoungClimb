@@ -41,11 +41,7 @@ function Comment({comment, navigation}) {
 
   return (
     <View style={styles.commentContainer}>
-      <UserAvatar
-        source={{uri: comment.user.image}}
-        rank={comment.user.rank}
-        size={32}
-      />
+      <UserAvatar source={{uri: comment.user.image}} size={32} />
       <View style={styles.commentInfo}>
         <View style={{...styles.commentMain, marginBottom: 3}}>
           <View style={{...styles.iconText, alignItems: 'center'}}>
@@ -69,9 +65,11 @@ function Comment({comment, navigation}) {
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
             {comment.createdAt}
           </Text>
-          <Text style={{fontSize: 12, color: '#a7a7a7', marginLeft: 8}}>
-            답글 달기
-          </Text>
+          <TouchableOpacity onPress={() => console.log('눌림')}>
+            <Text style={{fontSize: 12, color: '#a7a7a7', marginLeft: 8}}>
+              답글 달기
+            </Text>
+          </TouchableOpacity>
         </View>
         <View style={{marginTop: 3}}>
           {!isViewRecomment && comment.reComment.length ? (
