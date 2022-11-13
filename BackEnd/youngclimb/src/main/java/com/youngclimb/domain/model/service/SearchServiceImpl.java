@@ -32,11 +32,11 @@ public class SearchServiceImpl implements SearchService {
     public List<MemberPic> getMemberRec(String email) {
         Member user = memberRepository.findByEmail(email).orElseThrow();
 
-        List<Follow> follows = followRepository.findByFollower(user);
+        List<Follow> follows = followRepository.findAllByFollower(user);
         List<MemberPic> memberPics = new ArrayList<>();
 
         for (Follow follow : follows) {
-            List<Follow> recommends = followRepository.findByFollower(follow.getFollowing());
+            List<Follow> recommends = followRepository.findAllByFollower(follow.getFollowing());
 
             for (Follow recommend : recommends) {
                 if (!followRepository.existsByFollowerAndFollowing(user, recommend.getFollowing())) {
