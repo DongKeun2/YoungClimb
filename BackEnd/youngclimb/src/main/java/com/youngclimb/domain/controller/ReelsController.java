@@ -26,7 +26,7 @@ public class ReelsController {
     // 릴스 제공
     @ApiOperation(value = "serveReels: 릴스 제공")
     @GetMapping
-    public ResponseEntity<?> serveReels(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) {
+    public ResponseEntity<?> serveReels(@PageableDefault(sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) {
         try {
             return ResponseEntity.status(200).body(reelsService.serveReels(principal.getUsername(), pageable));
         } catch (Exception e) {
