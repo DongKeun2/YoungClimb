@@ -175,7 +175,7 @@ function ProfileEditScreen({navigation}) {
     const data = {
       nickname: editForm.nickname.value,
       intro: editForm.intro.value,
-      heigh: editForm.height.value,
+      height: editForm.height.value,
       shoeSize: editForm.shoeSize.value,
       wingspan: editForm.wingspan.value,
       image: currentUser.image,
