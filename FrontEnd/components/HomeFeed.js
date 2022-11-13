@@ -46,7 +46,7 @@ function HomeFeed({
     setIsLiked(feed.isLiked);
     setLike(feed.like);
     setIsScrap(feed.isScrap);
-  }, []);
+  }, [feed.isLiked, feed.like, feed.isScrap]);
 
   useFocusEffect(
     React.useCallback(() => {

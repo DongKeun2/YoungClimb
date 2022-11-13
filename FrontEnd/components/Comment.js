@@ -23,7 +23,7 @@ function Comment({comment, navigation}) {
 
   useEffect(() => {
     setIsLiked(comment.isLiked);
-  }, []);
+  }, [comment.isLiked]);
 
   const viewRecomment = () => {
     setIsViewRecomment(true);

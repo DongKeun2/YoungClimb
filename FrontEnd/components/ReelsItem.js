@@ -45,7 +45,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
   useEffect(() => {
     setIsLiked(item.isLiked);
     setIsScrap(item.isScrap);
-  }, []);
+  }, [item.isLiked, item.isScrap]);
 
   useFocusEffect(
     React.useCallback(() => {
