@@ -157,6 +157,24 @@ const fetchReels = createAsyncThunk(
   },
 );
 
+const commentLikeSubmit = createAsyncThunk(
+  'commentLikeSubmit',
+  async (commentId, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.commentLike(commentId),
+        {},
+        await getConfig(),
+      );
+      console.log('댓글 좋아요 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('댓글 좋아요 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: [],
   boardInfoComment: {},
@@ -219,6 +237,7 @@ export {
   scrapBoard,
   getVideoPath,
   fetchReels,
+  commentLikeSubmit,
 };
 
 export const {changeUploadVideo} = PostSlice.actions;

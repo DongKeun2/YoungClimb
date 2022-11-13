@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect} from 'react';
-import {View, ScrollView, Text, StyleSheet} from 'react-native';
+import {View, ScrollView, Text, StyleSheet, SafeAreaView} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import CustomSubHeader from '../../components/CustomSubHeader';
 
@@ -28,11 +28,11 @@ function PostScreen({navigation, route}) {
   );
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       <CustomSubHeader title="댓글" navigation={navigation} />
       {board ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.container}>
+          <View style={styles.headerBox}>
             {/* 피드 상단 헤더 */}
             <View style={styles.feedHeader}>
               <View style={styles.headerTop}>
@@ -94,12 +94,16 @@ function PostScreen({navigation, route}) {
       ) : (
         <View style={styles.container} />
       )}
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    height: '100%',
+    backgroundColor: 'white',
+  },
+  headerBox: {
     backgroundColor: 'white',
     borderBottomWidth: 0.2,
     borderColor: 'black',
