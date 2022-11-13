@@ -37,15 +37,15 @@ public class JwtTokenProvider {
     // access token 생성
     public String createAccessToken(String email) {
 //        Long tokenValidTime = 1000L * 60 * 3; // 3분
-//        Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
-        Long tokenValidTime = 1000L * 30; // 30초 (test용)
+        Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
+//        Long tokenValidTime = 1000L * 30; // 30초 (test용)
         return this.createToken(email, tokenValidTime, "accessToken");
     }
 
     // refresh token 생성
     public String createRefreshToken(String email) {
-        Long tokenValidTime = 1000 * 60L; // 1분
-//        Long tokenValidTime = 1000 * 60 * 60 * 24L; // 하루
+//        Long tokenValidTime = 1000 * 60L; // 1분
+        Long tokenValidTime = 1000 * 60 * 60 * 24L; // 하루
         String refreshToken = this.createToken(email, tokenValidTime, "refreshToken");
         redisService.setValues("RT " + email, refreshToken, Duration.ofMillis(tokenValidTime));
         return refreshToken;
