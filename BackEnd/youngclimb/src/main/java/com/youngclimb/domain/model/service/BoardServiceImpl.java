@@ -266,7 +266,7 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
         BoardLikeDto boardLikeDto = new BoardLikeDto();
-        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(board.getMember(), member, 2).orElse(null);
+        Notice notice = noticeRepository.findByBoardAndFromMemberAndType(board, member, 2).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
