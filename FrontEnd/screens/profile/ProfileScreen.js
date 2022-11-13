@@ -17,6 +17,7 @@ import UserAvatar from '../../components/UserAvatar';
 import ArticleCard from '../../components/ArticleCard';
 import FollowBtn from '../../components/FollowBtn';
 import RankInfo from '../../components/RankInfo';
+import ProfileLoading from '../../components/Loading/ProfileLoading';
 import {Toast} from '../../components/Toast';
 
 import {profile} from '../../utils/slices/ProfileSlice';
@@ -100,7 +101,9 @@ function ProfileScreen({navigation, route}) {
 
   return (
     <>
-      {isLoading ? null : (
+      {isLoading ? (
+        <ProfileLoading navigation={navigation} type={type} route={route} />
+      ) : (
         <>
           {route.params.initial ? (
             <CustomMainHeader type="프로필" navigation={navigation} />
@@ -245,9 +248,9 @@ function ProfileScreen({navigation, route}) {
               )}
             </ScrollView>
           ) : null}
-          <Toast ref={toastRef} />
         </>
       )}
+      <Toast ref={toastRef} />
     </>
   );
 }
