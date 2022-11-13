@@ -12,20 +12,26 @@ import java.util.List;
 public interface BoardService {
     // 전체 게시글 조회
 
-    public List<BoardDto> readAllBoard(String userId, Pageable pageable);
+    public MainPageDto readRecentBoard(String userId, Pageable pageable);
 
-    public BoardDto readBoardDetail(Long boardId, String email);
+    public MainPageDto readAddBoard(String userId, Pageable pageable);
+
 
     // 이미지 저장
     public String saveImage(MultipartFile file);
+
     // 게시물 작성
-    public void writeBoard(String email ,BoardCreate boardCreate);
+    public void writeBoard(String email, BoardCreate boardCreate);
+
     // 게시글 삭제
     public void deleteBoard(String email, Long boardId);
+
     // 게시글 좋아요
     public BoardLikeDto boardLikeCancle(Long boardId, String email);
+
     // 게시글 댓글 조회
     public BoardDetailDto readAllComments(Long boardId, String email);
+
     // 댓글 좋아요/취소
     public Boolean commentLikeCancle(Long commentId, String email);
     // 게시글 신고

@@ -35,4 +35,5 @@ public class BoardDto {
     Long commentNum;
     CommentPreviewDto commentPreview;
     LocalDateTime createdDateTime;
+
 }
