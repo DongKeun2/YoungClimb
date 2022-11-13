@@ -374,6 +374,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    // 토큰 재발급 요청
     public TokenDto reIssue(String email) {
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(jwtTokenProvider.createAccessToken(email))

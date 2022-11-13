@@ -93,7 +93,6 @@ public class BoardController {
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
     @GetMapping("/{boardId}")
     public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
-        Long userId = 1L;
         try {
             BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, principal.getUsername());
             if (boardDetailDto != null) {
@@ -123,9 +122,8 @@ public class BoardController {
     @ApiOperation(value = "WriteComment : 댓글 작성")
     @PostMapping("/{boardId}/comment")
     public ResponseEntity<?> writeComment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
-        commentCreate.setBoardId(boardId);
         try {
-            boardService.writeComment(commentCreate, principal.getUsername());
+            boardService.writeComment(commentCreate, boardId, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -137,10 +135,8 @@ public class BoardController {
     @ApiOperation(value = "WriteRecomment : 대댓글 작성")
     @PostMapping("/{boardId}/comment/{commentId}")
     public ResponseEntity<?> writeRecomment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @PathVariable Long commentId, @CurrentUser UserPrincipal principal) throws Exception {
-        commentCreate.setBoardId(boardId);
-        commentCreate.setParaentId(commentId);
         try {
-            boardService.writeRecomment(commentCreate, principal.getUsername());
+            boardService.writeRecomment(commentCreate, boardId, commentId, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);

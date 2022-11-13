@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
@@ -35,12 +36,13 @@ public class JwtTokenProvider {
     public String createAccessToken(String email) {
 //        Long tokenValidTime = 1000L * 60 * 3; // 3분
         Long tokenValidTime = 1000L * 60 * 60 * 24; // 24시간(refreshtoken 완성 전까지)
-//        Long tokenValidTime = 1000L * 30; // 30초 (testy6용)
+//        Long tokenValidTime = 1000L * 30; // 30초 (test용)
         return this.createToken(email, tokenValidTime, "accessToken");
     }
 
     // refresh token 생성
     public String createRefreshToken(String email) {
+//        Long tokenValidTime = 1000 * 60L; // 1분
         Long tokenValidTime = 1000 * 60 * 60 * 24L; // 하루
         String refreshToken = this.createToken(email, tokenValidTime, "refreshToken");
         redisService.setValues("RT " + email, refreshToken, Duration.ofMillis(tokenValidTime));
@@ -78,35 +80,37 @@ public class JwtTokenProvider {
     // 토큰 유효성 검사
     public boolean checkClaim(String token) {
         try {
-//            String expiredAT = redisService.getValues(blackListATPrefix + jwt);
-//            if (expiredAT != null) {
-//                throw new ExpiredJwtException(null, null, null
-//                );
-//            }
+            String expired = redisService.getValues(blackListATPrefix + token);
+            // 로그아웃한 유저인 경우
+            if (!ObjectUtils.isEmpty(expired)) {
+                throw new ExpiredJwtException(null, null, null);
+            }
 
+            // 아닌 경우 유효성 검사 진행
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key).build()
                     .parseClaimsJws(token).getBody();
 
+            // 만료 검사
             if (claims.getExpiration().before(new Date())) {
                 throw new ExpiredJwtException(null, claims, "AccessToken이 만료되었습니다");
             }
 
-            if(claims.get("type").equals("refreshToken")) {
+            // 리프레쉬 토큰인 경우 리프레쉬 토큰 유효성 검사
+            if (claims.get("type").equals("refreshToken")) {
                 System.out.println("리프레쉬 토큰이 들어왔습니다.");
-               return this.checkRefreshToken(claims.getSubject(), token);
-            };
-                System.out.println("여기서 안터지니?");
+                return this.checkRefreshToken(claims.getSubject(), token);
+            }
+
+            System.out.println("여기서 안터지니?");
             return true;
 
-        }
-//        catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
-//            e.getClaims();
-//            System.out.println("AccessToken이 만료되었지롱");
-//            return false;
-//
-//        }
-        catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
+        } catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
+            e.getClaims();
+            System.out.println("AccessToken이 만료되었지롱");
+            return false;
+
+        } catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
             System.out.println("변조된 AccessToken이지롱");
             return false;
         }
@@ -145,24 +149,38 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
+    // 리프레쉬 토큰 유효성 검사
     public boolean checkRefreshToken(String email, String refreshToken) throws ExpiredJwtException {
         String redisRT = redisService.getValues("RT " + email);
+        // redis에 리프레쉬 토큰이 없는 경우 -> 만료 또는 로그아웃된 상황
         if (redisRT == null) {
             System.out.println("RefreshToken이 만료되었습니다!");
             throw new ExpiredJwtException(null, null, "RefreshToken이 만료되었습니다!");
         }
 
-        if(redisService.getTTL("RT "+email) <= (60 * 60 * 24 * 3) ) {
+        // refresh 토큰 만료일이 3일 이내이면 refresh token 재발급하여 redis에 저장
+        if (redisService.getTTL("RT " + email) <= (60 * 60 * 24 * 3)) {
             this.createRefreshToken(email);
         }
-        System.out.println("리프레시 토큰이 확인되었습니다.");
-        return true;
+
+        // 사용자가 보내준 refresh 토큰이 redis에 저장된 refresh token과 일치하는 지 확인
+        if (redisRT.equals(refreshToken)) {
+            System.out.println("리프레시 토큰이 확인되었습니다.");
+            return true;
+        } else {
+            System.out.println("잘못된 토큰입니다");
+            return false;
+        }
     }
 
     public void logout(String email, String accessToken) {
+        // 현재 남은 access token의 유효시간 후에 파기되는 logout user 관련 access token과 정보를 redis에 저장
         Long expiredAccessTokenTime = getJwtContents(accessToken).getExpiration().getTime() - new Date().getTime();
         redisService.setValues(blackListATPrefix + accessToken, email, Duration.ofMillis(expiredAccessTokenTime));
-        redisService.deleteValues("RT " + email);
+
+        // refresh token도 삭제
+        if (redisService.getValues("RT " + email) != null)
+            redisService.deleteValues("RT " + email);
 
     }
 }
