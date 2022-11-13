@@ -8,7 +8,7 @@ const fetchHomeFeed = createAsyncThunk(
   async (pageNumber, {rejectWithValue}) => {
     try {
       const res = await axios.get(api.homeFeed(pageNumber), await getConfig());
-      console.log('홈피드 요청 성공', res.data.length);
+      console.log('홈피드 요청 성공', res.data.boardDtos.length);
       return res.data;
     } catch (err) {
       console.log('홈피드 요청 실패', err);
