@@ -16,7 +16,7 @@ function RandomScreen({navigation}) {
     toastRef.current.show('앱을 종료하려면 뒤로가기를 한번 더 눌러주세요');
   }, []);
 
-  const reels = useSelector(state => state.post.reels);
+  const reels = useSelector(state => state.post.reels.boardDtos);
 
   const backAction = () => {
     if (!exitAttempt) {
@@ -33,7 +33,7 @@ function RandomScreen({navigation}) {
   };
 
   useEffect(() => {
-    dispatch(fetchReels(0));
+    dispatch(fetchReels(1));
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');

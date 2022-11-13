@@ -79,24 +79,29 @@ function HomeFeed({
 
   const feedLike = id => {
     setLikePress(true);
-    dispatch(feedLikeSubmit(id))
-      .then(() => {
+    dispatch(feedLikeSubmit(id)).then(res => {
+      if (res.type === 'feedLikeSubmit/fulfilled') {
         isLiked ? setLike(like - 1) : setLike(like + 1);
         setIsLiked(!isLiked);
         setLikePress(false);
-      })
-      .catch(() => setLikePress(false));
+      } else {
+        alert('다시 시도해주세요');
+        setLikePress(false);
+      }
+    });
   };
 
   const feedScrap = id => {
-    console.log('눌림');
     setScrapPress(true);
-    dispatch(feedScrapSubmit(id))
-      .then(() => {
+    dispatch(feedScrapSubmit(id)).then(res => {
+      if (res.type === 'feedScrapSubmit/fulfilled') {
         setIsScrap(!isScrap);
         setScrapPress(false);
-      })
-      .catch(() => setScrapPress(false));
+      } else {
+        alert('다시 시도해주세요');
+        setScrapPress(false);
+      }
+    });
   };
 
   return (
