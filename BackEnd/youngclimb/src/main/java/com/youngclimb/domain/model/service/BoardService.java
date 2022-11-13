@@ -12,9 +12,9 @@ import java.util.List;
 public interface BoardService {
     // 전체 게시글 조회
 
-    public List<BoardDto> readRecentBoard(String userId, Pageable pageable);
+    public MainPageDto readRecentBoard(String userId, Pageable pageable);
 
-    public List<BoardDto> readOldBoard(String userId, Pageable pageable);
+    public MainPageDto readAddBoard(String userId, Pageable pageable);
 
 
     // 이미지 저장

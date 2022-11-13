@@ -24,12 +24,12 @@ public class BoardController {
     private final BoardService boardService;
 
     // 최근 게시글 조회
-    @ApiOperation(value = "readRecentBoard: 최근 게시글 조회")
+    @ApiOperation(value = "readRecentBoard: 팔로우한 게시글 조회")
     @GetMapping("/home")
     public ResponseEntity<?> readRecentBoard(@PageableDefault(sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            List<BoardDto> boardDtos = boardService.readRecentBoard(principal.getUsername(), pageable);
-            return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
+            MainPageDto mainPageDto = boardService.readRecentBoard(principal.getUsername(), pageable);
+            return new ResponseEntity<MainPageDto>(mainPageDto, HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -37,12 +37,12 @@ public class BoardController {
     }
 
     // 추가 게시글 조회
-    @ApiOperation(value = "readOldBoard: 추가 게시글 조회")
+    @ApiOperation(value = "readAddBoard: 추가 게시글 조회")
     @GetMapping("/home/add")
-    public ResponseEntity<?> readOldBoard(@PageableDefault(sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> readAddBoard(@PageableDefault(sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) throws Exception {
         try {
-            List<BoardDto> boardDtos = boardService.readOldBoard(principal.getUsername(), pageable);
-            return new ResponseEntity<List<BoardDto>>(boardDtos, HttpStatus.OK);
+            MainPageDto mainPageDto = boardService.readAddBoard(principal.getUsername(), pageable);
+            return new ResponseEntity<MainPageDto>(mainPageDto, HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);

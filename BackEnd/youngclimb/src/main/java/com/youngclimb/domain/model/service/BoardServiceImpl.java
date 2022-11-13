@@ -58,15 +58,15 @@ public class BoardServiceImpl implements BoardService {
     private final AmazonS3 amazonS3;
 
 
-    // 2주 이내 게시글 읽기
+    // 2주 이내 팔로워 게시글 읽기
     @Override
-    public List<BoardDto> readRecentBoard(String email, Pageable pageable) {
+    public MainPageDto readRecentBoard(String email, Pageable pageable) {
         // 최종 Dto List
         List<BoardDto> boardDtos = new ArrayList<>();
+        MainPageDto mainPageDto = new MainPageDto();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
         Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
-
 
         // 2주 이내 게시글
         for (Board board : recentBoards) {
@@ -85,10 +85,7 @@ public class BoardServiceImpl implements BoardService {
             if (!comments.isEmpty()) {
                 for (Comment comment : comments) {
                     if (comment.getParentId() == 0) {
-                        CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                                .nickname(comment.getMember().getNickname())
-                                .comment(comment.getContent())
-                                .build();
+                        CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder().nickname(comment.getMember().getNickname()).comment(comment.getContent()).build();
                         boardDto.setCommentPreview(commentPreviewDto);
                         break;
                     }
@@ -100,21 +97,21 @@ public class BoardServiceImpl implements BoardService {
 
         }
 
-        return boardDtos;
+        mainPageDto.setBoardDtos(boardDtos);
+        mainPageDto.setNextPage(recentBoards.hasNext());
+
+        return mainPageDto;
     }
 
+    // 메인페이지 추가 게시글
     @Override
-    public List<BoardDto> readOldBoard(String email, Pageable pageable) {
+    public MainPageDto readAddBoard(String email, Pageable pageable) {
         // 최종 Dto List
         List<BoardDto> boardDtos = new ArrayList<>();
+        MainPageDto mainPageDto = new MainPageDto();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
         Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
-        Slice<Board> oldBoards = boardRepository.findAllByCreatedDateTimeBeforeOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
-
-
-//        List<Board> boards = boardRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDateTime"));
-
 
         // 2주 이내 게시글
         for (Board board : recentBoards) {
@@ -136,10 +133,7 @@ public class BoardServiceImpl implements BoardService {
             if (!comments.isEmpty()) {
                 for (Comment comment : comments) {
                     if (comment.getParentId() == 0) {
-                        CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                                .nickname(comment.getMember().getNickname())
-                                .comment(comment.getContent())
-                                .build();
+                        CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder().nickname(comment.getMember().getNickname()).comment(comment.getContent()).build();
                         boardDto.setCommentPreview(commentPreviewDto);
                         break;
                     }
@@ -151,43 +145,10 @@ public class BoardServiceImpl implements BoardService {
 
         }
 
-        // 2주 이후 게시글
-        for (Board board : oldBoards) {
-            // 삭제된 게시글
-            if (board.getIsDelete() != 0) continue;
-            // 자기 자신인 경우
-            if (Objects.equals(board.getMember().getMemberId(), member.getMemberId())) continue;
-            // 자기가 신고한 게시글
-            if (reportRepository.existsByBoardAndMember(board, member)) continue;
-            // 팔로우하지 않은 경우
-            if (!followRepository.existsByFollowerAndFollowing(member, board.getMember())) continue;
+        mainPageDto.setBoardDtos(boardDtos);
+        mainPageDto.setNextPage(recentBoards.hasNext());
 
-
-            // 게시글 Dto 세팅
-            BoardDto boardDto = this.startDto(board, member);
-            boardDto.setCreateUser(this.toCreateUser(board, member));
-            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
-            boardDto.setMediaPath(boardMedia.getMediaPath());
-
-            // 댓글 DTO 1개 세팅
-            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
-            if (!comments.isEmpty()) {
-                for (Comment comment : comments) {
-                    if (comment.getParentId() == 0) {
-                        CommentPreviewDto commentPreviewDto = CommentPreviewDto.builder()
-                                .nickname(comment.getMember().getNickname())
-                                .comment(comment.getContent())
-                                .build();
-                        boardDto.setCommentPreview(commentPreviewDto);
-                        break;
-                    }
-                }
-            }
-            // List add
-            boardDtos.add(boardDto);
-        }
-
-        return boardDtos;
+        return mainPageDto;
     }
 
     // 동영상 저장
@@ -221,14 +182,7 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(board);
 
         // 카테고리 저장하기
-        Category category = Category.builder()
-                .board(board)
-                .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
-                .wall(wallRepository.findById(boardCreate.getWallId()).orElse(new Wall()))
-                .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
-                .holdcolor(boardCreate.getHoldColor())
-                .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
-                .build();
+        Category category = Category.builder().board(board).center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow()).wall(wallRepository.findById(boardCreate.getWallId()).orElse(new Wall())).centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow()).holdcolor(boardCreate.getHoldColor()).difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank()).build();
         categoryRepository.save(category);
 
 //        // 이미지 저장하기
@@ -247,9 +201,7 @@ public class BoardServiceImpl implements BoardService {
 //            boardMediaRepository.save(boardMedia);
 //        }
 
-        BoardMedia boardMedia = BoardMedia.builder()
-                .board(board).mediaPath(boardCreate.getMediaPath())
-                .build();
+        BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(boardCreate.getMediaPath()).build();
 
         boardMediaRepository.save(boardMedia);
 
@@ -319,20 +271,11 @@ public class BoardServiceImpl implements BoardService {
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
         if (!isLike) {
-            BoardLike boardLike = BoardLike.builder()
-                    .board(board)
-                    .member(member)
-                    .build();
+            BoardLike boardLike = BoardLike.builder().board(board).member(member).build();
             boardLikeRepository.save(boardLike);
 
             if (board.getMember() != member) {
-                Notice noticeBuild = Notice.builder()
-                        .type(2)
-                        .toMember(board.getMember())
-                        .fromMember(member)
-                        .board(board)
-                        .createdDateTime(LocalDateTime.now())
-                        .build();
+                Notice noticeBuild = Notice.builder().type(2).toMember(board.getMember()).fromMember(member).board(board).createdDateTime(LocalDateTime.now()).build();
                 noticeRepository.save(noticeBuild);
             }
 
@@ -343,13 +286,9 @@ public class BoardServiceImpl implements BoardService {
             // 푸쉬 알림 보내기
             try {
                 if (board.getMember().getFcmToken() != null) {
-                    Notification notification = new Notification("",
-                            member.getNickname() + "님이 게시물을 좋아합니다.");
+                    Notification notification = new Notification("", member.getNickname() + "님이 게시물을 좋아합니다.");
 
-                    Message message = Message.builder()
-                            .setNotification(notification)
-                            .setToken(board.getMember().getFcmToken())
-                            .build();
+                    Message message = Message.builder().setNotification(notification).setToken(board.getMember().getFcmToken()).build();
 
                     FirebaseMessaging.getInstance().send(message);
                 }
@@ -422,34 +361,21 @@ public class BoardServiceImpl implements BoardService {
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
         if (!isLike) {
-            CommentLike commentLike = CommentLike.builder()
-                    .comment(comment)
-                    .member(member)
-                    .build();
+            CommentLike commentLike = CommentLike.builder().comment(comment).member(member).build();
 
             commentLikeRepository.save(commentLike);
 
             if (comment.getMember() != member) {
-                Notice noticeBuild = Notice.builder()
-                        .type(4)
-                        .toMember(comment.getMember())
-                        .fromMember(member)
-                        .board(comment.getBoard())
-                        .createdDateTime(LocalDateTime.now())
-                        .build();
+                Notice noticeBuild = Notice.builder().type(4).toMember(comment.getMember()).fromMember(member).board(comment.getBoard()).createdDateTime(LocalDateTime.now()).build();
                 noticeRepository.save(noticeBuild);
             }
 
             // 푸쉬 알림 보내기
             try {
                 if (comment.getMember().getFcmToken() != null) {
-                    Notification notification = new Notification("",
-                            member.getNickname() + "님이 댓글을 좋아합니다.");
+                    Notification notification = new Notification("", member.getNickname() + "님이 댓글을 좋아합니다.");
 
-                    Message message = Message.builder()
-                            .setNotification(notification)
-                            .setToken(comment.getMember().getFcmToken())
-                            .build();
+                    Message message = Message.builder().setNotification(notification).setToken(comment.getMember().getFcmToken()).build();
 
                     FirebaseMessaging.getInstance().send(message);
                 }
@@ -485,26 +411,16 @@ public class BoardServiceImpl implements BoardService {
 
         // 알림 저장하기
         if (board.getMember() != member) {
-            Notice noticeBuild = Notice.builder()
-                    .type(3)
-                    .toMember(board.getMember())
-                    .fromMember(member)
-                    .board(board)
-                    .createdDateTime(LocalDateTime.now())
-                    .build();
+            Notice noticeBuild = Notice.builder().type(3).toMember(board.getMember()).fromMember(member).board(board).createdDateTime(LocalDateTime.now()).build();
             noticeRepository.save(noticeBuild);
         }
 
         // 푸쉬 알림 보내기
         try {
             if (board.getMember().getFcmToken() != null) {
-                Notification notification = new Notification("",
-                        member.getNickname() + "님이 게시물에 댓글을 작성하였습니다.");
+                Notification notification = new Notification("", member.getNickname() + "님이 게시물에 댓글을 작성하였습니다.");
 
-                Message message = Message.builder()
-                        .setNotification(notification)
-                        .setToken(board.getMember().getFcmToken())
-                        .build();
+                Message message = Message.builder().setNotification(notification).setToken(board.getMember().getFcmToken()).build();
 
                 FirebaseMessaging.getInstance().send(message);
             }
@@ -528,26 +444,16 @@ public class BoardServiceImpl implements BoardService {
 
         // 알림 저장하기
         if (comment.getMember() != member) {
-            Notice noticeBuild = Notice.builder()
-                    .type(5)
-                    .toMember(comment.getMember())
-                    .fromMember(member)
-                    .board(board)
-                    .createdDateTime(LocalDateTime.now())
-                    .build();
+            Notice noticeBuild = Notice.builder().type(5).toMember(comment.getMember()).fromMember(member).board(board).createdDateTime(LocalDateTime.now()).build();
             noticeRepository.save(noticeBuild);
         }
 
         // 푸쉬 알림 보내기
         try {
             if (comment.getMember().getFcmToken() != null) {
-                Notification notification = new Notification("",
-                        member.getNickname() + "님이 대댓글을 작성하였습니다.");
+                Notification notification = new Notification("", member.getNickname() + "님이 대댓글을 작성하였습니다.");
 
-                Message message = Message.builder()
-                        .setNotification(notification)
-                        .setToken(comment.getMember().getFcmToken())
-                        .build();
+                Message message = Message.builder().setNotification(notification).setToken(comment.getMember().getFcmToken()).build();
 
                 FirebaseMessaging.getInstance().send(message);
             }
@@ -623,10 +529,7 @@ public class BoardServiceImpl implements BoardService {
         boolean isScrap = boardScrapRepository.existsByBoardAndMember(board, member);
 
         if (!isScrap) {
-            BoardScrap boardScrap = BoardScrap.builder()
-                    .board(board)
-                    .member(member)
-                    .build();
+            BoardScrap boardScrap = BoardScrap.builder().board(board).member(member).build();
             boardScrapRepository.save(boardScrap);
 
             return true;
@@ -656,12 +559,7 @@ public class BoardServiceImpl implements BoardService {
         }
 
         if (report == null) {
-            Report reportCreate = Report.builder()
-                    .board(board)
-                    .member(member)
-                    .content(content)
-                    .flag(0)
-                    .build();
+            Report reportCreate = Report.builder().board(board).member(member).content(content).flag(0).build();
 
             reportRepository.save(reportCreate);
 
@@ -674,16 +572,7 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 DTO 세팅
     public BoardDto startDto(Board board, Member member) {
         // 게시글 DTO 초기화
-        BoardDto boardDto = BoardDto.builder()
-                .id(board.getBoardId())
-                .solvedDate(board.getSolvedDate())
-                .content(board.getContent())
-                .like(boardLikeRepository.countByBoard(board))
-                .view(board.getBoardView())
-                .isLiked(boardLikeRepository.existsByBoardAndMember(board, member))
-                .isScrap(boardScrapRepository.existsByBoardAndMember(board, member))
-                .commentNum(commentRepository.countByBoard(board))
-                .build();
+        BoardDto boardDto = BoardDto.builder().id(board.getBoardId()).solvedDate(board.getSolvedDate()).content(board.getContent()).like(boardLikeRepository.countByBoard(board)).view(board.getBoardView()).isLiked(boardLikeRepository.existsByBoardAndMember(board, member)).isScrap(boardScrapRepository.existsByBoardAndMember(board, member)).commentNum(commentRepository.countByBoard(board)).build();
 
         // 작성날짜 세팅
         LocalDateTime createdTime = board.getCreatedDateTime();
@@ -718,12 +607,7 @@ public class BoardServiceImpl implements BoardService {
     // 작성 유저 정보 세팅
     public CreateMember toCreateUser(Board board, Member member) {
         Member writer = board.getMember();
-        CreateMember createUser = CreateMember.builder()
-                .nickname(writer.getNickname())
-                .image(writer.getMemberProfileImg())
-                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                .build();
+        CreateMember createUser = CreateMember.builder().nickname(writer.getNickname()).image(writer.getMemberProfileImg()).rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName()).isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId())).build();
         return createUser;
     }
 
@@ -731,12 +615,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 댓글 작성자
         Member cWriter = comment.getMember();
-        CreateMember cCreateMember = CreateMember.builder()
-                .nickname(cWriter.getNickname())
-                .image(cWriter.getMemberProfileImg())
-                .rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName())
-                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId()))
-                .build();
+        CreateMember cCreateMember = CreateMember.builder().nickname(cWriter.getNickname()).image(cWriter.getMemberProfileImg()).rank(memberRankExpRepository.findByMember(cWriter).orElseThrow().getRank().getName()).isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(cWriter.getMemberId(), member.getMemberId())).build();
 
         // 댓글 세팅
         CommentDto commentDto = comment.toCommentDto();
@@ -767,16 +646,7 @@ public class BoardServiceImpl implements BoardService {
     // 스크랩한 글 보여주기
     public BoardDto startScrapDto(BoardScrap scrap, Member member) {
         // 게시글 DTO 세팅
-        BoardDto scrapDto = BoardDto.builder()
-                .id(scrap.getBoard().getBoardId())
-                .solvedDate(scrap.getBoard().getSolvedDate())
-                .content(scrap.getBoard().getContent())
-                .like(boardLikeRepository.countByBoard(scrap.getBoard()))
-                .view(scrap.getBoard().getBoardView())
-                .isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member))
-                .isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member))
-                .commentNum(commentRepository.countByBoard(scrap.getBoard()))
-                .build();
+        BoardDto scrapDto = BoardDto.builder().id(scrap.getBoard().getBoardId()).solvedDate(scrap.getBoard().getSolvedDate()).content(scrap.getBoard().getContent()).like(boardLikeRepository.countByBoard(scrap.getBoard())).view(scrap.getBoard().getBoardView()).isLiked(boardLikeRepository.existsByBoardAndMember(scrap.getBoard(), member)).isScrap(boardScrapRepository.existsByBoardAndMember(scrap.getBoard(), member)).commentNum(commentRepository.countByBoard(scrap.getBoard())).build();
 
         LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
 
@@ -818,12 +688,7 @@ public class BoardServiceImpl implements BoardService {
     public CreateMember toCreateScrapUser(BoardScrap scrap, Member member) {
         // 작성 유저 정보 세팅
         Member writer = scrap.getBoard().getMember();
-        CreateMember createUser = CreateMember.builder()
-                .nickname(writer.getNickname())
-                .image(writer.getMemberProfileImg())
-                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                .build();
+        CreateMember createUser = CreateMember.builder().nickname(writer.getNickname()).image(writer.getMemberProfileImg()).rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName()).isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId())).build();
         return createUser;
     }
 
