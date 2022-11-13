@@ -4,6 +4,7 @@ import com.youngclimb.common.redis.RedisService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Component
@@ -78,24 +80,26 @@ public class JwtTokenProvider {
     }
 
     // 토큰 유효성 검사
-    public boolean checkClaim(String token) {
-        try {
+    public boolean checkClaim(String token) throws ExpiredJwtException, JwtException{
+//        try {
             String expired = redisService.getValues(blackListATPrefix + token);
             // 로그아웃한 유저인 경우
             if (!ObjectUtils.isEmpty(expired)) {
-                throw new ExpiredJwtException(null, null, null);
+                throw new JwtException("로그아웃한 유저입니다.");
             }
-
+            System.out.println(token + " 유효성 검사 안에서 로그아웃 이후야");
             // 아닌 경우 유효성 검사 진행
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key).build()
-                    .parseClaimsJws(token).getBody();
+                    .parseClaimsJws(token).getBody(); // 토큰 만료된 경우는 여기서 exception 던짐
+
 
             // 만료 검사
-            if (claims.getExpiration().before(new Date())) {
-                throw new ExpiredJwtException(null, claims, "AccessToken이 만료되었습니다");
-            }
-
+//            if (claims.getExpiration().before(new Date())) {
+//                System.out.println("토큰이 만료되었습니다.");
+//                throw new ExpiredJwtException(null, null, "AccessToken이 만료되었습니다");
+//            }
+//        System.out.println(token + "유효성 검사 안에서 만료 검사 이후야");
             // 리프레쉬 토큰인 경우 리프레쉬 토큰 유효성 검사
             if (claims.get("type").equals("refreshToken")) {
                 System.out.println("리프레쉬 토큰이 들어왔습니다.");
@@ -105,15 +109,16 @@ public class JwtTokenProvider {
             System.out.println("여기서 안터지니?");
             return true;
 
-        } catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
-            e.getClaims();
-            System.out.println("AccessToken이 만료되었지롱");
-            return false;
+//        }
 
-        } catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
-            System.out.println("변조된 AccessToken이지롱");
-            return false;
-        }
+//        catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
+//            System.out.println("AccessToken이 만료되었지롱");
+//            return false;
+//
+//        } catch (JwtException e) {        //Token이 변조된 경우 Exception이 발생한다.
+//            System.out.println("변조된 AccessToken이지롱");
+//            return false;
+//        }
     }
 
     // token 정보 확인
