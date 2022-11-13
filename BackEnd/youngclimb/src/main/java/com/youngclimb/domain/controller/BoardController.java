@@ -123,6 +123,8 @@ public class BoardController {
     @PostMapping("/{boardId}/comment")
     public ResponseEntity<?> writeComment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
+            System.out.println("댓글 잡아오기");
+            System.out.println(commentCreate);
             boardService.writeComment(commentCreate, boardId, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {

@@ -1,13 +1,17 @@
 package com.youngclimb.domain.model.dto.board;
 
 import com.youngclimb.domain.model.entity.Comment;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CommentCreate {
 
     String content;
