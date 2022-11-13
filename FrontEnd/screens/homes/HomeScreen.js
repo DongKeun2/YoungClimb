@@ -24,7 +24,7 @@ function HomeScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const boards = useSelector(state => state.post.boards);
+  const boards = useSelector(state => state.post.boards.boardDtos);
 
   const onViewRef = useRef(({viewableItems}) => {
     if (viewableItems && viewableItems[0]) {
