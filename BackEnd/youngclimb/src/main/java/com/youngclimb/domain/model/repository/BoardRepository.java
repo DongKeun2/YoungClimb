@@ -23,5 +23,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Long countByMember(Member member);
 
+    List<Board> findAllByBoardViewGreaterThan(Integer views, Sort sort);
+
+    List<Board> findByBoardViewGreaterThanOrderByBoardViewDesc(Long views);
+
     List<Board> findByMemberInOrBoardViewGreaterThan(List<Member> memberList, Long views, Pageable pageable);
 }

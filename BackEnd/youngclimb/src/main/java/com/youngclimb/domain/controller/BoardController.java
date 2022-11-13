@@ -26,7 +26,7 @@ public class BoardController {
     // 전체 게시글 조회
     @ApiOperation(value = "readAllBoard: 전체 게시글 조회")
     @GetMapping("/home")
-    public ResponseEntity<?> readAllBoard(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal ) throws Exception {
+    public ResponseEntity<?> readAllBoard(@PageableDefault(size = 5, sort = "createdDateTime", direction = Sort.Direction.DESC) Pageable pageable, @CurrentUser UserPrincipal principal) throws Exception {
         try {
             List<BoardDto> boardDtos = boardService.readAllBoard(principal.getUsername(), pageable);
             if (boardDtos != null) {
@@ -69,7 +69,7 @@ public class BoardController {
     // 게시물 삭제
     @ApiOperation(value = "deleteBoard : 글 삭제하기")
     @PostMapping("/{boardId}/delete")
-    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId,@CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
             boardService.deleteBoard(principal.getUsername(), boardId);
             return new ResponseEntity<Void>(HttpStatus.OK);
@@ -83,7 +83,6 @@ public class BoardController {
     @ApiOperation(value = "readOneBoard : 게시글-댓글 조회")
     @GetMapping("/{boardId}")
     public ResponseEntity<?> readOneBoard(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
-        Long userId = 1L;
         try {
             BoardDetailDto boardDetailDto = boardService.readAllComments(boardId, principal.getUsername());
             if (boardDetailDto != null) {
@@ -124,9 +123,8 @@ public class BoardController {
     @ApiOperation(value = "WriteComment : 댓글 작성")
     @PostMapping("/{boardId}/comment")
     public ResponseEntity<?> writeComment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
-        commentCreate.setBoardId(boardId);
         try {
-            boardService.writeComment(commentCreate, principal.getUsername());
+            boardService.writeComment(commentCreate, boardId, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -138,10 +136,8 @@ public class BoardController {
     @ApiOperation(value = "WriteRecomment : 대댓글 작성")
     @PostMapping("/{boardId}/comment/{commentId}")
     public ResponseEntity<?> writeRecomment(@RequestBody CommentCreate commentCreate, @PathVariable Long boardId, @PathVariable Long commentId, @CurrentUser UserPrincipal principal) throws Exception {
-        commentCreate.setBoardId(boardId);
-        commentCreate.setParaentId(commentId);
         try {
-            boardService.writeRecomment(commentCreate, principal.getUsername());
+            boardService.writeRecomment(commentCreate, boardId, commentId, principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -164,7 +160,7 @@ public class BoardController {
     // 게시물 스크랩/취소
     @ApiOperation(value = "upBoardScrap : 스크랩 클릭")
     @PostMapping("/{boardId}/scrap")
-    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId,  @CurrentUser UserPrincipal principal) throws Exception {
+    public ResponseEntity<?> boardScrapCancle(@PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception {
         try {
             return new ResponseEntity<Boolean>(boardService.boardScrapCancle(boardId, principal.getUsername()), HttpStatus.OK);
 

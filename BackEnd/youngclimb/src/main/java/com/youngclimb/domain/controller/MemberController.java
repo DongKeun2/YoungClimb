@@ -65,7 +65,11 @@ public class MemberController {
     @ApiOperation(value = "reIssue: 액세스토큰 재발급")
     @PostMapping("/reIssue")
     public ResponseEntity<?> reIssue(@CurrentUser UserPrincipal user) throws Exception {
+        try {
         return new ResponseEntity<>(memberService.reIssue(user.getUsername()), HttpStatus.OK);
+        } catch (Exception e) {
+           return exceptionHandling(e);
+        }
     }
 
     // 회원가입

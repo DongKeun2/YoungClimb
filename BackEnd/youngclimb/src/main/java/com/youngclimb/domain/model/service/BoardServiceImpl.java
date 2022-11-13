@@ -110,10 +110,8 @@ public class BoardServiceImpl implements BoardService {
             }
             // 팔로우하지 않은 경우
             else {
-                System.out.println("여기가 문제야");
-                System.out.println(board.getMember().getNickname());
                 if (board.getMember() == member) continue;
-                System.out.println("저기가 문제야");
+
                 // 게시글 Dto 세팅
                 BoardDto boardDto = this.startDto(board, member);
                 boardDto.setCreateUser(this.toCreateUser(board, member));
@@ -369,7 +367,7 @@ public class BoardServiceImpl implements BoardService {
 
     private String getFileExtension(String fileName) {
         try {
-            return fileName.substring(fileName.lastIndexOf("."));
+            return fileName.substring(0, fileName.indexOf("."));
         } catch (StringIndexOutOfBoundsException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다");
         }
@@ -539,15 +537,15 @@ public class BoardServiceImpl implements BoardService {
 
     // 댓글 작성
     @Override
-    public void writeComment(CommentCreate commentCreate, String email) {
+    public void writeComment(CommentCreate commentCreate, Long boardId, String email) {
 
         // 댓글 저장하기
         Comment comment = commentCreate.toComment();
-        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        comment.setBoard(board);
-        comment.setMember(member);
+
+        comment.setMemberandBoard(member, board);
         commentRepository.save(comment);
 
         // 알림 저장하기
@@ -584,13 +582,14 @@ public class BoardServiceImpl implements BoardService {
 
     // 대댓글 작성
     @Override
-    public void writeRecomment(CommentCreate commentCreate, String email) {
+    public void writeRecomment(CommentCreate commentCreate,Long boardId, Long commentId, String email) {
+
         Comment comment = commentCreate.toComment();
-        Board board = boardRepository.findById(commentCreate.getBoardId()).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        comment.setBoard(board);
-        comment.setMember(member);
+        comment.setMemberandBoard(member, board);
+        comment.setParentId(commentId);
         commentRepository.save(comment);
 
         // 알림 저장하기
@@ -766,9 +765,6 @@ public class BoardServiceImpl implements BoardService {
         } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
             timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
         }
-        System.out.println(createdTime);
-        System.out.println(LocalDateTime.now());
-        System.out.println(minus);
         boardDto.setCreatedAt(timeText);
 
         // 카테고리 정보 세팅
