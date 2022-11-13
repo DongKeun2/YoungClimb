@@ -31,6 +31,9 @@ const REELS_URL = '/reels';
 const REPORT_URL = '/report';
 const IMAGE_URL = '/image';
 
+const FCMTOKEN_URL = '/fcmtoken'
+const NOTICE_URL = '/notice'
+
 const api = {
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
 
@@ -69,6 +72,12 @@ const api = {
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
   report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
+
+  fcmtokensave : () => API_BASE_URL + FCMTOKEN_URL + '/save',
+  fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + '/delete',
+
+  noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL 
+
 };
 
 export default api;

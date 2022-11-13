@@ -29,6 +29,7 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   try {
     const res = await axios.post(api.logout(), {}, await getConfig());
     console.log('로그아웃 성공');
+    await axios.post(api.fcmtokendelete(),{},await getConfig())
     removeAccessToken();
     removeCurrentUser();
     return res.data;

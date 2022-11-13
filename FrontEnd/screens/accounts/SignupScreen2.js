@@ -13,6 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {changeSignupForm, signup} from '../../utils/slices/AccountsSlice';
 
 import CustomButton from '../../components/CustomBtn';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import logo from '../../assets/image/main/signup.png';
 import Camera from '../../assets/image/main/camera.svg';
@@ -33,12 +34,14 @@ function SecondPage({navigation}) {
     navigation.goBack();
   }
 
-  function onSubmitSignup(isSkip) {
+  async function onSubmitSignup(isSkip) {
+    const fcmToken = await AsyncStorage.getItem('fcmToken')
     const data = {
       email: signupForm.email.value,
       nickname: signupForm.nickname.value,
       password: signupForm.password.value,
       gender: signupForm.gender.value,
+      fcmToken: fcmToken.replace('"','').replace('"','')
     };
 
     // 건너뛰기 클릭 시 추가정보 제외하고 회원가입 신청
