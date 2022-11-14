@@ -78,31 +78,31 @@ public class JwtTokenProvider {
     }
 
     // 토큰 유효성 검사
-    public boolean checkClaim(String token) throws ExpiredJwtException, JwtException{
+    public boolean checkClaim(String token) throws ExpiredJwtException, JwtException {
 //        try {
-            String expired = redisService.getValues(blackListATPrefix + token);
+        String expired = redisService.getValues(blackListATPrefix + token);
 
-            // 로그아웃한 유저인 경우
-            if (!ObjectUtils.isEmpty(expired)) {
-                throw new JwtException("로그아웃한 유저입니다.");
-            }
-            System.out.println(token + " 유효성 검사 안에서 로그아웃 이후야");
-
-            // 아닌 경우 유효성 검사 진행
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(key).build()
-                    .parseClaimsJws(token).getBody(); // 토큰 만료된 경우는 여기서 exception 던짐
-
-            // 리프레쉬 토큰인 경우 리프레쉬 토큰 유효성 검사
-            if (claims.get("type").equals("refreshToken")) {
-                System.out.println("리프레쉬 토큰이 들어왔습니다.");
-                return checkRefreshToken(claims.getSubject(), token);
-            }
-
-            System.out.println("여기서 안터지니?");
-            return true;
-
+        // 로그아웃한 유저인 경우
+        if (!ObjectUtils.isEmpty(expired)) {
+            throw new JwtException("로그아웃한 유저입니다.");
         }
+        System.out.println(token + " 유효성 검사 안에서 로그아웃 이후야");
+
+        // 아닌 경우 유효성 검사 진행
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key).build()
+                .parseClaimsJws(token).getBody(); // 토큰 만료된 경우는 여기서 exception 던짐
+
+        // 리프레쉬 토큰인 경우 리프레쉬 토큰 유효성 검사
+        if (claims.get("type").equals("refreshToken")) {
+            System.out.println("리프레쉬 토큰이 들어왔습니다.");
+            return checkRefreshToken(claims.getSubject(), token);
+        }
+
+        System.out.println("여기서 안터지니?");
+        return true;
+
+    }
 
 //        catch (ExpiredJwtException e) {   //Token이 만료된 경우 Exception이 발생한다.
 //            System.out.println(e.getClaims().get("type"));
@@ -162,6 +162,9 @@ public class JwtTokenProvider {
 //        }
 
         // 사용자가 보내준 refresh 토큰이 redis에 저장된 refresh token과 일치하는지 확인
+        System.out.println("redis 저장 토큰: " + redisRT);
+        System.out.println("들어온 refreshToken: " + refreshToken);
+
         if (redisRT.equals(refreshToken)) {
             System.out.println("리프레시 토큰이 확인되었습니다.");
 
@@ -184,8 +187,9 @@ public class JwtTokenProvider {
         redisService.setValues(blackListATPrefix + accessToken, email, Duration.ofMillis(expiredAccessTokenTime));
 
         // refresh token도 삭제
-        if (redisService.getValues("RT " + email) != null)
+        if (redisService.getValues("RT " + email) != null) {
             redisService.deleteValues("RT " + email);
+        }
 
     }
 }
