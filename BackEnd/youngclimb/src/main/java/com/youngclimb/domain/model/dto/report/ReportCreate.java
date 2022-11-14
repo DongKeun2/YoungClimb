@@ -1,4 +1,4 @@
-package com.youngclimb.domain.model.dto.board;
+package com.youngclimb.domain.model.dto.report;
 
 import lombok.Data;
 

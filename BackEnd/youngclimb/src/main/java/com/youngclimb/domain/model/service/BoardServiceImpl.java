@@ -300,9 +300,6 @@ public class BoardServiceImpl implements BoardService {
                         Message message = Message.builder()
                                 .setNotification(notification)
                                 .setToken(board.getMember().getFcmToken())
-                                .setAndroidConfig(AndroidConfig.builder()
-                                        .setPriority(AndroidConfig.Priority.HIGH)
-                                        .build())
                                 .build();
 
                         FirebaseMessaging.getInstance().send(message);
