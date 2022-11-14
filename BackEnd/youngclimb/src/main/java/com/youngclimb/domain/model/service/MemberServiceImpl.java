@@ -695,7 +695,7 @@ public class MemberServiceImpl implements MemberService {
     // 알림 목록 읽기
     public List<NoticeDto> readNotice(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        List<Notice> noticeList = noticeRepository.findAllByToMember(member, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+        List<Notice> noticeList = noticeRepository.findAllByToMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<NoticeDto> noticeDtos = new ArrayList<>();
 
         for (Notice notice : noticeList) {
@@ -716,8 +716,13 @@ public class MemberServiceImpl implements MemberService {
 
             if (notice.getType() == 1) {
                 noticeDto.setBoardId(null);
+                noticeDto.setCommentId(null);
+            } else if (notice.getType() == 4) {
+                noticeDto.setBoardId(null);
+                noticeDto.setCommentId(notice.getComment().getId());
             } else {
                 noticeDto.setBoardId(notice.getBoard().getBoardId());
+                noticeDto.setCommentId(null);
             }
 
             noticeDto.setProfileImage(notice.getFromMember().getMemberProfileImg());
