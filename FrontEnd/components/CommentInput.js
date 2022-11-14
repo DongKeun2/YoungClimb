@@ -8,6 +8,7 @@ import InputBtnIcon from '../assets/image/feed/inputBtn.svg';
 import {
   commentAdd,
   fetchFeedComment,
+  fetchComment,
   changeCommentIdForRe,
   changeIsFocusedInput,
   recommentAdd,
@@ -56,8 +57,9 @@ function CommentInput({boardId, navigation}) {
         if (res.type === 'commentAdd/fulfilled') {
           changeText('');
           dispatch(fetchFeedComment(boardId));
+          dispatch(fetchComment(boardId));
           inputRef.current.blur();
-          navigation.navigate('댓글', {boardId: boardId});
+          // navigation.navigate('댓글', {boardId: boardId});
         } else {
           alert('다시 시도해주세요');
         }
@@ -76,8 +78,9 @@ function CommentInput({boardId, navigation}) {
           dispatch(fetchFeedComment(boardId));
           dispatch(changeCommentIdForRe(0));
           dispatch(changeIsFocusedInput(false));
+          dispatch(fetchComment(boardId));
           inputRef.current.blur();
-          navigation.navigate('댓글', {boardId: boardId});
+          // navigation.navigate('댓글', {boardId: boardId});
         } else {
           alert('다시 시도해주세요');
         }

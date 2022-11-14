@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 
 import React, {useRef, useState, useEffect, useCallback} from 'react';
+
 import {Platform, PermissionsAndroid, Linking, Alert} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
@@ -50,6 +51,9 @@ import {
 
 import {handleInitialFCM, onRefreshFCMToken} from '../utils/fcm/fcmGetToken';
 import {changeNewNoti} from '../utils/slices/notificationSlice';
+import axios from 'axios';
+import api from '../utils/api';
+import getConfig from '../utils/headers';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -57,20 +61,17 @@ const Stack = createStackNavigator();
 export default function YoungClimb() {
   const dispatch = useDispatch();
   const [loading, setIsLoading] = useState(true);
-
   const login = useSelector(state => state.accounts.loginState);
-  useEffect(() => {
+  
+  useEffect(()=>{
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      await AsyncStorage.setItem('newNoti', 'true');
-      dispatch(changeNewNoti(true));
+      await AsyncStorage.setItem('newNoti','true')
+      dispatch(changeNewNoti(true))
+      return remoteMessage
     });
 
-    messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      await AsyncStorage.setItem('newNoti', 'true');
-      dispatch(changeNewNoti(true));
-    });
-  }, []);
+  },[])
+
 
   useEffect(() => {
     const permissionList = [
@@ -89,7 +90,8 @@ export default function YoungClimb() {
     const callRes = async () => {
       try {
         const result = await checkMultiplePermissions(permissionList);
-        if (!login && !result) {
+        const accessToken = AsyncStorage.getItem('accessToken')
+        if (!accessToken && !result) {
           await AsyncAlert(
             'Young Climb 앱 권한 설정',
             '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요',
@@ -130,19 +132,45 @@ export default function YoungClimb() {
       handleInitialFCM();
     } else {
       onRefreshFCMToken();
-    }
+      AsyncStorage.getItem('notiSet').then((res)=>{
+        if (!res){
+          const now = new Date(); // 현재 시간
+          const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 utc로 변환한 밀리세컨드값
+          const koreaTimeDiff = 9 * 60 * 60 * 1000; // 한국 시간은 UTC보다 9시간 빠름(9시간의 밀리세컨드 표현)
+          const koreaNow = new Date(utcNow + koreaTimeDiff)
+          Alert.alert(                    // 말그대로 Alert를 띄운다
+          "서비스 푸시 알림 동의",                    // 첫번째 text: 타이틀 제목
+          "Young Climb 활동(팔로우, 댓글, 좋아요) \n알림을 받기 위해 동의해주세요",                         // 두번째 text: 그 밑에 작은 제목
+          [                              // 버튼 배열
+            {
+              text: "동의하지 않음",                              // 버튼 제목
+              onPress: async() => {
+                // axios.post(api.fcmtokendelete(),{},await getConfig()).then((res)=>{console.log(res)}).catch((err)=>{console.log(err)})
+                await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))},     //onPress 이벤트시 콘솔창에 로그를 찍는다
+              style: "cancel"
+            },
+            { text: "동의", onPress: async() => {
+              await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))
+              await AsyncStorage.setItem('notiAllow', JSON.stringify('true'))
+              const fcmToken = await AsyncStorage.getItem('fcmToken')
+              const fcm = fcmToken.replace('"','').replace('"','')
+              axios.post(api.fcmtokensave(), {fcmToken:fcm}, await getConfig()).then((res)=>{console.log(res)})
+            }}, 
+          ],
+          { cancelable: false })
+        }
+
+      })
+      }
   }, []);
 
   useEffect(() => {
-    console.log('앱 새로고침');
     dispatch(fetchCenterInfo());
 
     getCurrentUser().then(res => {
       if (res) {
-        console.log('로그인됨', res);
         dispatch(fetchCurrentUser(res));
       } else {
-        console.log('비로그인상태임');
         removeAccessToken();
         removeRefreshToken();
         removeCurrentUser();
@@ -158,7 +186,7 @@ export default function YoungClimb() {
     <>
       {loading ? (
         <InitialScreen />
-      ) : (
+        ) : (
         <NavigationContainer>
           {login ? (
             <Tab.Navigator

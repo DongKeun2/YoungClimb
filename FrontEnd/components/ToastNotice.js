@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback, forwardRef, useImperativeHandle }
 import {
     StyleSheet,
     Text,
+    Image,
 		View
 } from 'react-native';
 import Animated, {
@@ -11,9 +12,10 @@ import Animated, {
     withSequence,
     runOnJS,
 } from 'react-native-reanimated';
+import logoIcon from '../assets/image/header/logoIcon.png'
 
 
-export const Toast = forwardRef((props, ref) => {
+export const ToastNotice = forwardRef((props, ref) => {
     const [ message, setMessage ] = useState("");
     const toastOpacity = useSharedValue(0);
     const isShowed = useRef(false);
@@ -30,8 +32,8 @@ export const Toast = forwardRef((props, ref) => {
     }));
 
     const turnOnIsShow = useCallback(()=>{
-        isShowed.current = false;
-				setIsShown(false)
+      isShowed.current = false;
+      setIsShown(false)
     }, []);
     
     const show = useCallback((message) => {
@@ -41,8 +43,8 @@ export const Toast = forwardRef((props, ref) => {
 						setIsShown(true)
             toastOpacity.value = withSequence(
                 withTiming(1, { duration: 500 }), 
-                withTiming(1, {duration: 500}),
-                withTiming(0, { duration: 1000 }, () => {
+                withTiming(1, {duration: 800}),
+                withTiming(0, { duration: 1200 }, () => {
                     runOnJS(turnOnIsShow)();
                 }),
             );
@@ -52,31 +54,36 @@ export const Toast = forwardRef((props, ref) => {
     return (
 			<>
 			{isShown ?
-			<Animated.View style={[ styles.rootContainer, animatedStyle ]}>
+			<Animated.View style={[ styles.rootContainer, animatedStyle]}>
+          <Image style={{width:20, height:20}} source={logoIcon}/>
 					<Text style={styles.message}>{message}</Text>
 			</Animated.View>	:		
 			<></>
 			}
-			
 			</>
     );
 })
 
 const styles = StyleSheet.create({
     rootContainer: {
-        zIndex:10,
-        width:340,
-        position: "absolute",
-        bottom: 15,
-        backgroundColor: "#F34D7F",
+        paddingTop:15,
+        flexDirection:'row',
+        zIndex:100,
+        width:410,
+        position:'absolute',
+        top: 0,
+        backgroundColor: "#FFFEFA",
         paddingVertical: 9,
         paddingHorizontal: 23,
-        borderRadius: 100,
+        borderRadius: 10,
         left:'50%',
-        transform:[{translateX:-170}]
+        height:50,
+        transform:[{translateX:-205}],
+        elevation:10
     },
     message: {
-        color: "rgb(255, 255, 255)",
+      marginLeft:10,
+        color: "#525252",
         textAlign:'center'
     }
 });

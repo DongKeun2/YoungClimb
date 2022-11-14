@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosTemp from '../axios';
 import api from '../api';
 import getConfig from '../headers';
 
@@ -8,7 +9,7 @@ const fetchUser = createAsyncThunk(
   async (arg, {rejectWithValue}) => {
     console.log('추천 유저 받기');
     try {
-      const res = await axios.get(api.searchUser(), await getConfig());
+      const res = await axiosTemp.get(api.searchUser(), await getConfig());
       console.log('추천유저정보', res.data);
       return res.data;
     } catch (err) {
@@ -20,7 +21,7 @@ const fetchUser = createAsyncThunk(
 const search = createAsyncThunk('search', async (data, {rejectWithValue}) => {
   try {
     console.log('검색 요청', data);
-    const res = await axios.post(api.search(), data, await getConfig());
+    const res = await axiosTemp.post(api.search(), data, await getConfig());
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -32,7 +33,12 @@ const searchUser = createAsyncThunk(
   async (data, {rejectWithValue}) => {
     console.log('유저 검색 요청');
     try {
-      const res = await axios.post(api.searchUser(), data, await getConfig());
+      const res = await axiosTemp.post(
+        api.searchUser(),
+        data,
+        await getConfig(),
+      );
+      console.log(res.data);
       return res.data;
     } catch (err) {
       console.log(err);

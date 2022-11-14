@@ -8,6 +8,9 @@ import PostScreen from '../screens/homes/PostScreen';
 import NoticeScreen from '../screens/homes/NoticeScreen';
 import ChoiceVideoScreen from '../screens/postadd/ChoiceVideoScreen';
 import PostAddInfoScreen from '../screens/postadd/PostAddInfoScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
+import DetailScreen from '../screens/profile/DetailScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -32,6 +35,8 @@ function HomeStack({navigation, route}) {
       <Stack.Screen name="알림" component={NoticeScreen} />
       <Stack.Screen name="게시글 생성" component={ChoiceVideoScreen} />
       <Stack.Screen name="정보 입력" component={PostAddInfoScreen} />
+      <Stack.Screen name="게시글" component={DetailScreen} />
+      <Stack.Screen name="서브프로필" component={ProfileScreen} />
     </Stack.Navigator>
   );
 }

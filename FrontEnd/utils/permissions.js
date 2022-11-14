@@ -76,16 +76,13 @@ export async function checkPermission(permission) {
   var isPermissionGranted = false;
   const result = await check(permission);
   switch (result) {
+    case RESULTS.NEVER_ASK_AGAIN:
+      isPermissionGranted = 'never';
+      break;
     case RESULTS.GRANTED:
       isPermissionGranted = true;
       break;
     case RESULTS.DENIED:
-      isPermissionGranted = false;
-      break;
-    case RESULTS.BLOCKED:
-      isPermissionGranted = false;
-      break;
-    case RESULTS.UNAVAILABLE:
       isPermissionGranted = false;
       break;
   }
@@ -100,13 +97,11 @@ export async function requestSinglePermission(permission,message) {
       return true
     } 
     else if (granted === RESULTS.DENIED) {
-      return true
+      return false
     } else {
       Alert.alert(
-        'Location permission',
-        'Location permission is blocked in the device ' +
-            'settings. Allow the app to access location to ' +
-            'see location-based weather.',
+        message.title||'앱 사용에 권장되는 권한입니다.',
+        message.content||'앱 설정에 들어가 권한을 설정해주세요',
         [
             {
                 text: 'OK',
@@ -116,6 +111,7 @@ export async function requestSinglePermission(permission,message) {
             },
         ],
     )
+    return false
     }
   } catch(err){
     console.warn(err)

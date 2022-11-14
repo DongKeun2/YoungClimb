@@ -20,14 +20,24 @@ const fetchNotificationList = createAsyncThunk(
 );
 
 let newNoti
-AsyncStorage.getItem('newNoti',(err,result)=>{
-  const newNoti = JSON.parse(result)
-});
+AsyncStorage.getItem('newNoti').then((res)=>{
+  if (res){
+    newNoti = true
+  } else{ newNoti =false }
+})
+let notiAllow
+AsyncStorage.getItem('notiAllow').then((res)=>{
+  if (res){
+    notiAllow = true
+  } else{ notiAllow =false }
+})
+
 
 
 const initialState = {
   notifications: [],
-  newNoti: newNoti||false
+  newNoti: newNoti,
+  notiAllow: notiAllow||false,
 };
 
 export const NotificationSlice = createSlice({
@@ -37,6 +47,10 @@ export const NotificationSlice = createSlice({
     changeNewNoti: (state, action) => {
       state.newNoti = action.payload;
     },
+    changeNotiAllow: (state, action) => {
+      state.notiAllow = action.payload;
+    },
+
   },
   extraReducers: {
     [fetchNotificationList.fulfilled]: (state, action) => {
@@ -45,6 +59,6 @@ export const NotificationSlice = createSlice({
   },
 });
 
-export const {changeNewNoti} = NotificationSlice.actions;
+export const {changeNewNoti, changeNotiAllow} = NotificationSlice.actions;
 export {fetchNotificationList};
 export default NotificationSlice.reducer;
