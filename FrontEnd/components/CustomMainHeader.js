@@ -1,5 +1,5 @@
 import React, {useRef, useCallback, useEffect} from 'react';
-import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
+import {TouchableOpacity, Text, StyleSheet, View, Image, Vibration} from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import mainLogo from '../assets/image/main/logo.png';
@@ -19,21 +19,21 @@ function CustomMainHeader(props) {
   const dispatch=useDispatch()
   const toastNoticeRef = useRef(null);
   const onMsgIncome = useCallback(async remoteMessage => {
-    await toastNoticeRef.current.show(remoteMessage.notification.body);
-    toastNoticeRef.current=null
+    toastNoticeRef.current.show(remoteMessage.notification.body);
+    // toastNoticeRef.current=null
   });
-
+  
   useEffect(()=>{
     messaging().onMessage(async remoteMessage => {
       try{
+        Vibration.vibrate(500)
         onMsgIncome(remoteMessage)
         await AsyncStorage.setItem('newNoti','true')
         dispatch(changeNewNoti(true))
-
         return remoteMessage
       }catch{err=>console.log(err)}
     })
-  },[])
+  },[toastNoticeRef])
 
   const newNoti = useSelector(state=>state.notification.newNoti)
   return props.type === '홈' ? (

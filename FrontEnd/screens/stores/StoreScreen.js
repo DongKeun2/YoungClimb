@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react'
-import {View, Text, Animated, StyleSheet, TouchableOpacity, Easing, BackHandler, Alert} from 'react-native';
+import {View, Text, Animated, StyleSheet, TouchableOpacity, Easing, BackHandler, Alert, PermissionsAndroid} from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
 import NaverMapView, {Marker, Align} from "react-native-nmap";
@@ -12,6 +12,8 @@ import Refresh from '../../assets/image/map/Refresh.svg'
 
 import axios from 'axios'
 import api from '../../utils/api'
+import { checkPermission, requestSinglePermission } from '../../utils/permissions';
+
 import { Toast } from '../../components/Toast';
 
 export default function StoreScreen({navigation, route}) {
@@ -58,19 +60,30 @@ export default function StoreScreen({navigation, route}) {
   }
 
   useEffect(()=>{
-    Geolocation.getCurrentPosition(
-      position => {
-        const {latitude, longitude} = position.coords;
-        setCurrentLocation({latitude,longitude})
-        setCurrentCenter({latitude,longitude})
-      },
-      error => {
+    checkPermission(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION).then((res)=>{
+      const granted = res
+      if (!granted && rerender==1){
+        requestSinglePermission(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+      } else if (granted){
+        Geolocation.getCurrentPosition(
+          position => {
+            const {latitude, longitude} = position.coords;
+            setCurrentLocation({latitude,longitude})
+            setCurrentCenter({latitude,longitude})
+          },
+          error => {
+            setCurrentLocation({latitude: 37.5873, longitude: 127.0575})
+            setCurrentCenter({latitude: 37.5873, longitude: 127.0575})
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
+      }else {
         setCurrentLocation({latitude: 37.5873, longitude: 127.0575})
         setCurrentCenter({latitude: 37.5873, longitude: 127.0575})
-      },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-    );
-  }
+      }
+    })
+    }
+    
   ,[rerender])
 
   useFocusEffect(()=>{

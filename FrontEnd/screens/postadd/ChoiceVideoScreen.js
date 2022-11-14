@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   View,
@@ -9,6 +9,7 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  PermissionsAndroid,
 } from 'react-native';
 import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -17,11 +18,34 @@ import CustomSubHeader from '../../components/CustomSubHeader';
 import {changeUploadVideo} from '../../utils/slices/PostSlice';
 
 import gallery from '../../assets/image/main/whiteGallery.png';
+import { AsyncAlert, checkPermission, requestSinglePermission } from '../../utils/permissions';
 
 function ChoiceVideoScreen({navigation}) {
   const dispatch = useDispatch();
+  const [permissionTrial, setPermissionTrial] = useState(1)
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
+
+  useEffect(()=>{
+    checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((res)=>{
+      const granted = res
+      console.log(res)
+      if (!granted&&permissionTrial===1){
+        const message = {title:'권한 거부된 요청 (저장공간)', content:'서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.'}
+        requestSinglePermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,message).then(
+          setPermissionTrial(2)
+        ) 
+      } else if (!granted){
+          navigation.goBack()
+      } else if (granted === 'never'){
+        AsyncAlert(
+          '권한 요청 거부된 요청',
+          '서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.',
+          Linking.openSettings,
+        );
+      }
+    })
+  },[permissionTrial])
 
   useEffect(() => {
     dispatch(changeUploadVideo(null));

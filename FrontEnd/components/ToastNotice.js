@@ -19,7 +19,7 @@ export const ToastNotice = forwardRef((props, ref) => {
     const [ message, setMessage ] = useState("");
     const toastOpacity = useSharedValue(0);
     const isShowed = useRef(false);
-		const [isShown, setIsShown] = useState(true)
+		const [isShown, setIsShown] = useState(false)
 
     const animatedStyle = useAnimatedStyle(()=>{
         return {
@@ -32,8 +32,8 @@ export const ToastNotice = forwardRef((props, ref) => {
     }));
 
     const turnOnIsShow = useCallback(()=>{
-        isShowed.current = false;
-				setIsShown(false)
+      isShowed.current = false;
+      setIsShown(false)
     }, []);
     
     const show = useCallback((message) => {
