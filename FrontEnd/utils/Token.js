@@ -14,11 +14,13 @@ export const removeAccessToken = () => {
 
 // refreshToken 저장 및 삭제
 export const setRefreshToken = async token => {
+  console.log('저장할 리프레쉬 토큰', token);
   await AsyncStorage.setItem('refreshToken', JSON.stringify(token));
 };
 export const getRefreshToken = async () => {
   const token = await AsyncStorage.getItem('refreshToken');
-  return token.replace('"', '').replace('"', '');
+  console.log('꺼내온 리프레쉬 토큰', token);
+  return token;
 };
 export const removeRefreshToken = () => {
   AsyncStorage.removeItem('refreshToken');

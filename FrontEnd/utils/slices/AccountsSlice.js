@@ -9,6 +9,7 @@ import {
   setCurrentUser,
   removeCurrentUser,
   setRefreshToken,
+  getRefreshToken,
   removeRefreshToken,
 } from '../Token';
 
@@ -136,7 +137,12 @@ const profileEdit = createAsyncThunk(
   async (data, {rejectWithValue}) => {
     console.log('수정 요청', data);
     try {
-      const res = await axios.post(api.profileEdit(), data, await getConfig());
+      const res = await axiosTemp.post(
+        api.profileEdit(),
+        data,
+        {},
+        // await getConfig()
+      );
       alert('수정 완료');
       console.log('프로필 수정 성공', res.data);
       setAccessToken(res.data.accessToken);
@@ -169,6 +175,21 @@ const wingspan = createAsyncThunk(
       return res.data;
     } catch (err) {
       console.log('측정 에러', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+import axiosTemp from '../axios';
+const testRefresh = createAsyncThunk(
+  'testRefresh',
+  async (arg, {rejectWithValue}) => {
+    console.log('리프레쉬 요청');
+    try {
+      return accessToken;
+    } catch (err) {
+      alert('요청 실패');
+      console.log(err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -376,6 +397,7 @@ export {
   checkNickname,
   profileEdit,
   saveImage,
+  testRefresh,
 };
 
 export const {

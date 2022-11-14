@@ -30,7 +30,11 @@ const REELS_URL = '/reels';
 const REPORT_URL = '/report';
 const IMAGE_URL = '/image';
 
+const REISSUE_URL = '/reissue';
+
 const api = {
+  refresh: () => API_BASE_URL + USER_URL + REISSUE_URL,
+
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
 
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
