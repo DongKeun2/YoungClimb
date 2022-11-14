@@ -123,9 +123,11 @@ function DetailScreen({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
-                  <MenuIcon width={16} height={16} />
-                </TouchableOpacity>
+                {feed.createUser.nickname === currentUser.nickname ? null : (
+                  <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
+                    <MenuIcon width={16} height={16} />
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={styles.wallInfo}>
                 <Text style={{...styles.feedTextStyle, marginRight: 8}}>
