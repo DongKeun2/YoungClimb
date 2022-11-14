@@ -12,7 +12,7 @@ public interface FirebaseService {
 
     public void saveFcmToken(String email, String token);
 
-    public void deleteFcmToken(String email, String token);
+    public void deleteFcmToken(String email);
 
 
 }

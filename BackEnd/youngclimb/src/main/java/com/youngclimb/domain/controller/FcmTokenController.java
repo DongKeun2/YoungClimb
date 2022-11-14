@@ -33,9 +33,9 @@ public class FcmTokenController {
     // 토큰 삭제
     @ApiOperation(value = "deleteFcmToken : 토큰 삭제")
     @PostMapping("/delete")
-    public ResponseEntity<?> deleteFcmToken(@CurrentUser UserPrincipal principal, @RequestBody FcmTokenDto fcmTokenDto) {
+    public ResponseEntity<?> deleteFcmToken(@CurrentUser UserPrincipal principal) {
         try {
-            firebaseService.deleteFcmToken(principal.getUsername(), fcmTokenDto.getFcmToken());
+            firebaseService.deleteFcmToken(principal.getUsername());
             return new ResponseEntity<Void>(HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
