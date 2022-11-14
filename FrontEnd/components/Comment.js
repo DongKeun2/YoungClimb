@@ -74,10 +74,10 @@ function Comment({comment, navigation}) {
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
             {comment.createdAt}
           </Text>
-          <TouchableOpacity onPress={() => readyReComment(comment.id)}>
-            <Text style={{fontSize: 12, color: '#a7a7a7', marginLeft: 8}}>
-              답글 달기
-            </Text>
+          <TouchableOpacity
+            style={{paddingHorizontal: 8}}
+            onPress={() => readyReComment(comment.id)}>
+            <Text style={{fontSize: 12, color: '#a7a7a7'}}>답글 달기</Text>
           </TouchableOpacity>
         </View>
         <View style={{marginTop: 3}}>

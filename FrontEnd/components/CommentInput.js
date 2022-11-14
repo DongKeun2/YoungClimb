@@ -56,6 +56,7 @@ function CommentInput({boardId, navigation}) {
         if (res.type === 'commentAdd/fulfilled') {
           changeText('');
           dispatch(fetchFeedComment(boardId));
+          inputRef.current.blur();
           navigation.navigate('댓글', {boardId: boardId});
         } else {
           alert('다시 시도해주세요');
@@ -75,6 +76,7 @@ function CommentInput({boardId, navigation}) {
           dispatch(fetchFeedComment(boardId));
           dispatch(changeCommentIdForRe(0));
           dispatch(changeIsFocusedInput(false));
+          inputRef.current.blur();
           navigation.navigate('댓글', {boardId: boardId});
         } else {
           alert('다시 시도해주세요');
