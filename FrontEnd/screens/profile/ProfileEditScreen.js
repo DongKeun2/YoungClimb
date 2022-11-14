@@ -21,7 +21,6 @@ import {
   profileEdit,
   logout,
   saveImage,
-  testRefresh,
 } from '../../utils/slices/AccountsSlice';
 import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
@@ -193,10 +192,6 @@ function ProfileEditScreen({navigation}) {
     }
   }
 
-  function test() {
-    dispatch(testRefresh());
-  }
-
   return (
     <>
       <CustomSubHeader
@@ -329,9 +324,6 @@ function ProfileEditScreen({navigation}) {
             style={styles.logout}
             onPress={() => dispatch(logout())}>
             <Text style={styles.link}>로그아웃</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.logout} onPress={test}>
-            <Text style={styles.link}>리프레쉬 테스트</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

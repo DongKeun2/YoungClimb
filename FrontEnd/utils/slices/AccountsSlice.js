@@ -33,7 +33,7 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   try {
     const res = await axios.post(api.logout(), {}, await getConfig());
     console.log('로그아웃 성공');
-    await axios.post(api.fcmtokendelete(),{},await getConfig())
+    await axios.post(api.fcmtokendelete(), {}, await getConfig());
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
@@ -133,6 +133,7 @@ const profileCreate = createAsyncThunk(
   },
 );
 
+import axiosTemp from '../axios';
 const profileEdit = createAsyncThunk(
   'profileEdit',
   async (data, {rejectWithValue}) => {
@@ -176,21 +177,6 @@ const wingspan = createAsyncThunk(
       return res.data;
     } catch (err) {
       console.log('측정 에러', err);
-      return rejectWithValue(err.response.data);
-    }
-  },
-);
-
-import axiosTemp from '../axios';
-const testRefresh = createAsyncThunk(
-  'testRefresh',
-  async (arg, {rejectWithValue}) => {
-    console.log('리프레쉬 요청');
-    try {
-      return accessToken;
-    } catch (err) {
-      alert('요청 실패');
-      console.log(err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -398,7 +384,6 @@ export {
   checkNickname,
   profileEdit,
   saveImage,
-  testRefresh,
 };
 
 export const {
