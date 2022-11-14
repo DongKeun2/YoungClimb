@@ -17,6 +17,10 @@ import EmptyScrap from '../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../assets/image/feed/eye.svg';
 import HoldIcon from '../assets/image/hold/hold.svg';
+import PlayBtn from '../assets/image/videoBtn/playBtn.svg';
+import RefreshBtn from '../assets/image/videoBtn/refreshBtn.svg';
+import MuteBtn from '../assets/image/videoBtn/muteBtn.svg';
+import SoundBtn from '../assets/image/videoBtn/soundBtn.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
@@ -41,12 +45,20 @@ function HomeFeed({
   const [likePress, setLikePress] = useState(false);
   const [isScrap, setIsScrap] = useState(false);
   const [scrapPress, setScrapPress] = useState(false);
+  const [isView, setIsView] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
 
   useEffect(() => {
     setIsLiked(feed.isLiked);
     setLike(feed.like);
     setIsScrap(feed.isScrap);
   }, [feed.isLiked, feed.like, feed.isScrap]);
+
+  useEffect(() => {
+    setIsView(false);
+    setIsRepeat(false);
+  }, [isViewable]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -70,6 +82,23 @@ function HomeFeed({
 
   const changeMuted = () => {
     setIsMuted(!isMuted);
+  };
+
+  const changePlay = () => {
+    if (isFinished) {
+      console.log('리셋?');
+      setIsView(true);
+      setIsRepeat(true);
+    } else {
+      setIsView(!isView);
+    }
+    setIsMuted(true);
+  };
+
+  const changeFinished = () => {
+    console.log('끝남');
+    setIsView(false);
+    setIsFinished(true);
   };
 
   const openMenu = feed => {
@@ -158,18 +187,49 @@ function HomeFeed({
         <TouchableOpacity
           style={styles.videoBox}
           activeOpacity={1}
-          onPress={changeMuted}>
+          onPress={changePlay}>
           <Video
             source={{uri: feed.mediaPath}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
-            repeat={false}
+            repeat={isRepeat}
             controls={false}
-            paused={true}
+            paused={!(isViewable && isView)}
             muted={isMuted}
+            onLoad={() => setIsRepeat(false)}
+            onEnd={changeFinished}
           />
+          {/* 동영상 재생 버튼 */}
+          {!(isViewable && isView) ? (
+            <View
+              style={{...styles.videoBox, backgroundColor: 'rgba(0,0,0,0.6)'}}>
+              {isFinished ? (
+                <RefreshBtn color="white" width={70} height={120} />
+              ) : (
+                <PlayBtn color="white" width={70} height={120} />
+              )}
+            </View>
+          ) : null}
         </TouchableOpacity>
+        {/* 음소거 버튼 */}
+        {isViewable && isView ? (
+          isMuted ? (
+            <TouchableOpacity
+              style={styles.muteIcon}
+              activeOpacity={1}
+              onPress={changeMuted}>
+              <MuteBtn color="white" width={50} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.muteIcon}
+              activeOpacity={1}
+              onPress={changeMuted}>
+              <SoundBtn color="white" width={50} />
+            </TouchableOpacity>
+          )
+        ) : null}
         <View style={styles.solvedDate}>
           <CameraIcon />
           <Text
@@ -241,7 +301,11 @@ function HomeFeed({
                 ? navigation.navigate('댓글', {boardId: feed.id})
                 : null
             }>
-            <Text style={styles.contentPreview}>{feed.content}</Text>
+            {feed.content ? (
+              <Text style={styles.contentPreview}>{feed.content}</Text>
+            ) : (
+              <View style={{height: 0}} />
+            )}
           </TouchableOpacity>
         )}
       </View>
@@ -275,7 +339,15 @@ function HomeFeed({
           </Text>
         </TouchableOpacity>
       ) : (
-        <View style={styles.commentSummary} />
+        <TouchableOpacity
+          style={{...styles.commentSummary, marginTop: 2}}
+          onPress={() =>
+            navigation ? navigation.navigate('댓글', {boardId: feed.id}) : null
+          }>
+          <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
+            댓글 작성하러 가기
+          </Text>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -369,6 +441,11 @@ const styles = StyleSheet.create({
   commentPreview: {
     display: 'flex',
     flexDirection: 'row',
+  },
+  muteIcon: {
+    position: 'absolute',
+    bottom: 30,
+    right: 0,
   },
 });
 
