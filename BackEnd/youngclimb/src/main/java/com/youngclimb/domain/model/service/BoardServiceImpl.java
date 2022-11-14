@@ -197,7 +197,14 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(board);
 
         // 카테고리 저장하기
-        Category category = Category.builder().board(board).center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow()).wall(wallRepository.findById(boardCreate.getWallId()).orElse(new Wall())).centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow()).holdcolor(boardCreate.getHoldColor()).difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank()).build();
+        Category category = Category.builder()
+                .board(board)
+                .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
+                .wall(wallRepository.findById(boardCreate.getWallId()).orElse(null))
+                .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
+                .holdcolor(boardCreate.getHoldColor())
+                .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
+                .build();
         categoryRepository.save(category);
 
 //        // 이미지 저장하기
