@@ -57,12 +57,18 @@ function HomeFeed({
 
   useEffect(() => {
     setIsView(false);
+    setIsFinished(false);
     setIsRepeat(false);
   }, [isViewable]);
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => setIsMuted(true);
+      return () => {
+        setIsMuted(true);
+        setIsView(false);
+        setIsFinished(false);
+        setIsRepeat(false);
+      };
     }, []),
   );
 
@@ -86,7 +92,6 @@ function HomeFeed({
 
   const changePlay = () => {
     if (isFinished) {
-      console.log('리셋?');
       setIsView(true);
       setIsRepeat(true);
     } else {
@@ -96,7 +101,6 @@ function HomeFeed({
   };
 
   const changeFinished = () => {
-    console.log('끝남');
     setIsView(false);
     setIsFinished(true);
   };
@@ -219,14 +223,14 @@ function HomeFeed({
               style={styles.muteIcon}
               activeOpacity={1}
               onPress={changeMuted}>
-              <MuteBtn color="white" width={50} />
+              <MuteBtn color="white" width={60} />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
               style={styles.muteIcon}
               activeOpacity={1}
               onPress={changeMuted}>
-              <SoundBtn color="white" width={50} />
+              <SoundBtn color="white" width={60} />
             </TouchableOpacity>
           )
         ) : null}
@@ -444,8 +448,13 @@ const styles = StyleSheet.create({
   },
   muteIcon: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 25,
     right: 0,
+    width: 50,
+    height: 50,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
