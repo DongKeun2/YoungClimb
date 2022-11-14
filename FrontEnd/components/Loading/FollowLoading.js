@@ -1,21 +1,9 @@
-import React, {useState, useEffect} from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import {useIsFocused} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
-import {TextInput} from 'react-native-gesture-handler';
-import {useSelector} from 'react-redux';
-import CustomSubHeader from '../../components/CustomSubHeader';
-import FollowBtn from '../../components/FollowBtn';
-import UserAvatar from '../../components/UserAvatar';
+import React from 'react';
+import {StyleSheet, View, Text, Image} from 'react-native';
 
-import {fetchFollowList} from '../../utils/slices/ProfileSlice';
+import {TextInput} from 'react-native-gesture-handler';
+
+import CustomSubHeader from '../../components/CustomSubHeader';
 
 import searchIcon from '../../assets/image/profile/searchIcon.png';
 
@@ -193,13 +181,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   profileNickname: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
     marginBottom: 10,
     width: '50%',
     height: 15,
   },
   profileSize: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
     width: '80%',
     height: 15,
     paddingVertical: 5,
@@ -212,7 +200,7 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 45 / 2,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
   },
   nickname: {color: 'black', fontSize: 14, fontWeight: 'bold'},
   text: {color: 'black', fontSize: 12},

@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
   },
   header: {
     alignSelf: 'center',
@@ -110,13 +110,13 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   profileNickname: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
     marginBottom: 10,
     width: '50%',
     height: 15,
   },
   profileSize: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
     width: '80%',
     height: 15,
     paddingVertical: 5,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     height: 13,
     marginLeft: 15,
     alignSelf: 'flex-start',
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
     margin: 10,
   },
   horizonLine: {
@@ -153,9 +153,9 @@ const styles = StyleSheet.create({
     height: 15,
     width: 30,
     marginBottom: 10,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
   },
-  InfoContent: {height: 15, width: 15, backgroundColor: '#C4C4C4'},
+  InfoContent: {height: 15, width: 15, backgroundColor: '#F4F4F4F4'},
   tabBox: {
     width: '100%',
     display: 'flex',

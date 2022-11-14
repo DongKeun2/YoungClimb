@@ -68,13 +68,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
   },
   userInfoBox: {
     width: 60,
     height: 15,
     margin: 4,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#F4F4F4F4',
   },
 });
 
