@@ -48,6 +48,18 @@ public class BoardController {
         }
     }
 
+    // 게시글 조회수 증가
+    @ApiOperation(value = "updateView : 게시글 조회수 증가")
+    @PostMapping("/{boardId}/view")
+    public ResponseEntity<?> updateView(@PathVariable Long boardId) throws Exception {
+        try {
+            return new ResponseEntity<Long>(boardService.updateView(boardId), HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
     // 동영상 저장
     @ApiOperation(value = "saveImage: 이미지 저장하기")
     @PostMapping("/save/image")
