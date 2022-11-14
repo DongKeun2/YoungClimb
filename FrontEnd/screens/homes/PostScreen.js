@@ -85,9 +85,9 @@ function PostScreen({navigation, route}) {
                 </View>
               </View>
               {/* 본문 */}
-              <View style={styles.contentSummary}>
+              {board.content ? (
                 <Text style={styles.contentPreview}>{board.content}</Text>
-              </View>
+              ) : null}
             </View>
             {comments?.map((comment, idx) => {
               return (
