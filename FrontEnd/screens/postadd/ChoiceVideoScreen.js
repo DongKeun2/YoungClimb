@@ -35,6 +35,7 @@ function ChoiceVideoScreen({navigation}) {
         maxHeight: 512,
         includeBase64: false,
         videoQuality: 'low',
+        includeExtra: true,
       },
       res => {
         if (res.didCancel) {
@@ -71,9 +72,30 @@ function ChoiceVideoScreen({navigation}) {
               paused={false}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={onVideoGallery} style={styles.cameraBtn}>
-            <Text style={styles.btnText}>다시 선택하기</Text>
-          </TouchableOpacity>
+          <View style={styles.metaBox}>
+            <Text style={styles.metaHeader}>업로드한 동영상 정보</Text>
+            <View style={styles.metaInfoBox}>
+              <Text style={styles.btnText}>
+                Time :{' '}
+                {uploadVideo.assets[0].timestamp.substring(0, 3) === '202'
+                  ? uploadVideo.assets[0].timestamp.substring(0, 10)
+                  : '오래 전'}
+              </Text>
+              <Text style={styles.btnText}>
+                Type : {uploadVideo.assets[0].type}
+              </Text>
+              <Text style={styles.btnText}>
+                Duration : {uploadVideo.assets[0].duration} 초
+              </Text>
+              <Text style={styles.btnText}>
+                Size : {uploadVideo.assets[0].width} X{' '}
+                {uploadVideo.assets[0].height}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={onVideoGallery} style={styles.cameraBtn}>
+              <Text style={styles.btnText}>다시 선택하기</Text>
+            </TouchableOpacity>
+          </View>
         </>
       ) : (
         <TouchableOpacity
@@ -155,6 +177,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 10,
     borderColor: 'white',
+  },
+  metaBox: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  metaHeader: {
+    color: 'white',
+    fontSize: 18,
+    marginVertical: 30,
+  },
+  metaInfoBox: {
+    marginBottom: 30,
   },
 });
 
