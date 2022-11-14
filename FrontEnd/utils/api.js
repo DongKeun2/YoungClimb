@@ -31,10 +31,14 @@ const REELS_URL = '/reels';
 const REPORT_URL = '/report';
 const IMAGE_URL = '/image';
 
-const FCMTOKEN_URL = '/fcmtoken'
-const NOTICE_URL = '/notice'
+const REISSUE_URL = '/reissue';
+
+const FCMTOKEN_URL = '/fcmtoken';
+const NOTICE_URL = '/notice';
 
 const api = {
+  refresh: () => API_BASE_URL + USER_URL + REISSUE_URL,
+
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
 
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
@@ -67,18 +71,18 @@ const api = {
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
 
   comment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL,
-  commentLike: commentId => API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
+  commentLike: commentId =>
+    API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
   recomment: (boardId, commentId) => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL + `/${commentId}`,
 
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
   report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
 
-  fcmtokensave : () => API_BASE_URL + FCMTOKEN_URL + '/save',
+  fcmtokensave: () => API_BASE_URL + FCMTOKEN_URL + '/save',
   fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + '/delete',
 
-  noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL 
-
+  noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL,
 };
 
 export default api;
