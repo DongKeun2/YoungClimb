@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosTemp from '../axios';
 import api from '../api';
 import getConfig from '../headers';
 
@@ -8,7 +9,7 @@ const profile = createAsyncThunk(
   async (nickname, {rejectWithValue}) => {
     console.log('프로필 요청', nickname);
     try {
-      const res = await axios.get(api.profile(nickname), await getConfig());
+      const res = await axiosTemp.get(api.profile(nickname), await getConfig());
       console.log('프로필 요청 성공', res.data);
       return res.data;
     } catch (err) {
@@ -23,7 +24,11 @@ const followSubmit = createAsyncThunk(
   async (nickname, {rejectWithValue}) => {
     console.log(nickname, '를 팔로우');
     try {
-      const res = await axios.post(api.follow(nickname), {}, await getConfig());
+      const res = await axiosTemp.post(
+        api.follow(nickname),
+        {},
+        await getConfig(),
+      );
       console.log('팔로우 성공');
       console.log(res.data);
       return res.data;
@@ -39,7 +44,7 @@ const fetchFollowList = createAsyncThunk(
   async (nickname, {rejectWithValue}) => {
     console.log('팔로우 정보 요청', nickname);
     try {
-      const res = await axios.get(api.follow(nickname), await getConfig());
+      const res = await axiosTemp.get(api.follow(nickname), await getConfig());
       console.log('팔로우 목록 결과', res.data);
       return res.data;
     } catch (err) {
