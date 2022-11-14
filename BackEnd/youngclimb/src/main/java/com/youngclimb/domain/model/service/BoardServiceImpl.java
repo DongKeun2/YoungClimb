@@ -290,10 +290,8 @@ public class BoardServiceImpl implements BoardService {
                 try {
                     if (board.getMember().getFcmToken() != null) {
                         Notification notification = new Notification("", member.getNickname() + "님이 게시물을 좋아합니다.");
-                        String topic = "boardLike";
 
                         Message message = Message.builder()
-                                .setTopic(topic)
                                 .setNotification(notification)
                                 .setToken(board.getMember().getFcmToken())
                                 .setAndroidConfig(AndroidConfig.builder()
