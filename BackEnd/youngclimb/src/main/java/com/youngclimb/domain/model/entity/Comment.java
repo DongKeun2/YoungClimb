@@ -35,7 +35,7 @@ public class Comment {
     private String content;
     // 댓글 작성 시간
     @Column(name = "comment_created_datetime")
-    private LocalDateTime createdDatetime = LocalDateTime.now();
+    private LocalDateTime createdDateTime = LocalDateTime.now();
     // 댓글 부모 번호
     @Column(name = "parent_id")
     private Long parentId;
@@ -56,18 +56,18 @@ public class Comment {
     public CommentDto toCommentDto() {
 
         String timeText = "";
-        Long minus = ChronoUnit.MINUTES.between(createdDatetime, LocalDateTime.now());
+        Long minus = ChronoUnit.MINUTES.between(createdDateTime, LocalDateTime.now());
 
         if (minus <= 10L) {
             timeText = "방금 전";
         } else if (minus <= 60L) {
             timeText = minus + "분 전";
         } else if (minus <= 1440L) {
-            timeText = ChronoUnit.HOURS.between(createdDatetime, LocalDateTime.now()) + "시간 전";
-        } else if (ChronoUnit.YEARS.between(createdDatetime, LocalDateTime.now()) > 1) {
-            timeText = createdDatetime.getMonth().toString() + "월 " + createdDatetime.getDayOfMonth() + "일";
+            timeText = ChronoUnit.HOURS.between(createdDateTime, LocalDateTime.now()) + "시간 전";
+        } else if (ChronoUnit.YEARS.between(createdDateTime, LocalDateTime.now()) > 1) {
+            timeText = createdDateTime.getMonth().toString() + "월 " + createdDateTime.getDayOfMonth() + "일";
         } else {
-            timeText = createdDatetime.getYear() + "년 " + createdDatetime.getMonth().toString() + "월 " + createdDatetime.getDayOfMonth() + "일";
+            timeText = createdDateTime.getYear() + "년 " + createdDateTime.getMonth().toString() + "월 " + createdDateTime.getDayOfMonth() + "일";
         }
 
         return CommentDto.builder()

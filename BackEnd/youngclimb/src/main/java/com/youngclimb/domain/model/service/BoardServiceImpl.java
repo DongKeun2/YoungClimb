@@ -13,6 +13,7 @@ import com.youngclimb.domain.model.dto.member.MemberDto;
 import com.youngclimb.domain.model.dto.member.UserDto;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
+import com.youngclimb.domain.model.util.BoardDtoCreator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +57,7 @@ public class BoardServiceImpl implements BoardService {
     private final RankRepository rankRepository;
     private final NoticeRepository noticeRepository;
     private final AmazonS3 amazonS3;
+    private final BoardDtoCreator boardDtoCreator;
 
 
     // 2주 이내 팔로워 게시글 읽기
@@ -77,11 +79,17 @@ public class BoardServiceImpl implements BoardService {
             if (!followRepository.existsByFollowerAndFollowing(member, board.getMember())) continue;
 
             // 게시글 Dto 세팅
-            BoardDto boardDto = this.startDto(board, member);
-            boardDto.setCreateUser(this.toCreateUser(board, member));
+            BoardDto boardDto = boardDtoCreator.startDto(board, member);
+            boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
+//            BoardDto boardDto = this.startDto(board, member);
+//            boardDto.setCreateUser(this.toCreateUser(board, member));
+
+            // 게시글 미디어 path 세팅
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+            boardDto.setMediaPath(boardMedia.getMediaPath());
 
             // 댓글 DTO 1개 세팅
-            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
             if (!comments.isEmpty()) {
                 for (Comment comment : comments) {
                     if (comment.getParentId() == 0) {
@@ -125,11 +133,17 @@ public class BoardServiceImpl implements BoardService {
             if (Objects.equals(board.getMember().getMemberId(), member.getMemberId())) continue;
 
             // 게시글 Dto 세팅
-            BoardDto boardDto = this.startDto(board, member);
-            boardDto.setCreateUser(this.toCreateUser(board, member));
+            BoardDto boardDto = boardDtoCreator.startDto(board, member);
+            boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
+//            BoardDto boardDto = this.startDto(board, member);
+//            boardDto.setCreateUser(this.toCreateUser(board, member));
+
+            // 게시글 미디어 path 세팅
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+            boardDto.setMediaPath(boardMedia.getMediaPath());
 
             // 댓글 DTO 1개 세팅
-            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+            List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
             if (!comments.isEmpty()) {
                 for (Comment comment : comments) {
                     if (comment.getParentId() == 0) {
@@ -241,7 +255,7 @@ public class BoardServiceImpl implements BoardService {
     public void deleteBoard(String email, Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow();
 
-        if (board.getMember().getEmail() == email) {
+        if (board.getMember().getEmail().equals(email)) {
             board.setIsDelete(1);
             boardRepository.save(board);
         }
@@ -270,6 +284,7 @@ public class BoardServiceImpl implements BoardService {
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
+        // 좋아요 누르지 않은 경우
         if (!isLike) {
             BoardLike boardLike = BoardLike.builder().board(board).member(member).build();
             boardLikeRepository.save(boardLike);
@@ -298,7 +313,9 @@ public class BoardServiceImpl implements BoardService {
             }
 
             return boardLikeDto;
-        } else {
+        }
+        // 좋아요 누른 경우
+        else {
             if (board.getMember() != member) {
                 noticeRepository.delete(notice);
             }
@@ -321,24 +338,27 @@ public class BoardServiceImpl implements BoardService {
         // 게시글 DTO 세팅
         Board board = boardRepository.findById(boardId).orElseThrow();
 
-        BoardDto boardDto = this.startDto(board, member);
-        boardDto.setCreateUser(this.toCreateUser(board, member));
+        BoardDto boardDto = boardDtoCreator.startDto(board, member);
+        boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
+//        BoardDto boardDto = this.startDto(board, member);
+//        boardDto.setCreateUser(this.toCreateUser(board, member));
 
         boardDetailDto.setBoardDto(boardDto);
 
         // 댓글 DTO 세팅
-        List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+        List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<CommentDto> commentDtos = new ArrayList<>();
         for (Comment comment : comments) {
             if (comment.getParentId() == 0) {
-                CommentDto commentDto = this.toCommentDtos(comment, member);
+                CommentDto commentDto = boardDtoCreator.toCommentDtos(comment, member);
+//                CommentDto commentDto = this.toCommentDtos(comment, member);
 
                 // 대댓글 세팅
                 List<Comment> reComments = commentRepository.findByParentId(comment.getId(), Sort.by(Sort.Direction.DESC, "id"));
                 List<CommentDto> reCommentDtos = new ArrayList<>();
                 for (Comment reComment : reComments) {
-
-                    CommentDto reCommentDto = this.toCommentDtos(reComment, member);
+                    CommentDto reCommentDto = boardDtoCreator.toCommentDtos(reComment, member);
+//                    CommentDto reCommentDto = this.toCommentDtos(reComment, member);
                     reCommentDtos.add(reCommentDto);
                 }
 
@@ -477,7 +497,8 @@ public class BoardServiceImpl implements BoardService {
 
         memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(loginMember.getMemberId(), member.getMemberId()));
 
-        memberDto.setUser(this.setUserDto(member));
+        memberDto.setUser(boardDtoCreator.setUserDto(member));
+//        memberDto.setUser(this.setUserDto(member));
 
         List<Board> boards = boardRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<BoardDto> boardDtos = new ArrayList<>();
@@ -501,15 +522,19 @@ public class BoardServiceImpl implements BoardService {
         List<BoardDto> scrapDtos = new ArrayList<>();
 
         for (BoardScrap scrap : scraps) {
-            if (scrap.getBoard().getIsDelete() != 0) continue;
-            if (scrap.getBoard().getMember() == member) continue;
-            if (reportRepository.existsByBoardAndMember(scrap.getBoard(), member)) continue;
+            Board board = scrap.getBoard();
+            if (board.getIsDelete() != 0) continue;
+            if (board.getMember() == member) continue;
+            if (reportRepository.existsByBoardAndMember(board, member)) continue;
 
-            BoardDto scrapDto = this.startScrapDto(scrap, member);
-            scrapDto.setCreateUser(this.toCreateScrapUser(scrap, member));
+            BoardDto scrapDto = boardDtoCreator.startDto(board, member);
+            scrapDto.setCreateUser(boardDtoCreator.toCreateUser(board,member));
+
+//            BoardDto scrapDto = this.startScrapDto(scrap, member);
+//            scrapDto.setCreateUser(this.toCreateScrapUser(scrap, member));
 
             // 게시글 미디어 path 세팅
-            BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
+            BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
             scrapDto.setMediaPath(boardMedia.getMediaPath());
 
             // List add
@@ -624,7 +649,7 @@ public class BoardServiceImpl implements BoardService {
         commentDto.setUser(cCreateMember);
 
         // 작성날짜 세팅
-        LocalDateTime createdTime = comment.getCreatedDatetime();
+        LocalDateTime createdTime = comment.getCreatedDateTime();
 
         String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
         Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
