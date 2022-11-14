@@ -17,6 +17,7 @@ import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -694,14 +695,14 @@ public class MemberServiceImpl implements MemberService {
     // 알림 목록 읽기
     public List<NoticeDto> readNotice(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        List<Notice> noticeList = noticeRepository.findAllByToMember(member);
+        List<Notice> noticeList = noticeRepository.findAllByToMember(member, Sort.by(Sort.Direction.DESC, "createdDatetime"));
         List<NoticeDto> noticeDtos = new ArrayList<>();
 
         for (Notice notice : noticeList) {
             NoticeDto noticeDto = new NoticeDto();
             LocalDateTime createdTime = notice.getCreatedDateTime();
 
-            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
             if (minus <= 10) {
                 timeText = "방금 전";
@@ -710,7 +711,7 @@ public class MemberServiceImpl implements MemberService {
             } else if (minus <= 1440) {
                 timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
             } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-                timeText = createdTime.getMonth() + "월 " + createdTime.getDayOfMonth() + "일";
+                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
             }
 
             if (notice.getType() == 1) {
