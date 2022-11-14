@@ -31,7 +31,7 @@ const REELS_URL = '/reels';
 const REPORT_URL = '/report';
 const IMAGE_URL = '/image';
 
-const REISSUE_URL = '/reissue';
+const REISSUE_URL = '/reIssue';
 
 const FCMTOKEN_URL = '/fcmtoken';
 const NOTICE_URL = '/notice';
@@ -73,7 +73,8 @@ const api = {
   comment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL,
   commentLike: commentId =>
     API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
-  recomment: (boardId, commentId) => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL + `/${commentId}`,
+  recomment: (boardId, commentId) =>
+    API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL + `/${commentId}`,
 
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
