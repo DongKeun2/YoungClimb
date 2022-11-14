@@ -3,6 +3,7 @@ package com.youngclimb.domain.controller;
 import com.youngclimb.common.security.CurrentUser;
 import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.*;
+import com.youngclimb.domain.model.dto.report.ReportCreate;
 import com.youngclimb.domain.model.service.BoardService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/board")
