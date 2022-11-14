@@ -11,11 +11,13 @@ import java.util.List;
 // 일단 login 될 때까지만 임시로 사용
 public interface BoardService {
     // 전체 게시글 조회
-
     public MainPageDto readRecentBoard(String userId, Pageable pageable);
 
+    // 추가 게시글 조회
     public MainPageDto readAddBoard(String userId, Pageable pageable);
 
+    // 게시글 조회수 증가
+    public Long updateView(Long boardId);
 
     // 이미지 저장
     public String saveImage(MultipartFile file);
