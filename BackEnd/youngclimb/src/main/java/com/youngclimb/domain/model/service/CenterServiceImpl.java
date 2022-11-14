@@ -54,6 +54,7 @@ public class CenterServiceImpl implements CenterService {
         centerDetailDto.setLatitude(center.getLatitude());
         centerDetailDto.setLongitude(center.getLongitude());
         centerDetailDto.setPhoneNumber(center.getPhoneNumber());
+        centerDetailDto.setImg(center.getImg());
 
         for (Wall wall : walls) {
             WallDto wallDto = new WallDto();
