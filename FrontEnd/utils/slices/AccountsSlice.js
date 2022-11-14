@@ -8,6 +8,9 @@ import {
   removeAccessToken,
   setCurrentUser,
   removeCurrentUser,
+  setRefreshToken,
+  getRefreshToken,
+  removeRefreshToken,
 } from '../Token';
 
 const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
@@ -16,6 +19,7 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
     const res = await axios.post(api.login(), data, {});
     console.log('로그인 결과', res.data);
     setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
@@ -29,13 +33,15 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   try {
     const res = await axios.post(api.logout(), {}, await getConfig());
     console.log('로그아웃 성공');
-    await axios.post(api.fcmtokendelete(),{},await getConfig())
+    await axios.post(api.fcmtokendelete(), {}, await getConfig());
     removeAccessToken();
+    removeRefreshToken();
     removeCurrentUser();
     return res.data;
   } catch (err) {
     console.log('로그아웃 실패', err.response);
     removeAccessToken();
+    removeRefreshToken();
     removeCurrentUser();
     return rejectWithValue(err.response.data);
   }
@@ -74,6 +80,7 @@ const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
     const res = await axios.post(api.signup(), data, {});
     console.log(res.payload);
     setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
@@ -116,6 +123,7 @@ const profileCreate = createAsyncThunk(
       );
       console.log('프로필 생성 성공', res.data);
       setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
@@ -125,15 +133,22 @@ const profileCreate = createAsyncThunk(
   },
 );
 
+import axiosTemp from '../axios';
 const profileEdit = createAsyncThunk(
   'profileEdit',
   async (data, {rejectWithValue}) => {
     console.log('수정 요청', data);
     try {
-      const res = await axios.post(api.profileEdit(), data, await getConfig());
+      const res = await axiosTemp.post(
+        api.profileEdit(),
+        data,
+        {},
+        // await getConfig()
+      );
       alert('수정 완료');
       console.log('프로필 수정 성공', res.data);
       setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
