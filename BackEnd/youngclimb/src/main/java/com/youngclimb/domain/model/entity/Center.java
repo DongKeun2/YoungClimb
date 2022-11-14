@@ -38,4 +38,7 @@ public class Center {
     // 클라이밍장 3d 벽여부
     @Column(name = "center_wall")
     private Boolean wall;
+    // 클라이밍장 이미지
+    @Column(name = "center_img")
+    private String img;
 }

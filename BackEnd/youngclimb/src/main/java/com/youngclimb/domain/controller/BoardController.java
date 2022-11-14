@@ -3,6 +3,7 @@ package com.youngclimb.domain.controller;
 import com.youngclimb.common.security.CurrentUser;
 import com.youngclimb.common.security.UserPrincipal;
 import com.youngclimb.domain.model.dto.board.*;
+import com.youngclimb.domain.model.dto.report.ReportCreate;
 import com.youngclimb.domain.model.service.BoardService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/board")
@@ -43,6 +42,18 @@ public class BoardController {
         try {
             MainPageDto mainPageDto = boardService.readAddBoard(principal.getUsername(), pageable);
             return new ResponseEntity<MainPageDto>(mainPageDto, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 게시글 조회수 증가
+    @ApiOperation(value = "updateView : 게시글 조회수 증가")
+    @PostMapping("/{boardId}/view")
+    public ResponseEntity<?> updateView(@PathVariable Long boardId) throws Exception {
+        try {
+            return new ResponseEntity<Long>(boardService.updateView(boardId), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);

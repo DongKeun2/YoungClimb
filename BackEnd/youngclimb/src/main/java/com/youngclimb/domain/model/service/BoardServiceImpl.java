@@ -157,6 +157,15 @@ public class BoardServiceImpl implements BoardService {
         return mainPageDto;
     }
 
+    // 게시글 조회수 증가
+    public Long updateView(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+
+        boardRepository.save(board.addView());
+
+        return board.getBoardView();
+    }
+
     // 동영상 저장
     @Override
     public String saveImage(MultipartFile file) {
@@ -188,7 +197,14 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(board);
 
         // 카테고리 저장하기
-        Category category = Category.builder().board(board).center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow()).wall(wallRepository.findById(boardCreate.getWallId()).orElse(new Wall())).centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow()).holdcolor(boardCreate.getHoldColor()).difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank()).build();
+        Category category = Category.builder()
+                .board(board)
+                .center(centerRepository.findById(boardCreate.getCenterId()).orElseThrow())
+                .wall(wallRepository.findById(boardCreate.getWallId()).orElse(null))
+                .centerlevel(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow())
+                .holdcolor(boardCreate.getHoldColor())
+                .difficulty(centerLevelRepository.findById(boardCreate.getCenterLevelId()).orElseThrow().getLevel().getRank())
+                .build();
         categoryRepository.save(category);
 
 //        // 이미지 저장하기
@@ -300,9 +316,6 @@ public class BoardServiceImpl implements BoardService {
                         Message message = Message.builder()
                                 .setNotification(notification)
                                 .setToken(board.getMember().getFcmToken())
-                                .setAndroidConfig(AndroidConfig.builder()
-                                        .setPriority(AndroidConfig.Priority.HIGH)
-                                        .build())
                                 .build();
 
                         FirebaseMessaging.getInstance().send(message);
