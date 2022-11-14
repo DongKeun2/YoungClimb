@@ -8,5 +8,6 @@ public class NoticeDto {
     String profileImage;
     Integer Type;
     Long boardId;
+    Long commentId;
     String createdAt;
 }

@@ -1,13 +1,9 @@
 package com.youngclimb.domain.model.service;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.youngclimb.common.exception.ResourceNotFoundException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.common.redis.RedisService;
 import com.youngclimb.domain.model.dto.TokenDto;
@@ -21,13 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
-import reactor.util.annotation.Nullable;
 
 import javax.persistence.EntityExistsException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -396,9 +388,9 @@ public class MemberServiceImpl implements MemberService {
         }
 
         // 중복로그인 체크
-        if(redisService.getValues("RT " + member.getEmail()) != null) {
-            throw new EntityExistsException("이미 로그인한 사용자입니다.");
-        }
+//        if(redisService.getValues("RT " + member.getEmail()) != null) {
+//            throw new EntityExistsException("이미 로그인한 사용자입니다.");
+//        }
 
         loginMember.setFcmToken(member.getFcmToken());
         memberRepository.save(loginMember);
@@ -695,7 +687,7 @@ public class MemberServiceImpl implements MemberService {
     // 알림 목록 읽기
     public List<NoticeDto> readNotice(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        List<Notice> noticeList = noticeRepository.findAllByToMember(member, Sort.by(Sort.Direction.DESC, "createdDatetime"));
+        List<Notice> noticeList = noticeRepository.findAllByToMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<NoticeDto> noticeDtos = new ArrayList<>();
 
         for (Notice notice : noticeList) {
@@ -716,8 +708,13 @@ public class MemberServiceImpl implements MemberService {
 
             if (notice.getType() == 1) {
                 noticeDto.setBoardId(null);
+                noticeDto.setCommentId(null);
+            } else if (notice.getType() == 4) {
+                noticeDto.setBoardId(null);
+                noticeDto.setCommentId(notice.getComment().getId());
             } else {
                 noticeDto.setBoardId(notice.getBoard().getBoardId());
+                noticeDto.setCommentId(null);
             }
 
             noticeDto.setProfileImage(notice.getFromMember().getMemberProfileImg());

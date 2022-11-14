@@ -285,33 +285,35 @@ public class BoardServiceImpl implements BoardService {
                         .createdDateTime(LocalDateTime.now())
                         .build();
                 noticeRepository.save(noticeBuild);
+
+                // 푸쉬 알림 보내기
+                try {
+                    if (board.getMember().getFcmToken() != null) {
+                        Notification notification = new Notification("", member.getNickname() + "님이 게시물을 좋아합니다.");
+                        String topic = "boardLike";
+
+                        Message message = Message.builder()
+                                .setTopic(topic)
+                                .setNotification(notification)
+                                .setToken(board.getMember().getFcmToken())
+                                .setAndroidConfig(AndroidConfig.builder()
+                                        .setPriority(AndroidConfig.Priority.HIGH)
+                                        .build())
+                                .build();
+
+                        FirebaseMessaging.getInstance().send(message);
+                    }
+                } catch (Exception e) {
+                    board.getMember().setFcmToken(null);
+                    memberRepository.save(board.getMember());
+                }
             }
 
             List<BoardLike> boardLikes = boardLikeRepository.findAllByBoard(board);
             boardLikeDto.setIsLike(Boolean.TRUE);
             boardLikeDto.setLike(boardLikes.size());
 
-            // 푸쉬 알림 보내기
-            try {
-                if (board.getMember().getFcmToken() != null) {
-                    Notification notification = new Notification("", member.getNickname() + "님이 게시물을 좋아합니다.");
-                    String topic = "boardLike";
 
-                    Message message = Message.builder()
-                            .setTopic(topic)
-                            .setNotification(notification)
-                            .setToken(board.getMember().getFcmToken())
-                            .setAndroidConfig(AndroidConfig.builder()
-                                    .setPriority(AndroidConfig.Priority.HIGH)
-                                    .build())
-                            .build();
-
-                    FirebaseMessaging.getInstance().send(message);
-                }
-            } catch (Exception e) {
-                board.getMember().setFcmToken(null);
-                memberRepository.save(board.getMember());
-            }
 
             return boardLikeDto;
         } else {
