@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -275,7 +276,14 @@ public class BoardServiceImpl implements BoardService {
             boardLikeRepository.save(boardLike);
 
             if (board.getMember() != member) {
-                Notice noticeBuild = Notice.builder().type(2).toMember(board.getMember()).fromMember(member).board(board).createdDateTime(LocalDateTime.now()).build();
+                Notice noticeBuild = Notice.builder()
+                        .type(2)
+                        .toMember(board.getMember())
+                        .fromMember(member)
+                        .board(board)
+                        .comment(null)
+                        .createdDateTime(LocalDateTime.now())
+                        .build();
                 noticeRepository.save(noticeBuild);
             }
 
@@ -287,8 +295,16 @@ public class BoardServiceImpl implements BoardService {
             try {
                 if (board.getMember().getFcmToken() != null) {
                     Notification notification = new Notification("", member.getNickname() + "님이 게시물을 좋아합니다.");
+                    String topic = "boardLike";
 
-                    Message message = Message.builder().setNotification(notification).setToken(board.getMember().getFcmToken()).build();
+                    Message message = Message.builder()
+                            .setTopic(topic)
+                            .setNotification(notification)
+                            .setToken(board.getMember().getFcmToken())
+                            .setAndroidConfig(AndroidConfig.builder()
+                                    .setPriority(AndroidConfig.Priority.HIGH)
+                                    .build())
+                            .build();
 
                     FirebaseMessaging.getInstance().send(message);
                 }
@@ -334,7 +350,7 @@ public class BoardServiceImpl implements BoardService {
                 CommentDto commentDto = this.toCommentDtos(comment, member);
 
                 // 대댓글 세팅
-                List<Comment> reComments = commentRepository.findByParentId(comment.getId(), Sort.by(Sort.Direction.DESC, "id"));
+                List<Comment> reComments = commentRepository.findByParentId(comment.getId(), Sort.by(Sort.Direction.DESC, "createdDatetime"));
                 List<CommentDto> reCommentDtos = new ArrayList<>();
                 for (Comment reComment : reComments) {
 
@@ -356,7 +372,7 @@ public class BoardServiceImpl implements BoardService {
     public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Notice notice = noticeRepository.findByToMemberAndFromMemberAndType(comment.getMember(), member, 4).orElse(null);
+        Notice notice = noticeRepository.findByCommentAndFromMemberAndType(comment, member, 4).orElse(null);
 
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
@@ -366,7 +382,14 @@ public class BoardServiceImpl implements BoardService {
             commentLikeRepository.save(commentLike);
 
             if (comment.getMember() != member) {
-                Notice noticeBuild = Notice.builder().type(4).toMember(comment.getMember()).fromMember(member).board(comment.getBoard()).createdDateTime(LocalDateTime.now()).build();
+                Notice noticeBuild = Notice.builder()
+                        .type(4)
+                        .toMember(comment.getMember())
+                        .fromMember(member)
+                        .board(null)
+                        .createdDateTime(LocalDateTime.now())
+                        .comment(comment)
+                        .build();
                 noticeRepository.save(noticeBuild);
             }
 
@@ -375,7 +398,10 @@ public class BoardServiceImpl implements BoardService {
                 if (comment.getMember().getFcmToken() != null) {
                     Notification notification = new Notification("", member.getNickname() + "님이 댓글을 좋아합니다.");
 
-                    Message message = Message.builder().setNotification(notification).setToken(comment.getMember().getFcmToken()).build();
+                    Message message = Message.builder()
+                            .setNotification(notification)
+                            .setToken(comment.getMember().getFcmToken())
+                            .build();
 
                     FirebaseMessaging.getInstance().send(message);
                 }
@@ -411,7 +437,14 @@ public class BoardServiceImpl implements BoardService {
 
         // 알림 저장하기
         if (board.getMember() != member) {
-            Notice noticeBuild = Notice.builder().type(3).toMember(board.getMember()).fromMember(member).board(board).createdDateTime(LocalDateTime.now()).build();
+            Notice noticeBuild = Notice.builder()
+                    .type(3)
+                    .toMember(board.getMember())
+                    .fromMember(member)
+                    .board(board)
+                    .comment(null)
+                    .createdDateTime(LocalDateTime.now())
+                    .build();
             noticeRepository.save(noticeBuild);
         }
 
@@ -445,7 +478,14 @@ public class BoardServiceImpl implements BoardService {
 
         // 알림 저장하기
         if (comment.getMember() != member) {
-            Notice noticeBuild = Notice.builder().type(5).toMember(comment.getMember()).fromMember(member).board(board).createdDateTime(LocalDateTime.now()).build();
+            Notice noticeBuild = Notice.builder()
+                    .type(5)
+                    .toMember(comment.getMember())
+                    .fromMember(member)
+                    .board(board)
+                    .comment(null)
+                    .createdDateTime(LocalDateTime.now()).build();
+
             noticeRepository.save(noticeBuild);
         }
 

@@ -551,6 +551,7 @@ public class MemberServiceImpl implements MemberService {
                     .fromMember(follower)
                     .type(1)
                     .board(null)
+                    .comment(null)
                     .createdDateTime(LocalDateTime.now())
                     .build();
             noticeRepository.save(noticeBuild);
