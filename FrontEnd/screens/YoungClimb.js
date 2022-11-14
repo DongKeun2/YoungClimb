@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 
 import React, {useRef, useState, useEffect, useCallback} from 'react';
+
 import {Platform, PermissionsAndroid, Linking, Alert} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
@@ -57,20 +58,17 @@ const Stack = createStackNavigator();
 export default function YoungClimb() {
   const dispatch = useDispatch();
   const [loading, setIsLoading] = useState(true);
-
   const login = useSelector(state => state.accounts.loginState);
-  useEffect(() => {
+  
+  useEffect(()=>{
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      await AsyncStorage.setItem('newNoti', 'true');
-      dispatch(changeNewNoti(true));
+      await AsyncStorage.setItem('newNoti','true')
+      dispatch(changeNewNoti(true))
+      return remoteMessage
     });
 
-    messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      await AsyncStorage.setItem('newNoti', 'true');
-      dispatch(changeNewNoti(true));
-    });
-  }, []);
+  },[])
+
 
   useEffect(() => {
     const permissionList = [
@@ -155,7 +153,7 @@ export default function YoungClimb() {
     <>
       {loading ? (
         <InitialScreen />
-      ) : (
+        ) : (
         <NavigationContainer>
           {login ? (
             <Tab.Navigator

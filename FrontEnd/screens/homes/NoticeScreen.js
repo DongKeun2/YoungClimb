@@ -40,6 +40,9 @@ function NoticeScreen({navigation}) {
     return(
       <TouchableOpacity
 				style={{...styles.renderItemContainer, width:screenWidth}}
+        onPress={() => {
+          navigation.navigate('게시글', {id: item.boardId});
+        }}
       >
         <View style={styles.contentContainer}>
           <Image 
@@ -48,7 +51,13 @@ function NoticeScreen({navigation}) {
                 uri:item.profileImage,
                 }}/>
           <View style={styles.textContainer}>
-            <Text style={styles.contentFont}><TouchableOpacity style={styles.justify}><Text style={styles.nicknameFont}>{item.nickname} </Text></TouchableOpacity>{noticeDict[item.type]}</Text>
+            <Text style={styles.contentFont}>
+              <TouchableOpacity 
+                onPress={() => {
+                navigation.push('서브프로필', {
+                initial: false,
+                nickname: item.nickname,
+            })}} style={styles.justify}><Text style={styles.nicknameFont}>{item.nickname} </Text></TouchableOpacity>{noticeDict[item.type]}</Text>
             <Text style={styles.createdFont}>{item.createdAt}</Text>
           </View>
         </View>
@@ -71,11 +80,8 @@ function NoticeScreen({navigation}) {
 export default NoticeScreen;
 const styles = StyleSheet.create({
 	renderItemContainer:{
-		width:'100%',
-		borderBottomColor: '#929292',
-    // borderBottomWidth: 0.2,
-		paddingHorizontal:20,
-		paddingVertical: 15,
+		paddingHorizontal: 10,
+		paddingVertical: 12,
 		color:'black'
 	},
   image:{
@@ -85,7 +91,8 @@ const styles = StyleSheet.create({
   },
   contentContainer:{
     flexDirection:'row',
-    
+    alignItems:'center',
+    marginHorizontal:10,
   },
   nicknameFont:{
     color:'#DE4976',
@@ -94,14 +101,17 @@ const styles = StyleSheet.create({
   contentFont:{
     color:'#323232',
     marginBottom:3,
-    justifyContent:'center'
+    // justifyContent:'center',
+    width:'100%'
   },
   createdFont:{
     color:'#525252',
     fontSize:12
   },
   textContainer:{
-    marginLeft:15
+    marginLeft:15,
+    width:320,
+    // height:30,
   },
   justify:{
     transform:[{translateY:4}],
