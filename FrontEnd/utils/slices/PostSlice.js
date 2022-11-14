@@ -8,7 +8,7 @@ const fetchHomeFeed = createAsyncThunk(
   async (pageNumber, {rejectWithValue}) => {
     try {
       const res = await axios.get(api.homeFeed(pageNumber), await getConfig());
-      console.log('홈피드 요청 성공', res.data.length);
+      console.log('홈피드 요청 성공', res.data.boardDtos.length);
       return res.data;
     } catch (err) {
       console.log('홈피드 요청 실패', err);
@@ -31,7 +31,7 @@ const fetchFeedComment = createAsyncThunk(
   },
 );
 
-const postAdd = createAsyncThunk('post', async (data, {rejectWithValue}) => {
+const postAdd = createAsyncThunk('postAdd', async (data, {rejectWithValue}) => {
   try {
     const res = await axios.post(api.postAdd(), data, await getConfig());
     console.log('게시글 성공');
@@ -129,25 +129,12 @@ const getVideoPath = createAsyncThunk(
   'getVideoPath',
   async (formData, {rejectWithValue}) => {
     try {
-      const res = await axios({
-        method: 'POST',
-        url: api.videoToUrl(),
-        data: formData,
+      const res = await axios.post(api.videoToUrl(), formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: await getHeader(),
         },
       });
-      // const res = await axios.post(api.videoToUrl(), formData, {
-      //   headers: {
-      //     'Content-Type': 'multipart/form-data',
-      //     Authorization: await getHeader(),
-      //     // transformRequest: (data, headers) => {
-      //     //   return formData;
-      //     // },
-      //   },
-      // });
-      console.log('동영상 성공', res.data);
       return res.data;
     } catch (err) {
       console.log('동영상 실패', err);
@@ -161,10 +148,46 @@ const fetchReels = createAsyncThunk(
   async (pageNumber, {rejectWithValue}) => {
     try {
       const res = await axios.get(api.homeFeed(pageNumber), await getConfig());
-      console.log('릴스 요청 성공', res.data.length, res.data);
+      console.log('릴스 요청 성공', res.data.boardDtos.length, res.data);
       return res.data;
     } catch (err) {
       console.log('릴스 요청 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const commentAdd = createAsyncThunk(
+  'commentAdd',
+  async (data, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.comment(data.boardId),
+        data.comment,
+        await getConfig(),
+      );
+      console.log('댓글 성공');
+      return res.data;
+    } catch (err) {
+      console.log('댓글 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const commentLikeSubmit = createAsyncThunk(
+  'commentLikeSubmit',
+  async (commentId, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.commentLike(commentId),
+        {},
+        await getConfig(),
+      );
+      console.log('댓글 좋아요 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('댓글 좋아요 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -232,6 +255,8 @@ export {
   scrapBoard,
   getVideoPath,
   fetchReels,
+  commentLikeSubmit,
+  commentAdd,
 };
 
 export const {changeUploadVideo} = PostSlice.actions;

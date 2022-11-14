@@ -15,6 +15,7 @@ import CustomSubHeader from '../../components/CustomSubHeader';
 import FollowBtn from '../../components/FollowBtn';
 import UserAvatar from '../../components/UserAvatar';
 
+import FollowLoading from '../../components/Loading/FollowLoading';
 import {fetchFollowList} from '../../utils/slices/ProfileSlice';
 
 import searchIcon from '../../assets/image/profile/searchIcon.png';
@@ -22,13 +23,12 @@ import searchIcon from '../../assets/image/profile/searchIcon.png';
 function FollowScreen({navigation, route}) {
   const dispatch = useDispatch();
 
-  const [type, setType] = useState('');
+  const [type, setType] = useState(route.params.type);
   const [keyword, setKeyword] = useState('');
 
   const isFocused = useIsFocused();
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
-    setType(route.params.type);
     setIsLoading(true);
     if (isFocused) {
       dispatch(fetchFollowList(route.params.nickname)).then(() => {
@@ -42,7 +42,9 @@ function FollowScreen({navigation, route}) {
 
   return (
     <>
-      {isLoading ? null : (
+      {isLoading ? (
+        <FollowLoading navigation={navigation} type={type} route={route} />
+      ) : (
         <>
           <CustomSubHeader
             title={route.params.nickname}

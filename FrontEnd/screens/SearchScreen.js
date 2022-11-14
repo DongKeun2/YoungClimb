@@ -30,6 +30,7 @@ import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
 import searchInputIcon from '../assets/image/profile/searchIcon.png';
 import HoldIcon from '../assets/image/hold/hold.svg';
+import SearchUserLoading from '../components/Loading/SearchUserLoading';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
@@ -343,7 +344,6 @@ function UserTab({navigation}) {
 
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(undefined);
-  const [first, setFirst] = useState(true);
   const [result, setResult] = useState('');
 
   const starUsers = useSelector(state => state.search.starUsers);
@@ -353,19 +353,16 @@ function UserTab({navigation}) {
     () =>
       debounce(async (result, waitingTime = 300) => {
         setResult('');
-        setLoading(true);
         if (keyword) {
           await new Promise(resolve => setTimeout(resolve, waitingTime));
 
           const data = {keyword};
           dispatch(searchUser(data)).then(() => {
             setResult(keyword);
-            setFirst(true);
             setLoading(false);
           });
         } else {
           setResult('');
-          setFirst(true);
           setLoading(false);
         }
       }, 500),
@@ -391,6 +388,7 @@ function UserTab({navigation}) {
           placeholderTextColor={'#ADADAD'}
           value={keyword}
           onChangeText={value => {
+            setLoading(true);
             setKeyword(value);
           }}
         />
@@ -399,9 +397,10 @@ function UserTab({navigation}) {
 
       <View style={styles.searchUserResultBox}>
         {loading ? (
-          <View>
+          <>
             <Text style={styles.searchText}>검색 중</Text>
-          </View>
+            <SearchUserLoading />
+          </>
         ) : keyword && result ? (
           users?.length ? (
             <View>

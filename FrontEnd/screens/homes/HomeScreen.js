@@ -24,7 +24,7 @@ function HomeScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const boards = useSelector(state => state.post.boards);
+  const boards = useSelector(state => state.post.boards.boardDtos);
 
   const onViewRef = useRef(({viewableItems}) => {
     if (viewableItems && viewableItems[0]) {
@@ -65,7 +65,7 @@ function HomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    dispatch(fetchHomeFeed(1));
+    dispatch(fetchHomeFeed(0));
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');

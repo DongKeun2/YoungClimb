@@ -24,6 +24,7 @@ const BOARD_URL = '/board';
 const HOME_URL = '/home';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
+const COMMENT_URL = '/comment';
 
 const REELS_URL = '/reels';
 
@@ -31,6 +32,9 @@ const REPORT_URL = '/report';
 const IMAGE_URL = '/image';
 
 const REISSUE_URL = '/reissue';
+
+const FCMTOKEN_URL = '/fcmtoken';
+const NOTICE_URL = '/notice';
 
 const api = {
   refresh: () => API_BASE_URL + USER_URL + REISSUE_URL,
@@ -66,9 +70,18 @@ const api = {
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
 
+  comment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL,
+  commentLike: commentId =>
+    API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
+
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
   report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
+
+  fcmtokensave: () => API_BASE_URL + FCMTOKEN_URL + '/save',
+  fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + '/delete',
+
+  noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL,
 };
 
 export default api;
