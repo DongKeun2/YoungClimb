@@ -32,6 +32,10 @@ public class Notice {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "board_id")
     private Board board;
+    // 댓글 번호
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "comment_id")
+    private Comment comment;
     // 알림 타입 번호
     @Column(name = "notice_type")
     private Integer type;
