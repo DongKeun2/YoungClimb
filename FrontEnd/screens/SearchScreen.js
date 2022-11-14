@@ -17,10 +17,9 @@ import CustomMainHeader from '../components/CustomMainHeader';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {Toast} from '../components/Toast';
 import {holdList, YCLevelColorDict} from '../assets/info/ColorInfo';
-import centerInfo from '../assets/info/CenterInfo';
 import UserAvatar from '../components/UserAvatar';
 
-import {fetchUser, searchUser} from '../utils/slices/SearchSlice';
+import {fetchUser, searchUser, search} from '../utils/slices/SearchSlice';
 
 import SearchBtnIcon from '../assets/image/search/searchBtn.svg';
 import UserIcon from '../assets/image/search/user.svg';
@@ -31,6 +30,7 @@ import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
 import searchInputIcon from '../assets/image/profile/searchIcon.png';
 import HoldIcon from '../assets/image/hold/hold.svg';
+import SearchUserLoading from '../components/Loading/SearchUserLoading';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
@@ -120,20 +120,18 @@ function SearchScreen({navigation}) {
 function BoardTab({navigation}) {
   const dispatch = useDispatch();
 
-  const [isSimilar, setIsSimilar] = useState(false);
+  const centerInfo = useSelector(state => state.center.centerInfo);
 
+  const [isSimilar, setIsSimilar] = useState(false);
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState('');
   const [level, setLevel] = useState('');
   const [holdColor, setHoldColor] = useState('');
+  const [wallName, setWallName] = useState('');
 
   function onSubmitSearch() {
     if (!center) {
       return alert('지점을 선택해주세요');
-    } else if (!level) {
-      return alert('난이도를 선택해주세요.');
-    } else if (!holdColor) {
-      return alert('홀드 색상을 선택해주세요.');
     } else {
       const data = {
         center,
@@ -142,14 +140,15 @@ function BoardTab({navigation}) {
         holdColor,
         isSimilar,
       };
-      // dispatch(search(data)).then(() => {
-      navigation.navigate('검색 결과', {
-        center: centerInfo[center - 1].name,
-        wall,
-        level,
-        holdColor,
+      dispatch(search(data)).then(() => {
+        navigation.navigate('검색 결과', {
+          center: centerInfo[center - 1]?.name,
+          wall,
+          level,
+          holdColor,
+          wallName,
+        });
       });
-      // });
     }
   }
 
@@ -169,7 +168,8 @@ function BoardTab({navigation}) {
           </Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
+              dropdownIconRippleColor="#F34D7F" // 드롭다운 버튼 클릭시 테두리 색깔
               dropdownIconColor="black"
               selectedValue={center}
               style={center ? styles.picker : styles.nonePick}
@@ -179,9 +179,9 @@ function BoardTab({navigation}) {
                 label="선택 없음"
                 value=""
               />
-              {centerInfo.map((item, id) => (
+              {centerInfo?.map((item, idx) => (
                 <Picker.Item
-                  key={id}
+                  key={idx}
                   style={styles.pickerLabel}
                   label={item.name}
                   value={item.id}
@@ -195,21 +195,36 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>구역</Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={wall}
-              enabled={center ? true : false}
-              style={wall ? styles.picker : styles.nonePick}
-              onValueChange={(value, idx) => setWall(value)}>
+              enabled={
+                center && centerInfo[center - 1]?.wallList.length ? true : false
+              }
+              style={
+                wall && centerInfo[center - 1]?.wallList.length
+                  ? styles.picker
+                  : styles.nonePick
+              }
+              onValueChange={(value, idx) => {
+                setWallName(centerInfo[center - 1].wallList[idx - 1].name);
+                setWall(value);
+              }}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
-                label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
+                label={
+                  center
+                    ? centerInfo[center - 1]?.wallList.length
+                      ? '선택 없음'
+                      : '해당 지점 선택 불가'
+                    : '지점을 먼저 선택해주세요'
+                }
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                ? centerInfo[center - 1]?.wallList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
                       label={item.name}
                       value={item.id}
@@ -221,17 +236,14 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>
-            난이도<Text style={{color: '#F34D7F'}}> *</Text>
-          </Text>
+          <Text style={styles.text}>난이도</Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={level}
               enabled={center ? true : false}
               style={level ? styles.picker : styles.nonePick}
-              itemStyle={styles.item}
               onValueChange={(value, idx) => setLevel(value)}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
@@ -239,11 +251,11 @@ function BoardTab({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.level.map((item, id) => (
+                ? centerInfo[center - 1]?.centerLevelList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
-                      label={item.name}
+                      label={`${item.color} (${item.levelRank})`}
                       value={item.id}
                     />
                   ))
@@ -253,12 +265,10 @@ function BoardTab({navigation}) {
         </View>
 
         <View style={styles.box}>
-          <Text style={styles.text}>
-            홀드 색상<Text style={{color: '#F34D7F'}}> *</Text>
-          </Text>
+          <Text style={styles.text}>홀드 색상</Text>
           <View style={styles.pickerItem}>
             <Picker
-              mode="dropdown"
+              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={holdColor}
               enabled={center ? true : false}
@@ -311,7 +321,12 @@ function BoardTab({navigation}) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity onPress={onSubmitSearch} style={styles.button}>
+      <TouchableOpacity
+        onPress={center ? onSubmitSearch : null}
+        style={[
+          styles.button,
+          {backgroundColor: center ? '#F34D7F' : '#C4C4C4'},
+        ]}>
         <SearchBtnIcon />
         <Text style={styles.btnText}>검색</Text>
       </TouchableOpacity>
@@ -329,7 +344,6 @@ function UserTab({navigation}) {
 
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(undefined);
-  const [first, setFirst] = useState(true);
   const [result, setResult] = useState('');
 
   const starUsers = useSelector(state => state.search.starUsers);
@@ -339,19 +353,16 @@ function UserTab({navigation}) {
     () =>
       debounce(async (result, waitingTime = 300) => {
         setResult('');
-        setLoading(true);
         if (keyword) {
           await new Promise(resolve => setTimeout(resolve, waitingTime));
 
           const data = {keyword};
           dispatch(searchUser(data)).then(() => {
             setResult(keyword);
-            setFirst(true);
             setLoading(false);
           });
         } else {
           setResult('');
-          setFirst(true);
           setLoading(false);
         }
       }, 500),
@@ -377,6 +388,7 @@ function UserTab({navigation}) {
           placeholderTextColor={'#ADADAD'}
           value={keyword}
           onChangeText={value => {
+            setLoading(true);
             setKeyword(value);
           }}
         />
@@ -385,9 +397,10 @@ function UserTab({navigation}) {
 
       <View style={styles.searchUserResultBox}>
         {loading ? (
-          <View>
+          <>
             <Text style={styles.searchText}>검색 중</Text>
-          </View>
+            <SearchUserLoading />
+          </>
         ) : keyword && result ? (
           users?.length ? (
             <View>
@@ -488,6 +501,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginVertical: 8,
   },
   textBox: {},
   text: {
@@ -495,35 +509,37 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   pickerItem: {
-    width: '70%',
-    borderBottomWidth: 1,
+    width: '80%',
+    borderBottomWidth: 0.2,
     borderColor: 'black',
   },
   picker: {
     width: '100%',
     color: 'black',
+    backgroundColor: 'white',
   },
   nonePick: {
+    width: '100%',
     color: '#ADADAD',
+    backgroundColor: 'white',
   },
   pickerPlaceHold: {
     backgroundColor: 'white',
     color: '#ADADAD',
-    fontSize: 14,
+    fontSize: 13,
   },
   pickerLabel: {
     backgroundColor: 'white',
     color: 'black',
-    fontSize: 14,
+    fontSize: 13,
   },
   checkGroup: {
     display: 'flex',
     flexDirection: 'row',
-    margin: 10,
   },
   checkText: {
     color: 'black',
-    fontSize: 14,
+    fontSize: 13,
     backgroundColor: 'white',
   },
   button: {

@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
+import {useDispatch} from 'react-redux';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
 
@@ -8,7 +9,6 @@ import UserAvatar from './UserAvatar';
 import HoldLabel from './HoldLabel';
 import LevelLabel from './LevelLabel';
 
-import avatar from '../assets/image/initial/background.png';
 import MenuIcon from '../assets/image/feed/menuIcon.svg';
 import CameraIcon from '../assets/image/feed/whiteCamera.svg';
 import EmptyHeart from '../assets/image/feed/emptyHeart.svg';
@@ -20,11 +20,33 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-function HomeFeed({feed, navigation, isViewable}) {
+import {feedLikeSubmit, feedScrapSubmit} from '../utils/slices/PostSlice';
+
+function HomeFeed({
+  feed,
+  isRecommend,
+  navigation,
+  isViewable,
+  setModalVisible,
+  setFocusedContent,
+}) {
+  const dispatch = useDispatch();
+
   const [contentHeight, setContentHeight] = useState(0);
   const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
+  const [like, setLike] = useState(0);
+  const [likePress, setLikePress] = useState(false);
+  const [isScrap, setIsScrap] = useState(false);
+  const [scrapPress, setScrapPress] = useState(false);
+
+  useEffect(() => {
+    setIsLiked(feed.isLiked);
+    setLike(feed.like);
+    setIsScrap(feed.isScrap);
+  }, [feed.isLiked, feed.like, feed.isScrap]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -50,13 +72,45 @@ function HomeFeed({feed, navigation, isViewable}) {
     setIsMuted(!isMuted);
   };
 
+  const openMenu = feed => {
+    setModalVisible(true);
+    setFocusedContent({...feed, isRecommend});
+  };
+
+  const feedLike = id => {
+    setLikePress(true);
+    dispatch(feedLikeSubmit(id)).then(res => {
+      if (res.type === 'feedLikeSubmit/fulfilled') {
+        isLiked ? setLike(like - 1) : setLike(like + 1);
+        setIsLiked(!isLiked);
+        setLikePress(false);
+      } else {
+        alert('다시 시도해주세요');
+        setLikePress(false);
+      }
+    });
+  };
+
+  const feedScrap = id => {
+    setScrapPress(true);
+    dispatch(feedScrapSubmit(id)).then(res => {
+      if (res.type === 'feedScrapSubmit/fulfilled') {
+        setIsScrap(!isScrap);
+        setScrapPress(false);
+      } else {
+        alert('다시 시도해주세요');
+        setScrapPress(false);
+      }
+    });
+  };
+
   return (
     <View style={styles.container} onLayout={calVideoLength}>
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
           <View style={styles.iconText}>
-            <UserAvatar source={avatar} size={36} />
+            <UserAvatar source={{uri: feed.createUser.image}} size={36} />
             <View style={styles.headerTextGroup}>
               <View style={{...styles.iconText, alignItems: 'center'}}>
                 <Text
@@ -79,7 +133,9 @@ function HomeFeed({feed, navigation, isViewable}) {
               </Text>
             </View>
           </View>
-          <MenuIcon width={16} height={16} />
+          <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
+            <MenuIcon width={16} height={16} />
+          </TouchableOpacity>
         </View>
         <View style={styles.wallInfo}>
           <Text style={{...styles.feedTextStyle, marginRight: 8}}>
@@ -108,9 +164,9 @@ function HomeFeed({feed, navigation, isViewable}) {
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
-            repeat={true}
+            repeat={false}
             controls={false}
-            paused={!isViewable}
+            paused={true}
             muted={isMuted}
           />
         </TouchableOpacity>
@@ -131,28 +187,26 @@ function HomeFeed({feed, navigation, isViewable}) {
       <View style={styles.popularInfo}>
         <View style={styles.likeGroup}>
           <View style={styles.iconText}>
-            {feed.isLiked ? (
-              <TouchableOpacity onPress={() => null}>
+            <TouchableOpacity
+              onPress={() => feedLike(feed.id)}
+              disabled={likePress}>
+              {isLiked ? (
                 <FillHeart style={{marginRight: 5}} />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity onPress={() => null}>
+              ) : (
                 <EmptyHeart style={{marginRight: 5}} />
-              </TouchableOpacity>
-            )}
-            <Text style={styles.feedTextStyle}>
-              {feed.like} 명이 좋아합니다.
-            </Text>
+              )}
+            </TouchableOpacity>
+            <Text style={styles.feedTextStyle}>{like} 명이 좋아합니다.</Text>
           </View>
-          {feed.isScrap ? (
-            <TouchableOpacity onPress={() => null}>
+          <TouchableOpacity
+            onPress={() => feedScrap(feed.id)}
+            disabled={scrapPress}>
+            {isScrap ? (
               <FillScrap style={{marginRight: 5}} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={() => null}>
+            ) : (
               <EmptyScrap style={{marginRight: 5}} />
-            </TouchableOpacity>
-          )}
+            )}
+          </TouchableOpacity>
         </View>
         <View style={styles.iconText}>
           <EyeIcon style={{marginRight: 5}} />
@@ -183,36 +237,46 @@ function HomeFeed({feed, navigation, isViewable}) {
         ) : (
           <TouchableOpacity
             onPress={() =>
-              navigation ? navigation.navigate('댓글', {board: feed}) : null
+              navigation
+                ? navigation.navigate('댓글', {boardId: feed.id})
+                : null
             }>
             <Text style={styles.contentPreview}>{feed.content}</Text>
           </TouchableOpacity>
         )}
       </View>
-      <TouchableOpacity
-        style={styles.commentSummary}
-        onPress={() =>
-          navigation ? navigation.navigate('댓글', {board: feed}) : null
-        }>
-        <View style={styles.commentPreview}>
-          <Text
-            style={{
-              ...styles.feedTextStyle,
-              fontWeight: '600',
-              marginRight: 8,
-            }}>
-            {feed.commentPreview.nickname}
+      {feed.commentPreview ? (
+        <TouchableOpacity
+          style={styles.commentSummary}
+          onPress={() =>
+            navigation ? navigation.navigate('댓글', {boardId: feed.id}) : null
+          }>
+          <View style={styles.commentPreview}>
+            <Text
+              style={{
+                ...styles.feedTextStyle,
+                fontWeight: '600',
+                marginRight: 8,
+              }}>
+              {feed.commentPreview.nickname}
+            </Text>
+            <Text
+              numberOfLines={1}
+              style={{
+                ...styles.feedTextStyle,
+                width: '60%',
+                overflow: 'hidden',
+              }}>
+              {feed.commentPreview.comment}
+            </Text>
+          </View>
+          <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
+            댓글 {feed.commentNum}개 모두 보기
           </Text>
-          <Text
-            numberOfLines={1}
-            style={{...styles.feedTextStyle, width: '60%', overflow: 'hidden'}}>
-            {feed.commentPreview.comment}
-          </Text>
-        </View>
-        <Text style={{...styles.feedTextStyle, color: '#a7a7a7'}}>
-          댓글 {feed.commentNum}개 모두 보기
-        </Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      ) : (
+        <View style={styles.commentSummary} />
+      )}
     </View>
   );
 }

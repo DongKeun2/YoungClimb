@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   SafeAreaView,
@@ -7,24 +7,35 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
 } from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Picker} from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
+// import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {AutocompleteDropdown} from 'react-native-autocomplete-dropdown';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
 
 import {postAdd} from '../../utils/slices/PostSlice';
 
 import {holdList} from '../../assets/info/ColorInfo';
-import centerInfo from '../../assets/info/CenterInfo';
+import centerNameInfo from '../../assets/info/CenterNameInfo';
 import CalendarIcon from '../../assets/image/feed/calendarIcon.svg';
+import CloseIcon from '../../assets/image/header/closeIcon.svg';
+
+import {getVideoPath} from '../../utils/slices/PostSlice';
 
 function PostAddInfoScreen({navigation}) {
   const dispatch = useDispatch();
 
+  const centerInfo = useSelector(state => state.center.centerInfo);
+
+  const uploadVideo = useSelector(state => state.post.uploadVideo);
+  const videoPath = useSelector(state => state.post.videoPath);
+
   const [center, setCenter] = useState('');
-  const [wall, setWall] = useState('');
+  const [wall, setWall] = useState(0);
   const [level, setLevel] = useState('');
   const [holdColor, setHoldColor] = useState('');
   const [solvedDate, setSolvedDate] = useState(null);
@@ -32,11 +43,36 @@ function PostAddInfoScreen({navigation}) {
 
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
+  const changeVideoToPath = async () => {
+    let formData = new FormData();
+    const videoFile = {
+      uri: uploadVideo.assets[0].uri,
+      name: uploadVideo.assets[0].fileName + '.mp4',
+      type: uploadVideo.assets[0].type,
+    };
+    console.log(videoFile);
+    formData.append('file', videoFile);
+
+    dispatch(getVideoPath(formData)).then(() => {
+      console.log('변환된 url : ', videoPath);
+    });
+  };
+
+  useEffect(() => {
+    changeVideoToPath();
+  }, []);
+
   function onChangeCenter(value) {
     setCenter(value);
     setWall('');
     setLevel('');
     setHoldColor('');
+  }
+
+  function clearCenter(e) {
+    if (!e) {
+      onChangeCenter('');
+    }
   }
 
   const showDatePicker = () => {
@@ -52,7 +88,7 @@ function PostAddInfoScreen({navigation}) {
     hideDatePicker();
   };
 
-  function onPostAdd () {
+  function onPostAdd() {
     if (!center) {
       return alert('지점을 선택해주세요');
     } else if (!level) {
@@ -62,7 +98,6 @@ function PostAddInfoScreen({navigation}) {
     } else if (!solvedDate) {
       return alert('풀이 날짜를 선택해주세요');
     } else {
-      const formdata = new FormData();
       const data = {
         centerId: center,
         wallId: wall,
@@ -70,11 +105,16 @@ function PostAddInfoScreen({navigation}) {
         holdColor: holdColor,
         solvedDate: solvedDate,
         content: content,
-        memberId: 1, // 임시
+        mediaPath: videoPath,
       };
       console.log(data);
-      dispatch(postAdd(data)).then(() => {
-        alert('생성완료');
+      dispatch(postAdd(data)).then(res => {
+        if (res.type === 'postAdd/fulfilled') {
+          alert('성공적으로 생성되었습니다');
+          navigation.popToTop();
+        } else {
+          alert('다시 시도해주세요');
+        }
       });
     }
   }
@@ -82,14 +122,46 @@ function PostAddInfoScreen({navigation}) {
   return (
     <SafeAreaView style={styles.container}>
       <CustomSubHeader title="정보 입력" navigation={navigation} />
-      <Text>정보 입력</Text>
       <View style={styles.selectContainer}>
+        {/* <KeyboardAwareScrollView
+        style={styles.selectContainer}
+        showsVerticalScrollIndicator={false}> */}
         <View style={styles.box}>
           <Text style={styles.text}>
             지점<Text style={{color: '#F34D7F'}}> *</Text>
           </Text>
-          <View style={styles.pickerItem}>
-            <Picker
+          <View style={{...styles.pickerItem, zIndex: 3}}>
+            <AutocompleteDropdown
+              clearOnFocus={false}
+              closeOnBlur={true}
+              closeOnSubmit={true}
+              showChevron={false}
+              suggestionsListMaxHeight={260}
+              onSelectItem={item => {
+                item && onChangeCenter(item.id);
+              }}
+              onChangeText={e => clearCenter(e)}
+              onClear={e => clearCenter(e)}
+              dataSet={centerNameInfo}
+              textInputProps={{
+                placeholder: '지점을 입력해주세요',
+                placeholderTextColor: '#a7a7a7',
+                style: {color: 'black', fontSize: 14, marginLeft: 2},
+              }}
+              inputContainerStyle={{
+                backgroundColor: 'white',
+              }}
+              ClearIconComponent={
+                <CloseIcon width={16} style={{marginTop: 3, marginRight: 5}} />
+              }
+              EmptyResultComponent={
+                <Text style={{...styles.text, padding: 16}}>
+                  검색 지점이 존재하지 않습니다.
+                </Text>
+              }
+              emptyResultTextStyle={{color: 'black'}}
+            />
+            {/* <Picker
               mode="dropdown"
               dropdownIconColor="black"
               selectedValue={center}
@@ -98,7 +170,7 @@ function PostAddInfoScreen({navigation}) {
               <Picker.Item
                 style={styles.pickerPlaceHold}
                 label="선택 없음"
-                value=""
+                value="" 1
               />
               {centerInfo.map((item, id) => (
                 <Picker.Item
@@ -108,7 +180,7 @@ function PostAddInfoScreen({navigation}) {
                   value={item.id}
                 />
               ))}
-            </Picker>
+            </Picker> */}
           </View>
         </View>
 
@@ -128,9 +200,9 @@ function PostAddInfoScreen({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.sector.map((item, id) => (
+                ? centerInfo[center - 1]?.wallList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
                       label={item.name}
                       value={item.id}
@@ -160,11 +232,11 @@ function PostAddInfoScreen({navigation}) {
                 value=""
               />
               {center
-                ? centerInfo[center - 1]?.level.map((item, id) => (
+                ? centerInfo[center - 1]?.centerLevelList.map((item, idx) => (
                     <Picker.Item
-                      key={id}
+                      key={idx}
                       style={styles.pickerLabel}
-                      label={item.name}
+                      label={item.color}
                       value={item.id}
                     />
                   ))
@@ -210,7 +282,9 @@ function PostAddInfoScreen({navigation}) {
           <Text style={styles.text}>
             풀이 날짜<Text style={{color: '#F34D7F'}}> *</Text>
           </Text>
-          <TouchableOpacity style={styles.dateBox} onPress={showDatePicker}>
+          <TouchableOpacity
+            style={{...styles.dateBox, zIndex: -1}}
+            onPress={showDatePicker}>
             {solvedDate ? (
               <Text style={styles.text}>
                 {solvedDate.getFullYear() +
@@ -222,7 +296,7 @@ function PostAddInfoScreen({navigation}) {
             ) : (
               <Text style={styles.pickerPlaceHold}>날짜를 선택해주세요</Text>
             )}
-            <CalendarIcon />
+            <CalendarIcon style={{marginRight: -2}} />
           </TouchableOpacity>
           <DateTimePickerModal
             isVisible={isDatePickerVisible}
@@ -233,7 +307,7 @@ function PostAddInfoScreen({navigation}) {
           />
         </View>
 
-        <View style={{width: '80%', marginTop: 20}}>
+        <View style={{width: '100%', marginTop: 20}}>
           <TextInput
             style={styles.introInput}
             placeholder="본문을 작성해주세요 :)"
@@ -243,13 +317,13 @@ function PostAddInfoScreen({navigation}) {
             onChangeText={value => setContent(value)}
           />
         </View>
+        <TouchableOpacity onPress={onPostAdd} style={styles.button}>
+          <Text style={{color: 'white', fontSize: 18, fontWeight: '600'}}>
+            업로드
+          </Text>
+        </TouchableOpacity>
+        {/* </KeyboardAwareScrollView> */}
       </View>
-
-      <TouchableOpacity onPress={onPostAdd} style={styles.button}>
-        <Text style={{color: 'white', fontSize: 18, fontWeight: '600'}}>
-          업로드
-        </Text>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -262,12 +336,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectContainer: {
-    width: '100%',
-    alignItems: 'center',
-    marginVertical: '15%',
+    width: '80%',
+    marginVertical: 20,
+    marginHorizontal: 'auto',
   },
   box: {
-    width: '80%',
+    width: '100%',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
@@ -317,10 +391,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    width: '80%',
-    height: 40,
+    width: '100%',
+    height: 50,
     backgroundColor: '#F34D7F',
-    marginTop: '15%',
+    marginTop: 30,
+    marginBottom: 100,
   },
   introInput: {
     width: '100%',
@@ -331,7 +406,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 5,
     paddingHorizontal: 8,
-    height: 80,
+    height: 90,
   },
 });
 

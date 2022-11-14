@@ -7,10 +7,12 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
 import FollowScreen from '../screens/profile/FollowScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
-import CommentScreen from '../screens/profile/CommentScreen';
 import WingspanScreen from '../screens/accounts/WingspanScreen';
+import ChoiceVideoScreen from '../screens/postadd/ChoiceVideoScreen';
+import PostAddInfoScreen from '../screens/postadd/PostAddInfoScreen';
 
-import PostAddStack from './PostAddStack';
+import ProfileDrawer from './ProfileDrawer';
+
 import {getCurrentUser} from '../utils/Token';
 import {useSelector} from 'react-redux';
 
@@ -30,23 +32,23 @@ function ProfileStack({navigation, route}) {
 
   return (
     <Stack.Navigator
-      initialRouteName="메인프로필"
+      initialRouteName="프로필 메뉴"
       screenOptions={{
         headerShown: false,
       }}>
       <Stack.Screen
-        name="메인프로필"
-        component={ProfileScreen}
+        name="프로필 메뉴"
+        component={ProfileDrawer}
         initialParams={{
           initial: true,
           nickname,
         }}
       />
-      <Stack.Screen name="게시글 생성" component={PostAddStack} />
+      <Stack.Screen name="게시글 생성" component={ChoiceVideoScreen} />
+      <Stack.Screen name="정보 입력" component={PostAddInfoScreen} />
       <Stack.Screen name="프로필 설정" component={ProfileEditScreen} />
       <Stack.Screen name="팔로우" component={FollowScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
-      <Stack.Screen name="댓글" component={CommentScreen} />
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
       <Stack.Screen name="윙스팬" component={WingspanScreen} />
     </Stack.Navigator>

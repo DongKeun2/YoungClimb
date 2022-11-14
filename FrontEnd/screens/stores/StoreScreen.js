@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react'
-import {View, Text, Animated, StyleSheet, TouchableOpacity, BackHandler, Alert} from 'react-native';
+import {View, Text, Animated, StyleSheet, TouchableOpacity, Easing, BackHandler, Alert} from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
 import NaverMapView, {Marker, Align} from "react-native-nmap";
@@ -17,6 +17,8 @@ import { Toast } from '../../components/Toast';
 export default function StoreScreen({navigation, route}) {
   const [currentLocation, setCurrentLocation] = useState({latitude: 37.0575, longitude: 127.0575});
   const [currentCenter, setCurrentCenter] = useState({latitude: 37.0575, longitude: 127.0575})
+  const [zoom, setZoom] = useState(14)
+  const [currentZoom, setCurrentZoom] = useState(14)
   const [modalVisible, setModalVisible] = useState(false)
   const [exitAttempt, setExitAttempt] = useState(false) 
   const [rerender, setRerender] = useState(1)
@@ -26,6 +28,11 @@ export default function StoreScreen({navigation, route}) {
   const [climbingLocations, setClimbingLocations] = useState([])
   const routeName = useRoute()
   const toastRef = useRef(null);
+  const spinValue = useRef(new Animated.Value(0)).current
+  const spin = spinValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg']
+  })
   const onPressExit = useCallback(()=>{
       toastRef.current.show("앱을 종료하려면 뒤로가기를 한번 더 눌러주세요");
   }, []);
@@ -59,7 +66,7 @@ export default function StoreScreen({navigation, route}) {
       },
       error => {
         setCurrentLocation({latitude: 37.5873, longitude: 127.0575})
-        console.error(error.code, error.message,10);
+        setCurrentCenter({latitude: 37.5873, longitude: 127.0575})
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );
@@ -86,21 +93,40 @@ export default function StoreScreen({navigation, route}) {
     )
     .then((res)=>{
         setClimbingLocations(res.data)
+        setTimeout(()=>spinValue.setValue(0), 600)
       })
     .catch((err)=>{
       console.log(err.message,'err')
+      setTimeout(()=>spinValue.setValue(0), 2000)
     })
-    return () => {
-			source.cancel();
-		}
-  },[currentLocation])
+  },[currentLocation, rerender])
 
   const onSearchThisRegion = ()=>{
     setCurrentLocation(currentCenter)
+    setCurrentZoom(zoom)
   }
 
   const onRefresh = () =>{
     setRerender(rerender+1)
+    setCurrentZoom(14)
+    setZoom(14)
+    Animated.loop(
+      Animated.timing(
+        spinValue,
+        {
+         toValue: 1,
+         duration: 1200,
+         easing: Easing.linear,
+         useNativeDriver: true
+        }
+      ), {iterations: 3}
+     ).start();
+  }
+
+  const setCurrents = (e) => {
+    setCurrentCenter({latitude:e.latitude,longitude:e.longitude})
+    setZoom(e.zoom)
+
   }
 
   return (
@@ -113,10 +139,13 @@ export default function StoreScreen({navigation, route}) {
         </TouchableOpacity>
       
       <TouchableOpacity
+        hitSlop={10}
         style={{...styles.button, zIndex:0.5, borderRadius:3, width:30,position:'absolute', backgroundColor:'white',top:15, right:15}} 
         onPress={()=>{onRefresh()}}
       >
-        <Refresh/>
+        <Animated.View style={{height:'100%', width:'100%',justifyContent:'center', alignItems:'center', transform:[{rotate: spin}]}}>
+          <Refresh/>
+        </Animated.View>
         </TouchableOpacity>
       
       {/* <TouchableOpacity>refresh</TouchableOpacity> */}
@@ -124,9 +153,9 @@ export default function StoreScreen({navigation, route}) {
         <NaverMapView style={{width: '100%', height: '100%'}}
           useTextureView={true}
           onMapClick={e => locationHandler(e)}
-          center={{...currentLocation, zoom: 14}}
+          center={{...currentLocation, zoom: currentZoom}}
           zoomControl ={true}
-          onCameraChange={(e)=>{setCurrentCenter({latitude:e.latitude,longitude:e.longitude})}}
+          onCameraChange={(e)=>{setCurrents(e)}}
           >
             {/*             받은 정보 map         */}
             {climbingLocations.map((center, idx)=>{

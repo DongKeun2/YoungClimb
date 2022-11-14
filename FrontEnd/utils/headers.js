@@ -1,11 +1,24 @@
 import {getAccessToken} from './Token';
 
-function getConfig() {
-  const headers = {Authorization: `Bearer ${getAccessToken()}`};
+async function getConfig() {
+  const token = await getAccessToken();
+  const header = {Authorization: `Bearer ${token}`};
+
   const config = {
-    headers,
+    headers: header,
   };
+
   return config;
 }
+
+async function getHeader() {
+  const token = await getAccessToken();
+
+  const header = `Bearer ${token}`;
+
+  return header;
+}
+
+export {getHeader};
 
 export default getConfig;

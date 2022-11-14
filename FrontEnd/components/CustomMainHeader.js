@@ -4,10 +4,13 @@ import {TouchableOpacity, Text, StyleSheet, View, Image} from 'react-native';
 import mainLogo from '../assets/image/main/logo.png';
 import PostAddIcon from '../assets/image/header/postAddIcon.svg';
 import NoticeIcon from '../assets/image/header/noticeIcon.svg';
+import NoticeActiveIcon from '../assets/image/header/noticeActiveIcon.svg'
 
 import DropDown from './Dropdown';
+import { useSelector } from 'react-redux';
 
 function CustomMainHeader(props) {
+  const newNoti = useSelector(state=>state.notification.newNoti)
   return props.type === '홈' ? (
     <View style={styles.container}>
       <Image style={styles.logoImg} source={mainLogo} />
@@ -22,7 +25,11 @@ function CustomMainHeader(props) {
           onPress={() =>
             props.navigation ? props.navigation.navigate('알림') : null
           }>
+          {newNoti ?
+          <NoticeActiveIcon style={{marginRight: 10, marginTop:2}} />
+          :
           <NoticeIcon style={{marginRight: 10}} />
+        }
         </TouchableOpacity>
       </View>
     </View>

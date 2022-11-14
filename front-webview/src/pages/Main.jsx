@@ -27,7 +27,7 @@ const Main = () => {
   const [page, setPage] = useState(1);
 
   const GoPage = (page) => {
-    if (page == 1) {
+    if (page === 1) {
       setOpen(true);
     } else {
       setOpen(false);
@@ -50,7 +50,7 @@ const Main = () => {
 
       if (deltaY > 0) {
         //스크롤 내릴때
-        for (let i = 1; i < 9; i++) {
+        for (let i = 1; i < 1; i++) {
           if (scrollTop >= pageHeight * (i - 1) && scrollTop < pageHeight * i) {
             setScrollIndex(i + 1);
             setPage(i + 1);

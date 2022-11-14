@@ -64,6 +64,7 @@ export const Toast = forwardRef((props, ref) => {
 
 const styles = StyleSheet.create({
     rootContainer: {
+        zIndex:10,
         width:340,
         position: "absolute",
         bottom: 15,
