@@ -91,6 +91,21 @@ const fetchDetail = createAsyncThunk(
   },
 );
 
+const fetchComment = createAsyncThunk(
+  'fetchComment',
+  async (boardId, {rejectWithValue}) => {
+    console.log('게시글 상세 요청 보냄');
+    try {
+      const res = await axios.get(api.feedComment(boardId), await getConfig());
+      console.log('게시글 댓글 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('게시글 댓글 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const likeBoard = createAsyncThunk(
   'likeBoard',
   async (boardId, {rejectWithValue}) => {
@@ -193,6 +208,24 @@ const commentLikeSubmit = createAsyncThunk(
   },
 );
 
+const recommentAdd = createAsyncThunk(
+  'recommentAdd',
+  async (data, {rejectWithValue}) => {
+    try {
+      const res = await axios.post(
+        api.recomment(data.boardId, data.commentId),
+        data.comment,
+        await getConfig(),
+      );
+      console.log('대댓글 성공');
+      return res.data;
+    } catch (err) {
+      console.log('대댓글 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: [],
   boardInfoComment: {},
@@ -201,6 +234,8 @@ const initialState = {
   uploadVideo: null,
   videoPath: '',
   reels: [],
+  commentIdForRe: 0,
+  isFocusedInput: false,
 };
 
 export const PostSlice = createSlice({
@@ -209,6 +244,12 @@ export const PostSlice = createSlice({
   reducers: {
     changeUploadVideo: (state, action) => {
       state.uploadVideo = action.payload;
+    },
+    changeCommentIdForRe: (state, action) => {
+      state.commentIdForRe = action.payload;
+    },
+    changeIsFocusedInput: (state, action) => {
+      state.isFocusedInput = action.payload;
     },
   },
   extraReducers: {
@@ -220,6 +261,9 @@ export const PostSlice = createSlice({
     },
     [fetchDetail.fulfilled]: (state, action) => {
       state.boardInfo = action.payload.boardDto;
+      state.commentInfo = action.payload.commentDtos;
+    },
+    [fetchComment.fulfilled]: (state, action) => {
       state.commentInfo = action.payload.commentDtos;
     },
     [fetchHomeFeed.fulfilled]: (state, action) => {
@@ -251,14 +295,17 @@ export {
   feedLikeSubmit,
   feedScrapSubmit,
   fetchDetail,
+  fetchComment,
   likeBoard,
   scrapBoard,
   getVideoPath,
   fetchReels,
   commentLikeSubmit,
   commentAdd,
+  recommentAdd,
 };
 
-export const {changeUploadVideo} = PostSlice.actions;
+export const {changeUploadVideo, changeCommentIdForRe, changeIsFocusedInput} =
+  PostSlice.actions;
 
 export default PostSlice.reducer;

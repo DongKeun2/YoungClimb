@@ -12,7 +12,11 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-import {commentLikeSubmit} from '../utils/slices/PostSlice';
+import {
+  commentLikeSubmit,
+  changeCommentIdForRe,
+  changeIsFocusedInput,
+} from '../utils/slices/PostSlice';
 
 function Comment({comment, navigation}) {
   const dispatch = useDispatch();
@@ -27,6 +31,11 @@ function Comment({comment, navigation}) {
 
   const viewRecomment = () => {
     setIsViewRecomment(true);
+  };
+
+  const readyReComment = id => {
+    dispatch(changeCommentIdForRe(id));
+    dispatch(changeIsFocusedInput(true));
   };
 
   const commentLike = id => {
@@ -65,10 +74,10 @@ function Comment({comment, navigation}) {
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
             {comment.createdAt}
           </Text>
-          <TouchableOpacity onPress={() => console.log('눌림')}>
-            <Text style={{fontSize: 12, color: '#a7a7a7', marginLeft: 8}}>
-              답글 달기
-            </Text>
+          <TouchableOpacity
+            style={{paddingHorizontal: 8}}
+            onPress={() => readyReComment(comment.id)}>
+            <Text style={{fontSize: 12, color: '#a7a7a7'}}>답글 달기</Text>
           </TouchableOpacity>
         </View>
         <View style={{marginTop: 3}}>
@@ -80,13 +89,7 @@ function Comment({comment, navigation}) {
             </Text>
           ) : isViewRecomment && comment.reComment.length ? (
             comment.reComment.map((recomment, idx) => {
-              return (
-                <Recomment
-                  key={idx}
-                  recomment={recomment}
-                  navigation={navigation}
-                />
-              );
+              return <Recomment key={idx} recomment={recomment} />;
             })
           ) : null}
         </View>

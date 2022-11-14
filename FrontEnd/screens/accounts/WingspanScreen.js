@@ -54,22 +54,22 @@ function WingSpanScreen({navigation, route}) {
     // console.log(formdata);
     dispatch(wingspan(formdata)).then(res => {
       if (res.type === 'wingspan/rejected') {
-        console.log('윙스팬 측정 실패함 ㅠㅠ');
+        alert('올바른 사진을 업로드해주세요.');
       } else {
-        console.log('측정 결과', res.payload.wingspan);
         if (route.params.type === 'signup') {
           console.log('회원가입에서 보냄');
           dispatch(
             changeSignupForm({
               name: 'wingspan',
-              value: String(res.payload.wingspan),
+              value: String(res.payload.wingspan.toFixed(0)),
             }),
           );
         } else if (route.params.type === 'edit') {
+          console.log('수정에서 보냄', res.payload.wingspan);
           dispatch(
             changeEditForm({
               name: 'wingspan',
-              value: String(res.payload.wingspan),
+              value: String(res.payload.wingspan.toFixed(0)),
             }),
           );
         }

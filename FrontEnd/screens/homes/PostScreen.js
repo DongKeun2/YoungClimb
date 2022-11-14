@@ -33,7 +33,9 @@ function PostScreen({navigation, route}) {
       <CustomSubHeader title="댓글" navigation={navigation} />
       {board ? (
         <>
-          <ScrollView showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={{marginBottom: 50}}
+            showsVerticalScrollIndicator={false}>
             <View style={styles.headerBox}>
               {/* 피드 상단 헤더 */}
               <View style={styles.feedHeader}>

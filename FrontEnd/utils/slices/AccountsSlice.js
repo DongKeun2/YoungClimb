@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosTemp from '../axios';
 import api from '../api';
 import getConfig, {getHeader} from '../headers';
 
@@ -8,6 +9,8 @@ import {
   removeAccessToken,
   setCurrentUser,
   removeCurrentUser,
+  setRefreshToken,
+  removeRefreshToken,
 } from '../Token';
 
 const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
@@ -16,6 +19,7 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
     const res = await axios.post(api.login(), data, {});
     console.log('로그인 결과', res.data);
     setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
@@ -27,15 +31,17 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   console.log('로그아웃 시도');
   try {
+    // await axios.post(api.fcmtokendelete(), {}, await getConfig());
     const res = await axios.post(api.logout(), {}, await getConfig());
     console.log('로그아웃 성공');
-    await axios.post(api.fcmtokendelete(),{},await getConfig())
     removeAccessToken();
+    removeRefreshToken();
     removeCurrentUser();
     return res.data;
   } catch (err) {
     console.log('로그아웃 실패', err.response);
     removeAccessToken();
+    removeRefreshToken();
     removeCurrentUser();
     return rejectWithValue(err.response.data);
   }
@@ -74,6 +80,7 @@ const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
     const res = await axios.post(api.signup(), data, {});
     console.log(res.payload);
     setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
@@ -116,6 +123,7 @@ const profileCreate = createAsyncThunk(
       );
       console.log('프로필 생성 성공', res.data);
       setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
@@ -130,10 +138,15 @@ const profileEdit = createAsyncThunk(
   async (data, {rejectWithValue}) => {
     console.log('수정 요청', data);
     try {
-      const res = await axios.post(api.profileEdit(), data, await getConfig());
+      const res = await axiosTemp.post(
+        api.profileEdit(),
+        data,
+        await getConfig(),
+      );
       alert('수정 완료');
       console.log('프로필 수정 성공', res.data);
       setAccessToken(res.data.accessToken);
+      setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
@@ -331,7 +344,6 @@ export const AccountsSlice = createSlice({
     },
     [checkEmail.rejected]: (state, action) => {
       alert('사용 불가능한 이메일입니다.');
-      console.log(action.payload);
     },
     [checkNickname.fulfilled]: (state, action) => {
       if (action.payload === false) {
@@ -341,7 +353,6 @@ export const AccountsSlice = createSlice({
     },
     [checkNickname.rejected]: (state, action) => {
       alert('사용 불가능한 닉네임입니다.');
-      console.log(action.payload);
     },
     [logout.fulfilled]: state => {
       state.loginState = false;

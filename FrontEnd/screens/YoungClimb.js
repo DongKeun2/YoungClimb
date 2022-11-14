@@ -4,7 +4,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 
 import React, {useRef, useState, useEffect, useCallback} from 'react';
-import { Platform, PermissionsAndroid, Linking, Alert, View } from 'react-native';
+
+import {Platform, PermissionsAndroid, Linking, Alert} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -38,13 +39,18 @@ import {
   getCurrentUser,
   removeAccessToken,
   removeCurrentUser,
+  removeRefreshToken,
 } from '../utils/Token';
 import {fetchCurrentUser} from '../utils/slices/AccountsSlice';
 import {fetchCenterInfo} from '../utils/slices/CenterSlice';
-import {StartPer, AsyncAlert, checkMultiplePermissions} from '../utils/permissions.js'
+import {
+  StartPer,
+  AsyncAlert,
+  checkMultiplePermissions,
+} from '../utils/permissions.js';
 
-import { handleInitialFCM, onRefreshFCMToken } from '../utils/fcm/fcmGetToken';
-import { changeNewNoti, changeNotiAllow } from '../utils/slices/notificationSlice';
+import {handleInitialFCM, onRefreshFCMToken} from '../utils/fcm/fcmGetToken';
+import {changeNewNoti} from '../utils/slices/notificationSlice';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -63,6 +69,7 @@ export default function YoungClimb() {
 
   },[])
 
+
   useEffect(() => {
     const permissionList = [
       PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -70,60 +77,69 @@ export default function YoungClimb() {
       // PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION,
       PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
       // PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-     ]
+    ];
     const permissionDict = {
       'android.permission.CAMERA': '카메라',
       'android.permission.ACCESS_FINE_LOCATION': '위치',
       'android.permission.READ_EXTERNAL_STORAGE': '저장공간',
-    }
-    const neverCallList = []
-    const callRes = async()=> {
-      try{
-        const result = await checkMultiplePermissions(permissionList)
+    };
+    const neverCallList = [];
+    const callRes = async () => {
+      try {
+        const result = await checkMultiplePermissions(permissionList);
         if (!login && !result) {
-            await AsyncAlert('Young Climb 앱 권한 설정', '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요', 
-            async ()=> { 
-              try{
-              for (const per of permissionList) {
-                const result = await StartPer(per)
-                if (result === per) {
-                  neverCallList.push(per)
+          await AsyncAlert(
+            'Young Climb 앱 권한 설정',
+            '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요',
+            async () => {
+              try {
+                for (const per of permissionList) {
+                  const result = await StartPer(per);
+                  if (result === per) {
+                    neverCallList.push(per);
+                  }
                 }
+              } catch (err) {
+                console.log(err);
               }
-            } catch(err){console.log(err)}
-          })
-          }
-        if (neverCallList.length){
-          let txt = '' 
-          neverCallList.forEach((content)=>{
-            txt += permissionDict[content] + `\n`
-          }) 
-          AsyncAlert('권한 요청 거부된 요청','다음의 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다. \n \n'+txt,Linking.openSettings)
+            },
+          );
         }
-      } catch (err){console.log(err)}
-    }
-    callRes()
-    
-    if(!login){
-      // 로그인 되어있지 않은 상태면 fcmToken 받아와서 async에 저장
-      handleInitialFCM()
-    } else{
-      onRefreshFCMToken()
-    }
+        if (neverCallList.length) {
+          let txt = '';
+          neverCallList.forEach(content => {
+            txt += permissionDict[content] + '\n';
+          });
+          AsyncAlert(
+            '권한 요청 거부된 요청',
+            '다음의 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다. \n \n' +
+              txt,
+            Linking.openSettings,
+          );
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    callRes();
 
-},[]);
+    if (!login) {
+      // 로그인 되어있지 않은 상태면 fcmToken 받아와서 async에 저장
+      handleInitialFCM();
+    } else {
+      onRefreshFCMToken();
+    }
+  }, []);
 
   useEffect(() => {
-    console.log('앱 새로고침');
     dispatch(fetchCenterInfo());
 
     getCurrentUser().then(res => {
       if (res) {
-        console.log('로그인됨', res);
         dispatch(fetchCurrentUser(res));
       } else {
-        console.log('비로그인상태임');
         removeAccessToken();
+        removeRefreshToken();
         removeCurrentUser();
       }
     });

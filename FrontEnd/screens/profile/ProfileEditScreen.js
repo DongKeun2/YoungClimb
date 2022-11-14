@@ -26,7 +26,6 @@ import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
 import Camera from '../../assets/image/main/camera.svg';
 import checkIcon from '../../assets/image/main/done.png';
-import {useIsFocused} from '@react-navigation/native';
 
 function ProfileEditScreen({navigation}) {
   const dispatch = useDispatch();
@@ -79,8 +78,6 @@ function ProfileEditScreen({navigation}) {
     );
     console.log('프로필 사진 변경');
   };
-
-  const isFocused = useIsFocused();
   useEffect(() => {
     setIsChange(false);
     dispatch(changeUploadImg(null));
@@ -112,7 +109,7 @@ function ProfileEditScreen({navigation}) {
       changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
     );
     console.log('프로필 설정 입장');
-  }, [dispatch, currentUser, isFocused]);
+  }, [dispatch, currentUser]);
 
   function reset() {
     alert('초기화');
@@ -181,8 +178,6 @@ function ProfileEditScreen({navigation}) {
       image: currentUser.image,
     };
 
-    console.log(data);
-    console.log('사진여부', isPhoto);
     if (isPhoto) {
       dispatch(saveImage(formData)).then(res => {
         console.log('사진 저장 결과', res.payload);
