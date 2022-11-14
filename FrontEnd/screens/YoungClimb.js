@@ -145,7 +145,7 @@ export default function YoungClimb() {
             {
               text: "동의하지 않음",                              // 버튼 제목
               onPress: async() => {
-                axios.post(api.fcmtokendelete(),{},await getConfig()).then((res)=>{console.log(res)}).catch((err)=>{console.log(err)})
+                // axios.post(api.fcmtokendelete(),{},await getConfig()).then((res)=>{console.log(res)}).catch((err)=>{console.log(err)})
                 await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))},     //onPress 이벤트시 콘솔창에 로그를 찍는다
               style: "cancel"
             },
