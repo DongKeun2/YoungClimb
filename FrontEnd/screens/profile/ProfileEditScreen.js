@@ -79,8 +79,6 @@ function ProfileEditScreen({navigation}) {
     );
     console.log('프로필 사진 변경');
   };
-
-  const isFocused = useIsFocused();
   useEffect(() => {
     setIsChange(false);
     dispatch(changeUploadImg(null));
@@ -112,7 +110,7 @@ function ProfileEditScreen({navigation}) {
       changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
     );
     console.log('프로필 설정 입장');
-  }, [dispatch, currentUser, isFocused]);
+  }, [dispatch, currentUser]);
 
   function reset() {
     alert('초기화');
@@ -175,7 +173,7 @@ function ProfileEditScreen({navigation}) {
     const data = {
       nickname: editForm.nickname.value,
       intro: editForm.intro.value,
-      heigh: editForm.height.value,
+      height: editForm.height.value,
       shoeSize: editForm.shoeSize.value,
       wingspan: editForm.wingspan.value,
       image: currentUser.image,
