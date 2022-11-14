@@ -15,7 +15,6 @@ import Input from '../../components/Input';
 import CustomButton from '../../components/CustomBtn';
 import title from '../../assets/image/main/title.png';
 
-const windowHeight = Dimensions.get('window').height;
 
 function LoginScreen({navigation}) {
   const dispatch = useDispatch();
