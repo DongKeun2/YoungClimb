@@ -1,5 +1,5 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {useFocusEffect, useRoute} from '@react-navigation/native';
+import {useFocusEffect, useRoute, useIsFocused} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 
 import {
@@ -18,6 +18,7 @@ import DeclareSheet from '../../components/DeclareSheet';
 import {fetchHomeFeed} from '../../utils/slices/PostSlice';
 
 function HomeScreen({navigation, route}) {
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [visablePostIndex, setVisablePostIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -65,7 +66,6 @@ function HomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    dispatch(fetchHomeFeed(1));
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');
@@ -74,6 +74,10 @@ function HomeScreen({navigation, route}) {
       isBackHandler = false;
     };
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchHomeFeed(1));
+  }, [isFocused]);
 
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(

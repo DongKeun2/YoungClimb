@@ -15,6 +15,7 @@ import {YCLevelColorDict} from '../assets/info/ColorInfo';
 import {
   commentLikeSubmit,
   changeCommentIdForRe,
+  changeNicknameForRe,
   changeIsFocusedInput,
 } from '../utils/slices/PostSlice';
 
@@ -33,8 +34,9 @@ function Comment({comment, navigation}) {
     setIsViewRecomment(true);
   };
 
-  const readyReComment = id => {
+  const readyReComment = (id, nickname) => {
     dispatch(changeCommentIdForRe(id));
+    dispatch(changeNicknameForRe(nickname));
     dispatch(changeIsFocusedInput(true));
   };
 
@@ -76,7 +78,7 @@ function Comment({comment, navigation}) {
           </Text>
           <TouchableOpacity
             style={{paddingHorizontal: 8}}
-            onPress={() => readyReComment(comment.id)}>
+            onPress={() => readyReComment(comment.id, comment.user.nickname)}>
             <Text style={{fontSize: 12, color: '#a7a7a7'}}>답글 달기</Text>
           </TouchableOpacity>
         </View>

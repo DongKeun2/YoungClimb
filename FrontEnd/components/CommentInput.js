@@ -10,6 +10,7 @@ import {
   fetchFeedComment,
   fetchComment,
   changeCommentIdForRe,
+  changeNicknameForRe,
   changeIsFocusedInput,
   recommentAdd,
 } from '../utils/slices/PostSlice';
@@ -22,6 +23,7 @@ function CommentInput({boardId, navigation}) {
   const currentUser = useSelector(state => state.accounts.currentUser);
 
   const commentIdForRe = useSelector(state => state.post.commentIdForRe);
+  const nicknameForRe = useSelector(state => state.post.nicknameForRe);
   const isFocusedInput = useSelector(state => state.post.isFocusedInput);
 
   const [text, changeText] = useState('');
@@ -36,12 +38,14 @@ function CommentInput({boardId, navigation}) {
   useEffect(() => {
     return () => {
       dispatch(changeCommentIdForRe(0));
+      dispatch(changeNicknameForRe(''));
       dispatch(changeIsFocusedInput(false));
     };
   }, []);
 
   const onBlur = () => {
     dispatch(changeCommentIdForRe(0));
+    dispatch(changeNicknameForRe(''));
     dispatch(changeIsFocusedInput(false));
   };
 
@@ -77,6 +81,7 @@ function CommentInput({boardId, navigation}) {
           changeText('');
           dispatch(fetchFeedComment(boardId));
           dispatch(changeCommentIdForRe(0));
+          dispatch(changeNicknameForRe(''));
           dispatch(changeIsFocusedInput(false));
           dispatch(fetchComment(boardId));
           inputRef.current.blur();
@@ -99,7 +104,9 @@ function CommentInput({boardId, navigation}) {
         value={text}
         multiline={true}
         placeholder={
-          isFocusedInput ? '답글을 입력해주세요' : '댓글을 입력해주세요'
+          isFocusedInput
+            ? `${nicknameForRe}` + ' 님에게 보낼 답글을 입력해주세요'
+            : '댓글을 입력해주세요'
         }
         placeholderTextColor="#a7a7a7"
       />
