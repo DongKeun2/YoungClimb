@@ -32,8 +32,8 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   console.log('로그아웃 시도');
   try {
     // await axios.post(api.fcmtokendelete(), {}, await getConfig());
-    const res = await axios.post(api.logout(), {}, await getConfig());
-    console.log('로그아웃 성공');
+    const res = await axiosTemp.post(api.logout(), {}, await getConfig());
+    console.log('로그아웃', res.status);
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
@@ -99,7 +99,6 @@ const saveImage = createAsyncThunk(
         data: formData,
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: await getHeader(),
         },
       });
       console.log('사진 저장 성공', res.data);
@@ -116,7 +115,7 @@ const profileCreate = createAsyncThunk(
   async (data, {rejectWithValue}) => {
     console.log('회원가입 후 프로필 자기소개 입력', data);
     try {
-      const res = await axios.post(
+      const res = await axiosTemp.post(
         api.profileCreate(),
         data,
         await getConfig(),

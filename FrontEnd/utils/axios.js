@@ -46,7 +46,6 @@ axiosTemp.interceptors.response.use(
         console.log('새로운 config', originalRequest);
         return axiosTemp(originalRequest);
       } catch (err) {
-        console.log('refresh도 실패', err);
         removeAccessToken();
         removeRefreshToken();
         removeCurrentUser();
