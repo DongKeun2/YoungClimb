@@ -86,7 +86,9 @@ function PostScreen({navigation, route}) {
               </View>
               {/* 본문 */}
               {board.content ? (
-                <Text style={styles.contentPreview}>{board.content}</Text>
+                <View style={styles.contentSummary}>
+                  <Text style={styles.contentPreview}>{board.content}</Text>
+                </View>
               ) : null}
             </View>
             {comments?.map((comment, idx) => {
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
   },
   contentSummary: {
     marginVertical: 3,
-    marginHorizontal: 10,
+    marginHorizontal: 13,
   },
   contentPreview: {
     color: 'black',

@@ -23,6 +23,8 @@ import FillScrap from '../assets/image/feed/fillScrap.svg';
 import WhiteHeart from '../assets/image/reels/whiteHeart.svg';
 import FillHeart from '../assets/image/feed/fillHeart.svg';
 import CommentIcon from '../assets/image/reels/commentIcon.svg';
+import MuteBtn from '../assets/image/videoBtn/muteBtn.svg';
+import SoundBtn from '../assets/image/videoBtn/soundBtn.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
@@ -125,15 +127,14 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
         </View>
       </View>
       {/* 비디오 */}
-      <View
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={changeMuted}
         style={{
           width: Dimensions.get('window').width,
           height: viewHeight - bottomTabBarHeight,
         }}>
-        <TouchableOpacity
-          style={styles.videoBox}
-          activeOpacity={1}
-          onPress={changeMuted}>
+        <View style={styles.videoBox}>
           <Video
             source={{uri: item.mediaPath}}
             style={styles.backgroundVideo}
@@ -144,17 +145,40 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
             paused={!isViewable}
             muted={isMuted}
           />
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
+        {isMuted ? (
+          <MuteBtn
+            color="white"
+            width={28}
+            height={28}
+            style={{marginBottom: 8, marginHorizontal: 10}}
+          />
+        ) : (
+          <SoundBtn
+            color="white"
+            width={28}
+            height={28}
+            style={{marginBottom: 8, marginHorizontal: 10}}
+          />
+        )}
         <TouchableOpacity
           onPress={() => reelsLike(item.id)}
           disabled={likePress}>
           {isLiked ? (
-            <FillHeart width={28} height={28} style={{marginBottom: 10}} />
+            <FillHeart
+              width={28}
+              height={28}
+              style={{marginVertical: 5, marginHorizontal: 10}}
+            />
           ) : (
-            <WhiteHeart width={28} height={28} style={{marginBottom: 10}} />
+            <WhiteHeart
+              width={28}
+              height={28}
+              style={{marginVertical: 5, marginHorizontal: 10}}
+            />
           )}
         </TouchableOpacity>
         <TouchableOpacity
@@ -162,16 +186,32 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
           disabled={scrapPress}>
           {isScrap ? (
             <FillScrap
-              width={30}
-              height={30}
-              style={{marginBottom: 12, marginLeft: -0.8}}
+              width={28}
+              height={28}
+              style={{marginVertical: 6, marginHorizontal: 10}}
             />
           ) : (
-            <WhiteScrap width={28} height={28} style={{marginBottom: 12}} />
+            <WhiteScrap
+              width={28}
+              height={28}
+              style={{marginVertical: 6, marginHorizontal: 10}}
+            />
           )}
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => null}>
-          <CommentIcon width={26} height={24} style={{marginLeft: 0.5}} />
+        <TouchableOpacity
+          onPress={() =>
+            navigation ? navigation.navigate('댓글', {boardId: item.id}) : null
+          }>
+          <CommentIcon
+            width={26}
+            height={24}
+            style={{
+              marginLeft: 11,
+              marginRight: 10,
+              marginTop: 6,
+              marginBottom: 10,
+            }}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -231,8 +271,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     position: 'absolute',
-    bottom: 20,
-    right: 10,
+    bottom: 10,
+    right: 0,
     zIndex: 3,
   },
 });

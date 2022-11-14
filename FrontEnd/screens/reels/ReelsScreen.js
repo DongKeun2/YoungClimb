@@ -2,11 +2,11 @@ import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {BackHandler} from 'react-native';
-import {Toast} from '../components/Toast';
+import {Toast} from '../../components/Toast';
 
-import ReelsList from '../components/ReelsList';
+import ReelsList from '../../components/ReelsList';
 
-import {fetchReels} from '../utils/slices/PostSlice';
+import {fetchReels} from '../../utils/slices/PostSlice';
 
 function RandomScreen({navigation}) {
   const isFocused = useIsFocused();
