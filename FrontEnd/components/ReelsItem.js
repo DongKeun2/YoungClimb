@@ -16,7 +16,6 @@ import UserAvatar from './UserAvatar';
 import HoldLabel from './HoldLabel';
 import LevelLabel from './LevelLabel';
 
-import avatar from '../assets/image/initial/background.png';
 import HoldIcon from '../assets/image/hold/hold.svg';
 import WhiteScrap from '../assets/image/reels/whiteScrap.svg';
 import FillScrap from '../assets/image/feed/fillScrap.svg';
@@ -91,7 +90,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
       <View style={styles.reelsInfo}>
         <View style={styles.userGroup}>
           <View style={styles.iconText}>
-            <UserAvatar source={avatar} size={36} />
+            <UserAvatar source={{uri: item.createUser.image}} size={36} />
             <View style={{...styles.iconText, marginLeft: 8, marginBottom: 2}}>
               <Text
                 style={{
