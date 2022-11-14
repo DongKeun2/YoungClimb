@@ -33,4 +33,9 @@ public class Report {
     // 신고 처리 여부
     @Column(name = "report_flag")
     private Integer flag;
+
+    public Report setFlag(Integer num) {
+        this.flag = num;
+        return this;
+    }
 }
