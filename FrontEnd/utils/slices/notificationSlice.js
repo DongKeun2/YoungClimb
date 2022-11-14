@@ -20,48 +20,24 @@ const fetchNotificationList = createAsyncThunk(
 );
 
 let newNoti
-AsyncStorage.getItem('newNoti',(err,result)=>{
-  if (result){
-    newNoti = true}
-});
-let followNoti
-AsyncStorage.getItem('followNoti',(err,result)=>{
-  if (result){
-  followNoti = true}
+AsyncStorage.getItem('newNoti').then((res)=>{
+  if (res){
+    newNoti = true
+  } else{ newNoti =false }
 })
-let likeNoti
-AsyncStorage.getItem('likeNoti',(err,result)=>{
-  if (result){
-  likeNoti = true}
+let notiAllow
+AsyncStorage.getItem('notiAllow').then((res)=>{
+  if (res){
+    notiAllow = true
+  } else{ notiAllow =false }
 })
-let commentNoti
-AsyncStorage.getItem('commentNoti',(err,result)=>{
-  if (result){
-  commentNoti = true}
-})
-let commentLikeNoti
-AsyncStorage.getItem('commentLikeNoti',(err,result)=>{
-  if (result){
-  commentLikeNoti = true}
-})
-let subCommentNoti
-AsyncStorage.getItem('subCommentNotiNoti',(err,result)=>{
-  if (result){
-  subCommentNoti = true}
-})
+
 
 
 const initialState = {
   notifications: [],
-  newNoti: newNoti||false,
-  notiAllow: {
-    followNoti: followNoti||true,
-    likeNoti: likeNoti||true,
-    commentNoti: commentNoti||true,
-    commentLikeNoti:commentLikeNoti||true,
-    subCommentNoti:subCommentNoti||true
-  },
-  message: false
+  newNoti: newNoti,
+  notiAllow: notiAllow||false,
 };
 
 export const NotificationSlice = createSlice({
@@ -74,9 +50,7 @@ export const NotificationSlice = createSlice({
     changeNotiAllow: (state, action) => {
       state.notiAllow = action.payload;
     },
-    changeMessage:(state, action) => {
-      state.message = action.payload
-    }
+
   },
   extraReducers: {
     [fetchNotificationList.fulfilled]: (state, action) => {

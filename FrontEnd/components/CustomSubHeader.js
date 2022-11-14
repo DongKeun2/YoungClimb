@@ -24,10 +24,9 @@ function CustomSubHeader({
 }) {
   const uploadVideo = useSelector(state => state.post.uploadVideo);
   const dispatch=useDispatch()
-  const toastNoticeRef = useRef(null);
+  const toastNoticesubRef = useRef(null);
   const onMsgIncome = useCallback(async remoteMessage => {
-    await toastNoticeRef.current.show(remoteMessage.notification.body);
-    toastNoticeRef.current=null
+    await toastNoticesubRef.current.show(remoteMessage.notification.body);
   });
 
   useEffect(()=>{
@@ -37,13 +36,14 @@ function CustomSubHeader({
         await AsyncStorage.setItem('newNoti','true')
         dispatch(changeNewNoti(true))
         return remoteMessage
-      }catch{}
+      }catch{err=>console.log(err)}
     })
 
-  },[])
+  },[toastNoticesubRef])
+
   return isVideo ? (
     <View style={styles.headerbox}>
-      <ToastNotice ref={toastNoticeRef} />
+      <ToastNotice ref={toastNoticesubRef} />
       <TouchableOpacity
         style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
@@ -70,7 +70,7 @@ function CustomSubHeader({
     </View>
   ) : isProfile ? (
     <View style={styles.headerbox}>
-      <ToastNotice ref={toastNoticeRef} />
+      <ToastNotice ref={toastNoticesubRef} />
       <TouchableOpacity
         style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
@@ -94,7 +94,7 @@ function CustomSubHeader({
     </View>
   ) : (
     <View style={styles.header}>
-      <ToastNotice ref={toastNoticeRef} />
+      <ToastNotice ref={toastNoticesubRef} />
       <TouchableOpacity
         style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
@@ -135,7 +135,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   container: {
-    position:'relative',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
