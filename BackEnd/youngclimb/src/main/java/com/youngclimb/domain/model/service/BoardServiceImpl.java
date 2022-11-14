@@ -157,6 +157,15 @@ public class BoardServiceImpl implements BoardService {
         return mainPageDto;
     }
 
+    // 게시글 조회수 증가
+    public Long updateView(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow();
+
+        boardRepository.save(board.addView());
+
+        return board.getBoardView();
+    }
+
     // 동영상 저장
     @Override
     public String saveImage(MultipartFile file) {

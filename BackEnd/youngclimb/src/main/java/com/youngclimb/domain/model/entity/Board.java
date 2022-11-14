@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -80,6 +79,11 @@ public class Board {
                 .solvedDate(solvedDate)
                 .build();
 
+    }
+
+    public Board addView() {
+        this.boardView ++;
+        return this;
     }
 
 }
