@@ -20,37 +20,36 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         ErrorCode errorCode;
 
         // 토큰이 없는 경우
-        if(exception == null) {
+        if (exception == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "토큰이 존재하지 않습니다.");
             return;
         }
 
-        // 토큰 만료된 경우
-        if(exception.equals("만료된 토큰")) {
-            System.out.println("만료된 토큰이 걸렸어");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        // access 토큰 만료된 경우
+        if (exception.equals("accessToken")) {
+            System.out.println("만료된 accesstoken이 걸렸어");
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "expired accesstoken");
             return;
         }
+
+        // refresh 토큰 만료된 경우
+        if (exception.equals("refreshToken")) {
+            System.out.println("만료된 refreshtoken이 걸렸어");
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "expired refreshtoken");
+            return;
+        }
+
 
         // 변조된 토큰인 경우
-        if(exception.equals("변조된 토큰")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        if (exception.equals("변조된 토큰")) {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "변조된 토큰입니다.");
             return;
         }
 
-
-
     }
 
-    /**
-     * 한글 출력을 위해 getWriter() 사용
-     */
-    private void setResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.getWriter().println("{ \"message\" : \"" + errorCode.getMessage()
-//                + "\", \"code\" : \"" +  errorCode.getCode()
-//                + "\", \"status\" : " + errorCode.getStatus()
-//                + ", \"errors\" : [ ] }");
-    }
 }

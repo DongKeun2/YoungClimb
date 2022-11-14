@@ -38,14 +38,15 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                     UserPrincipal userDetails = (UserPrincipal) authentication.getPrincipal();
                     System.out.println("스프링 필터에서 걸린거야");
                     System.out.println(userDetails.getUsername());
-                } else {
-                    System.out.println("만료된 토큰에서 걸린거야");
-                    
-                    throw new ExpiredJwtException(null, null, "만료된 토큰입니다.");
                 }
+
+//                else {
+//                    System.out.println("만료된 토큰에서 걸린거야");
+//                    throw new ExpiredJwtException(null, null, "만료된 accesstoken.");
+//                }
             }
         } catch (ExpiredJwtException e) {
-            request.setAttribute("exception", "만료된 토큰");
+            request.setAttribute("exception", e.getClaims().get("type"));
             System.out.println("401에러가 걸린거야");
         } catch (JwtException e) {
             request.setAttribute("exception", "변조된 토큰");
