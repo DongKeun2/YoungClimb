@@ -276,7 +276,7 @@ public class MemberServiceImpl implements MemberService {
 
         LoginResDto loginResDto = LoginResDto.builder()
                 .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
-                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .refreshToken(redisService.getValues("RT "+email))
                 .build();
 
 
