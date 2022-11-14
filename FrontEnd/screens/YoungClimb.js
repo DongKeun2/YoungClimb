@@ -134,15 +134,12 @@ export default function YoungClimb() {
   }, []);
 
   useEffect(() => {
-    console.log('앱 새로고침');
     dispatch(fetchCenterInfo());
 
     getCurrentUser().then(res => {
       if (res) {
-        console.log('로그인됨', res);
         dispatch(fetchCurrentUser(res));
       } else {
-        console.log('비로그인상태임');
         removeAccessToken();
         removeRefreshToken();
         removeCurrentUser();

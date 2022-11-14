@@ -178,8 +178,6 @@ function ProfileEditScreen({navigation}) {
       image: currentUser.image,
     };
 
-    console.log(data);
-    console.log('사진여부', isPhoto);
     if (isPhoto) {
       dispatch(saveImage(formData)).then(res => {
         console.log('사진 저장 결과', res.payload);

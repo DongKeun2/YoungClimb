@@ -91,6 +91,21 @@ const fetchDetail = createAsyncThunk(
   },
 );
 
+const fetchComment = createAsyncThunk(
+  'fetchComment',
+  async (boardId, {rejectWithValue}) => {
+    console.log('게시글 상세 요청 보냄');
+    try {
+      const res = await axios.get(api.feedComment(boardId), await getConfig());
+      console.log('게시글 댓글 성공', res.data);
+      return res.data;
+    } catch (err) {
+      console.log('게시글 댓글 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const likeBoard = createAsyncThunk(
   'likeBoard',
   async (boardId, {rejectWithValue}) => {
@@ -248,6 +263,9 @@ export const PostSlice = createSlice({
       state.boardInfo = action.payload.boardDto;
       state.commentInfo = action.payload.commentDtos;
     },
+    [fetchComment.fulfilled]: (state, action) => {
+      state.commentInfo = action.payload.commentDtos;
+    },
     [fetchHomeFeed.fulfilled]: (state, action) => {
       state.boards = action.payload;
     },
@@ -277,6 +295,7 @@ export {
   feedLikeSubmit,
   feedScrapSubmit,
   fetchDetail,
+  fetchComment,
   likeBoard,
   scrapBoard,
   getVideoPath,
@@ -286,6 +305,7 @@ export {
   recommentAdd,
 };
 
-export const {changeUploadVideo, changeCommentIdForRe, changeIsFocusedInput} = PostSlice.actions;
+export const {changeUploadVideo, changeCommentIdForRe, changeIsFocusedInput} =
+  PostSlice.actions;
 
 export default PostSlice.reducer;

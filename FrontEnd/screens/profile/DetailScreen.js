@@ -29,9 +29,12 @@ import EmptyScrap from '../../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../../assets/image/feed/eye.svg';
 import HoldIcon from '../../assets/image/hold/hold.svg';
+import CommentInput from '../../components/CommentInput';
 
 function DetailScreen({navigation, route}) {
   const dispatch = useDispatch();
+
+  const currentUser = useSelector(state => state.accounts.currentUser);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -40,11 +43,7 @@ function DetailScreen({navigation, route}) {
   const [closeSignal, setCloseSignal] = useState(0);
 
   const [videoLength, setVideoLength] = useState(0);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [isFullContent, setIsFullContent] = useState(false);
-  const viewFullContent = () => {
-    setIsFullContent(true);
-  };
+
   const [isMuted, setIsMuted] = useState(true);
   const calVideoLength = e => {
     const {width} = e.nativeEvent.layout;
@@ -52,10 +51,6 @@ function DetailScreen({navigation, route}) {
   };
   const changeMuted = () => {
     setIsMuted(!isMuted);
-  };
-  const onLayout = e => {
-    const {height} = e.nativeEvent.layout;
-    setContentHeight(height);
   };
 
   const openMenu = feed => {
@@ -65,13 +60,14 @@ function DetailScreen({navigation, route}) {
 
   const feed = useSelector(state => state.post.boardInfo);
   const comments = useSelector(state => state.post.commentInfo);
+
   const isFocused = useIsFocused();
   useEffect(() => {
     setIsLoading(true);
     if (isFocused) {
       dispatch(fetchDetail(route.params.id)).then(() => setIsLoading(false));
     }
-  }, [dispatch, isFocused]);
+  }, [dispatch, route, isFocused]);
 
   function onClickHeart() {
     dispatch(likeBoard(route.params.id));
@@ -106,18 +102,20 @@ function DetailScreen({navigation, route}) {
                   <View style={styles.headerTextGroup}>
                     <View style={{...styles.iconText, alignItems: 'center'}}>
                       <Text
-                        style={{
-                          ...styles.feedTextStyle,
-                          fontSize: 16,
-                          fontWeight: '600',
-                          marginRight: 5,
-                        }}>
-                        {feed.createUser.nickname}
+                        style={[
+                          styles.feedTextStyle,
+                          {
+                            fontSize: 16,
+                            fontWeight: '600',
+                            marginRight: 5,
+                          },
+                        ]}>
+                        {feed.createUser?.nickname}
                       </Text>
                       <HoldIcon
                         width={18}
                         height={18}
-                        color={YCLevelColorDict[feed.createUser.rank]}
+                        color={YCLevelColorDict[feed.createUser?.rank]}
                       />
                     </View>
                     <Text style={{...styles.feedTextStyle, fontSize: 12}}>
@@ -190,13 +188,15 @@ function DetailScreen({navigation, route}) {
                     {feed.like} 명이 좋아합니다.
                   </Text>
                 </View>
-                <TouchableOpacity onPress={onClickScrap}>
-                  {feed.isScrap ? (
-                    <FillScrap style={{marginRight: 5}} />
-                  ) : (
-                    <EmptyScrap style={{marginRight: 5}} />
-                  )}
-                </TouchableOpacity>
+                {feed.createUser.nickname === currentUser.nickname ? null : (
+                  <TouchableOpacity onPress={onClickScrap}>
+                    {feed.isScrap ? (
+                      <FillScrap style={{marginRight: 5}} />
+                    ) : (
+                      <EmptyScrap style={{marginRight: 5}} />
+                    )}
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={styles.iconText}>
                 <EyeIcon style={{marginRight: 5}} />
@@ -207,9 +207,7 @@ function DetailScreen({navigation, route}) {
             </View>
 
             <View style={styles.contentSummary}>
-              <View
-                onLayout={onLayout}
-                style={{position: 'absolute', top: 0, opacity: 0}}>
+              <View style={{position: 'absolute', top: 0, opacity: 0}}>
                 <Text style={styles.contentPreview}>{feed.content}</Text>
               </View>
             </View>
@@ -229,6 +227,8 @@ function DetailScreen({navigation, route}) {
           </>
         )}
       </ScrollView>
+
+      <CommentInput boardId={route.params.id} navigation={navigation} />
       {modalVisible ? (
         <TouchableOpacity
           style={{...styles.background}}
@@ -253,6 +253,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+    marginBottom: 50,
   },
   feedHeader: {
     margin: 8,

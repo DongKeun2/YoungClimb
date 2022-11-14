@@ -1,5 +1,6 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
+import axiosTemp from '../axios';
 import api from '../api';
 import getConfig, {getHeader} from '../headers';
 
@@ -9,7 +10,6 @@ import {
   setCurrentUser,
   removeCurrentUser,
   setRefreshToken,
-  getRefreshToken,
   removeRefreshToken,
 } from '../Token';
 
@@ -31,9 +31,9 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   console.log('로그아웃 시도');
   try {
+    // await axios.post(api.fcmtokendelete(), {}, await getConfig());
     const res = await axios.post(api.logout(), {}, await getConfig());
     console.log('로그아웃 성공');
-    await axios.post(api.fcmtokendelete(), {}, await getConfig());
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
@@ -133,7 +133,6 @@ const profileCreate = createAsyncThunk(
   },
 );
 
-import axiosTemp from '../axios';
 const profileEdit = createAsyncThunk(
   'profileEdit',
   async (data, {rejectWithValue}) => {
@@ -142,8 +141,7 @@ const profileEdit = createAsyncThunk(
       const res = await axiosTemp.post(
         api.profileEdit(),
         data,
-        {},
-        // await getConfig()
+        await getConfig(),
       );
       alert('수정 완료');
       console.log('프로필 수정 성공', res.data);
@@ -346,7 +344,6 @@ export const AccountsSlice = createSlice({
     },
     [checkEmail.rejected]: (state, action) => {
       alert('사용 불가능한 이메일입니다.');
-      console.log(action.payload);
     },
     [checkNickname.fulfilled]: (state, action) => {
       if (action.payload === false) {
@@ -356,7 +353,6 @@ export const AccountsSlice = createSlice({
     },
     [checkNickname.rejected]: (state, action) => {
       alert('사용 불가능한 닉네임입니다.');
-      console.log(action.payload);
     },
     [logout.fulfilled]: state => {
       state.loginState = false;
