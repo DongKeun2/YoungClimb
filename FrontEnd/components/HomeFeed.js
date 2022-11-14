@@ -142,7 +142,15 @@ function HomeFeed({
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
-          <View style={styles.iconText}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.push('서브프로필', {
+                initial: false,
+                nickname: feed.createUser.nickname,
+              });
+            }}
+            activeOpacity={1}
+            style={styles.iconText}>
             <UserAvatar source={{uri: feed.createUser.image}} size={36} />
             <View style={styles.headerTextGroup}>
               <View style={{...styles.iconText, alignItems: 'center'}}>
@@ -165,7 +173,7 @@ function HomeFeed({
                 {feed.createdAt}
               </Text>
             </View>
-          </View>
+          </TouchableOpacity>
           <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
             <MenuIcon width={16} height={16} />
           </TouchableOpacity>

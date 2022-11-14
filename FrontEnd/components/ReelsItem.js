@@ -48,6 +48,10 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
     setIsScrap(item.isScrap);
   }, [item.isLiked, item.isScrap]);
 
+  // useEffect(() => {
+  //   setIsMuted(true);
+  // }, [isViewable]);
+
   useFocusEffect(
     React.useCallback(() => {
       return () => setIsMuted(true);
@@ -89,7 +93,15 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
       {/* 릴스 게시물 정보 */}
       <View style={styles.reelsInfo}>
         <View style={styles.userGroup}>
-          <View style={styles.iconText}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.push('서브프로필', {
+                initial: false,
+                nickname: item.createUser.nickname,
+              });
+            }}
+            activeOpacity={1}
+            style={styles.iconText}>
             <UserAvatar source={{uri: item.createUser.image}} size={36} />
             <View style={{...styles.iconText, marginLeft: 8, marginBottom: 2}}>
               <Text
@@ -107,7 +119,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
                 color={YCLevelColorDict[item.createUser.rank]}
               />
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
         <View style={styles.wallInfo}>
           <Text style={{...styles.reelsTextStyle, marginRight: 8}}>
@@ -148,21 +160,23 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
       </TouchableOpacity>
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
-        {isMuted ? (
-          <MuteBtn
-            color="white"
-            width={28}
-            height={28}
-            style={{marginBottom: 8, marginHorizontal: 10}}
-          />
-        ) : (
-          <SoundBtn
-            color="white"
-            width={28}
-            height={28}
-            style={{marginBottom: 8, marginHorizontal: 10}}
-          />
-        )}
+        <TouchableOpacity activeOpacity={1} onPress={changeMuted}>
+          {isMuted ? (
+            <MuteBtn
+              color="white"
+              width={28}
+              height={28}
+              style={{marginBottom: 5, marginHorizontal: 10}}
+            />
+          ) : (
+            <SoundBtn
+              color="white"
+              width={28}
+              height={28}
+              style={{marginBottom: 5, marginHorizontal: 10}}
+            />
+          )}
+        </TouchableOpacity>
         <TouchableOpacity
           onPress={() => reelsLike(item.id)}
           disabled={likePress}>

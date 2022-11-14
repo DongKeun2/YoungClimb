@@ -10,7 +10,7 @@ import ChoiceVideoScreen from '../screens/postadd/ChoiceVideoScreen';
 import PostAddInfoScreen from '../screens/postadd/PostAddInfoScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
-
+import FollowScreen from '../screens/profile/FollowScreen';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +37,7 @@ function HomeStack({navigation, route}) {
       <Stack.Screen name="정보 입력" component={PostAddInfoScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
+      <Stack.Screen name="팔로우" component={FollowScreen} />
     </Stack.Navigator>
   );
 }
