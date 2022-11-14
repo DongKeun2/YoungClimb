@@ -19,7 +19,7 @@ public class CommentCreate {
     public Comment toComment() {
         return Comment.builder()
                 .content(content)
-                .createdDatetime(LocalDateTime.now())
+                .createdDateTime(LocalDateTime.now())
                 .isDeleted(false)
                 .parentId(0L)
                 .build();
