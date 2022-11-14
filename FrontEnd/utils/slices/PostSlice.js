@@ -248,6 +248,7 @@ const initialState = {
   videoPath: '',
   reels: [],
   commentIdForRe: 0,
+  nicknameForRe: '',
   isFocusedInput: false,
 };
 
@@ -260,6 +261,9 @@ export const PostSlice = createSlice({
     },
     changeCommentIdForRe: (state, action) => {
       state.commentIdForRe = action.payload;
+    },
+    changeNicknameForRe: (state, action) => {
+      state.nicknameForRe = action.payload;
     },
     changeIsFocusedInput: (state, action) => {
       state.isFocusedInput = action.payload;
@@ -318,7 +322,11 @@ export {
   recommentAdd,
 };
 
-export const {changeUploadVideo, changeCommentIdForRe, changeIsFocusedInput} =
-  PostSlice.actions;
+export const {
+  changeUploadVideo,
+  changeCommentIdForRe,
+  changeNicknameForRe,
+  changeIsFocusedInput,
+} = PostSlice.actions;
 
 export default PostSlice.reducer;
