@@ -393,24 +393,26 @@ public class BoardServiceImpl implements BoardService {
                         .comment(comment)
                         .build();
                 noticeRepository.save(noticeBuild);
-            }
 
-            // 푸쉬 알림 보내기
-            try {
-                if (comment.getMember().getFcmToken() != null) {
-                    Notification notification = new Notification("", member.getNickname() + "님이 댓글을 좋아합니다.");
+                // 푸쉬 알림 보내기
+                try {
+                    if (comment.getMember().getFcmToken() != null) {
+                        Notification notification = new Notification("", member.getNickname() + "님이 댓글을 좋아합니다.");
 
-                    Message message = Message.builder()
-                            .setNotification(notification)
-                            .setToken(comment.getMember().getFcmToken())
-                            .build();
+                        Message message = Message.builder()
+                                .setNotification(notification)
+                                .setToken(comment.getMember().getFcmToken())
+                                .build();
 
-                    FirebaseMessaging.getInstance().send(message);
+                        FirebaseMessaging.getInstance().send(message);
+                    }
+                } catch (Exception e) {
+                    comment.getMember().setFcmToken(null);
+                    memberRepository.save(comment.getMember());
                 }
-            } catch (Exception e) {
-                comment.getMember().setFcmToken(null);
-                memberRepository.save(comment.getMember());
             }
+
+
             return true;
         } else {
 
@@ -448,21 +450,23 @@ public class BoardServiceImpl implements BoardService {
                     .createdDateTime(LocalDateTime.now())
                     .build();
             noticeRepository.save(noticeBuild);
-        }
 
-        // 푸쉬 알림 보내기
-        try {
-            if (board.getMember().getFcmToken() != null) {
-                Notification notification = new Notification("", member.getNickname() + "님이 게시물에 댓글을 작성하였습니다.");
+            // 푸쉬 알림 보내기
+            try {
+                if (board.getMember().getFcmToken() != null) {
+                    Notification notification = new Notification("", member.getNickname() + "님이 게시물에 댓글을 작성하였습니다.");
 
-                Message message = Message.builder().setNotification(notification).setToken(board.getMember().getFcmToken()).build();
+                    Message message = Message.builder().setNotification(notification).setToken(board.getMember().getFcmToken()).build();
 
-                FirebaseMessaging.getInstance().send(message);
+                    FirebaseMessaging.getInstance().send(message);
+                }
+            } catch (Exception e) {
+                board.getMember().setFcmToken(null);
+                memberRepository.save(board.getMember());
             }
-        } catch (Exception e) {
-            board.getMember().setFcmToken(null);
-            memberRepository.save(board.getMember());
         }
+
+
 
     }
 
@@ -489,21 +493,23 @@ public class BoardServiceImpl implements BoardService {
                     .createdDateTime(LocalDateTime.now()).build();
 
             noticeRepository.save(noticeBuild);
-        }
 
-        // 푸쉬 알림 보내기
-        try {
-            if (comment.getMember().getFcmToken() != null) {
-                Notification notification = new Notification("", member.getNickname() + "님이 대댓글을 작성하였습니다.");
+            // 푸쉬 알림 보내기
+            try {
+                if (comment.getMember().getFcmToken() != null) {
+                    Notification notification = new Notification("", member.getNickname() + "님이 대댓글을 작성하였습니다.");
 
-                Message message = Message.builder().setNotification(notification).setToken(comment.getMember().getFcmToken()).build();
+                    Message message = Message.builder().setNotification(notification).setToken(comment.getMember().getFcmToken()).build();
 
-                FirebaseMessaging.getInstance().send(message);
+                    FirebaseMessaging.getInstance().send(message);
+                }
+            } catch (Exception e) {
+                comment.getMember().setFcmToken(null);
+                memberRepository.save(comment.getMember());
             }
-        } catch (Exception e) {
-            comment.getMember().setFcmToken(null);
-            memberRepository.save(comment.getMember());
         }
+
+
 
 
     }
