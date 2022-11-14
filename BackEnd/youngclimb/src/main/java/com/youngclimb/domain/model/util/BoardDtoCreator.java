@@ -34,6 +34,10 @@ public class BoardDtoCreator {
         LocalDateTime createdTime = board.getCreatedDateTime();
         boardDto.setCreatedAt(createdDate(createdTime));
 
+        // 게시글 미디어 path 세팅
+        BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
+        boardDto.setMediaPath(boardMedia.getMediaPath());
+
         // 카테고리 정보 세팅
         Category category = categoryRepository.findByBoard(board).orElseThrow();
         setCategoryBoard(boardDto, category);
@@ -94,42 +98,6 @@ public class BoardDtoCreator {
         userDto.setFollowingNum(followRepository.countByFollower(member));
         userDto.setFollowerNum(followRepository.countByFollowing(member));
         return userDto;
-    }
-
-    // 스크랩한 글 보여주기
-    public BoardDto startScrapDto(BoardScrap scrap, Member member) {
-        // 게시글 DTO 세팅
-        Board board = scrap.getBoard();
-        BoardDto scrapDto = createBoardDto(board, member);
-
-       // 작성날짜 세팅
-        LocalDateTime createdTime = scrap.getBoard().getCreatedDateTime();
-        scrapDto.setCreatedAt(createdDate(createdTime));
-
-
-        // 게시글 미디어 path 세팅
-        BoardMedia boardMedia = boardMediaRepository.findByBoard(scrap.getBoard()).orElseThrow();
-        scrapDto.setMediaPath(boardMedia.getMediaPath());
-
-        // 카테고리 정보 세팅
-        Category category = categoryRepository.findByBoard(scrap.getBoard()).orElseThrow();
-        setCategoryBoard(scrapDto, category);
-
-        return scrapDto;
-    }
-
-    // 스크랩한 글 작성자 정보
-    // 작성 유저 정보 세팅
-    public CreateMember toCreateScrapUser(BoardScrap scrap, Member member) {
-        // 작성 유저 정보 세팅
-        Member writer = scrap.getBoard().getMember();
-        CreateMember createUser = CreateMember.builder()
-                .nickname(writer.getNickname())
-                .image(writer.getMemberProfileImg())
-                .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-                .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-                .build();
-        return createUser;
     }
 
     // 작성일 세팅
