@@ -88,7 +88,7 @@ export default function YoungClimb() {
       'android.permission.READ_EXTERNAL_STORAGE': '저장공간',
     };
     const neverCallList = [];
-    const callRes = async (login) => {
+    const callRes = async () => {
       try {
         const result = await checkMultiplePermissions(permissionList);
         const current = await AsyncStorage.getItem('currentUser')
@@ -126,7 +126,7 @@ export default function YoungClimb() {
         console.log(err);
       }
     };
-    callRes(login);
+    callRes();
 
     // AsyncStorage.getItem('currentUser').then((res)=>{
     //   if (!res) {
