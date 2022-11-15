@@ -52,6 +52,7 @@ import {
 import {handleInitialFCM, onRefreshFCMToken} from '../utils/fcm/fcmGetToken';
 import {changeNewNoti} from '../utils/slices/notificationSlice';
 import axios from 'axios';
+import axiosTemp from '../utils/axios';
 import api from '../utils/api';
 import getConfig from '../utils/headers';
 
@@ -63,17 +64,17 @@ export default function YoungClimb() {
   const [loading, setIsLoading] = useState(true);
   const login = useSelector(state => state.accounts.loginState);
   
-  useEffect(()=>{
+
+  useEffect(() => {
+    
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       await AsyncStorage.setItem('newNoti','true')
       dispatch(changeNewNoti(true))
       return remoteMessage
     });
 
-  },[])
-
-
-  useEffect(() => {
+    AsyncStorage.getItem('notiSet').then((res)=>{console.log(res)})
+    // AsyncStorage.removeItem('notiSet')
     const permissionList = [
       PermissionsAndroid.PERMISSIONS.CAMERA,
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -87,11 +88,11 @@ export default function YoungClimb() {
       'android.permission.READ_EXTERNAL_STORAGE': '저장공간',
     };
     const neverCallList = [];
-    const callRes = async () => {
+    const callRes = async (login) => {
       try {
         const result = await checkMultiplePermissions(permissionList);
-        const accessToken = AsyncStorage.getItem('accessToken')
-        if (!accessToken && !result) {
+        const current = await AsyncStorage.getItem('currentUser')
+        if (!current && !result) {
           await AsyncAlert(
             'Young Climb 앱 권한 설정',
             '원활한 Young Climb 앱 사용을 위해 다음의 권한을 허용해주세요',
@@ -125,43 +126,46 @@ export default function YoungClimb() {
         console.log(err);
       }
     };
-    callRes();
+    callRes(login);
 
-    if (!login) {
-      // 로그인 되어있지 않은 상태면 fcmToken 받아와서 async에 저장
-      handleInitialFCM();
-    } else {
-      onRefreshFCMToken();
-      AsyncStorage.getItem('notiSet').then((res)=>{
-        if (!res){
-          const now = new Date(); // 현재 시간
-          const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 utc로 변환한 밀리세컨드값
-          const koreaTimeDiff = 9 * 60 * 60 * 1000; // 한국 시간은 UTC보다 9시간 빠름(9시간의 밀리세컨드 표현)
-          const koreaNow = new Date(utcNow + koreaTimeDiff)
-          Alert.alert(                    // 말그대로 Alert를 띄운다
-          "서비스 푸시 알림 동의",                    // 첫번째 text: 타이틀 제목
-          "Young Climb 활동(팔로우, 댓글, 좋아요) \n알림을 받기 위해 동의해주세요",                         // 두번째 text: 그 밑에 작은 제목
-          [                              // 버튼 배열
-            {
-              text: "동의하지 않음",                              // 버튼 제목
-              onPress: async() => {
-                // axios.post(api.fcmtokendelete(),{},await getConfig()).then((res)=>{console.log(res)}).catch((err)=>{console.log(err)})
-                await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))},     //onPress 이벤트시 콘솔창에 로그를 찍는다
-              style: "cancel"
-            },
-            { text: "동의", onPress: async() => {
-              await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))
-              await AsyncStorage.setItem('notiAllow', JSON.stringify('true'))
-              const fcmToken = await AsyncStorage.getItem('fcmToken')
-              const fcm = fcmToken.replace('"','').replace('"','')
-              axios.post(api.fcmtokensave(), {fcmToken:fcm}, await getConfig()).then((res)=>{console.log(res)})
-            }}, 
-          ],
-          { cancelable: false })
-        }
+    // AsyncStorage.getItem('currentUser').then((res)=>{
+    //   if (!res) {
+    //     // 로그인 되어있지 않은 상태면 fcmToken 받아와서 async에 저장
+    //     handleInitialFCM();
+    //   } else {
+    //     onRefreshFCMToken();
+    //     AsyncStorage.getItem('notiSet').then((res)=>{
+    //       const now = new Date(); // 현재 시간
+    //       const utcNow = now.getTime() + (now.getTimezoneOffset() * 60 * 1000); // 현재 시간을 utc로 변환한 밀리세컨드값
+    //       const koreaTimeDiff = 9 * 60 * 60 * 1000; // 한국 시간은 UTC보다 9시간 빠름(9시간의 밀리세컨드 표현)
+    //       const koreaNow = new Date(9 * 60 * 60 * 1000)
+    //       if (!res){
+    //         Alert.alert(                    // 말그대로 Alert를 띄운다
+    //         "서비스 푸시 알림 동의",                    // 첫번째 text: 타이틀 제목
+    //         "Young Climb 활동(팔로우, 댓글, 좋아요) \n알림을 받기 위해 동의해주세요",                         // 두번째 text: 그 밑에 작은 제목
+    //         [                              // 버튼 배열
+    //           {
+    //             text: "동의하지 않음",                              // 버튼 제목
+    //             onPress: async() => {
+    //               axiosTemp.post(api.fcmtokendelete(),await getConfig()).then((res)=>{console.log(res)}).catch((err)=>{console.log(err)})
+    //               await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))},     //onPress 이벤트시 콘솔창에 로그를 찍는다
+    //             style: "cancel"
+    //           },
+    //           { text: "동의", onPress: async() => {
+    //             await AsyncStorage.setItem('notiSet', JSON.stringify(koreaNow))
+    //             await AsyncStorage.setItem('notiAllow', JSON.stringify('true'))
+    //             const fcmToken = await AsyncStorage.getItem('fcmToken')
+    //             const fcm = fcmToken.replace('"','').replace('"','')
+    //             axiosTemp.post(api.fcmtokensave(), {fcmToken:fcm}, await getConfig()).then((res)=>{console.log(res)})
+    //           }}, 
+    //         ],
+    //         { cancelable: false })
+    //       }
+  
+    //     })
+    //     }
 
-      })
-      }
+    // })
   }, []);
 
   useEffect(() => {
@@ -170,6 +174,7 @@ export default function YoungClimb() {
     getCurrentUser().then(res => {
       if (res) {
         dispatch(fetchCurrentUser(res));
+
       } else {
         removeAccessToken();
         removeRefreshToken();
