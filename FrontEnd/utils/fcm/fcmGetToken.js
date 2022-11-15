@@ -40,8 +40,8 @@ export const onRefreshFCMToken = async()=> {
   const refreshedFCMToken = messaging().onTokenRefresh(
     async()=>{
       try{
-        const isPushGranted = await AsyncStorage.getItem('getPush')
-        if(isPushGranted!=='denied'){
+        const isPushGranted = await AsyncStorage.getItem('notiAllow')
+        if(isPushGranted){
           const fcmToken = await messaging().getToken()
           const res = await axios.post(api.fcmtokensave,{fcmToken}, await getConfig())
           await AsyncStorage.setItem('fcmToken', JSON.stringify(refreshedFCMToken))
