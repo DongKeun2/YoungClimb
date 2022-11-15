@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -34,8 +35,10 @@ import PlayBtn from '../../assets/image/videoBtn/playBtn.svg';
 import RefreshBtn from '../../assets/image/videoBtn/refreshBtn.svg';
 import MuteBtn from '../../assets/image/videoBtn/muteBtn.svg';
 import SoundBtn from '../../assets/image/videoBtn/soundBtn.svg';
+import Trash from '../../assets/image/feed/trash.svg';
 
 import CommentInput from '../../components/CommentInput';
+import {deleteBoard} from '../../utils/slices/ProfileSlice';
 
 function DetailScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -116,6 +119,13 @@ function DetailScreen({navigation, route}) {
     dispatch(scrapBoard(route.params.id));
   }
 
+  function onDelete(boardId) {
+    dispatch(deleteBoard(boardId)).then(() => {
+      Alert.alert('삭제되었습니다.');
+      navigation.goBack();
+    });
+  }
+
   return (
     <>
       <CustomSubHeader title="게시글" navigation={navigation} />
@@ -163,7 +173,20 @@ function DetailScreen({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {feed.createUser.nickname === currentUser.nickname ? null : (
+                {feed.createUser.nickname === currentUser.nickname ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      Alert.alert('게시글 삭제', '글을 삭제하시겠습니까?', [
+                        {text: '삭제', onPress: () => onDelete(feed.id)},
+                        {
+                          text: '취소',
+                          onPress: () => Alert.alert('', '취소되었습니다.'),
+                        },
+                      ]);
+                    }}>
+                    <Trash />
+                  </TouchableOpacity>
+                ) : (
                   <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
                     <MenuIcon width={16} height={16} />
                   </TouchableOpacity>
