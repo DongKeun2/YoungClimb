@@ -44,7 +44,6 @@ function CardList({boards, navigation}) {
     <>
       <View style={styles.articleContainer}>
         {boards.map((board, i) => {
-          console.log(board);
           return (
             <TouchableOpacity
               key={i}

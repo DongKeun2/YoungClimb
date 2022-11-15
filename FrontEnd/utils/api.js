@@ -19,6 +19,7 @@ const CENTERS_URL = '/center';
 const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
 const SAVE_URL = '/save';
+const DELETE_URL = '/delete';
 
 const BOARD_URL = '/board';
 const HOME_URL = '/home';
@@ -54,6 +55,8 @@ const api = {
   profileEdit: () => API_BASE_URL + USER_URL + PROFILE_URL + EDIT_URL,
 
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
+
+  deleteBoard: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DELETE_URL,
 
   wingspan: () => WINGSPAN_URL,
 

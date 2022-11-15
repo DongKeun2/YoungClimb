@@ -370,8 +370,6 @@ function UserTab({navigation}) {
   );
 
   useEffect(() => {
-    console.log(keyword);
-
     mockApiCall(keyword); // call the debounced function
 
     return () => {
