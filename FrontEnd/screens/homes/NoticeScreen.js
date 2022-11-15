@@ -41,7 +41,14 @@ function NoticeScreen({navigation}) {
       <TouchableOpacity
 				style={{...styles.renderItemContainer, width:screenWidth}}
         onPress={() => {
-          navigation.navigate('게시글', {id: item.boardId});
+          if(item.type === 1){
+            navigation.push('서브프로필', {
+              initial: false,
+              nickname: item.nickname,
+          })
+          } else {
+            navigation.navigate('게시글', {id: item.boardId});
+          }
         }}
       >
         <View style={styles.contentContainer}>
