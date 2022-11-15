@@ -110,7 +110,18 @@ public class BoardServiceImpl implements BoardService {
         MainPageDto mainPageDto = new MainPageDto();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
+
+        List<Follow> followList = followRepository.findAllByFollower(member);
+        List<Member> followMembers = new ArrayList<>();
+        followMembers.add(member);
+
+        if (!followList.isEmpty()) {
+            for (Follow follow : followList) {
+                followMembers.add(memberRepository.findById(follow.getFollowing().getMemberId()).get());
+            }
+        }
+
+        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterAndMemberNotInOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), followMembers, pageable);
 
         // 2주 이내 게시글
         for (Board board : recentBoards) {
@@ -118,10 +129,6 @@ public class BoardServiceImpl implements BoardService {
             if (board.getIsDelete() != 0) continue;
             // 자기가 신고한 게시글
             if (reportRepository.existsByBoardAndMember(board, member)) continue;
-            // 팔로우한 사람이 쓴 경우
-            if (followRepository.existsByFollowerAndFollowing(member, board.getMember())) continue;
-            // 자기 자신이 쓴 경우
-            if (Objects.equals(board.getMember().getMemberId(), member.getMemberId())) continue;
 
             // 게시글 Dto 세팅
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
@@ -453,7 +460,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 대댓글 작성
     @Override
-    public void writeRecomment(CommentCreate commentCreate,Long boardId, Long commentId, String email) {
+    public void writeRecomment(CommentCreate commentCreate, Long boardId, Long commentId, String email) {
 
         Comment comment = commentCreate.toComment();
         Board board = boardRepository.findById(boardId).orElseThrow();
@@ -509,7 +516,7 @@ public class BoardServiceImpl implements BoardService {
             if (board.getIsDelete() != 0) continue;
             // 게시물 Dto 세팅
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
-            boardDto.setCreateUser(boardDtoCreator.toCreateUser(board,member));
+            boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
 
             // List add
             boardDtos.add(boardDto);
@@ -526,7 +533,7 @@ public class BoardServiceImpl implements BoardService {
             if (reportRepository.existsByBoardAndMember(board, member)) continue;
 
             BoardDto scrapDto = boardDtoCreator.startDto(board, member);
-            scrapDto.setCreateUser(boardDtoCreator.toCreateUser(board,member));
+            scrapDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
 
             // List add
             scrapDtos.add(scrapDto);
