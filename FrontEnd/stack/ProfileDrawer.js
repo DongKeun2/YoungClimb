@@ -25,7 +25,7 @@ const ProfileDrawer = () => {
         },
       }}>
       <Drawer.Screen
-        name="메인프로필"
+        name="메인 프로필"
         component={ProfileScreen}
         options={{
           drawerItemStyle: {display: 'none'},
@@ -37,6 +37,7 @@ const ProfileDrawer = () => {
         }}
       />
       <Drawer.Screen name="프로필 설정" component={ProfileEditScreen} />
+      <Drawer.Screen name="공유하기" component={ShareScreen} />
       <Drawer.Screen name="앱 설정" component={AppSettings} />
       <Drawer.Screen name="앱 정보" component={AppInfoStack} />
     </Drawer.Navigator>
@@ -44,6 +45,7 @@ const ProfileDrawer = () => {
 };
 
 import {createStackNavigator} from '@react-navigation/stack';
+import ShareScreen from '../screens/profile/ShareScreen';
 const Stack = createStackNavigator();
 
 function AppInfoStack() {

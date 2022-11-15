@@ -60,6 +60,17 @@ function ProfileEditScreen({navigation}) {
     }
   }
 
+  function goWingspan() {
+    if (editForm.height.value) {
+      navigation.navigate('윙스팬', {
+        height: editForm.height.value,
+        type: 'edit',
+      });
+    } else {
+      Alert.alert('프로필 수정', '윙스팬 측정을 위해 키를 먼저 입력해주세요.');
+    }
+  }
+
   const selectProfile = () => {
     launchImageLibrary(
       {
@@ -178,12 +189,24 @@ function ProfileEditScreen({navigation}) {
 
     if (isPhoto) {
       dispatch(saveImage(formData)).then(res => {
-        dispatch(profileEdit({...data, image: res.payload}));
+        dispatch(profileEdit({...data, image: res.payload})).then(res => {
+          navigation.navigate('메인 프로필', {
+            nickname: res.payload.user.nickname,
+          });
+        });
       });
     } else if (isChange) {
-      dispatch(profileEdit({...data, image: ''}));
+      dispatch(profileEdit({...data, image: ''})).then(res => {
+        navigation.navigate('메인 프로필', {
+          nickname: res.payload.user.nickname,
+        });
+      });
     } else {
-      dispatch(profileEdit(data));
+      dispatch(profileEdit(data)).then(res => {
+        navigation.navigate('메인 프로필', {
+          nickname: res.payload.user.nickname,
+        });
+      });
     }
   }
 
@@ -301,13 +324,7 @@ function ProfileEditScreen({navigation}) {
                 type={editForm.wingspan.type}
                 onChangeText={value => updateInput('wingspan', value)}
               />
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('윙스팬', {
-                    height: editForm.height.value,
-                    type: 'edit',
-                  })
-                }>
+              <TouchableOpacity onPress={goWingspan}>
                 <Camera style={styles.cameraIcon} width={30} height={30} />
               </TouchableOpacity>
             </View>
