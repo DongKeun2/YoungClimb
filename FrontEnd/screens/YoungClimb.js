@@ -127,11 +127,11 @@ export default function YoungClimb() {
       }
     };
     callRes();
+    handleInitialFCM();
 
     // AsyncStorage.getItem('currentUser').then((res)=>{
     //   if (!res) {
     //     // 로그인 되어있지 않은 상태면 fcmToken 받아와서 async에 저장
-    //     handleInitialFCM();
     //   } else {
     //     onRefreshFCMToken();
     //     AsyncStorage.getItem('notiSet').then((res)=>{
