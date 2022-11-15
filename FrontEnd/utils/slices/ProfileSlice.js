@@ -85,6 +85,11 @@ export const ProfileSlice = createSlice({
     },
     profileFollow: (state, action) => {
       state.profileInfo.follow = action.payload;
+      if (action.payload) {
+        state.profileInfo.user.followerNum += 1;
+      } else {
+        state.profileInfo.user.followerNum -= 1;
+      }
     },
     followingFollow: (state, action) => {
       state.followInfo.followings[action.payload.idx].follow =
