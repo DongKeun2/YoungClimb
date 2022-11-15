@@ -19,4 +19,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     Optional<Report> findByBoardAndMember(Board board, Member member);
 
     List<Report> findAllByBoard(Board board);
+
+    Long countByBoard(Board board);
+
 }

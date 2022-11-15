@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class BoardLikeDto {
     Boolean isLike;
-    Integer like;
+    Long like;
 }

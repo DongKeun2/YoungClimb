@@ -136,8 +136,13 @@ public class BoardDtoCreator {
         boardDto.setCenterName(category.getCenter().getName());
         boardDto.setCenterLevelId(category.getCenterlevel().getId());
         boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
+        if(category.getWall() != null ) {
         boardDto.setWallId(category.getWall().getId());
-        boardDto.setWallName(category.getWall().getName());
+        boardDto.setWallName(category.getWall().getName()); }
+        else {
+            boardDto.setWallId(null);
+            boardDto.setWallName(null);
+        }
         boardDto.setDifficulty(category.getDifficulty());
         boardDto.setHoldColor(category.getHoldcolor());
     }
