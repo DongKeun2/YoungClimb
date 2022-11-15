@@ -63,17 +63,17 @@ export default function YoungClimb() {
   const dispatch = useDispatch();
   const [loading, setIsLoading] = useState(true);
   const login = useSelector(state => state.accounts.loginState);
-  
 
   useEffect(() => {
-    
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      await AsyncStorage.setItem('newNoti','true');
+      await AsyncStorage.setItem('newNoti', 'true');
       dispatch(changeNewNoti(true));
       return remoteMessage;
     });
 
-    AsyncStorage.getItem('notiSet').then((res)=>{console.log(res)})
+    AsyncStorage.getItem('notiSet').then(res => {
+      console.log(res);
+    });
     // AsyncStorage.removeItem('notiSet')
     const permissionList = [
       PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -91,7 +91,7 @@ export default function YoungClimb() {
     const callRes = async () => {
       try {
         const result = await checkMultiplePermissions(permissionList);
-        const current = await AsyncStorage.getItem('currentUser')
+        const current = await AsyncStorage.getItem('currentUser');
         if (!current && !result) {
           await AsyncAlert(
             'Young Climb 앱 권한 설정',
@@ -157,11 +157,11 @@ export default function YoungClimb() {
     //             const fcmToken = await AsyncStorage.getItem('fcmToken')
     //             const fcm = fcmToken.replace('"','').replace('"','')
     //             axiosTemp.post(api.fcmtokensave(), {fcmToken:fcm}, await getConfig()).then((res)=>{console.log(res)})
-    //           }}, 
+    //           }},
     //         ],
     //         { cancelable: false })
     //       }
-  
+
     //     })
     //     }
 
@@ -174,7 +174,6 @@ export default function YoungClimb() {
     getCurrentUser().then(res => {
       if (res) {
         dispatch(fetchCurrentUser(res));
-
       } else {
         removeAccessToken();
         removeRefreshToken();

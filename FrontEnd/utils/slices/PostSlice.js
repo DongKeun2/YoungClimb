@@ -176,7 +176,7 @@ const getVideoPath = createAsyncThunk(
           Authorization: await getHeader(),
         },
       });
-      console.log('비디오 uri 가져오기');
+      console.log('비디오 uri 가져오기', res.data);
       return res.data;
     } catch (err) {
       console.log('동영상 실패', err);
@@ -264,7 +264,6 @@ const initialState = {
   boardInfo: {},
   commentInfo: {},
   uploadVideo: null,
-  videoPath: '',
   reels: {},
   reelsArray: [],
   commentIdForRe: 0,
@@ -321,9 +320,6 @@ export const PostSlice = createSlice({
     },
     [scrapBoard.fulfilled]: (state, action) => {
       state.boardInfo.isScrap = action.payload;
-    },
-    [getVideoPath.fulfilled]: (state, action) => {
-      state.videoPath = action.payload;
     },
     [fetchReels.fulfilled]: (state, action) => {
       state.reels = action.payload;
