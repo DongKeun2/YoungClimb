@@ -116,22 +116,16 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
         List<Follow> followList = followRepository.findAllByFollower(member);
-        List<Member> follwMembers = new ArrayList<>();
-
+        List<Member> followMembers = new ArrayList<>();
+        followMembers.add(member);
 
         if (!followList.isEmpty()) {
             for (Follow follow : followList) {
-                follwMembers.add(memberRepository.findById(follow.getFollowing().getMemberId()).get());
-//                Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterAndMemberNotInOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), follwMembers, pageable);
+                followMembers.add(memberRepository.findById(follow.getFollowing().getMemberId()).get());
             }
         }
-//        else {
-//            Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
-//        }
 
-        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterAndMemberNotInOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), follwMembers, pageable);
-
-
+        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterAndMemberNotInOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), followMembers, pageable);
 
         // 2주 이내 게시글
         for (Board board : recentBoards) {
@@ -139,10 +133,6 @@ public class BoardServiceImpl implements BoardService {
             if (board.getIsDelete() != 0) continue;
             // 자기가 신고한 게시글
             if (reportRepository.existsByBoardAndMember(board, member)) continue;
-            // 팔로우한 사람이 쓴 경우
-            if (followRepository.existsByFollowerAndFollowing(member, board.getMember())) continue;
-            // 자기 자신이 쓴 경우
-            if (Objects.equals(board.getMember().getMemberId(), member.getMemberId())) continue;
 
             // 게시글 Dto 세팅
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
