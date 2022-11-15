@@ -131,7 +131,17 @@ function HomeScreen({navigation, route}) {
 
   useEffect(() => {
     console.log('홈피드 접근');
-    dispatch(fetchHomeFeed(page));
+    dispatch(fetchHomeFeed(page)).then(res => {
+      if (res.payload.boardDtos.length < 2) {
+        dispatch(fetchHomeFeedAdd(page)).then(res => {
+          if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+            setPage(page + 1);
+            setIsLoading(false);
+          }
+        });
+      }
+      setIsLoading(false);
+    });
   }, [isFocused]);
 
   useFocusEffect(() => {
