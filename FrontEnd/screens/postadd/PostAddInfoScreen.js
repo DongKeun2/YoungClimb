@@ -33,7 +33,6 @@ function PostAddInfoScreen({navigation}) {
   const centerInfo = useSelector(state => state.center.centerInfo);
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
-  const videoPath = useSelector(state => state.post.videoPath);
 
   const [center, setCenter] = useState('');
   const [wall, setWall] = useState(0);
@@ -100,7 +99,7 @@ function PostAddInfoScreen({navigation}) {
             holdColor: holdColor,
             solvedDate: solvedDate,
             content: content,
-            mediaPath: videoPath,
+            mediaPath: res.payload,
           };
           console.log(data);
           dispatch(postAdd(data)).then(res => {
