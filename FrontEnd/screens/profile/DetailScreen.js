@@ -211,9 +211,7 @@ function DetailScreen({navigation, route}) {
             </View>
 
             <View style={styles.contentSummary}>
-              <View style={{position: 'absolute', top: 0, opacity: 0}}>
-                <Text style={styles.contentPreview}>{feed.content}</Text>
-              </View>
+              <Text style={styles.contentPreview}>{feed.content}</Text>
             </View>
             {comments.length ? (
               comments?.map((comment, idx) => {
