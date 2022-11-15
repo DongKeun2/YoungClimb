@@ -39,6 +39,12 @@ function FollowScreen({navigation, route}) {
 
   const followings = useSelector(state => state.profile.followInfo?.followings);
   const followers = useSelector(state => state.profile.followInfo?.followers);
+  const followingNum = useSelector(
+    state => state.profile.followInfo?.followingNum,
+  );
+  const followerNum = useSelector(
+    state => state.profile.followInfo?.followerNum,
+  );
 
   return (
     <>
@@ -61,7 +67,7 @@ function FollowScreen({navigation, route}) {
                       styles.tabFont,
                       {fontWeight: 'bold', color: 'white'},
                     ]}>
-                    팔로잉({followings?.length})
+                    팔로잉({followingNum})
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -69,9 +75,7 @@ function FollowScreen({navigation, route}) {
                     setType('follower');
                   }}
                   style={styles.tabBtn}>
-                  <Text style={styles.tabFont}>
-                    팔로워({followers?.length})
-                  </Text>
+                  <Text style={styles.tabFont}>팔로워({followerNum})</Text>
                 </TouchableOpacity>
               </View>
             ) : (
@@ -81,9 +85,7 @@ function FollowScreen({navigation, route}) {
                     setType('following');
                   }}
                   style={styles.tabBtn}>
-                  <Text style={styles.tabFont}>
-                    팔로잉({followings?.length})
-                  </Text>
+                  <Text style={styles.tabFont}>팔로잉({followingNum})</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => {}} style={styles.activeTab}>
                   <Text
@@ -91,7 +93,7 @@ function FollowScreen({navigation, route}) {
                       styles.tabFont,
                       {fontWeight: 'bold', color: 'white'},
                     ]}>
-                    팔로워({followers?.length})
+                    팔로워({followerNum})
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -112,6 +114,7 @@ function FollowScreen({navigation, route}) {
               type={type}
               keyword={keyword}
               navigation={navigation}
+              profileUser={route.params.nickname}
             />
           </ScrollView>
         </>
@@ -120,7 +123,7 @@ function FollowScreen({navigation, route}) {
   );
 }
 
-function FollowList({follows, keyword, navigation, type}) {
+function FollowList({follows, keyword, navigation, type, profileUser}) {
   const searchResult = follows.filter(follow =>
     follow.nickname.includes(keyword),
   );
@@ -135,6 +138,7 @@ function FollowList({follows, keyword, navigation, type}) {
             type={type}
             item={item}
             navigation={navigation}
+            profileUser={profileUser}
           />
         );
       })}
@@ -143,7 +147,7 @@ function FollowList({follows, keyword, navigation, type}) {
 }
 
 // 팔로우 버튼에 보내주는 follow 정보 api연결해야함 item.follow
-function FollowItem({item, navigation, type, idx}) {
+function FollowItem({item, navigation, type, idx, profileUser}) {
   return (
     <>
       <View style={styles.followItem}>
@@ -172,6 +176,7 @@ function FollowItem({item, navigation, type, idx}) {
           type={type}
           follow={item.follow}
           nickname={item.nickname}
+          profileUser={profileUser}
         />
       </View>
     </>

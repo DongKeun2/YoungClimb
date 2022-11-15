@@ -33,6 +33,30 @@ const followSubmit = createAsyncThunk(
   },
 );
 
+const followingFollowAfter = createAsyncThunk(
+  'followingFollowAfter',
+  async (nickname, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.get(api.follow(nickname), await getConfig());
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+const followerFollowAfter = createAsyncThunk(
+  'followerFollowAfter',
+  async (nickname, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.get(api.follow(nickname), await getConfig());
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const fetchFollowList = createAsyncThunk(
   'fetchFollowList',
   async (nickname, {rejectWithValue}) => {
@@ -78,6 +102,8 @@ const initialState = {
   followInfo: {
     followings: [],
     followers: [],
+    followerNum: 0,
+    followingNum: 0,
   },
   uploadImg: null,
 };
@@ -122,10 +148,28 @@ export const ProfileSlice = createSlice({
     [checkNickname.rejected]: () => {
       Alert.alert('가입정보 확인', '사용 불가능한 이메일입니다.');
     },
+    [followingFollowAfter.fulfilled]: (state, action) => {
+      state.followInfo.followers = action.payload.followers;
+      state.followInfo.followerNum = action.payload.followerNum;
+      state.followInfo.followingNum = action.payload.followingNum;
+    },
+    [followerFollowAfter.fulfilled]: (state, action) => {
+      state.followInfo.followings = action.payload.followings;
+      state.followInfo.followerNum = action.payload.followerNum;
+      state.followInfo.followingNum = action.payload.followingNum;
+    },
   },
 });
 
-export {profile, followSubmit, fetchFollowList, checkNickname, deleteBoard};
+export {
+  profile,
+  followSubmit,
+  fetchFollowList,
+  checkNickname,
+  deleteBoard,
+  followingFollowAfter,
+  followerFollowAfter,
+};
 
 export const {changeUploadImg, profileFollow, followingFollow, followerFollow} =
   ProfileSlice.actions;
