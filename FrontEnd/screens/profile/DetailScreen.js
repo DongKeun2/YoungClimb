@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -97,8 +98,9 @@ function DetailScreen({navigation, route}) {
                       nickname: feed.createUser.nickname,
                     });
                   }}
+                  activeOpacity={1}
                   style={styles.iconText}>
-                  <UserAvatar source={avatar} size={36} />
+                  <UserAvatar source={{uri: feed.createUser.image}} size={36} />
                   <View style={styles.headerTextGroup}>
                     <View style={{...styles.iconText, alignItems: 'center'}}>
                       <Text

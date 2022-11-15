@@ -1,20 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {BackHandler} from 'react-native';
+import React from 'react';
+
 import {createStackNavigator} from '@react-navigation/stack';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
-import HomeScreen from '../screens/homes/HomeScreen';
+import ReelsScreen from '../screens/reels/ReelsScreen';
 import PostScreen from '../screens/homes/PostScreen';
-import NoticeScreen from '../screens/homes/NoticeScreen';
-import ChoiceVideoScreen from '../screens/postadd/ChoiceVideoScreen';
-import PostAddInfoScreen from '../screens/postadd/PostAddInfoScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import DetailScreen from '../screens/profile/DetailScreen';
 import FollowScreen from '../screens/profile/FollowScreen';
 
 const Stack = createStackNavigator();
 
-function HomeStack({navigation, route}) {
+function ReelsStack({navigation, route}) {
   React.useLayoutEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
     if (routeName === '댓글') {
@@ -26,15 +23,12 @@ function HomeStack({navigation, route}) {
 
   return (
     <Stack.Navigator
-      initialRouteName="홈"
+      initialRouteName="릴스"
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="홈" component={HomeScreen} />
+      <Stack.Screen name="릴스" component={ReelsScreen} />
       <Stack.Screen name="댓글" component={PostScreen} />
-      <Stack.Screen name="알림" component={NoticeScreen} />
-      <Stack.Screen name="게시글 생성" component={ChoiceVideoScreen} />
-      <Stack.Screen name="정보 입력" component={PostAddInfoScreen} />
       <Stack.Screen name="게시글" component={DetailScreen} />
       <Stack.Screen name="서브프로필" component={ProfileScreen} />
       <Stack.Screen name="팔로우" component={FollowScreen} />
@@ -42,4 +36,4 @@ function HomeStack({navigation, route}) {
   );
 }
 
-export default HomeStack;
+export default ReelsStack;

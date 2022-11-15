@@ -1,6 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect} from 'react';
-import {View, ScrollView, Text, StyleSheet, SafeAreaView} from 'react-native';
+import {
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import CustomSubHeader from '../../components/CustomSubHeader';
 
@@ -40,7 +47,15 @@ function PostScreen({navigation, route}) {
               {/* 피드 상단 헤더 */}
               <View style={styles.feedHeader}>
                 <View style={styles.headerTop}>
-                  <View style={styles.iconText}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.push('서브프로필', {
+                        initial: false,
+                        nickname: board.createUser.nickname,
+                      });
+                    }}
+                    activeOpacity={1}
+                    style={styles.iconText}>
                     <UserAvatar
                       source={{uri: board.createUser.image}}
                       size={36}
@@ -66,7 +81,7 @@ function PostScreen({navigation, route}) {
                         {board.createdAt}
                       </Text>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 </View>
                 <View style={styles.wallInfo}>
                   <Text style={{...styles.feedTextStyle, marginRight: 8}}>
@@ -85,9 +100,11 @@ function PostScreen({navigation, route}) {
                 </View>
               </View>
               {/* 본문 */}
-              <View style={styles.contentSummary}>
-                <Text style={styles.contentPreview}>{board.content}</Text>
-              </View>
+              {board.content ? (
+                <View style={styles.contentSummary}>
+                  <Text style={styles.contentPreview}>{board.content}</Text>
+                </View>
+              ) : null}
             </View>
             {comments?.map((comment, idx) => {
               return (
@@ -164,7 +181,7 @@ const styles = StyleSheet.create({
   },
   contentSummary: {
     marginVertical: 3,
-    marginHorizontal: 10,
+    marginHorizontal: 13,
   },
   contentPreview: {
     color: 'black',

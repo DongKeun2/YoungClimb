@@ -1,14 +1,15 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {BackHandler} from 'react-native';
-import {Toast} from '../components/Toast';
+import {Toast} from '../../components/Toast';
 
-import ReelsList from '../components/ReelsList';
+import ReelsList from '../../components/ReelsList';
 
-import {fetchReels} from '../utils/slices/PostSlice';
+import {fetchReels} from '../../utils/slices/PostSlice';
 
 function RandomScreen({navigation}) {
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [exitAttempt, setExitAttempt] = useState(false);
   const toastRef = useRef(null);
@@ -33,7 +34,6 @@ function RandomScreen({navigation}) {
   };
 
   useEffect(() => {
-    dispatch(fetchReels(1));
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');
@@ -42,6 +42,10 @@ function RandomScreen({navigation}) {
       isBackHandler = false;
     };
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchReels(1));
+  }, [isFocused]);
 
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(

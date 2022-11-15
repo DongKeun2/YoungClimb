@@ -21,7 +21,7 @@ import HomeStack from '../stack/HomeStack';
 import SearchStack from '../stack/SearchStack';
 
 import StoreStack from '../stack/StoreStack';
-import RandomScreen from './RandomScreen';
+import ReelsStack from '../stack/ReelsStack';
 import ProfileStack from '../stack/ProfileStack';
 
 import MapIcon from '../assets/image/tab/map.svg';
@@ -68,9 +68,9 @@ export default function YoungClimb() {
   useEffect(() => {
     
     messaging().setBackgroundMessageHandler(async remoteMessage => {
-      await AsyncStorage.setItem('newNoti','true')
-      dispatch(changeNewNoti(true))
-      return remoteMessage
+      await AsyncStorage.setItem('newNoti','true');
+      dispatch(changeNewNoti(true));
+      return remoteMessage;
     });
 
     AsyncStorage.getItem('notiSet').then((res)=>{console.log(res)})
@@ -191,7 +191,7 @@ export default function YoungClimb() {
     <>
       {loading ? (
         <InitialScreen />
-        ) : (
+      ) : (
         <NavigationContainer>
           {login ? (
             <Tab.Navigator
@@ -210,8 +210,8 @@ export default function YoungClimb() {
                 }}
               />
               <Tab.Screen
-                name="릴스"
-                component={RandomScreen}
+                name="릴스탭"
+                component={ReelsStack}
                 options={{
                   tabBarIcon: ({focused}) =>
                     focused ? <ActiveReelsIcon /> : <ReelsIcon />,
