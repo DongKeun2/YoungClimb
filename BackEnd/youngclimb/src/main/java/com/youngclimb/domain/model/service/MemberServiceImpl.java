@@ -275,8 +275,8 @@ public class MemberServiceImpl implements MemberService {
         MemberRankExp memberRankExp = memberRankExpRepository.findByMember(member).orElseThrow();
 
         LoginResDto loginResDto = LoginResDto.builder()
-                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
-                .refreshToken(redisService.getValues("RT "+email))
+                .accessToken(null)
+                .refreshToken(null)
                 .build();
 
 
