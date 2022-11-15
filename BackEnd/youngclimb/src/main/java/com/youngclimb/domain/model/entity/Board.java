@@ -67,10 +67,6 @@ public class Board {
         } else if (ChronoUnit.YEARS.between(LocalDateTime.now(), createdDateTime) > 1) {
             timeText = createdDateTime.getMonth() + "월 " + createdDateTime.getDayOfMonth() + "일";
         }
-//        else {
-//            timeText = createdDateTime.getYear() + "년 " + createdDateTime.getMonth() + "월 " + createdDateTime.getDayOfMonth() + "일";
-//        }
-
 
         return BoardDto.builder()
                 .id(boardId)
@@ -80,7 +76,6 @@ public class Board {
                 .build();
 
     }
-
     public Board addView() {
         this.boardView ++;
         return this;
