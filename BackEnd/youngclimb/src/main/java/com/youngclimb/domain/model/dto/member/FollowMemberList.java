@@ -9,5 +9,7 @@ public class FollowMemberList {
 
     List<FollowMemberDto> followings;
     List<FollowMemberDto> followers;
+    Integer followingNum;
+    Integer followerNum;
 
 }
