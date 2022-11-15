@@ -315,7 +315,7 @@ function ProfileEditScreen({navigation}) {
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity style={styles.logout} onPress={reset}>
+          <TouchableOpacity style={styles.reset} onPress={reset}>
             <Text style={styles.link}>변경사항 초기화</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -438,8 +438,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: 'black',
   },
+  reset: {
+    marginTop: 20,
+  },
   logout: {
     marginTop: 20,
+    marginBottom: 100,
   },
   inputForm: {
     width: '80%',
