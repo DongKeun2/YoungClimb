@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -39,14 +40,12 @@ function SuccessScreen({navigation}) {
         includeBase64: Platform.OS === 'android',
       },
       res => {
-        console.log(res);
         if (res.didCancel) {
           return;
         }
         setImageUri(res);
       },
     );
-    console.log('프로필 사진 변경');
   };
 
   function onSubmitProfile(isSkip) {
@@ -77,10 +76,9 @@ function SuccessScreen({navigation}) {
         dispatch(saveImage(formData)).then(res => {
           dispatch(profileCreate({...data, image: res.payload})).then(res => {
             // 스토어에 회원정보 입력 후 로그인 처리
-            console.log('누가 먼저냐');
             getCurrentUser().then(
               currentUser => dispatch(fetchCurrentUser(currentUser)),
-              alert('성공요'),
+              Alert.alert('', '회원가입에 성공했습니다.'),
             );
           });
         });
@@ -89,7 +87,7 @@ function SuccessScreen({navigation}) {
           // 스토어에 회원정보 입력 후 로그인 처리
           getCurrentUser().then(
             currentUser => dispatch(fetchCurrentUser(currentUser)),
-            alert('성공요'),
+            Alert.alert('', '회원가입에 성공했습니다.'),
           );
         });
       }
