@@ -19,7 +19,6 @@ export const StartPer = async (per)=>{
         case PermissionsAndroid.RESULTS.GRANTED:
           break
         case PermissionsAndroid.RESULTS.DENIED:
-          await AsyncAlert('권한 재요청','다음의 권한은 앱 사용에 필수적인 권한입니다.',async()=>await requestSinglePermission(per))
           break
         case PermissionsAndroid.RESULTS.NEVER_ASK_AGAIN:
           neverask=true

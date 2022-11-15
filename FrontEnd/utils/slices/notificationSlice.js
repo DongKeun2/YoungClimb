@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosTemp from '../axios';
 import api from '../api';
 import getConfig from '../headers';
 
@@ -9,7 +9,7 @@ const fetchNotificationList = createAsyncThunk(
   async (id,{rejectWithValue}) => {
     try {
       console.log(111)
-      const res = await axios.get(api.noticeList(), await getConfig());
+      const res = await axiosTemp.get(api.noticeList(), await getConfig());
       console.log('알림 목록 결과', res.data);
       return res.data;
     } catch (err) {
