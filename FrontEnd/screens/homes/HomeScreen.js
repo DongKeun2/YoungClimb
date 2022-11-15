@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {useFocusEffect, useRoute, useIsFocused} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -8,6 +9,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import CustomMainHeader from '../../components/CustomMainHeader';
 import HomeFeed from '../../components/HomeFeed';
@@ -15,7 +17,7 @@ import HomeFeed from '../../components/HomeFeed';
 import {Toast} from '../../components/Toast';
 import DeclareSheet from '../../components/DeclareSheet';
 
-import {fetchHomeFeed} from '../../utils/slices/PostSlice';
+import {fetchHomeFeed, fetchHomeFeedAdd} from '../../utils/slices/PostSlice';
 
 function HomeScreen({navigation, route}) {
   const isFocused = useIsFocused();
@@ -25,7 +27,59 @@ function HomeScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const boards = useSelector(state => state.post.boards.boardDtos);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+
+  const isNext = useSelector(state => state.post.isNext);
+
+  const onEndReached = () => {
+    if (!isLoading && !isFinished) {
+      if (isNext) {
+        setIsLoading(true);
+        setPage(page + 1);
+        dispatch(fetchHomeFeed(page)).then(res => {
+          if (res.payload.nextPage && res.payload.boardDtos.length < 3) {
+            setPage(page + 1);
+            dispatch(fetchHomeFeed(page)).then(res => {
+              if (res.type === 'fetchHomeFeed/fulfilled') {
+                if (!res.payload.nextPage) {
+                  setPage(-1);
+                }
+                setIsLoading(false);
+              }
+            });
+          } else if (res.type === 'fetchHomeFeed/fulfilled') {
+            if (!res.payload.nextPage) {
+              setPage(-1);
+            }
+            setIsLoading(false);
+          }
+        });
+      } else {
+        setIsLoading(true);
+        setPage(page + 1);
+        console.log(page, '추가');
+        dispatch(fetchHomeFeedAdd(page)).then(res => {
+          if (!res.payload.nextPage) {
+            setIsFinished(true);
+          }
+          if (res.payload.nextPage && res.payload.boardDtos.length < 3) {
+            setPage(page + 1);
+            dispatch(fetchHomeFeedAdd(page)).then(res => {
+              if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+                setIsLoading(false);
+              }
+            });
+          } else if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+            setIsLoading(false);
+          }
+        });
+      }
+    }
+  };
+
+  const boards = useSelector(state => state.post.boardArray);
 
   const onViewRef = useRef(({viewableItems}) => {
     if (viewableItems && viewableItems[0]) {
@@ -76,7 +130,8 @@ function HomeScreen({navigation, route}) {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchHomeFeed(1));
+    console.log('홈피드 접근');
+    dispatch(fetchHomeFeed(page));
   }, [isFocused]);
 
   useFocusEffect(() => {
@@ -108,6 +163,20 @@ function HomeScreen({navigation, route}) {
             setFocusedContent={setFocusedContent}
           />
         )}
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.2}
+        ListFooterComponent={
+          isLoading && (
+            <View
+              style={{
+                width: '100%',
+                paddingVertical: 15,
+                backgroundColor: 'white',
+              }}>
+              <ActivityIndicator size="large" color="#F34D7F" />
+            </View>
+          )
+        }
       />
       <Toast ref={toastRef} />
       {modalVisible ? (

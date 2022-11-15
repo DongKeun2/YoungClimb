@@ -8,10 +8,11 @@ const DropDown = ({navigation}) => {
   return (
     <View style={styles.dropDownMenu}>
       <TouchableOpacity
+        style={styles.touchRange}
         onPress={() => {
           navigation.toggleDrawer();
         }}>
-        <SettingIcon style={{marginRight: 10}} />
+        <SettingIcon />
       </TouchableOpacity>
     </View>
   );
@@ -21,6 +22,10 @@ const styles = StyleSheet.create({
   dropDownMenu: {},
   text: {
     color: 'black',
+  },
+  touchRange: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
   },
 });
 

@@ -21,6 +21,23 @@ const fetchHomeFeed = createAsyncThunk(
   },
 );
 
+const fetchHomeFeedAdd = createAsyncThunk(
+  'fetchHomeFeedAdd',
+  async (pageNumber, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.get(
+        api.homeFeedAdd(pageNumber),
+        await getConfig(),
+      );
+      console.log('홈피드 추가 요청 성공', res.data.boardDtos.length);
+      return res.data;
+    } catch (err) {
+      console.log('홈피드 추가 요청 실패', err);
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const fetchFeedComment = createAsyncThunk(
   'fetchFeedComment',
   async (boardId, {rejectWithValue}) => {
@@ -240,13 +257,16 @@ const recommentAdd = createAsyncThunk(
 );
 
 const initialState = {
-  boards: [],
+  boards: {},
+  boardArray: [],
+  isNext: true,
   boardInfoComment: {},
   boardInfo: {},
   commentInfo: {},
   uploadVideo: null,
   videoPath: '',
-  reels: [],
+  reels: {},
+  reelsArray: [],
   commentIdForRe: 0,
   nicknameForRe: '',
   isFocusedInput: false,
@@ -285,6 +305,12 @@ export const PostSlice = createSlice({
     },
     [fetchHomeFeed.fulfilled]: (state, action) => {
       state.boards = action.payload;
+      state.boardArray = [...state.boardArray, ...action.payload.boardDtos];
+      state.isNext = action.payload.nextPage;
+    },
+    [fetchHomeFeedAdd.fulfilled]: (state, action) => {
+      state.boards = action.payload;
+      state.boardArray = [...state.boardArray, ...action.payload.boardDtos];
     },
     [fetchFeedComment.fulfilled]: (state, action) => {
       state.boardInfoComment = action.payload;
@@ -301,12 +327,14 @@ export const PostSlice = createSlice({
     },
     [fetchReels.fulfilled]: (state, action) => {
       state.reels = action.payload;
+      state.reelsArray = [...state.reelsArray, ...action.payload.boardDtos];
     },
   },
 });
 
 export {
   fetchHomeFeed,
+  fetchHomeFeedAdd,
   fetchFeedComment,
   postAdd,
   feedLikeSubmit,
