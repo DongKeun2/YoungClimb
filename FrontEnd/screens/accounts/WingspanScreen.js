@@ -13,6 +13,7 @@ import {
 } from '../../utils/slices/AccountsSlice';
 
 function WingSpanScreen({navigation, route}) {
+  
   const dispatch = useDispatch();
 
   const imageUri = useSelector(
