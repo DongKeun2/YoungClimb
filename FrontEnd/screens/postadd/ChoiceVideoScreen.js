@@ -65,7 +65,7 @@ function ChoiceVideoScreen({navigation}) {
         if (res.didCancel) {
           return;
         }
-        if (res.assets[0].fileSize > 4500000) {
+        if (res.assets[0].fileSize > 45000000) {
           alert('파일 크기가 너무 큽니다. 다른 영상을 선택해주세요.');
           return;
         } else {

@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   View,
@@ -21,7 +22,6 @@ import Comment from '../../components/Comment';
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 import {fetchDetail, likeBoard, scrapBoard} from '../../utils/slices/PostSlice';
 
-import avatar from '../../assets/image/initial/background.png';
 import MenuIcon from '../../assets/image/feed/menuIcon.svg';
 import CameraIcon from '../../assets/image/feed/whiteCamera.svg';
 import EmptyHeart from '../../assets/image/feed/emptyHeart.svg';
@@ -30,6 +30,11 @@ import EmptyScrap from '../../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../../assets/image/feed/eye.svg';
 import HoldIcon from '../../assets/image/hold/hold.svg';
+import PlayBtn from '../../assets/image/videoBtn/playBtn.svg';
+import RefreshBtn from '../../assets/image/videoBtn/refreshBtn.svg';
+import MuteBtn from '../../assets/image/videoBtn/muteBtn.svg';
+import SoundBtn from '../../assets/image/videoBtn/soundBtn.svg';
+
 import CommentInput from '../../components/CommentInput';
 
 function DetailScreen({navigation, route}) {
@@ -46,12 +51,30 @@ function DetailScreen({navigation, route}) {
   const [videoLength, setVideoLength] = useState(0);
 
   const [isMuted, setIsMuted] = useState(true);
+  const [isView, setIsView] = useState(true);
+  const [isFinished, setIsFinished] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
+
   const calVideoLength = e => {
     const {width} = e.nativeEvent.layout;
     setVideoLength(width);
   };
   const changeMuted = () => {
     setIsMuted(!isMuted);
+  };
+
+  const changePlay = () => {
+    if (isFinished) {
+      setIsView(true);
+      setIsRepeat(true);
+    } else {
+      setIsView(!isView);
+    }
+  };
+
+  const changeFinished = () => {
+    setIsView(false);
+    setIsFinished(true);
   };
 
   const openMenu = feed => {
@@ -63,12 +86,27 @@ function DetailScreen({navigation, route}) {
   const comments = useSelector(state => state.post.commentInfo);
 
   const isFocused = useIsFocused();
+
   useEffect(() => {
     setIsLoading(true);
     if (isFocused) {
       dispatch(fetchDetail(route.params.id)).then(() => setIsLoading(false));
     }
+    setIsView(true);
+    setIsFinished(false);
+    setIsRepeat(false);
   }, [dispatch, route, isFocused]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setIsMuted(true);
+        setIsView(false);
+        setIsFinished(false);
+        setIsRepeat(false);
+      };
+    }, []),
+  );
 
   function onClickHeart() {
     dispatch(likeBoard(route.params.id));
@@ -152,18 +190,52 @@ function DetailScreen({navigation, route}) {
               <TouchableOpacity
                 style={styles.videoBox}
                 activeOpacity={1}
-                onPress={changeMuted}>
+                onPress={changePlay}>
                 <Video
                   source={{uri: feed.mediaPath}}
                   style={styles.backgroundVideo}
                   fullscreen={false}
                   resizeMode={'contain'}
-                  repeat={true}
+                  repeat={isRepeat}
                   controls={false}
-                  paused={false}
+                  paused={!isView}
                   muted={isMuted}
+                  onLoad={() => setIsRepeat(false)}
+                  onEnd={changeFinished}
                 />
+                {/* 동영상 재생 버튼 */}
+                {!isView ? (
+                  <View
+                    style={{
+                      ...styles.videoBox,
+                      backgroundColor: 'rgba(0,0,0,0.6)',
+                    }}>
+                    {isFinished ? (
+                      <RefreshBtn color="white" width={70} height={120} />
+                    ) : (
+                      <PlayBtn color="white" width={70} height={120} />
+                    )}
+                  </View>
+                ) : null}
               </TouchableOpacity>
+              {/* 음소거 버튼 */}
+              {isView ? (
+                isMuted ? (
+                  <TouchableOpacity
+                    style={styles.muteIcon}
+                    activeOpacity={1}
+                    onPress={changeMuted}>
+                    <MuteBtn color="white" width={60} />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.muteIcon}
+                    activeOpacity={1}
+                    onPress={changeMuted}>
+                    <SoundBtn color="white" width={60} />
+                  </TouchableOpacity>
+                )
+              ) : null}
               <View style={styles.solvedDate}>
                 <CameraIcon />
                 <Text
@@ -211,9 +283,7 @@ function DetailScreen({navigation, route}) {
             </View>
 
             <View style={styles.contentSummary}>
-              <View style={{position: 'absolute', top: 0, opacity: 0}}>
-                <Text style={styles.contentPreview}>{feed.content}</Text>
-              </View>
+              <Text style={styles.contentPreview}>{feed.content}</Text>
             </View>
             {comments.length ? (
               comments?.map((comment, idx) => {
@@ -350,6 +420,16 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   text: {color: 'black', marginHorizontal: 10},
+  muteIcon: {
+    position: 'absolute',
+    bottom: 25,
+    right: 0,
+    width: 50,
+    height: 50,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default DetailScreen;
