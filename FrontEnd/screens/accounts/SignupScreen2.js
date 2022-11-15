@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Dimensions,
   TextInput,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -35,13 +36,13 @@ function SecondPage({navigation}) {
   }
 
   async function onSubmitSignup(isSkip) {
-    const fcmToken = await AsyncStorage.getItem('fcmToken')
+    const fcmToken = await AsyncStorage.getItem('fcmToken');
     const data = {
       email: signupForm.email.value,
       nickname: signupForm.nickname.value,
       password: signupForm.password.value,
       gender: signupForm.gender.value,
-      fcmToken: fcmToken.replace('"','').replace('"','')
+      fcmToken: fcmToken.replace('"', '').replace('"', ''),
     };
 
     // 건너뛰기 클릭 시 추가정보 제외하고 회원가입 신청
@@ -53,7 +54,7 @@ function SecondPage({navigation}) {
 
     dispatch(signup(data)).then(res => {
       if (res.type === 'signup/rejected') {
-        alert('회원가입에 실패하였습니다.');
+        Alert.alert('회원정보 확인', '회원가입에 실패하였습니다.');
       } else {
         navigation.navigate('완료');
       }
@@ -67,7 +68,10 @@ function SecondPage({navigation}) {
         type: 'signup',
       });
     } else {
-      alert('윙스팬 측정을 위해 키를 먼저 입력해주세요.');
+      Alert.alert(
+        '회원정보 확인',
+        '윙스팬 측정을 위해 키를 먼저 입력해주세요.',
+      );
     }
   }
 

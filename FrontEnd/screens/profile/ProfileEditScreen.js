@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -41,7 +42,6 @@ function ProfileEditScreen({navigation}) {
     if (name === 'nickname') {
       setIsCheckNickname(false);
     }
-    console.log(name, value);
     dispatch(changeEditForm({name, value}));
   }
 
@@ -56,7 +56,7 @@ function ProfileEditScreen({navigation}) {
         }
       });
     } else {
-      alert('닉네임을 입력해주세요.');
+      Alert.alert('프로필 수정', '닉네임을 입력해주세요.');
     }
   }
 
@@ -76,7 +76,6 @@ function ProfileEditScreen({navigation}) {
         setIsChange(true);
       },
     );
-    console.log('프로필 사진 변경');
   };
   useEffect(() => {
     setIsChange(false);
@@ -108,11 +107,10 @@ function ProfileEditScreen({navigation}) {
     dispatch(
       changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
     );
-    console.log('프로필 설정 입장');
   }, [dispatch, currentUser]);
 
   function reset() {
-    alert('초기화');
+    Alert.alert('프로필 수정', '초기화');
 
     dispatch(changeUploadImg(null));
     setIsChange(false);
@@ -150,7 +148,7 @@ function ProfileEditScreen({navigation}) {
   // 서브헤더 우측 완료버튼 이벤트
   function onSubmitEdit() {
     if (!isCheckNickname) {
-      alert('닉네임을 확인해주세요.');
+      Alert.alert('프로필 수정', '닉네임을 확인해주세요.');
       return;
     }
     const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
@@ -180,7 +178,6 @@ function ProfileEditScreen({navigation}) {
 
     if (isPhoto) {
       dispatch(saveImage(formData)).then(res => {
-        console.log('사진 저장 결과', res.payload);
         dispatch(profileEdit({...data, image: res.payload}));
       });
     } else if (isChange) {
@@ -315,7 +312,7 @@ function ProfileEditScreen({navigation}) {
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity style={styles.logout} onPress={reset}>
+          <TouchableOpacity style={styles.reset} onPress={reset}>
             <Text style={styles.link}>변경사항 초기화</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -438,8 +435,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: 'black',
   },
+  reset: {
+    marginTop: 20,
+  },
   logout: {
     marginTop: 20,
+    marginBottom: 100,
   },
   inputForm: {
     width: '80%',
