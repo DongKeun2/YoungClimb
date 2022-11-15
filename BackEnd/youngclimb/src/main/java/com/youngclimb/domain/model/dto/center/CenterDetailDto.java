@@ -18,4 +18,5 @@ public class CenterDetailDto {
     List<CenterLevelDto> centerLevelList;
     List<WallDto> wallList;
     Boolean wall;
+    String img;
 }

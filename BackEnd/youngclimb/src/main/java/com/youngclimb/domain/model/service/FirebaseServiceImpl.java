@@ -31,11 +31,11 @@ public class FirebaseServiceImpl implements FirebaseService {
 
 
     // Token 삭제
-    public void deleteFcmToken(String email, String token) {
+    public void deleteFcmToken(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
         member.setFcmToken(null);
 
-        memberRepository.delete(member);
+        memberRepository.save(member);
     }
 
 //    @Async
