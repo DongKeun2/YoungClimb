@@ -72,7 +72,7 @@ centerPriceList: [{
 			axios.get(api.center(route.params.Id), {cancelToken: source.token})
 			.then(res=>{
 				setDetailInfo(res.data)
-				setLoading(false)
+				setIsLoading(false)
 			})
 			.catch(err=>{
 				console.log(err)
