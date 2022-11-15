@@ -86,7 +86,7 @@ function CustomSubHeader({
           onPress={() => {
             request ? request() : null;
           }}>
-          <Text style={{...styles.textStyle, color: '#F34D7F', marginRight: 5}}>
+          <Text style={{...styles.textStyle, color: '#F34D7F', marginRight: 20}}>
             {rightTitle}
           </Text>
         </TouchableOpacity>

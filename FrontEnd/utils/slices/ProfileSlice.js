@@ -57,6 +57,22 @@ const checkNickname = createAsyncThunk(
   },
 );
 
+const deleteBoard = createAsyncThunk(
+  'deleteBoard',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.post(
+        api.deleteBoard(boardId),
+        {},
+        await getConfig(),
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   profileInfo: {},
   followInfo: {
@@ -75,6 +91,11 @@ export const ProfileSlice = createSlice({
     },
     profileFollow: (state, action) => {
       state.profileInfo.follow = action.payload;
+      if (action.payload) {
+        state.profileInfo.user.followerNum += 1;
+      } else {
+        state.profileInfo.user.followerNum -= 1;
+      }
     },
     followingFollow: (state, action) => {
       state.followInfo.followings[action.payload.idx].follow =
@@ -104,7 +125,7 @@ export const ProfileSlice = createSlice({
   },
 });
 
-export {profile, followSubmit, fetchFollowList, checkNickname};
+export {profile, followSubmit, fetchFollowList, checkNickname, deleteBoard};
 
 export const {changeUploadImg, profileFollow, followingFollow, followerFollow} =
   ProfileSlice.actions;
