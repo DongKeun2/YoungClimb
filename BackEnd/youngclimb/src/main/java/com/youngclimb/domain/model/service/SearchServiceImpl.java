@@ -35,7 +35,7 @@ public class SearchServiceImpl implements SearchService {
             List<Follow> recommends = followRepository.findAllByFollower(follow.getFollowing());
 
             for (Follow recommend : recommends) {
-                if (recommend.getFollowing().getMemberId() == user.getMemberId()) continue;
+                if (Objects.equals(recommend.getFollowing().getMemberId(), user.getMemberId())) continue;
                 if (!followRepository.existsByFollowerAndFollowing(user, recommend.getFollowing())) {
                     MemberPic memberPic = MemberPic.builder()
                             .nickname(recommend.getFollowing().getNickname())
@@ -50,6 +50,22 @@ public class SearchServiceImpl implements SearchService {
         }
         Set<MemberPic> memberPicSet = new HashSet<>(memberPics);
         List<MemberPic> newMemberPics = new ArrayList<>(memberPicSet);
+
+        if (newMemberPics.isEmpty()) {
+            List<Member> similarMembers = memberRepository.findAllByWingheightBetween(user.getWingheight() - 10, user.getWingheight() + 10);
+
+            for (Member similarMember : similarMembers) {
+                if (Objects.equals(similarMember.getMemberId(), user.getMemberId())) continue;
+                MemberPic memberPic = MemberPic.builder()
+                        .nickname(similarMember.getNickname())
+                        .image(similarMember.getMemberProfileImg())
+                        .rank(memberRankExpRepository.findByMember(similarMember).orElseThrow().getRank().getName())
+                        .build();
+
+                newMemberPics.add(memberPic);
+            }
+
+        }
 
         return newMemberPics;
     }
