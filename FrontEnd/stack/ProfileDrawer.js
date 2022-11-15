@@ -25,7 +25,7 @@ const ProfileDrawer = () => {
         },
       }}>
       <Drawer.Screen
-        name="메인프로필"
+        name="메인 프로필"
         component={ProfileScreen}
         options={{
           drawerItemStyle: {display: 'none'},

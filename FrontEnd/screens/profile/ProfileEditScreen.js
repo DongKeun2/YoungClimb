@@ -189,12 +189,24 @@ function ProfileEditScreen({navigation}) {
 
     if (isPhoto) {
       dispatch(saveImage(formData)).then(res => {
-        dispatch(profileEdit({...data, image: res.payload}));
+        dispatch(profileEdit({...data, image: res.payload})).then(res => {
+          navigation.navigate('메인 프로필', {
+            nickname: res.payload.user.nickname,
+          });
+        });
       });
     } else if (isChange) {
-      dispatch(profileEdit({...data, image: ''}));
+      dispatch(profileEdit({...data, image: ''})).then(res => {
+        navigation.navigate('메인 프로필', {
+          nickname: res.payload.user.nickname,
+        });
+      });
     } else {
-      dispatch(profileEdit(data));
+      dispatch(profileEdit(data)).then(res => {
+        navigation.navigate('메인 프로필', {
+          nickname: res.payload.user.nickname,
+        });
+      });
     }
   }
 

@@ -108,8 +108,6 @@ const profileCreate = createAsyncThunk(
         data,
         await getConfig(),
       );
-      setAccessToken(res.data.accessToken);
-      setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
@@ -128,8 +126,6 @@ const profileEdit = createAsyncThunk(
         await getConfig(),
       );
       Alert.alert('프로필  수정', '수정 완료');
-      setAccessToken(res.data.accessToken);
-      setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
@@ -337,6 +333,7 @@ export const AccountsSlice = createSlice({
       state.currentUser = action.payload.user;
     },
     [profileEdit.fulfilled]: (state, action) => {
+      console.log('여기', action.payload);
       state.currentUser = action.payload.user;
     },
   },
