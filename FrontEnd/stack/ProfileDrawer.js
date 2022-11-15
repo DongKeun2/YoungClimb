@@ -1,12 +1,11 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
 import {useSelector} from 'react-redux';
-import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
 import AppSettings from '../screens/profile/AppSettings';
+import AppInfo from '../screens/profile/AppInfo';
 
 const Drawer = createDrawerNavigator();
 
@@ -38,6 +37,7 @@ const ProfileDrawer = () => {
       />
       <Drawer.Screen name="프로필 설정" component={ProfileEditScreen} />
       <Drawer.Screen name="앱 설정" component={AppSettings} />
+      <Drawer.Screen name="앱 정보" component={AppInfo} />
     </Drawer.Navigator>
   );
 };
