@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   BackHandler,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused, useFocusEffect, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -28,6 +29,8 @@ import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
+
+const windowWidth = Dimensions.get('window').width;
 
 function ProfileScreen({navigation, route}) {
   const [exitAttempt, setExitAttempt] = useState(false);
@@ -399,7 +402,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '50%',
+    width: windowWidth / 2,
   },
 });
 
