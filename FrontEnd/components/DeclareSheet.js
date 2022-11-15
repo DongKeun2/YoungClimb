@@ -30,7 +30,7 @@ const DeclareSheet = (props) => {
 			BackHandler.removeEventListener('hardwareBackPress')
 			// let backAction
 			if (focusedPage ==='메뉴메인'){
-				setPageSize(200)
+				setPageSize(160)
 				setPageTitle('')
 				// backAction = ()=>{setModalVisible(false)}
 			} else if (focusedPage === '게시물정보') {
