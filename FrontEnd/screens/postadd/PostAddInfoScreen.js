@@ -46,7 +46,7 @@ function PostAddInfoScreen({navigation}) {
 
   function onChangeCenter(value) {
     setCenter(value);
-    setWall('');
+    setWall(0);
     setLevel('');
     setHoldColor('');
   }
