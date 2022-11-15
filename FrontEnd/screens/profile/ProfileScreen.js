@@ -165,7 +165,13 @@ function ProfileScreen({navigation, route}) {
                   <View style={styles.InfoContainer}>
                     <TouchableOpacity
                       style={styles.InfoBox}
-                      onPress={() => setIsRank(true)}>
+                      onPress={() => {
+                        if (currentUser.nickname === userInfo.nickname) {
+                          setIsRank(true);
+                        } else {
+                          alert('본인의 등급정보만 볼 수 있습니다.');
+                        }
+                      }}>
                       <Text style={styles.text}>등급</Text>
                       <HoldIcon
                         width={20}
