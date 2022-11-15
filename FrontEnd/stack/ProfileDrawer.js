@@ -6,6 +6,7 @@ import ProfileScreen from '../screens/profile/ProfileScreen';
 import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
 import AppSettings from '../screens/profile/AppSettings';
 import AppInfo from '../screens/profile/AppInfo';
+import ServiceTermsScreen from '../screens/profile/ServiceTermsScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -14,7 +15,7 @@ const ProfileDrawer = () => {
   return (
     <Drawer.Navigator
       initialRouteName="메인 프로필"
-      detachInactiveScreens={true}
+      detachInactiveScreens={false}
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
@@ -37,9 +38,25 @@ const ProfileDrawer = () => {
       />
       <Drawer.Screen name="프로필 설정" component={ProfileEditScreen} />
       <Drawer.Screen name="앱 설정" component={AppSettings} />
-      <Drawer.Screen name="앱 정보" component={AppInfo} />
+      <Drawer.Screen name="앱 정보" component={AppInfoStack} />
     </Drawer.Navigator>
   );
 };
+
+import {createStackNavigator} from '@react-navigation/stack';
+const Stack = createStackNavigator();
+
+function AppInfoStack() {
+  return (
+    <Stack.Navigator
+      initialRouteName="앱 정보"
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name="앱 정보" component={AppInfo} />
+      <Stack.Screen name="이용약관" component={ServiceTermsScreen} />
+    </Stack.Navigator>
+  );
+}
 
 export default ProfileDrawer;

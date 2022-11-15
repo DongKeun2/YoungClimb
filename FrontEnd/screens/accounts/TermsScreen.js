@@ -377,7 +377,6 @@ const styles = StyleSheet.create({
   },
   textBox: {padding: 5},
   subTitle: {color: 'black', fontSize: 16, fontWeight: 'bold'},
-
   text: {
     color: 'black',
   },
