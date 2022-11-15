@@ -1,5 +1,11 @@
 import React from 'react';
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import HoldLabel from './HoldLabel';
 import LevelLabel from './LevelLabel';
 import Video from 'react-native-video';
@@ -7,6 +13,8 @@ import UserAvatar from './UserAvatar';
 
 import HoldIcon from '../assets/image/hold/hold.svg';
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
+
+const windowWidth = Dimensions.get('window').width;
 
 function ArticleCard({article, type}) {
   return (
@@ -59,7 +67,7 @@ const styles = StyleSheet.create({
   },
   videoBox: {
     width: '98%',
-    height: 180,
+    height: windowWidth / 2 - 30,
   },
   video: {
     position: 'absolute',

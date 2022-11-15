@@ -1,8 +1,9 @@
+import {Alert} from 'react-native';
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import axiosTemp from '../axios';
 import api from '../api';
-import getConfig, {getHeader} from '../headers';
+import getConfig from '../headers';
 
 import {
   setAccessToken,
@@ -14,32 +15,27 @@ import {
 } from '../Token';
 
 const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
-  console.log('로그인 요청', data);
   try {
     const res = await axios.post(api.login(), data, {});
-    console.log('로그인 결과', res.data);
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
-    console.log(err);
+    Alert.alert('로그인 정보', '이메일과 비밀번호를 확인해주세요.');
     return rejectWithValue(err.response.data);
   }
 });
 
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
-  console.log('로그아웃 시도');
   try {
     // await axios.post(api.fcmtokendelete(), {}, await getConfig());
     const res = await axiosTemp.post(api.logout(), {}, await getConfig());
-    console.log('로그아웃', res.status);
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
     return res.data;
   } catch (err) {
-    console.log('로그아웃 실패', err.response);
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
@@ -50,7 +46,6 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
 const checkEmail = createAsyncThunk(
   'checkEmail',
   async (data, {rejectWithValue}) => {
-    console.log('이메일 확인', data);
     try {
       const res = await axios.post(api.checkEmail(), data, {});
       return res.data;
@@ -63,7 +58,6 @@ const checkEmail = createAsyncThunk(
 const checkNickname = createAsyncThunk(
   'checkNickname',
   async (data, {rejectWithValue}) => {
-    console.log('닉네임 확인', data);
     try {
       const res = await axios.post(api.checkNickname(), data, {});
       return res.data;
@@ -75,16 +69,13 @@ const checkNickname = createAsyncThunk(
 
 // 회원가입시에도 스토리지에 저장
 const signup = createAsyncThunk('signup', async (data, {rejectWithValue}) => {
-  console.log('회원가입 정보', data);
   try {
     const res = await axios.post(api.signup(), data, {});
-    console.log(res.payload);
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
     setCurrentUser(res.data.user);
     return res.data;
   } catch (err) {
-    console.log(err);
     return rejectWithValue(err.response.data);
   }
 });
@@ -101,10 +92,8 @@ const saveImage = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('사진 저장 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('사진 저장 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -113,20 +102,17 @@ const saveImage = createAsyncThunk(
 const profileCreate = createAsyncThunk(
   'profileCreate',
   async (data, {rejectWithValue}) => {
-    console.log('회원가입 후 프로필 자기소개 입력', data);
     try {
       const res = await axiosTemp.post(
         api.profileCreate(),
         data,
         await getConfig(),
       );
-      console.log('프로필 생성 성공', res.data);
       setAccessToken(res.data.accessToken);
       setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
-      console.log('프로필 생성 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -135,22 +121,19 @@ const profileCreate = createAsyncThunk(
 const profileEdit = createAsyncThunk(
   'profileEdit',
   async (data, {rejectWithValue}) => {
-    console.log('수정 요청', data);
     try {
       const res = await axiosTemp.post(
         api.profileEdit(),
         data,
         await getConfig(),
       );
-      alert('수정 완료');
-      console.log('프로필 수정 성공', res.data);
+      Alert.alert('프로필  수정', '수정 완료');
       setAccessToken(res.data.accessToken);
       setRefreshToken(res.data.refreshToken);
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {
-      alert('수정 실패');
-      console.log(err);
+      Alert.alert('프로필  수정', '수정 실패');
       return rejectWithValue(err.response.data);
     }
   },
@@ -159,7 +142,6 @@ const profileEdit = createAsyncThunk(
 const wingspan = createAsyncThunk(
   'wingspan',
   async (formData, {rejectWithValue}) => {
-    console.log('측정 요청 감');
     const header = {
       'Content-Type': 'multipart/form-data',
     };
@@ -170,10 +152,8 @@ const wingspan = createAsyncThunk(
         data: formData,
         headers: header,
       });
-      console.log('측정 결과', res.data);
       return res.data;
     } catch (err) {
-      console.log('측정 에러', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -270,7 +250,6 @@ export const AccountsSlice = createSlice({
   initialState,
   reducers: {
     fetchCurrentUser: (state, action) => {
-      console.log('새로고침 유저 정보', action.payload);
       state.currentUser = action.payload;
       state.loginState = true;
     },
@@ -297,7 +276,6 @@ export const AccountsSlice = createSlice({
       }
     },
     changeEditForm: (state, action) => {
-      console.log(action.payload);
       if (action.payload.value === 0) {
         state.editForm[action.payload.name].value = '';
       } else if (
@@ -325,33 +303,28 @@ export const AccountsSlice = createSlice({
       state.currentUser = action.payload.user;
     },
     [login.rejected]: state => {
-      alert('이메일과 비밀번호를 확인해주세요.');
       state.loginState = false;
     },
     [signup.fulfilled]: (state, action) => {
       state.currentUser = action.payload.user;
-      console.log('회원가입 성공');
-    },
-    [signup.rejected]: (state, action) => {
-      console.log('회원가입 실패');
     },
     [checkEmail.fulfilled]: (state, action) => {
       if (action.payload === false) {
-        alert('사용 불가능한 이메일입니다.');
+        Alert.alert('가입정보 확인', '사용 불가능한 이메일입니다.');
       }
       state.isCheckEmail = action.payload;
     },
-    [checkEmail.rejected]: (state, action) => {
-      alert('사용 불가능한 이메일입니다.');
+    [checkEmail.rejected]: () => {
+      Alert.alert('가입정보 확인', '사용 불가능한 이메일입니다.');
     },
     [checkNickname.fulfilled]: (state, action) => {
       if (action.payload === false) {
-        alert('사용 불가능한 닉네임입니다.');
+        Alert.alert('가입정보 확인', '사용 불가능한 닉네임입니다.');
       }
       state.isCheckNickname = action.payload;
     },
     [checkNickname.rejected]: (state, action) => {
-      alert('사용 불가능한 닉네임입니다.');
+      Alert.alert('가입정보 확인', '사용 불가능한 이메일입니다.');
     },
     [logout.fulfilled]: state => {
       state.loginState = false;

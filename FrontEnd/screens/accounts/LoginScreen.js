@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Alert,
   Dimensions,
 } from 'react-native';
 import {login} from '../../utils/slices/AccountsSlice';
@@ -14,7 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Input from '../../components/Input';
 import CustomButton from '../../components/CustomBtn';
 import title from '../../assets/image/main/title.png';
-
 
 function LoginScreen({navigation}) {
   const dispatch = useDispatch();
@@ -43,12 +43,12 @@ function LoginScreen({navigation}) {
   }
 
   async function onSubmitLogin() {
-    const fcmToken = await AsyncStorage.getItem('fcmToken')
-    console.log(fcmToken,'inLogin fcm')
+    const fcmToken = await AsyncStorage.getItem('fcmToken');
+    console.log(fcmToken, 'inLogin fcm');
     const data = {
       email: loginForm.email.value,
       password: loginForm.password.value,
-      fcmToken: fcmToken.replace('"','').replace('"','')
+      fcmToken: fcmToken.replace('"', '').replace('"', ''),
     };
     dispatch(login(data));
   }
