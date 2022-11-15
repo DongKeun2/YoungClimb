@@ -43,14 +43,14 @@ function HomeScreen({navigation, route}) {
             setPage(page + 1);
             dispatch(fetchHomeFeed(page)).then(res => {
               if (res.type === 'fetchHomeFeed/fulfilled') {
-                if (!res.payload.nextPage) {
+                if (!res.payload.nextPage && page) {
                   setPage(-1);
                 }
                 setIsLoading(false);
               }
             });
           } else if (res.type === 'fetchHomeFeed/fulfilled') {
-            if (!res.payload.nextPage) {
+            if (!res.payload.nextPage && page) {
               setPage(-1);
             }
             setIsLoading(false);
