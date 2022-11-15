@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
@@ -79,9 +78,6 @@ public class BoardServiceImpl implements BoardService {
             // 게시글 Dto 세팅
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
             boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
-//            BoardDto boardDto = this.startDto(board, member);
-//            boardDto.setCreateUser(this.toCreateUser(board, member));
-
 
             // 댓글 DTO 1개 세팅
             List<Comment> comments = commentRepository.findAllByBoard(board, Sort.by(Sort.Direction.DESC, "createdDateTime"));
@@ -114,7 +110,18 @@ public class BoardServiceImpl implements BoardService {
         MainPageDto mainPageDto = new MainPageDto();
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), pageable);
+
+        List<Follow> followList = followRepository.findAllByFollower(member);
+        List<Member> followMembers = new ArrayList<>();
+        followMembers.add(member);
+
+        if (!followList.isEmpty()) {
+            for (Follow follow : followList) {
+                followMembers.add(memberRepository.findById(follow.getFollowing().getMemberId()).get());
+            }
+        }
+
+        Slice<Board> recentBoards = boardRepository.findAllByCreatedDateTimeAfterAndMemberNotInOrderByCreatedDateTimeDesc(LocalDateTime.now().minusWeeks(2), followMembers, pageable);
 
         // 2주 이내 게시글
         for (Board board : recentBoards) {
@@ -122,16 +129,10 @@ public class BoardServiceImpl implements BoardService {
             if (board.getIsDelete() != 0) continue;
             // 자기가 신고한 게시글
             if (reportRepository.existsByBoardAndMember(board, member)) continue;
-            // 팔로우한 사람이 쓴 경우
-            if (followRepository.existsByFollowerAndFollowing(member, board.getMember())) continue;
-            // 자기 자신이 쓴 경우
-            if (Objects.equals(board.getMember().getMemberId(), member.getMemberId())) continue;
 
             // 게시글 Dto 세팅
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
             boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
-//            BoardDto boardDto = this.startDto(board, member);
-//            boardDto.setCreateUser(this.toCreateUser(board, member));
 
 
             // 댓글 DTO 1개 세팅
@@ -160,9 +161,7 @@ public class BoardServiceImpl implements BoardService {
     // 게시글 조회수 증가
     public Long updateView(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow();
-
         boardRepository.save(board.addView());
-
         return board.getBoardView();
     }
 
@@ -184,6 +183,17 @@ public class BoardServiceImpl implements BoardService {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
         }
 
+    }
+    private String createFileName(String fileName) {
+        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+    }
+
+    private String getFileExtension(String fileName) {
+        try {
+            return fileName.substring(0, fileName.indexOf("."));
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다");
+        }
     }
 
     // 게시글 작성
@@ -207,24 +217,11 @@ public class BoardServiceImpl implements BoardService {
                 .build();
         categoryRepository.save(category);
 
-//        // 이미지 저장하기
-//        if (!file.isEmpty()) {
-//            String fileName = createFileName(file.getOriginalFilename());
-//            ObjectMetadata objectMetadata = new ObjectMetadata();
-//            objectMetadata.setContentLength(file.getSize());
-//            objectMetadata.setContentType(file.getContentType());
-//            try (InputStream inputStream = file.getInputStream()) {
-//                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-//            } catch (IOException e) {
-//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-//            }
-//            BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString())
-//                    .build();
-//            boardMediaRepository.save(boardMedia);
-//        }
-
-        BoardMedia boardMedia = BoardMedia.builder().board(board).mediaPath(boardCreate.getMediaPath()).build();
-
+        // 게시글 동영상 저장
+        BoardMedia boardMedia = BoardMedia.builder()
+                .board(board)
+                .mediaPath(boardCreate.getMediaPath())
+                .build();
         boardMediaRepository.save(boardMedia);
 
         // 유저 경험치 등급 저장하기
@@ -242,12 +239,7 @@ public class BoardServiceImpl implements BoardService {
 
         // 랭크 업데이트
         List<Rank> ranks = rankRepository.findAll();
-        ranks.sort(new Comparator<Rank>() {
-            @Override
-            public int compare(Rank o1, Rank o2) {
-                return (int) (o1.getQual() - o2.getQual());
-            }
-        });
+        ranks.sort((o1, o2) -> (int) (o1.getQual() - o2.getQual()));
 
         for (Rank tmp : ranks) {
             if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
@@ -267,19 +259,6 @@ public class BoardServiceImpl implements BoardService {
             board.setIsDelete(1);
             boardRepository.save(board);
         }
-
-    }
-
-    private String createFileName(String fileName) {
-        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
-    }
-
-    private String getFileExtension(String fileName) {
-        try {
-            return fileName.substring(0, fileName.indexOf("."));
-        } catch (StringIndexOutOfBoundsException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 형식의 파일입니다");
-        }
     }
 
     // 게시글 좋아요
@@ -288,11 +267,10 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
         BoardLikeDto boardLikeDto = new BoardLikeDto();
-        Notice notice = noticeRepository.findByBoardAndFromMemberAndType(board, member, 2).orElse(null);
 
         boolean isLike = boardLikeRepository.existsByBoardAndMember(board, member);
 
-        // 좋아요 누르지 않은 경우
+        // 이전에 좋아요 누르지 않은 경우
         if (!isLike) {
             BoardLike boardLike = BoardLike.builder().board(board).member(member).build();
             boardLikeRepository.save(boardLike);
@@ -326,23 +304,22 @@ public class BoardServiceImpl implements BoardService {
                 }
             }
 
-            List<BoardLike> boardLikes = boardLikeRepository.findAllByBoard(board);
             boardLikeDto.setIsLike(Boolean.TRUE);
-            boardLikeDto.setLike(boardLikes.size());
-
-
+            boardLikeDto.setLike(boardLikeRepository.countByBoard(board));
 
             return boardLikeDto;
         }
-        // 좋아요 누른 경우
+        // 이전에 좋아요 눌렀던 경우
         else {
             if (board.getMember() != member) {
+                Notice notice = noticeRepository.findByBoardAndFromMemberAndType(board, member, 2).orElse(null);
                 noticeRepository.delete(notice);
             }
             boardLikeRepository.deleteByBoardAndMember(board, member);
-            List<BoardLike> boardLikes = boardLikeRepository.findAllByBoard(board);
+//            List<BoardLike> boardLikes = boardLikeRepository.findAllByBoard(board);
             boardLikeDto.setIsLike(Boolean.FALSE);
-            boardLikeDto.setLike(boardLikes.size());
+            boardLikeDto.setLike(boardLikeRepository.countByBoard(board));
+
             return boardLikeDto;
         }
 
@@ -360,8 +337,6 @@ public class BoardServiceImpl implements BoardService {
 
         BoardDto boardDto = boardDtoCreator.startDto(board, member);
         boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
-//        BoardDto boardDto = this.startDto(board, member);
-//        boardDto.setCreateUser(this.toCreateUser(board, member));
 
         boardDetailDto.setBoardDto(boardDto);
 
@@ -371,14 +346,12 @@ public class BoardServiceImpl implements BoardService {
         for (Comment comment : comments) {
             if (comment.getParentId() == 0) {
                 CommentDto commentDto = boardDtoCreator.toCommentDtos(comment, member);
-//                CommentDto commentDto = this.toCommentDtos(comment, member);
 
                 // 대댓글 세팅
                 List<Comment> reComments = commentRepository.findByParentId(comment.getId(), Sort.by(Sort.Direction.ASC, "createdDateTime"));
                 List<CommentDto> reCommentDtos = new ArrayList<>();
                 for (Comment reComment : reComments) {
                     CommentDto reCommentDto = boardDtoCreator.toCommentDtos(reComment, member);
-//                    CommentDto reCommentDto = this.toCommentDtos(reComment, member);
                     reCommentDtos.add(reCommentDto);
                 }
 
@@ -396,13 +369,10 @@ public class BoardServiceImpl implements BoardService {
     public Boolean commentLikeCancle(Long commentId, String email) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Notice notice = noticeRepository.findByCommentAndFromMemberAndType(comment, member, 4).orElse(null);
-
         boolean isLike = commentLikeRepository.existsByCommentAndMember(comment, member);
 
         if (!isLike) {
             CommentLike commentLike = CommentLike.builder().comment(comment).member(member).build();
-
             commentLikeRepository.save(commentLike);
 
             if (comment.getMember() != member) {
@@ -437,8 +407,8 @@ public class BoardServiceImpl implements BoardService {
 
             return true;
         } else {
-
             if (comment.getMember() != member) {
+                Notice notice = noticeRepository.findByCommentAndFromMemberAndType(comment, member, 4).orElse(null);
                 noticeRepository.delete(notice);
             }
 
@@ -456,7 +426,6 @@ public class BoardServiceImpl implements BoardService {
         Comment comment = commentCreate.toComment();
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
-
 
         comment.setMemberandBoard(member, board);
         commentRepository.save(comment);
@@ -487,14 +456,11 @@ public class BoardServiceImpl implements BoardService {
                 memberRepository.save(board.getMember());
             }
         }
-
-
-
     }
 
     // 대댓글 작성
     @Override
-    public void writeRecomment(CommentCreate commentCreate,Long boardId, Long commentId, String email) {
+    public void writeRecomment(CommentCreate commentCreate, Long boardId, Long commentId, String email) {
 
         Comment comment = commentCreate.toComment();
         Board board = boardRepository.findById(boardId).orElseThrow();
@@ -530,10 +496,6 @@ public class BoardServiceImpl implements BoardService {
                 memberRepository.save(comment.getMember());
             }
         }
-
-
-
-
     }
 
 
@@ -544,11 +506,8 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByNickname(userId).orElseThrow();
         Member loginMember = memberRepository.findByEmail(loginEmail).orElseThrow();
         MemberDto memberDto = new MemberDto();
-
         memberDto.setFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(loginMember.getMemberId(), member.getMemberId()));
-
         memberDto.setUser(boardDtoCreator.setUserDto(member));
-//        memberDto.setUser(this.setUserDto(member));
 
         List<Board> boards = boardRepository.findByMember(member, Sort.by(Sort.Direction.DESC, "createdDateTime"));
         List<BoardDto> boardDtos = new ArrayList<>();
@@ -557,11 +516,7 @@ public class BoardServiceImpl implements BoardService {
             if (board.getIsDelete() != 0) continue;
             // 게시물 Dto 세팅
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
-            boardDto.setCreateUser(boardDtoCreator.toCreateUser(board,member));
-
-//            BoardDto boardDto = this.startDto(board, member);
-//            boardDto.setCreateUser(this.toCreateUser(board, member));
-
+            boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
 
             // List add
             boardDtos.add(boardDto);
@@ -578,10 +533,7 @@ public class BoardServiceImpl implements BoardService {
             if (reportRepository.existsByBoardAndMember(board, member)) continue;
 
             BoardDto scrapDto = boardDtoCreator.startDto(board, member);
-            scrapDto.setCreateUser(boardDtoCreator.toCreateUser(board,member));
-
-//            BoardDto scrapDto = this.startScrapDto(scrap, member);
-//            scrapDto.setCreateUser(this.toCreateScrapUser(scrap, member));
+            scrapDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
 
             // List add
             scrapDtos.add(scrapDto);
@@ -617,8 +569,10 @@ public class BoardServiceImpl implements BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow();
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-        List<Report> boardList = reportRepository.findAllByBoard(board);
-        int boardListLength = boardList.size();
+        Long reportCount = reportRepository.countByBoard(board);
+
+//        List<Report> boardList = reportRepository.findAllByBoard(board);
+//        int boardListLength = boardList.size();
 
         if (board.getMember() == member) {
             return Boolean.FALSE;
@@ -626,7 +580,7 @@ public class BoardServiceImpl implements BoardService {
 
         Report report = reportRepository.findByBoardAndMember(board, member).orElse(null);
 
-        if (boardListLength >= 9) {
+        if (reportCount >= 9) {
             board.setIsDelete(2);
         }
 
