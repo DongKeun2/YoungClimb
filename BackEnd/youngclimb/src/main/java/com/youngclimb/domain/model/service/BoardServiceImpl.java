@@ -252,11 +252,11 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시글 수정하기
     @Override
-    public void updateBoard(String email, BoardEdit boardEdit) {
+    public void updateBoard(String email, BoardEdit boardEdit, Long boardId) {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-        Board board = boardRepository.findById(boardEdit.getBoardId()).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow();
 
-        if(board.getMember() == member) {
+        if(board.getMember().equals(member)) {
             board.updateContent(boardEdit.getContent());
             boardRepository.save(board);
         }

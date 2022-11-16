@@ -24,7 +24,7 @@ public interface BoardService {
     public void writeBoard(String email, BoardCreate boardCreate);
 
     // 게시글 수정
-    public void updateBoard(String email, BoardEdit boardEdit);
+    public void updateBoard(String email, BoardEdit boardEdit, Long boardId);
 
     // 게시글 삭제
     public void deleteBoard(String email, Long boardId);

@@ -92,8 +92,7 @@ public class BoardController {
     @PostMapping("/{boardId}/edit")
     public ResponseEntity<?> editBoard(@RequestBody BoardEdit boardEdit, @PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception{
         try {
-            boardEdit.setBoardId(boardId);
-            boardService.updateBoard(principal.getUsername(), boardEdit);
+            boardService.updateBoard(principal.getUsername(), boardEdit, boardId);
             return new ResponseEntity<Void>(HttpStatus.OK);
 
         } catch (Exception e) {

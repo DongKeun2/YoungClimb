@@ -7,6 +7,5 @@ import lombok.Data;
 @Builder
 public class BoardEdit {
 
-    Long boardId;
     String content;
 }
