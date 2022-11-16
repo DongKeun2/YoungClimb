@@ -7,6 +7,12 @@ import ProfileEditScreen from '../screens/profile/ProfileEditScreen';
 import AppSettings from '../screens/profile/AppSettings';
 import AppInfo from '../screens/profile/AppInfo';
 import ServiceTermsScreen from '../screens/profile/ServiceTermsScreen';
+import CustomDrawer from '../components/CustomDrawer';
+
+import Edit from '../assets/image/drawer/profileEdit.svg';
+import Share from '../assets/image/drawer/share.svg';
+import Setting from '../assets/image/drawer/appSetting.svg';
+import Info from '../assets/image/drawer/appInfo.svg';
 
 const Drawer = createDrawerNavigator();
 
@@ -14,15 +20,16 @@ const ProfileDrawer = () => {
   const nickname = useSelector(state => state.accounts.currentUser.nickname);
   return (
     <Drawer.Navigator
+      drawerContent={props => <CustomDrawer {...props} />}
       initialRouteName="메인 프로필"
       detachInactiveScreens={false}
       screenOptions={{
         drawerPosition: 'right',
         headerShown: false,
         drawerStyle: {
-          // backgroundColor: 'black',
-          width: 150,
+          width: 190,
         },
+        drawerLabelStyle: {marginLeft: -25},
       }}>
       <Drawer.Screen
         name="메인 프로필"
@@ -36,10 +43,28 @@ const ProfileDrawer = () => {
           nickname,
         }}
       />
-      <Drawer.Screen name="프로필 설정" component={ProfileEditScreen} />
-      <Drawer.Screen name="공유하기" component={ShareScreen} />
-      <Drawer.Screen name="앱 설정" component={AppSettings} />
-      <Drawer.Screen name="앱 정보" component={AppInfoStack} />
+      <Drawer.Screen
+        name="프로필 설정"
+        component={ProfileEditScreen}
+        options={{drawerIcon: () => <Edit width={20} height={20} />}}
+      />
+      <Drawer.Screen
+        name="공유하기"
+        component={ShareScreen}
+        options={{
+          drawerIcon: () => <Share width={20} height={20} marginLeft={-2} />,
+        }}
+      />
+      <Drawer.Screen
+        name="앱 설정"
+        component={AppSettings}
+        options={{drawerIcon: () => <Setting width={20} height={20} />}}
+      />
+      <Drawer.Screen
+        name="앱 정보"
+        component={AppInfoStack}
+        options={{drawerIcon: () => <Info width={20} height={20} />}}
+      />
     </Drawer.Navigator>
   );
 };
@@ -51,11 +76,11 @@ const Stack = createStackNavigator();
 function AppInfoStack() {
   return (
     <Stack.Navigator
-      initialRouteName="앱 정보"
+      initialRouteName="정보"
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="앱 정보" component={AppInfo} />
+      <Stack.Screen name="정보" component={AppInfo} />
       <Stack.Screen name="이용약관" component={ServiceTermsScreen} />
     </Stack.Navigator>
   );
