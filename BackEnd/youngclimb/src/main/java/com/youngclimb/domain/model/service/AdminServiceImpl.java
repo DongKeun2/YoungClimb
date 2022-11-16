@@ -2,11 +2,8 @@ package com.youngclimb.domain.model.service;
 
 import com.youngclimb.domain.model.dto.report.ReportDetailDto;
 import com.youngclimb.domain.model.dto.report.ReportDto;
-import com.youngclimb.domain.model.entity.BoardMedia;
-import com.youngclimb.domain.model.entity.Report;
-import com.youngclimb.domain.model.repository.BoardMediaRepository;
-import com.youngclimb.domain.model.repository.BoardRepository;
-import com.youngclimb.domain.model.repository.ReportRepository;
+import com.youngclimb.domain.model.entity.*;
+import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +23,11 @@ public class AdminServiceImpl implements AdminService{
     private final ReportRepository reportRepository;
     private final BoardMediaRepository boardMediaRepository;
     private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
+    private final MemberRankExpRepository memberRankExpRepository;
+    private final MemberProblemRepository memberProblemRepository;
+    private final CategoryRepository categoryRepository;
+    private final RankRepository rankRepository;
 
     // 신고 목록 조회
     public List<ReportDto> readReport (String email) {
@@ -88,6 +90,33 @@ public class AdminServiceImpl implements AdminService{
     // 신고한 게시물 삭제
     public void deleteReport (Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
+        Member member = report.getBoard().getMember();
+        Category category = categoryRepository.findByBoard(report.getBoard()).orElseThrow();
+
+        // 유저 경험치 등급 저장하기
+        // 게시물에서 등급 받아오기
+        Level level = category.getCenterlevel().getLevel();
+
+        // 회원 경험치 업데이트
+        MemberRankExp memberExp = memberRankExpRepository.findByMember(member).orElseThrow();
+        memberExp.reduceMemberExp(level.getExp());
+
+        // 회원 푼 문제 업데이트
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+        memberProblem.reduceProblem(level.getRank());
+        memberProblemRepository.save(memberProblem);
+
+        // 랭크 업데이트
+        List<Rank> ranks = rankRepository.findAll();
+        ranks.sort((o1, o2) -> (int) (o1.getQual() - o2.getQual()));
+
+        for (Rank tmp : ranks) {
+            if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
+                memberExp.setRank(tmp);
+                break;
+            }
+        }
+        memberRankExpRepository.save(memberExp);
 
         report.getBoard().setIsDelete(1);
         boardRepository.save(report.getBoard());

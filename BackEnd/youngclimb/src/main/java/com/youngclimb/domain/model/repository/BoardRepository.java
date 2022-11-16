@@ -21,7 +21,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Slice<Board> findAllByCreatedDateTimeAfterAndMemberNotInOrderByCreatedDateTimeDesc(LocalDateTime localDateTime, List<Member> memberList, Pageable pageable);
 
-    Long countByMember(Member member);
+    Long countByMemberAndIsDeleteNot(Member member, Integer num);
 
     Slice<Board> findByMemberInOrBoardViewGreaterThan(List<Member> memberList, Long views, Pageable pageable);
 }

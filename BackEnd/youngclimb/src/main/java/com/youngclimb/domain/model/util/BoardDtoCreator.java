@@ -94,7 +94,7 @@ public class BoardDtoCreator {
         userDto.setShoeSize(member.getShoeSize());
         userDto.setWingspan(member.getWingspan());
         userDto.setRank(memberRankExpRepository.findByMember(member).orElseThrow().getRank().getName());
-        userDto.setBoardNum(boardRepository.countByMember(member));
+        userDto.setBoardNum(boardRepository.countByMemberAndIsDeleteNot(member, 1));
         userDto.setFollowingNum(followRepository.countByFollower(member));
         userDto.setFollowerNum(followRepository.countByFollowing(member));
         return userDto;
