@@ -110,7 +110,12 @@ public class Member {
         if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
         if (memberInfo.getIntro() != null) this.profileContent = memberInfo.getIntro();
         if (memberInfo.getImage() != "" && memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
-        this.wingheight = this.height + this.wingspan;
+
+        if (this.height == 0 || this.wingspan == 0) {
+            this.wingheight = (this.height + this.wingspan) * 2;
+        } else {
+            this.wingheight = this.height + this.wingspan;
+        }
 
 
         return this;

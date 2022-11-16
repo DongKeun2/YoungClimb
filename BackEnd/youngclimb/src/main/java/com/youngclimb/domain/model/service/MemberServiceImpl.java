@@ -80,6 +80,15 @@ public class MemberServiceImpl implements MemberService {
             throw new EntityExistsException("중복된 닉네임입니다!");
         }
 
+        Integer memberWingHeight = 0;
+
+        if (joinMember.getHeight() == 0 || joinMember.getWingspan() == 0) {
+            memberWingHeight = (joinMember.getHeight() + joinMember.getWingspan()) * 2;
+        } else {
+            memberWingHeight = joinMember.getHeight() + joinMember.getWingspan();
+        }
+
+
         Member member = Member.builder()
                 .memberProfileImg("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png")
                 .email(joinMember.getEmail())
@@ -90,7 +99,7 @@ public class MemberServiceImpl implements MemberService {
                 .height(joinMember.getHeight())
                 .shoeSize(joinMember.getShoeSize())
                 .wingspan(joinMember.getWingspan())
-                .wingheight(joinMember.getHeight() + joinMember.getWingspan())
+                .wingheight(memberWingHeight)
                 .role(UserRole.USER)
                 .fcmToken(joinMember.getFcmToekn())
                 .build();
@@ -680,6 +689,8 @@ public class MemberServiceImpl implements MemberService {
 
         followMemberList.setFollowers(followers);
         followMemberList.setFollowings(followings);
+        followMemberList.setFollowerNum(followers.size());
+        followMemberList.setFollowingNum(followings.size());
 
         return followMemberList;
     }
