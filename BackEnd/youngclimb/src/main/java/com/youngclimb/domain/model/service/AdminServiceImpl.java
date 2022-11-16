@@ -28,6 +28,7 @@ public class AdminServiceImpl implements AdminService{
     private final MemberProblemRepository memberProblemRepository;
     private final CategoryRepository categoryRepository;
     private final RankRepository rankRepository;
+    private final CenterLevelRepository centerLevelRepository;
 
     // 신고 목록 조회
     public List<ReportDto> readReport (String email) {
@@ -67,6 +68,7 @@ public class AdminServiceImpl implements AdminService{
     public ReportDetailDto readReportDetail (Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
         BoardMedia boardMedia = boardMediaRepository.findByBoard(report.getBoard()).orElseThrow();
+        Category category = categoryRepository.findByBoard(report.getBoard()).orElseThrow();
 
         List<String> reasons = new ArrayList<>();
         reasons.add("스팸");
@@ -81,6 +83,7 @@ public class AdminServiceImpl implements AdminService{
                 .boardMedia(boardMedia.getMediaPath())
                 .boardId(report.getBoard().getBoardId())
                 .boardContent(report.getBoard().getContent())
+                .boardLevel(category.getCenterlevel().getColor())
                 .memberNickname(report.getMember().getNickname())
                 .build();
 
