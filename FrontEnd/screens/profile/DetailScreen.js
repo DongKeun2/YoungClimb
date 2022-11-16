@@ -40,6 +40,7 @@ import Trash from '../../assets/image/feed/trash.svg';
 
 import CommentInput from '../../components/CommentInput';
 import {deleteBoard} from '../../utils/slices/ProfileSlice';
+import {viewCount} from '../../utils/slices/PostSlice';
 
 function DetailScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -59,6 +60,8 @@ function DetailScreen({navigation, route}) {
   const [isFinished, setIsFinished] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
+  const [isCounted, setIsCounted] = useState(false);
+  const [viewCounts, setViewCounts] = useState(0);
 
   const calVideoLength = e => {
     const {width} = e.nativeEvent.layout;
@@ -72,6 +75,7 @@ function DetailScreen({navigation, route}) {
     if (isFinished) {
       setIsView(true);
       setIsRepeat(true);
+      setIsCounted(false);
     } else {
       setIsView(!isView);
     }
@@ -85,6 +89,19 @@ function DetailScreen({navigation, route}) {
   const onLoad = () => {
     setIsRepeat(false);
     setIsBuffer(false);
+  };
+
+  const countView = log => {
+    if (!isCounted) {
+      if (log.currentTime / log.seekableDuration > 0.1) {
+        setIsCounted(true);
+        dispatch(viewCount(route.params.id)).then(res => {
+          if (res.type === 'viewCount/fulfilled') {
+            setViewCounts(viewCounts + 1);
+          }
+        });
+      }
+    }
   };
 
   const openMenu = feed => {
@@ -105,7 +122,8 @@ function DetailScreen({navigation, route}) {
     setIsView(true);
     setIsFinished(false);
     setIsRepeat(false);
-  }, [dispatch, route, isFocused]);
+    setViewCounts(feed.view);
+  }, [dispatch, route, isFocused, feed.view]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -234,6 +252,7 @@ function DetailScreen({navigation, route}) {
                   onBuffer={() => {
                     setIsBuffer(true);
                   }}
+                  onProgress={res => countView(res)}
                   onEnd={changeFinished}
                 />
                 {/* 동영상 재생 버튼 */}
@@ -322,7 +341,7 @@ function DetailScreen({navigation, route}) {
               <View style={styles.iconText}>
                 <EyeIcon style={{marginRight: 5}} />
                 <Text style={styles.feedTextStyle}>
-                  {feed.view} 명이 감상했습니다.
+                  {viewCounts} 명이 감상했습니다.
                 </Text>
               </View>
             </View>

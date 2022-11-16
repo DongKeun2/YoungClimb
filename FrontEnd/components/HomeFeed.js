@@ -30,7 +30,11 @@ import SoundBtn from '../assets/image/videoBtn/soundBtn.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-import {feedLikeSubmit, feedScrapSubmit} from '../utils/slices/PostSlice';
+import {
+  feedLikeSubmit,
+  feedScrapSubmit,
+  viewCount,
+} from '../utils/slices/PostSlice';
 
 function HomeFeed({
   feed,
@@ -55,12 +59,15 @@ function HomeFeed({
   const [isFinished, setIsFinished] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
+  const [isCounted, setIsCounted] = useState(false);
+  const [viewCounts, setViewCounts] = useState(0);
 
   useEffect(() => {
     setIsLiked(feed.isLiked);
     setLike(feed.like);
     setIsScrap(feed.isScrap);
-  }, [feed.isLiked, feed.like, feed.isScrap]);
+    setViewCounts(feed.view);
+  }, [feed.isLiked, feed.like, feed.isScrap, feed.view]);
 
   useEffect(() => {
     setIsView(false);
@@ -101,6 +108,7 @@ function HomeFeed({
     if (isFinished) {
       setIsView(true);
       setIsRepeat(true);
+      setIsCounted(false);
     } else {
       setIsView(!isView);
     }
@@ -115,6 +123,17 @@ function HomeFeed({
   const onLoad = () => {
     setIsRepeat(false);
     setIsBuffer(false);
+  };
+
+  const countView = log => {
+    if (log.currentTime / log.seekableDuration > 0.1) {
+      setIsCounted(true);
+      dispatch(viewCount(feed.id)).then(res => {
+        if (res.type === 'viewCount/fulfilled') {
+          setViewCounts(viewCounts + 1);
+        }
+      });
+    }
   };
 
   const openMenu = feed => {
@@ -222,6 +241,11 @@ function HomeFeed({
             paused={!(isViewable && isView)}
             muted={isMuted}
             onLoad={() => onLoad()}
+            onProgress={res => {
+              if (!isCounted) {
+                countView(res);
+              }
+            }}
             onBuffer={() => {
               setIsBuffer(true);
             }}
@@ -310,7 +334,7 @@ function HomeFeed({
         <View style={styles.iconText}>
           <EyeIcon style={{marginRight: 5}} />
           <Text style={styles.feedTextStyle}>
-            {feed.view} 명이 감상했습니다.
+            {viewCounts} 명이 감상했습니다.
           </Text>
         </View>
       </View>
