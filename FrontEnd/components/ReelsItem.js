@@ -109,6 +109,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
   };
 
   const resetPlay = () => {
+    setIsFinished(false);
     setIsRepeat(true);
     setIsCounted(false);
   };
@@ -177,6 +178,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
       <TouchableOpacity
         activeOpacity={1}
         onPress={changeMuted}
+        disabled={isFinished}
         style={{
           width: Dimensions.get('window').width,
           height: viewHeight - bottomTabBarHeight,
@@ -212,6 +214,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
             backgroundColor: 'black',
             display: 'flex',
             justifyContent: 'center',
+            zIndex: 2,
           }}>
           <ActivityIndicator size="large" color="white" />
         </View>
@@ -221,34 +224,38 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
         <TouchableOpacity
           activeOpacity={1}
           onPress={resetPlay}
+          disabled={!isFinished}
           style={{
             ...styles.background,
             backgroundColor: 'black',
             display: 'flex',
             justifyContent: 'center',
+            alignItems: 'center',
           }}>
           <RefreshBtn color="white" width={70} height={120} />
         </TouchableOpacity>
       ) : null}
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
-        <TouchableOpacity activeOpacity={1} onPress={changeMuted}>
-          {isMuted ? (
-            <MuteBtn
-              color="white"
-              width={28}
-              height={28}
-              style={{marginBottom: 5, marginHorizontal: 10}}
-            />
-          ) : (
-            <SoundBtn
-              color="white"
-              width={28}
-              height={28}
-              style={{marginBottom: 5, marginHorizontal: 10}}
-            />
-          )}
-        </TouchableOpacity>
+        {!isFinished ? (
+          <TouchableOpacity activeOpacity={1} onPress={changeMuted}>
+            {isMuted ? (
+              <MuteBtn
+                color="white"
+                width={28}
+                height={28}
+                style={{marginBottom: 5, marginHorizontal: 10}}
+              />
+            ) : (
+              <SoundBtn
+                color="white"
+                width={28}
+                height={28}
+                style={{marginBottom: 5, marginHorizontal: 10}}
+              />
+            )}
+          </TouchableOpacity>
+        ) : null}
         <TouchableOpacity
           onPress={() => reelsLike(item.id)}
           disabled={likePress}>
@@ -366,7 +373,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 0,
     left: 0,
-    zIndex: 2,
   },
 });
 

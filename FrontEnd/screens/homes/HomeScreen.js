@@ -162,7 +162,10 @@ function HomeScreen({navigation, route}) {
         viewabilityConfig={viewConfigRef.current}
         onViewableItemsChanged={onViewRef.current}
         keyExtractor={(item, index) => `${index}`}
-        initialNumToRender={3}
+        initialNumToRender={4}
+        maxToRenderPerBatch={4}
+        windowSize={7}
+        removeClippedSubviews={true}
         renderItem={({item, index}) => (
           <HomeFeed
             feed={item}
