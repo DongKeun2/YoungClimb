@@ -62,6 +62,7 @@ public class MemberController {
         }
     }
 
+
     @ApiOperation(value = "reIssue: 액세스토큰 재발급")
     @PostMapping("/reIssue")
     public ResponseEntity<?> reIssue(@CurrentUser UserPrincipal user) throws Exception {
@@ -82,18 +83,6 @@ public class MemberController {
             return ResponseEntity.status(409).body(e.getMessage());
         }
     }
-
-    // 신체 정보 입력
-//    @ApiOperation(value = "addBodyInfo: 추가정보 입력")
-//    @PostMapping("/addBody")
-//    public ResponseEntity<?> addBodyInfo(@RequestBody MemberInfo memberInfo) throws Exception {
-//        try {
-//            memberService.addBodyInfo(memberInfo);
-//            return new ResponseEntity<String>("추가 정보가 입력되었습니다.", HttpStatus.OK);
-//        } catch (Exception e) {
-//            return new ResponseEntity<String>("오류가 발생했습니다.", HttpStatus.BAD_REQUEST);
-//        }
-//    }
 
     // 프로필 정보 입력
     @ApiOperation(value = "addProfile: 프로필 정보 입력")
