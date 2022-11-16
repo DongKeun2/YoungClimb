@@ -174,7 +174,10 @@ function ProfileScreen({navigation, route}) {
                         if (currentUser.nickname === userInfo.nickname) {
                           setIsRank(true);
                         } else {
-                          alert('본인의 등급정보만 볼 수 있습니다.');
+                          Alert.alert(
+                            '열람 불가',
+                            '본인의 등급정보만 볼 수 있습니다.',
+                          );
                         }
                       }}>
                       <Text style={styles.text}>등급</Text>
