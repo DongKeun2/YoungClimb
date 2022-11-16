@@ -134,6 +134,12 @@ function BoardTab({navigation}) {
   function onSubmitSearch() {
     if (!center) {
       return alert('지점을 선택해주세요');
+    } else if (isSimilar && !currentUser.height && !currentUser.wingspan) {
+      setIsSimilar(false);
+      Alert.alert(
+        '이용 불가',
+        '비슷한 체형의 글을 검색하려면 프로필 수정을 해주세요.',
+      );
     } else {
       const data = {
         center,
