@@ -2,7 +2,13 @@
 import React, {useState, useEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
@@ -24,7 +30,11 @@ import SoundBtn from '../assets/image/videoBtn/soundBtn.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-import {feedLikeSubmit, feedScrapSubmit} from '../utils/slices/PostSlice';
+import {
+  feedLikeSubmit,
+  feedScrapSubmit,
+  viewCount,
+} from '../utils/slices/PostSlice';
 
 function HomeFeed({
   feed,
@@ -48,12 +58,16 @@ function HomeFeed({
   const [isView, setIsView] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [isBuffer, setIsBuffer] = useState(false);
+  const [isCounted, setIsCounted] = useState(false);
+  const [viewCounts, setViewCounts] = useState(0);
 
   useEffect(() => {
     setIsLiked(feed.isLiked);
     setLike(feed.like);
     setIsScrap(feed.isScrap);
-  }, [feed.isLiked, feed.like, feed.isScrap]);
+    setViewCounts(feed.view);
+  }, [feed.isLiked, feed.like, feed.isScrap, feed.view]);
 
   useEffect(() => {
     setIsView(false);
@@ -94,6 +108,7 @@ function HomeFeed({
     if (isFinished) {
       setIsView(true);
       setIsRepeat(true);
+      setIsCounted(false);
     } else {
       setIsView(!isView);
     }
@@ -103,6 +118,22 @@ function HomeFeed({
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
+  };
+
+  const onLoad = () => {
+    setIsRepeat(false);
+    setIsBuffer(false);
+  };
+
+  const countView = log => {
+    if (log.currentTime / log.seekableDuration > 0.1) {
+      setIsCounted(true);
+      dispatch(viewCount(feed.id)).then(res => {
+        if (res.type === 'viewCount/fulfilled') {
+          setViewCounts(viewCounts + 1);
+        }
+      });
+    }
   };
 
   const openMenu = feed => {
@@ -209,7 +240,15 @@ function HomeFeed({
             controls={false}
             paused={!(isViewable && isView)}
             muted={isMuted}
-            onLoad={() => setIsRepeat(false)}
+            onLoad={() => onLoad()}
+            onProgress={res => {
+              if (!isCounted) {
+                countView(res);
+              }
+            }}
+            onBuffer={() => {
+              setIsBuffer(true);
+            }}
             onEnd={changeFinished}
           />
           {/* 동영상 재생 버튼 */}
@@ -241,6 +280,18 @@ function HomeFeed({
               <SoundBtn color="white" width={60} />
             </TouchableOpacity>
           )
+        ) : null}
+        {/* 로딩중 */}
+        {isView && isBuffer ? (
+          <View
+            style={{
+              ...styles.background,
+              backgroundColor: 'black',
+              display: 'flex',
+              justifyContent: 'center',
+            }}>
+            <ActivityIndicator size="large" color="white" />
+          </View>
         ) : null}
         <View style={styles.solvedDate}>
           <CameraIcon />
@@ -283,7 +334,7 @@ function HomeFeed({
         <View style={styles.iconText}>
           <EyeIcon style={{marginRight: 5}} />
           <Text style={styles.feedTextStyle}>
-            {feed.view} 명이 감상했습니다.
+            {viewCounts} 명이 감상했습니다.
           </Text>
         </View>
       </View>
@@ -463,6 +514,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  background: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    zIndex: 2,
   },
 });
 

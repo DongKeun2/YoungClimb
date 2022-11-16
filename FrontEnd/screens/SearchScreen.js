@@ -7,6 +7,7 @@ import {
   BackHandler,
   Image,
   TextInput,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -121,6 +122,7 @@ function BoardTab({navigation}) {
   const dispatch = useDispatch();
 
   const centerInfo = useSelector(state => state.center.centerInfo);
+  const currentUser = useSelector(state => state.accounts.currentUser);
 
   const [isSimilar, setIsSimilar] = useState(false);
   const [center, setCenter] = useState('');
@@ -132,6 +134,12 @@ function BoardTab({navigation}) {
   function onSubmitSearch() {
     if (!center) {
       return alert('지점을 선택해주세요');
+    } else if (isSimilar && !currentUser.height && !currentUser.wingspan) {
+      setIsSimilar(false);
+      Alert.alert(
+        '이용 불가',
+        '비슷한 체형의 글을 검색하려면 프로필 수정을 해주세요.',
+      );
     } else {
       const data = {
         center,
@@ -157,6 +165,18 @@ function BoardTab({navigation}) {
     setWall('');
     setLevel('');
     setHoldColor('');
+  }
+
+  function onCheckSimilar() {
+    if (!currentUser.height && !currentUser.wingspan) {
+      setIsSimilar(false);
+      Alert.alert(
+        '이용 불가',
+        '비슷한 체형의 글을 검색하려면 프로필 수정을 해주세요.',
+      );
+    } else {
+      setIsSimilar(!isSimilar);
+    }
   }
 
   return (
@@ -299,22 +319,19 @@ function BoardTab({navigation}) {
         {isSimilar ? (
           <TouchableOpacity
             onPress={() => {
-              setIsSimilar(false);
+              onCheckSimilar;
             }}>
             <Checked width={20} height={20} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={() => {
-              setIsSimilar(true);
+              onCheckSimilar;
             }}>
             <UnChecked width={20} height={20} />
           </TouchableOpacity>
         )}
-        <TouchableOpacity
-          onPress={() => {
-            setIsSimilar(!isSimilar);
-          }}>
+        <TouchableOpacity onPress={onCheckSimilar}>
           <Text style={styles.checkText}>
             &nbsp; 나와 체형이 비슷한 사람의 결과만 보기
           </Text>
