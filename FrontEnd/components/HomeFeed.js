@@ -57,7 +57,6 @@ function HomeFeed({
   const [scrapPress, setScrapPress] = useState(false);
   const [isView, setIsView] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
   const [isCounted, setIsCounted] = useState(false);
   const [viewCounts, setViewCounts] = useState(0);
@@ -72,7 +71,6 @@ function HomeFeed({
   useEffect(() => {
     setIsView(false);
     setIsFinished(false);
-    setIsRepeat(false);
   }, [isViewable]);
 
   useFocusEffect(
@@ -81,7 +79,6 @@ function HomeFeed({
         setIsMuted(true);
         setIsView(false);
         setIsFinished(false);
-        setIsRepeat(false);
       };
     }, []),
   );
@@ -102,8 +99,8 @@ function HomeFeed({
   const changePlay = () => {
     if (isFinished) {
       setIsView(true);
-      setIsRepeat(true);
       setIsCounted(false);
+      this.player.seek(0);
     } else {
       setIsView(!isView);
     }
@@ -113,11 +110,6 @@ function HomeFeed({
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
-  };
-
-  const onLoad = () => {
-    setIsRepeat(false);
-    setIsBuffer(false);
   };
 
   const countView = log => {
@@ -231,22 +223,24 @@ function HomeFeed({
           activeOpacity={1}
           onPress={changePlay}>
           <Video
+            ref={ref => {
+              this.player = ref;
+            }}
             source={{uri: feed.mediaPath}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
-            repeat={isRepeat}
+            repeat={false}
             controls={false}
             paused={!(isViewable && isView)}
             muted={isMuted}
-            onLoad={() => onLoad()}
             onProgress={res => {
               if (!isCounted) {
                 countView(res);
               }
             }}
-            onBuffer={() => {
-              setIsBuffer(true);
+            onBuffer={res => {
+              setIsBuffer(res.isBuffering);
             }}
             onEnd={changeFinished}
           />
@@ -285,7 +279,7 @@ function HomeFeed({
           <View
             style={{
               ...styles.background,
-              backgroundColor: 'black',
+              backgroundColor: 'rgba(0,0,0,0.6)',
               display: 'flex',
               justifyContent: 'center',
             }}>

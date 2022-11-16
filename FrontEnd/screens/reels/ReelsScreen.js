@@ -145,9 +145,9 @@ function RandomScreen({navigation}) {
           snapToInterval={viewHeight - bottomTabBarHeight}
           snapToAlignment="start"
           showsVerticalScrollIndicator={false}
-          initialNumToRender={3}
+          initialNumToRender={2}
           maxToRenderPerBatch={2}
-          windowSize={5}
+          windowSize={3}
         />
       </View>
       <Toast ref={toastRef} />

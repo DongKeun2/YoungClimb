@@ -57,7 +57,6 @@ function DetailScreen({navigation, route}) {
   const [isMuted, setIsMuted] = useState(true);
   const [isView, setIsView] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
   const [isCounted, setIsCounted] = useState(false);
   const [viewCounts, setViewCounts] = useState(0);
@@ -69,8 +68,8 @@ function DetailScreen({navigation, route}) {
   const changePlay = () => {
     if (isFinished) {
       setIsView(true);
-      setIsRepeat(true);
       setIsCounted(false);
+      this.player.seek(0);
     } else {
       setIsView(!isView);
     }
@@ -79,11 +78,6 @@ function DetailScreen({navigation, route}) {
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
-  };
-
-  const onLoad = () => {
-    setIsRepeat(false);
-    setIsBuffer(false);
   };
 
   const countView = log => {
@@ -116,7 +110,6 @@ function DetailScreen({navigation, route}) {
     }
     setIsView(true);
     setIsFinished(false);
-    setIsRepeat(false);
     setViewCounts(feed.view);
   }, [dispatch, route, isFocused, feed.view]);
 
@@ -126,7 +119,6 @@ function DetailScreen({navigation, route}) {
         setIsMuted(true);
         setIsView(false);
         setIsFinished(false);
-        setIsRepeat(false);
       };
     }, []),
   );
@@ -236,17 +228,20 @@ function DetailScreen({navigation, route}) {
                 activeOpacity={1}
                 onPress={changePlay}>
                 <Video
+                  ref={ref => {
+                    this.player = ref;
+                  }}
                   source={{uri: feed.mediaPath}}
                   style={styles.backgroundVideo}
                   fullscreen={false}
                   resizeMode={'contain'}
-                  repeat={isRepeat}
+                  repeat={false}
                   controls={false}
                   paused={!isView}
                   muted={isMuted}
-                  onLoad={() => onLoad()}
-                  onBuffer={() => {
-                    setIsBuffer(true);
+                  onseek={() => null}
+                  onBuffer={res => {
+                    setIsBuffer(res.isBuffering);
                   }}
                   onProgress={res => countView(res)}
                   onEnd={changeFinished}
@@ -289,7 +284,7 @@ function DetailScreen({navigation, route}) {
                 <View
                   style={{
                     ...styles.background,
-                    backgroundColor: 'black',
+                    backgroundColor: 'rgba(0,0,0,0.6)',
                     display: 'flex',
                     justifyContent: 'center',
                   }}>

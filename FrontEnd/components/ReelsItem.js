@@ -46,7 +46,6 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
   const [scrapPress, setScrapPress] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
   const [isCounted, setIsCounted] = useState(false);
 
   const changeMuted = () => {
@@ -60,7 +59,6 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
 
   useEffect(() => {
     setIsFinished(false);
-    setIsRepeat(false);
   }, [isViewable]);
 
   useFocusEffect(
@@ -68,7 +66,6 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
       return () => {
         setIsMuted(true);
         setIsFinished(false);
-        setIsRepeat(false);
       };
     }, []),
   );
@@ -99,19 +96,14 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
     });
   };
 
-  const onLoad = () => {
-    setIsRepeat(false);
-    setIsBuffer(false);
-  };
-
   const changeFinished = () => {
     setIsFinished(true);
   };
 
   const resetPlay = () => {
     setIsFinished(false);
-    setIsRepeat(true);
     setIsCounted(false);
+    this.player.seek(0);
   };
 
   const countView = log => {
@@ -127,6 +119,63 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
         ...styles.container,
         height: viewHeight - bottomTabBarHeight,
       }}>
+      {/* 비디오 */}
+      <TouchableOpacity
+        activeOpacity={1}
+        onPress={isFinished ? resetPlay : changeMuted}
+        style={{
+          width: Dimensions.get('window').width,
+          height: viewHeight - bottomTabBarHeight,
+        }}>
+        <View style={styles.videoBox}>
+          <Video
+            ref={ref => {
+              this.player = ref;
+            }}
+            source={{uri: item.mediaPath}}
+            style={styles.backgroundVideo}
+            fullscreen={false}
+            resizeMode={'contain'}
+            repeat={false}
+            controls={false}
+            paused={!isViewable}
+            muted={isMuted}
+            onProgress={res => {
+              if (!isCounted) {
+                countView(res);
+              }
+            }}
+            onBuffer={res => {
+              setIsBuffer(res.isBuffering);
+            }}
+            onEnd={changeFinished}
+          />
+        </View>
+        {isFinished ? (
+          <View
+            style={{
+              ...styles.background,
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <RefreshBtn color="white" width={70} height={120} />
+          </View>
+        ) : null}
+      </TouchableOpacity>
+      {/* 로딩중 */}
+      {isBuffer ? (
+        <View
+          style={{
+            ...styles.background,
+            backgroundColor: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      ) : null}
       {/* 릴스 게시물 정보 */}
       <View style={styles.reelsInfo}>
         <View style={styles.userGroup}>
@@ -174,67 +223,6 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
           <HoldLabel color={item.holdColor} />
         </View>
       </View>
-      {/* 비디오 */}
-      <TouchableOpacity
-        activeOpacity={1}
-        onPress={changeMuted}
-        disabled={isFinished}
-        style={{
-          width: Dimensions.get('window').width,
-          height: viewHeight - bottomTabBarHeight,
-        }}>
-        <View style={styles.videoBox}>
-          <Video
-            source={{uri: item.mediaPath}}
-            style={styles.backgroundVideo}
-            fullscreen={false}
-            resizeMode={'contain'}
-            repeat={isRepeat}
-            controls={false}
-            paused={!isViewable}
-            muted={isMuted}
-            onLoad={() => onLoad()}
-            onProgress={res => {
-              if (!isCounted) {
-                countView(res);
-              }
-            }}
-            onBuffer={() => {
-              setIsBuffer(true);
-            }}
-            onEnd={changeFinished}
-          />
-        </View>
-      </TouchableOpacity>
-      {/* 로딩중 */}
-      {isViewable && isBuffer ? (
-        <View
-          style={{
-            ...styles.background,
-            backgroundColor: 'black',
-            display: 'flex',
-            justifyContent: 'center',
-            zIndex: 2,
-          }}>
-          <ActivityIndicator size="large" color="white" />
-        </View>
-      ) : null}
-      {/* 리셋 버튼 */}
-      {isFinished ? (
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={resetPlay}
-          disabled={!isFinished}
-          style={{
-            ...styles.background,
-            backgroundColor: 'black',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <RefreshBtn color="white" width={70} height={120} />
-        </TouchableOpacity>
-      ) : null}
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
         {!isFinished ? (
@@ -321,7 +309,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     left: 10,
-    zIndex: 3,
   },
   userGroup: {
     display: 'flex',
@@ -365,7 +352,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 10,
     right: 0,
-    zIndex: 3,
   },
   background: {
     height: '100%',
