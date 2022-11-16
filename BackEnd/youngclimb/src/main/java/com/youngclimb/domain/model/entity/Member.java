@@ -105,9 +105,21 @@ public class Member {
 
         if (memberInfo.getNickname() != "" && memberInfo.getNickname() != null)
             this.nickname = memberInfo.getNickname();
-        if (memberInfo.getHeight() != null) this.height = memberInfo.getHeight();
-        if (memberInfo.getWingspan() != null) this.wingspan = memberInfo.getWingspan();
-        if (memberInfo.getShoeSize() != null) this.shoeSize = memberInfo.getShoeSize();
+        if (memberInfo.getHeight() != null) {
+            this.height = memberInfo.getHeight();
+        } else {
+            this.height = 0;
+        }
+        if (memberInfo.getWingspan() != null) {
+            this.wingspan = memberInfo.getWingspan();
+        } else {
+            this.wingspan = 0;
+        }
+        if (memberInfo.getShoeSize() != null) {
+            this.shoeSize = memberInfo.getShoeSize();
+        } else {
+            this.shoeSize = 0;
+        }
         if (memberInfo.getIntro() != null) this.profileContent = memberInfo.getIntro();
         if (memberInfo.getImage() != "" && memberInfo.getImage() != null) this.memberProfileImg = memberInfo.getImage();
 
