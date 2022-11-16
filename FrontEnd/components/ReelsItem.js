@@ -9,6 +9,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import Video from 'react-native-video';
 
@@ -38,6 +39,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
   const [likePress, setLikePress] = useState(false);
   const [isScrap, setIsScrap] = useState(false);
   const [scrapPress, setScrapPress] = useState(false);
+  const [isBuffer, setIsBuffer] = useState(false);
 
   const changeMuted = () => {
     setIsMuted(!isMuted);
@@ -82,6 +84,10 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
         setScrapPress(false);
       }
     });
+  };
+
+  const onLoad = () => {
+    setIsBuffer(false);
   };
 
   return (
@@ -155,9 +161,25 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
             controls={false}
             paused={!isViewable}
             muted={isMuted}
+            onLoad={() => onLoad()}
+            onBuffer={() => {
+              setIsBuffer(true);
+            }}
           />
         </View>
       </TouchableOpacity>
+      {/* 로딩중 */}
+      {isViewable && isBuffer ? (
+        <View
+          style={{
+            ...styles.background,
+            backgroundColor: 'black',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      ) : null}
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
         <TouchableOpacity activeOpacity={1} onPress={changeMuted}>
@@ -287,6 +309,14 @@ const styles = StyleSheet.create({
     bottom: 10,
     right: 0,
     zIndex: 3,
+  },
+  background: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    zIndex: 2,
   },
 });
 

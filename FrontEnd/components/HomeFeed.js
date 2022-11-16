@@ -2,7 +2,13 @@
 import React, {useState, useEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import Video from 'react-native-video';
 
 import UserAvatar from './UserAvatar';
@@ -48,6 +54,7 @@ function HomeFeed({
   const [isView, setIsView] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [isBuffer, setIsBuffer] = useState(false);
 
   useEffect(() => {
     setIsLiked(feed.isLiked);
@@ -103,6 +110,11 @@ function HomeFeed({
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
+  };
+
+  const onLoad = () => {
+    setIsRepeat(false);
+    setIsBuffer(false);
   };
 
   const openMenu = feed => {
@@ -209,7 +221,10 @@ function HomeFeed({
             controls={false}
             paused={!(isViewable && isView)}
             muted={isMuted}
-            onLoad={() => setIsRepeat(false)}
+            onLoad={() => onLoad()}
+            onBuffer={() => {
+              setIsBuffer(true);
+            }}
             onEnd={changeFinished}
           />
           {/* 동영상 재생 버튼 */}
@@ -241,6 +256,18 @@ function HomeFeed({
               <SoundBtn color="white" width={60} />
             </TouchableOpacity>
           )
+        ) : null}
+        {/* 로딩중 */}
+        {isView && isBuffer ? (
+          <View
+            style={{
+              ...styles.background,
+              backgroundColor: 'black',
+              display: 'flex',
+              justifyContent: 'center',
+            }}>
+            <ActivityIndicator size="large" color="white" />
+          </View>
         ) : null}
         <View style={styles.solvedDate}>
           <CameraIcon />
@@ -463,6 +490,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  background: {
+    height: '100%',
+    width: '100%',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    zIndex: 2,
   },
 });
 

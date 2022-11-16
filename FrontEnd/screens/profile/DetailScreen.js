@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -57,6 +58,7 @@ function DetailScreen({navigation, route}) {
   const [isView, setIsView] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
   const [isRepeat, setIsRepeat] = useState(false);
+  const [isBuffer, setIsBuffer] = useState(false);
 
   const calVideoLength = e => {
     const {width} = e.nativeEvent.layout;
@@ -78,6 +80,11 @@ function DetailScreen({navigation, route}) {
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
+  };
+
+  const onLoad = () => {
+    setIsRepeat(false);
+    setIsBuffer(false);
   };
 
   const openMenu = feed => {
@@ -223,7 +230,10 @@ function DetailScreen({navigation, route}) {
                   controls={false}
                   paused={!isView}
                   muted={isMuted}
-                  onLoad={() => setIsRepeat(false)}
+                  onLoad={() => onLoad()}
+                  onBuffer={() => {
+                    setIsBuffer(true);
+                  }}
                   onEnd={changeFinished}
                 />
                 {/* 동영상 재생 버튼 */}
@@ -258,6 +268,18 @@ function DetailScreen({navigation, route}) {
                     <SoundBtn color="white" width={60} />
                   </TouchableOpacity>
                 )
+              ) : null}
+              {/* 로딩중 */}
+              {isBuffer ? (
+                <View
+                  style={{
+                    ...styles.background,
+                    backgroundColor: 'black',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}>
+                  <ActivityIndicator size="large" color="white" />
+                </View>
               ) : null}
               <View style={styles.solvedDate}>
                 <CameraIcon />
