@@ -22,4 +22,8 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     Long countByBoard(Board board);
 
+    List<Report> findByFlag(Integer flag);
+
+    Long countByFlag(Integer flag);
+
 }

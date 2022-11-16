@@ -27,9 +27,9 @@ public class AdminController {
     // 신고 목록 조회
     @ApiOperation(value = "readReport : 신고 목록 조회")
     @GetMapping("/report")
-    public ResponseEntity<?> readReport(@CurrentUser UserPrincipal principal) {
+    public ResponseEntity<?> readReport(@RequestParam Integer flag) {
         try {
-            return ResponseEntity.status(200).body(adminService.readReport(principal.getUsername()));
+            return ResponseEntity.status(200).body(adminService.readReport(flag));
         } catch (Exception e) {
             return exceptionHandling(e);
         }
@@ -45,6 +45,8 @@ public class AdminController {
             return exceptionHandling(e);
         }
     }
+
+
 
     // 신고한 게시물 삭제
     @ApiOperation(value = "deleteReport : 신고한 게시물 삭제")
@@ -90,6 +92,17 @@ public class AdminController {
             return new ResponseEntity<LoginResDto>(memberService.adminLogin(member), HttpStatus.OK);
         } catch (ForbiddenException e) {
             return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 운영 정보
+    @ApiOperation(value = "Info: 서비스 관리 정보")
+    @GetMapping("/info")
+    public ResponseEntity<?> adminInfo() throws Exception {
+        try {
+            return new ResponseEntity<>(adminService.readAdminInfo(), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
         }
