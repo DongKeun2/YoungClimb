@@ -13,6 +13,7 @@ public class CommentDto {
     CreateMember user;
     String content;
     Boolean isLiked;
+    Integer commentLikeNum;
     String createdAt;
     List<CommentDto> reComment;
 }
