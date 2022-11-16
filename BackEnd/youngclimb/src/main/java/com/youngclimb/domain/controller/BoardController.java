@@ -87,6 +87,22 @@ public class BoardController {
         }
     }
 
+    //게시글 수정
+    @ApiOperation(value = "editBoard: 글 수정하기")
+    @PostMapping("/{boardId}/edit")
+    public ResponseEntity<?> editBoard(@RequestBody BoardEdit boardEdit, @PathVariable Long boardId, @CurrentUser UserPrincipal principal) throws Exception{
+        try {
+            boardEdit.setBoardId(boardId);
+            boardService.updateBoard(principal.getUsername(), boardEdit);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+
+    }
+
+
     // 게시물 삭제
     @ApiOperation(value = "deleteBoard : 글 삭제하기")
     @PostMapping("/{boardId}/delete")
