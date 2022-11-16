@@ -35,6 +35,10 @@ public class MemberRankExp {
         this.memberExp += exp;
     }
 
+    public void reduceMemberExp(Long exp) {
+        this.memberExp -= exp;
+    }
+
     public void setRank(Rank rank) {
         this.rank = rank;
     }
