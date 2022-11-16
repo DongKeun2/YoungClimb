@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 
@@ -47,7 +48,6 @@ function HomeFeed({
   const dispatch = useDispatch();
 
   const [contentHeight, setContentHeight] = useState(0);
-  const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
@@ -89,11 +89,6 @@ function HomeFeed({
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
     setContentHeight(height);
-  };
-
-  const calVideoLength = e => {
-    const {width} = e.nativeEvent.layout;
-    setVideoLength(width);
   };
 
   const viewFullContent = () => {
@@ -169,7 +164,7 @@ function HomeFeed({
   };
 
   return (
-    <View style={styles.container} onLayout={calVideoLength}>
+    <View style={styles.container}>
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
@@ -226,7 +221,11 @@ function HomeFeed({
         </View>
       </View>
       {/* 동영상 */}
-      <View style={{width: videoLength, height: videoLength}}>
+      <View
+        style={{
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').width,
+        }}>
         <TouchableOpacity
           style={styles.videoBox}
           activeOpacity={1}

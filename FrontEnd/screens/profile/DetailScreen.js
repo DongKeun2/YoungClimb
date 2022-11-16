@@ -10,6 +10,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -53,8 +54,6 @@ function DetailScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const [videoLength, setVideoLength] = useState(0);
-
   const [isMuted, setIsMuted] = useState(true);
   const [isView, setIsView] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
@@ -63,10 +62,6 @@ function DetailScreen({navigation, route}) {
   const [isCounted, setIsCounted] = useState(false);
   const [viewCounts, setViewCounts] = useState(0);
 
-  const calVideoLength = e => {
-    const {width} = e.nativeEvent.layout;
-    setVideoLength(width);
-  };
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
@@ -154,10 +149,7 @@ function DetailScreen({navigation, route}) {
   return (
     <>
       <CustomSubHeader title="게시글" navigation={navigation} />
-      <ScrollView
-        style={styles.container}
-        onLayout={calVideoLength}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <></>
         ) : (
@@ -234,7 +226,11 @@ function DetailScreen({navigation, route}) {
               </View>
             </View>
 
-            <View style={{width: videoLength, height: videoLength}}>
+            <View
+              style={{
+                width: Dimensions.get('window').width,
+                height: Dimensions.get('window').width,
+              }}>
               <TouchableOpacity
                 style={styles.videoBox}
                 activeOpacity={1}
