@@ -1,7 +1,9 @@
 package com.youngclimb.domain.model.service;
 
+import com.youngclimb.domain.model.dto.report.AdminInfo;
 import com.youngclimb.domain.model.dto.report.ReportDetailDto;
 import com.youngclimb.domain.model.dto.report.ReportDto;
+import com.youngclimb.domain.model.dto.report.ReportInfo;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +17,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class AdminServiceImpl implements AdminService{
+public class AdminServiceImpl implements AdminService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -30,9 +32,18 @@ public class AdminServiceImpl implements AdminService{
     private final RankRepository rankRepository;
     private final CenterLevelRepository centerLevelRepository;
 
+    private final CenterRepository centerRepository;
+
     // 신고 목록 조회
-    public List<ReportDto> readReport (String email) {
-        List<Report> reportList = reportRepository.findAll();
+    public List<ReportDto> readReport(Integer flag) {
+        List<Report> reportList = new ArrayList<>();
+
+        if(flag == 4) {
+            reportList = reportRepository.findAll();
+        } else {
+            reportList = reportRepository.findByFlag(flag);
+        }
+
         List<ReportDto> reportDtos = new ArrayList<>();
 
         List<String> reasons = new ArrayList<>();
@@ -42,7 +53,7 @@ public class AdminServiceImpl implements AdminService{
         reasons.add("실제 문제 난이도와 게시물상 난이도가 다릅니다");
         reasons.add("풀이를 완료하지 못한 문제를 완료로 표기했습니다");
 
-        for (Report report: reportList) {
+        for (Report report : reportList) {
             if (report.getFlag() != 1) {
                 if (report.getBoard().getIsDelete() == 1) {
                     report.setFlag(1);
@@ -53,7 +64,7 @@ public class AdminServiceImpl implements AdminService{
                             .boardId(report.getBoard().getBoardId())
                             .memberNickname(report.getMember().getNickname())
                             .treated(report.getFlag())
-                            .reportReason(reasons.get(report.getContent()-1))
+                            .reportReason(reasons.get(report.getContent() - 1))
                             .build();
 
                     reportDtos.add(reportDto);
@@ -65,7 +76,7 @@ public class AdminServiceImpl implements AdminService{
     }
 
     // 신고 상세 조회
-    public ReportDetailDto readReportDetail (Long reportId) {
+    public ReportDetailDto readReportDetail(Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
         BoardMedia boardMedia = boardMediaRepository.findByBoard(report.getBoard()).orElseThrow();
         Category category = categoryRepository.findByBoard(report.getBoard()).orElseThrow();
@@ -79,7 +90,7 @@ public class AdminServiceImpl implements AdminService{
 
         ReportDetailDto reportDetailDto = ReportDetailDto.builder()
                 .reportId(reportId)
-                .reportReason(reasons.get(report.getContent()-1))
+                .reportReason(reasons.get(report.getContent() - 1))
                 .boardMedia(boardMedia.getMediaPath())
                 .boardId(report.getBoard().getBoardId())
                 .boardContent(report.getBoard().getContent())
@@ -91,7 +102,7 @@ public class AdminServiceImpl implements AdminService{
     }
 
     // 신고한 게시물 삭제
-    public void deleteReport (Long reportId) {
+    public void deleteReport(Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
         Member member = report.getBoard().getMember();
         Category category = categoryRepository.findByBoard(report.getBoard()).orElseThrow();
@@ -129,7 +140,7 @@ public class AdminServiceImpl implements AdminService{
 
 
     // 신고한 게시물 패스
-    public void passReport (Long reportId) {
+    public void passReport(Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
 
         report.setFlag(1);
@@ -140,11 +151,49 @@ public class AdminServiceImpl implements AdminService{
 
 
     // 신고한 게시물 보류
-    public void postponeReport (Long reportId) {
+    public void postponeReport(Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
 
         report.setFlag(2);
         reportRepository.save(report);
+    }
+
+    // 운영정보 조회
+    @Override
+    public AdminInfo readAdminInfo() {
+        AdminInfo adminInfo = new AdminInfo();
+
+        // 일반 현황
+        
+        adminInfo.setCountCenter(centerRepository.count());
+        adminInfo.setCountMember(memberRepository.count());
+        adminInfo.setCountBoard(boardRepository.countByIsDeleteNot(1));
+
+        // 신고 현황
+        
+        List<Report> reportList = reportRepository.findAll();
+        
+        Long countBefore = 0L;
+        Long countIng = 0L;
+        Long countCompleted = 0L;
+        
+        for(Report report : reportList) {
+            if(report.getFlag() == 0 ) countBefore ++;
+            if(report.getFlag() == 1 ) countCompleted ++;
+            if(report.getFlag() == 2 ) countIng ++;
+        }
+        
+        
+        ReportInfo reportInfo = ReportInfo.builder()
+                .totalReport(reportList.size())
+                .countBefore(countBefore)
+                .countIng(countIng)
+                .countCompleted(countCompleted)
+                .build();
+
+        adminInfo.setReportInfo(reportInfo);
+
+        return adminInfo;
     }
 
 
