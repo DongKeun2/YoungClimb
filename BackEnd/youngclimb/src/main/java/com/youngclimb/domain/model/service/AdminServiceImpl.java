@@ -3,9 +3,11 @@ package com.youngclimb.domain.model.service;
 import com.youngclimb.domain.model.dto.report.ReportDetailDto;
 import com.youngclimb.domain.model.dto.report.ReportDto;
 import com.youngclimb.domain.model.entity.BoardMedia;
+import com.youngclimb.domain.model.entity.Member;
 import com.youngclimb.domain.model.entity.Report;
 import com.youngclimb.domain.model.repository.BoardMediaRepository;
 import com.youngclimb.domain.model.repository.BoardRepository;
+import com.youngclimb.domain.model.repository.MemberRankExpRepository;
 import com.youngclimb.domain.model.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +28,8 @@ public class AdminServiceImpl implements AdminService{
     private final ReportRepository reportRepository;
     private final BoardMediaRepository boardMediaRepository;
     private final BoardRepository boardRepository;
+    private final MemberRankExpRepository memberRankExpRepository;
+
 
     // 신고 목록 조회
     public List<ReportDto> readReport (String email) {
@@ -88,6 +92,8 @@ public class AdminServiceImpl implements AdminService{
     // 신고한 게시물 삭제
     public void deleteReport (Long reportId) {
         Report report = reportRepository.findById(reportId).orElseThrow();
+        Member member = report.getMember();
+
 
         report.getBoard().setIsDelete(1);
         boardRepository.save(report.getBoard());
