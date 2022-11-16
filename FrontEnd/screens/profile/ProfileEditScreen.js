@@ -20,7 +20,6 @@ import Input from '../../components/Input';
 import {
   changeEditForm,
   profileEdit,
-  logout,
   saveImage,
 } from '../../utils/slices/AccountsSlice';
 import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
@@ -332,11 +331,6 @@ function ProfileEditScreen({navigation}) {
           <TouchableOpacity style={styles.reset} onPress={reset}>
             <Text style={styles.link}>변경사항 초기화</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.logout}
-            onPress={() => dispatch(logout())}>
-            <Text style={styles.link}>로그아웃</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
     </>
@@ -453,9 +447,6 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   reset: {
-    marginTop: 20,
-  },
-  logout: {
     marginTop: 20,
     marginBottom: 100,
   },
