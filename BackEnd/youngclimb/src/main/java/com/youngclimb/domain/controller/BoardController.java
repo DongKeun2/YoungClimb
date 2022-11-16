@@ -156,6 +156,19 @@ public class BoardController {
         }
     }
 
+    // 댓글 삭제
+    @ApiOperation(value = "CommentDelete : 댓글 삭제")
+    @PostMapping("/comment/{commentId}/delete")
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId, @CurrentUser UserPrincipal principal) throws Exception {
+        try {
+            boardService.deleteComment(commentId, principal.getUsername());
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+
     // 댓글 좋아요/취소
     @ApiOperation(value = "CommentLike : 댓글 좋아요 클릭")
     @PostMapping("/comment/{commentId}/like")
