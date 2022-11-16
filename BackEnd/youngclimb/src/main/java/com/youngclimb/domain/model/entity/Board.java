@@ -81,4 +81,9 @@ public class Board {
         return this;
     }
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+
 }

@@ -250,6 +250,18 @@ public class BoardServiceImpl implements BoardService {
         memberRankExpRepository.save(memberExp);
     }
 
+    // 게시글 수정하기
+    @Override
+    public void updateBoard(String email, BoardEdit boardEdit, Long boardId) {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        Board board = boardRepository.findById(boardId).orElseThrow();
+
+        if(board.getMember().equals(member)) {
+            board.updateContent(boardEdit.getContent());
+            boardRepository.save(board);
+        }
+    }
+
     // 게시글 삭제하기
     @Override
     public void deleteBoard(String email, Long boardId) {

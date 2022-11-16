@@ -12,15 +12,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -54,6 +47,7 @@ public class SecurityConfig {
 //			    .antMatchers("/**").permitAll()	// 개발 기간 동안 모든 사이트 허용
                 .antMatchers("/api/user/signup", "/api/user/login", "/api/user/email", "/api/user/nickname", "/api/user/save/image",
                         "/api/board/save/image", "/api/center", "/api/center/*", "/api/download").permitAll()
+                .antMatchers("/api/admin/**").hasRole("ADMIN")
                 .antMatchers("/v3/api-docs", "/swagger-ui", "/swagger-resources/**").permitAll()
                 .anyRequest().authenticated();
 
