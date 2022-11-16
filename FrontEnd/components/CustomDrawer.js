@@ -14,6 +14,7 @@ import {
 
 import {useDispatch, useSelector} from 'react-redux';
 import {logout} from '../utils/slices/AccountsSlice';
+import Logout from '../assets/image/drawer/logout.svg';
 
 function CustomDrawer(props) {
   const dispatch = useDispatch();
@@ -31,11 +32,16 @@ function CustomDrawer(props) {
         <View />
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
-      <TouchableOpacity
-        style={styles.logout}
-        onPress={() => dispatch(logout())}>
-        <Text style={styles.link}>로그아웃</Text>
-      </TouchableOpacity>
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={styles.logoutBox}
+          onPress={() => dispatch(logout())}>
+          <View style={styles.logoutBox}>
+            <Logout width={20} height={20} />
+            <Text style={styles.link}>로그아웃</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -59,11 +65,12 @@ const styles = StyleSheet.create({
     // marginRight: 20,
     marginVertical: 5,
   },
-  logout: {
+  footer: {padding: 20, borderTopWidth: 1, borderTopColor: '#CCCCCC'},
+  logoutBox: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 10,
   },
-  link: {color: '#F34D7F'},
+  link: {color: 'black', marginLeft: 5},
 });
 
 export default CustomDrawer;

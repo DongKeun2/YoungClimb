@@ -29,7 +29,7 @@ const ProfileDrawer = () => {
         drawerStyle: {
           width: 190,
         },
-        drawerLabelStyle: {marginLeft: -20},
+        drawerLabelStyle: {marginLeft: -25},
       }}>
       <Drawer.Screen
         name="메인 프로필"
@@ -51,7 +51,9 @@ const ProfileDrawer = () => {
       <Drawer.Screen
         name="공유하기"
         component={ShareScreen}
-        options={{drawerIcon: () => <Share width={20} height={20} />}}
+        options={{
+          drawerIcon: () => <Share width={20} height={20} marginLeft={-2} />,
+        }}
       />
       <Drawer.Screen
         name="앱 설정"
