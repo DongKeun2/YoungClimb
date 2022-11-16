@@ -256,6 +256,23 @@ const recommentAdd = createAsyncThunk(
   },
 );
 
+const viewCount = createAsyncThunk(
+  'viewCount',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.post(
+        api.viewCount(boardId),
+        {},
+        await getConfig(),
+      );
+      console.log('조회수 증가 성공', res.data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: {},
   boardArray: [],
@@ -344,6 +361,7 @@ export {
   commentLikeSubmit,
   commentAdd,
   recommentAdd,
+  viewCount,
 };
 
 export const {

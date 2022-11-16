@@ -24,11 +24,13 @@ function Comment({comment, navigation}) {
 
   const [isViewRecomment, setIsViewRecomment] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [like, setLike] = useState(0);
   const [likePress, setLikePress] = useState(false);
 
   useEffect(() => {
     setIsLiked(comment.isLiked);
-  }, [comment.isLiked]);
+    setLike(comment.commentLikeNum);
+  }, [comment.isLiked, comment.commentLikeNum]);
 
   const viewRecomment = () => {
     setIsViewRecomment(true);
@@ -44,6 +46,7 @@ function Comment({comment, navigation}) {
     setLikePress(true);
     dispatch(commentLikeSubmit(id))
       .then(() => {
+        isLiked ? setLike(like - 1) : setLike(like + 1);
         setIsLiked(!isLiked);
         setLikePress(false);
       })
@@ -96,11 +99,14 @@ function Comment({comment, navigation}) {
           ) : null}
         </View>
       </View>
-      <TouchableOpacity
-        onPress={() => commentLike(comment.id)}
-        disabled={likePress}>
-        {isLiked ? <FillHeart /> : <EmptyHeart />}
-      </TouchableOpacity>
+      <View style={styles.likeGroup}>
+        <TouchableOpacity
+          onPress={() => commentLike(comment.id)}
+          disabled={likePress}>
+          {isLiked ? <FillHeart /> : <EmptyHeart />}
+        </TouchableOpacity>
+        <Text>{like}</Text>
+      </View>
     </View>
   );
 }
@@ -134,6 +140,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  likeGroup: {
+    display: 'flex',
+    alignItems: 'center',
+  }
 });
 
 export default Comment;
