@@ -25,10 +25,15 @@ import FillHeart from '../assets/image/feed/fillHeart.svg';
 import CommentIcon from '../assets/image/reels/commentIcon.svg';
 import MuteBtn from '../assets/image/videoBtn/muteBtn.svg';
 import SoundBtn from '../assets/image/videoBtn/soundBtn.svg';
+import RefreshBtn from '../assets/image/videoBtn/refreshBtn.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-import {feedLikeSubmit, feedScrapSubmit} from '../utils/slices/PostSlice';
+import {
+  feedLikeSubmit,
+  feedScrapSubmit,
+  viewCount,
+} from '../utils/slices/PostSlice';
 
 function ReelsItem({item, navigation, isViewable, viewHeight}) {
   const dispatch = useDispatch();
@@ -40,6 +45,9 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
   const [isScrap, setIsScrap] = useState(false);
   const [scrapPress, setScrapPress] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [isRepeat, setIsRepeat] = useState(false);
+  const [isCounted, setIsCounted] = useState(false);
 
   const changeMuted = () => {
     setIsMuted(!isMuted);
@@ -50,13 +58,18 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
     setIsScrap(item.isScrap);
   }, [item.isLiked, item.isScrap]);
 
-  // useEffect(() => {
-  //   setIsMuted(true);
-  // }, [isViewable]);
+  useEffect(() => {
+    setIsFinished(false);
+    setIsRepeat(false);
+  }, [isViewable]);
 
   useFocusEffect(
     React.useCallback(() => {
-      return () => setIsMuted(true);
+      return () => {
+        setIsMuted(true);
+        setIsFinished(false);
+        setIsRepeat(false);
+      };
     }, []),
   );
 
@@ -87,7 +100,24 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
   };
 
   const onLoad = () => {
+    setIsRepeat(false);
     setIsBuffer(false);
+  };
+
+  const changeFinished = () => {
+    setIsFinished(true);
+  };
+
+  const resetPlay = () => {
+    setIsRepeat(true);
+    setIsCounted(false);
+  };
+
+  const countView = log => {
+    if (log.currentTime / log.seekableDuration > 0.1) {
+      setIsCounted(true);
+      dispatch(viewCount(item.id));
+    }
   };
 
   return (
@@ -157,14 +187,20 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
-            repeat={true}
+            repeat={isRepeat}
             controls={false}
             paused={!isViewable}
             muted={isMuted}
             onLoad={() => onLoad()}
+            onProgress={res => {
+              if (!isCounted) {
+                countView(res);
+              }
+            }}
             onBuffer={() => {
               setIsBuffer(true);
             }}
+            onEnd={changeFinished}
           />
         </View>
       </TouchableOpacity>
@@ -179,6 +215,20 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
           }}>
           <ActivityIndicator size="large" color="white" />
         </View>
+      ) : null}
+      {/* 리셋 버튼 */}
+      {isFinished ? (
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={resetPlay}
+          style={{
+            ...styles.background,
+            backgroundColor: 'black',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+          <RefreshBtn color="white" width={70} height={120} />
+        </TouchableOpacity>
       ) : null}
       {/* 아이콘 그룹 */}
       <View style={styles.likeGroup}>
