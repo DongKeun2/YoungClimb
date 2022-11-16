@@ -125,7 +125,7 @@ const profileEdit = createAsyncThunk(
         data,
         await getConfig(),
       );
-      Alert.alert('프로필  수정', '수정 완료');
+      Alert.alert('프로필  수정', '수정이 완료되었습니다.');
       setCurrentUser(res.data.user);
       return res.data;
     } catch (err) {

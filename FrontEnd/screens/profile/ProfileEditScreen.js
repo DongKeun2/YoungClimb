@@ -121,7 +121,7 @@ function ProfileEditScreen({navigation}) {
   }, [dispatch, currentUser]);
 
   function reset() {
-    Alert.alert('프로필 수정', '초기화');
+    Alert.alert('프로필 수정', '변경사항이 초기화되었습니다.');
 
     dispatch(changeUploadImg(null));
     setIsChange(false);
