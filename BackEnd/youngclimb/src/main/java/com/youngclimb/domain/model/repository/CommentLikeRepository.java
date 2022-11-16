@@ -10,6 +10,9 @@ import java.util.List;
 public interface CommentLikeRepository extends JpaRepository<CommentLike, Long> {
 
     Boolean existsByCommentAndMember(Comment comment, Member member);
+
+    Integer countByComment(Comment comment);
+
     void deleteByCommentAndMember(Comment comment, Member member);
 
     List<CommentLike> findByCommentIn(List<Comment> comments);

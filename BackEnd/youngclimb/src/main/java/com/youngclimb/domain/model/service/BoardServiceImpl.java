@@ -266,11 +266,40 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void deleteBoard(String email, Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow();
+        Member member = board.getMember();
+        Category category = categoryRepository.findByBoard(board).orElseThrow();
 
+        // 게시물 삭제
         if (board.getMember().getEmail().equals(email)) {
             board.setIsDelete(1);
             boardRepository.save(board);
+
+            // 유저 경험치 등급 저장하기
+            // 게시물에서 등급 받아오기
+            Level level = category.getCenterlevel().getLevel();
+
+            // 회원 경험치 업데이트
+            MemberRankExp memberExp = memberRankExpRepository.findByMember(member).orElseThrow();
+            memberExp.reduceMemberExp(level.getExp());
+
+            // 회원 푼 문제 업데이트
+            MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+            memberProblem.reduceProblem(level.getRank());
+            memberProblemRepository.save(memberProblem);
+
+            // 랭크 업데이트
+            List<Rank> ranks = rankRepository.findAll();
+            ranks.sort((o1, o2) -> (int) (o1.getQual() - o2.getQual()));
+
+            for (Rank tmp : ranks) {
+                if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
+                    memberExp.setRank(tmp);
+                    break;
+                }
+            }
+            memberRankExpRepository.save(memberExp);
         }
+
     }
 
     // 게시글 좋아요
@@ -366,6 +395,8 @@ public class BoardServiceImpl implements BoardService {
                     CommentDto reCommentDto = boardDtoCreator.toCommentDtos(reComment, member);
                     reCommentDtos.add(reCommentDto);
                 }
+
+                commentDto.setCommentLikeNum(commentLikeRepository.countByComment(comment));
 
                 commentDto.setReComment(reCommentDtos);
                 commentDtos.add(commentDto);

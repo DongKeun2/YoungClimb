@@ -12,4 +12,5 @@ public class ReportDetailDto {
     Long boardId;
     String boardMedia;
     String boardContent;
+    String boardLevel;
 }

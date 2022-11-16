@@ -130,6 +130,41 @@ public class MemberProblem {
         }
     }
 
+    public void reduceProblem(String rank) {
+        switch (rank) {
+            case "VB":
+                this.vB--;
+                break;
+            case "V0":
+                this.v0--;
+                break;
+            case "V1":
+                this.v1--;
+                break;
+            case "V2":
+                this.v2--;
+                break;
+            case "V3":
+                this.v3--;
+                break;
+            case "V4":
+                this.v4--;
+                break;
+            case "V5":
+                this.v5--;
+                break;
+            case "V6":
+                this.v6--;
+                break;
+            case "V7":
+                this.v7--;
+                break;
+            case "V8":
+                this.v8--;
+                break;
+        }
+    }
+
     public Integer findSolvedProblem(String rank) {
         switch (rank) {
             case "VB":
