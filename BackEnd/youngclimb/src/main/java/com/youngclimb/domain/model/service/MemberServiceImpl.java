@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
+import com.youngclimb.common.exception.ForbiddenException;
 import com.youngclimb.common.jwt.JwtTokenProvider;
 import com.youngclimb.common.redis.RedisService;
 import com.youngclimb.domain.model.dto.TokenDto;
@@ -23,10 +24,7 @@ import javax.persistence.EntityExistsException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -141,40 +139,12 @@ public class MemberServiceImpl implements MemberService {
         return loginResDto;
     }
 
-    // 신체정보 추가 또는 수정
-//    @Override
-//    public void addBodyInfo(MemberInfo memberInfo) throws Exception {
-//        Member member = memberRepository.findByEmail(memberInfo.getEmail())
-//                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
-//        member.addBodyInfo(memberInfo);
-//        memberRepository.save(member);
-//    }
-
     // 프로필 추가
     @Override
     public LoginResDto addProfile(String email, MemberProfile memberProfile) throws Exception {
 
         Member member = memberRepository.findByEmail(email).orElseThrow();
 
-//        Member member = memberRepository.findByEmail(memberProfile.getEmail())
-//                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberProfile.getEmail()));
-
-//        // 프로필 사진 s3 저장
-//        if (file == null) {
-//            memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
-//        } else {
-//            String fileName = createFileName(file.getOriginalFilename());
-//            ObjectMetadata objectMetadata = new ObjectMetadata();
-//            objectMetadata.setContentLength(file.getSize());
-//            objectMetadata.setContentType(file.getContentType());
-//            System.out.println(fileName);
-//            try (InputStream inputStream = file.getInputStream()) {
-////                amazonS3.putObject(bucket+"/userProfile", fileName, inputStream, objectMetadata);
-//                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-//                memberProfile.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
-//            } catch (IOException e) {
-//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-//            }
         if (memberProfile.getImage() == "") {
             memberProfile.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
         }
@@ -189,9 +159,6 @@ public class MemberServiceImpl implements MemberService {
                 .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
                 .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
                 .build();
-
-
-//        memberRankExp.getRank().getProblem();
 
         MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
 
@@ -255,25 +222,6 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public LoginResDto editProfile(String email, MemberInfo memberInfo) throws Exception {
         Member member = memberRepository.findByEmail(email).orElseThrow();
-//        Member member = memberRepository.findByEmail(memberInfo.getEmail())
-//                .orElseThrow(() -> new ResourceNotFoundException("Member", "memberEmail", memberInfo.getEmail()));
-
-//        // 프로필 사진 s3 저장
-//        if (file == null) {
-//            System.out.println("사진이 없습니다.");
-//        } else {
-//            String fileName = createFileName(file.getOriginalFilename());
-//            ObjectMetadata objectMetadata = new ObjectMetadata();
-//            objectMetadata.setContentLength(file.getSize());
-//            objectMetadata.setContentType(file.getContentType());
-//            System.out.println(fileName);
-//            try (InputStream inputStream = file.getInputStream()) {
-//                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-//                memberInfo.setImage(amazonS3.getUrl(bucket + "/userProfile", fileName).toString());
-//            } catch (IOException e) {
-//                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
-//            }
-//        }
 
         if (memberInfo.getImage() == "") {
             memberInfo.setImage("https://youngclimb.s3.ap-northeast-2.amazonaws.com/userProfile/KakaoTalk_20221108_150615819.png");
@@ -287,9 +235,6 @@ public class MemberServiceImpl implements MemberService {
                 .accessToken(null)
                 .refreshToken(null)
                 .build();
-
-
-//        memberRankExp.getRank().getProblem();
 
         MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
 
@@ -467,6 +412,33 @@ public class MemberServiceImpl implements MemberService {
 
         return loginResDto;
     }
+
+    // 운영자 로그인
+    @Override
+    public LoginResDto adminLogin(LoginMember member) throws ForbiddenException {
+        Member loginMember = memberRepository.findByEmail(member.getEmail()).orElseThrow(() -> new NoSuchElementException("아이디가 존재하지 않습니다."));
+
+        if (!passwordEncoder.matches(member.getPassword(), loginMember.getPw())) {
+            throw new IllegalArgumentException("잘못된 비밀번호입니다.");
+        }
+
+        if(!loginMember.getRole().equals(UserRole.ADMIN)) {
+            throw new ForbiddenException("운영자 계정이 아닙니다");
+        }
+
+        // 중복로그인 체크
+//        if(redisService.getValues("RT " + member.getEmail()) != null) {
+//            throw new EntityExistsException("이미 로그인한 사용자입니다.");
+//        }
+
+        LoginResDto loginResDto = LoginResDto.builder()
+                .accessToken(jwtTokenProvider.createAccessToken(member.getEmail()))
+                .refreshToken(jwtTokenProvider.createRefreshToken(member.getEmail()))
+                .build();
+
+        return loginResDto;
+    }
+
 
     // 로그아웃
     @Override

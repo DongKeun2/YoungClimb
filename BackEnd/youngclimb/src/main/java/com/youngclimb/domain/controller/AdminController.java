@@ -1,21 +1,27 @@
 package com.youngclimb.domain.controller;
 
 
+import com.youngclimb.common.exception.ForbiddenException;
 import com.youngclimb.common.security.CurrentUser;
 import com.youngclimb.common.security.UserPrincipal;
-import com.youngclimb.domain.model.dto.center.CenterDetailDto;
+import com.youngclimb.domain.model.dto.member.LoginMember;
+import com.youngclimb.domain.model.dto.member.LoginResDto;
 import com.youngclimb.domain.model.service.AdminService;
+import com.youngclimb.domain.model.service.MemberService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
     private final AdminService adminService;
+    private final MemberService memberService;
 
     // 신고 목록 조회
     @ApiOperation(value = "readReport : 신고 목록 조회")
@@ -74,6 +80,21 @@ public class AdminController {
             return exceptionHandling(e);
         }
     }
+
+    // 운영자 로그인
+    @ApiOperation(value = "login: 관리자 로그인")
+    @PostMapping("/login")
+    public ResponseEntity<?> adminLogin(@RequestBody LoginMember member, HttpServletResponse response) throws Exception {
+        try {
+            return new ResponseEntity<LoginResDto>(memberService.adminLogin(member), HttpStatus.OK);
+        } catch (ForbiddenException e) {
+            return new ResponseEntity<String>("Error : " + e.getMessage(), HttpStatus.FORBIDDEN);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+
 
     // 예외 처리
     private ResponseEntity<String> exceptionHandling(Exception e) {

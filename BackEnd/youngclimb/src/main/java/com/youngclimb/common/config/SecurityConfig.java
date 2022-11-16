@@ -3,6 +3,7 @@ package com.youngclimb.common.config;
 import com.youngclimb.common.jwt.CustomAuthenticationEntryPoint;
 import com.youngclimb.common.jwt.JWTAuthenticationFilter;
 import com.youngclimb.common.jwt.JwtTokenProvider;
+import com.youngclimb.domain.model.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,9 +46,9 @@ public class SecurityConfig {
                 .permitAll() // 특정 URL을 설정하며, permitAll은 해당 URL의 접근을 인증없이 허용한다는 의미
                 // user - 로그인, 회원가입, 아이디 찾기, 비밀번호 찾기
 //			    .antMatchers("/**").permitAll()	// 개발 기간 동안 모든 사이트 허용
-                .antMatchers("/api/user/signup", "/api/user/login", "/api/user/email", "/api/user/nickname", "/api/user/save/image",
+                .antMatchers("/api/user/signup", "/api/user/login", "/api/user/email", "/api/user/nickname", "/api/user/save/image", "/api/admin/login",
                         "/api/board/save/image", "/api/center", "/api/center/*", "/api/download").permitAll()
-                .antMatchers("/api/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/admin/**").hasAuthority(UserRole.ADMIN.getKey())
                 .antMatchers("/v3/api-docs", "/swagger-ui", "/swagger-resources/**").permitAll()
                 .anyRequest().authenticated();
 
