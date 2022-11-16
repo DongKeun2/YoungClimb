@@ -12,7 +12,7 @@ public interface CommentRepository extends JpaRepository<Comment,Long> {
     Long countByBoard(Board board);
     Optional<Comment> findByBoard(Board board);
     List<Comment> findAllByBoard(Board board, Sort sort);
-
     List<Comment> findByParentId(Long id, Sort sort);
+
 
 }
