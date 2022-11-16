@@ -43,7 +43,7 @@ function ProfileScreen({navigation, route}) {
   }, []);
 
   const backAction = () => {
-    if (routeName.name !== '메인프로필') {
+    if (routeName.name !== '메인 프로필') {
       navigation.goBack();
       return true;
     } else {
