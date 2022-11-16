@@ -40,6 +40,7 @@ function AppInfo({navigation}) {
               </TouchableOpacity>
               {isVersion ? (
                 <View style={styles.detailBox}>
+                  <Text style={styles.text}>2022.11.16 v1.0.3</Text>
                   <Text style={styles.text}>2022.11.15 release v1.0.0</Text>
                 </View>
               ) : null}
