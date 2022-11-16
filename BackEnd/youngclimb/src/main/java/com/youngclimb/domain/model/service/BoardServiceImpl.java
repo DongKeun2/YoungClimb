@@ -500,6 +500,41 @@ public class BoardServiceImpl implements BoardService {
         }
     }
 
+    // 댓글 삭제
+    @Override
+    public void deleteComment(Long commentId, String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        Comment comment = commentRepository.findById(commentId).orElseThrow();
+
+        // 코멘트가 자기 것인 경우
+        if(comment.getMember() == member) {
+
+        // 댓글 파트
+            // 댓글 좋아요 삭제
+            commentLikeRepository.deleteByCommentAndMember(comment, member);
+            // 댓글 삭제
+            commentRepository.delete(comment);
+
+            // 대댓글 파트
+            List<Comment> reComments = commentRepository.findByParentId(commentId, Sort.by(Sort.Direction.ASC, "createdDateTime"));
+            List<CommentLike> reCommentLikes = commentLikeRepository.findByCommentIn(reComments);
+
+            if (!reCommentLikes.isEmpty()) {
+                for (CommentLike reCommentLike : reCommentLikes) {
+                    commentLikeRepository.delete(reCommentLike);
+                }
+            }
+
+
+            if (!reComments.isEmpty()) {
+                for (Comment reComment : reComments) {
+                    commentRepository.delete(reComment);
+                }
+            }
+
+        }
+    }
+
 
     // 사용자 정보 조회
     @Override
