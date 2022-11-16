@@ -355,6 +355,8 @@ public class BoardServiceImpl implements BoardService {
                     reCommentDtos.add(reCommentDto);
                 }
 
+                commentDto.setCommentLikeNum(commentLikeRepository.countByComment(comment));
+
                 commentDto.setReComment(reCommentDtos);
                 commentDtos.add(commentDto);
             }
