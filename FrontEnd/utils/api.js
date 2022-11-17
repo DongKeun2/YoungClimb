@@ -27,6 +27,7 @@ const ADD_URL = '/add';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
 const COMMENT_URL = '/comment';
+const VIEW_URL = '/view';
 
 const REELS_URL = '/reels';
 
@@ -75,6 +76,7 @@ const api = {
   postAdd: () => API_BASE_URL + BOARD_URL,
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
+  viewCount: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + VIEW_URL,
 
   comment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL,
   commentLike: commentId =>

@@ -12,7 +12,7 @@ const fetchHomeFeed = createAsyncThunk(
         api.homeFeed(pageNumber),
         await getConfig(),
       );
-      console.log('홈피드 요청 성공', res.data.boardDtos.length);
+      console.log(pageNumber, '홈피드 요청 성공', res.data.boardDtos.length);
       return res.data;
     } catch (err) {
       console.log('홈피드 요청 실패', err);
@@ -29,7 +29,7 @@ const fetchHomeFeedAdd = createAsyncThunk(
         api.homeFeedAdd(pageNumber),
         await getConfig(),
       );
-      console.log('홈피드 추가 요청 성공', res.data.boardDtos.length);
+      console.log(pageNumber, '홈피드 추가 요청 성공', res.data.boardDtos.length);
       return res.data;
     } catch (err) {
       console.log('홈피드 추가 요청 실패', err);
@@ -193,7 +193,7 @@ const fetchReels = createAsyncThunk(
         api.homeFeed(pageNumber),
         await getConfig(),
       );
-      console.log('릴스 요청 성공', res.data.boardDtos.length, res.data);
+      console.log(pageNumber, '릴스 요청 성공', res.data.boardDtos.length);
       return res.data;
     } catch (err) {
       console.log('릴스 요청 실패', err);
@@ -256,10 +256,28 @@ const recommentAdd = createAsyncThunk(
   },
 );
 
+const viewCount = createAsyncThunk(
+  'viewCount',
+  async (boardId, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.post(
+        api.viewCount(boardId),
+        {},
+        await getConfig(),
+      );
+      console.log('조회수 증가 성공', res.data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   boards: {},
   boardArray: [],
   isNext: true,
+  isFinish: true,
   boardInfoComment: {},
   boardInfo: {},
   commentInfo: {},
@@ -310,6 +328,7 @@ export const PostSlice = createSlice({
     [fetchHomeFeedAdd.fulfilled]: (state, action) => {
       state.boards = action.payload;
       state.boardArray = [...state.boardArray, ...action.payload.boardDtos];
+      state.isFinish = action.payload.nextPage;
     },
     [fetchFeedComment.fulfilled]: (state, action) => {
       state.boardInfoComment = action.payload;
@@ -344,6 +363,7 @@ export {
   commentLikeSubmit,
   commentAdd,
   recommentAdd,
+  viewCount,
 };
 
 export const {

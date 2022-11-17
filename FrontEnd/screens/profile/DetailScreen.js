@@ -8,6 +8,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -34,8 +37,11 @@ import PlayBtn from '../../assets/image/videoBtn/playBtn.svg';
 import RefreshBtn from '../../assets/image/videoBtn/refreshBtn.svg';
 import MuteBtn from '../../assets/image/videoBtn/muteBtn.svg';
 import SoundBtn from '../../assets/image/videoBtn/soundBtn.svg';
+import Trash from '../../assets/image/feed/trash.svg';
 
 import CommentInput from '../../components/CommentInput';
+import {deleteBoard} from '../../utils/slices/ProfileSlice';
+import {viewCount} from '../../utils/slices/PostSlice';
 
 function DetailScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -48,17 +54,13 @@ function DetailScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const [videoLength, setVideoLength] = useState(0);
-
   const [isMuted, setIsMuted] = useState(true);
   const [isView, setIsView] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
+  const [isBuffer, setIsBuffer] = useState(false);
+  const [isCounted, setIsCounted] = useState(false);
+  const [viewCounts, setViewCounts] = useState(0);
 
-  const calVideoLength = e => {
-    const {width} = e.nativeEvent.layout;
-    setVideoLength(width);
-  };
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
@@ -66,7 +68,8 @@ function DetailScreen({navigation, route}) {
   const changePlay = () => {
     if (isFinished) {
       setIsView(true);
-      setIsRepeat(true);
+      setIsCounted(false);
+      this.player.seek(0);
     } else {
       setIsView(!isView);
     }
@@ -75,6 +78,19 @@ function DetailScreen({navigation, route}) {
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
+  };
+
+  const countView = log => {
+    if (!isCounted) {
+      if (log.currentTime / log.seekableDuration > 0.1) {
+        setIsCounted(true);
+        dispatch(viewCount(route.params.id)).then(res => {
+          if (res.type === 'viewCount/fulfilled') {
+            setViewCounts(viewCounts + 1);
+          }
+        });
+      }
+    }
   };
 
   const openMenu = feed => {
@@ -94,8 +110,8 @@ function DetailScreen({navigation, route}) {
     }
     setIsView(true);
     setIsFinished(false);
-    setIsRepeat(false);
-  }, [dispatch, route, isFocused]);
+    setViewCounts(feed.view);
+  }, [dispatch, route, isFocused, feed.view]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -103,7 +119,6 @@ function DetailScreen({navigation, route}) {
         setIsMuted(true);
         setIsView(false);
         setIsFinished(false);
-        setIsRepeat(false);
       };
     }, []),
   );
@@ -116,13 +131,17 @@ function DetailScreen({navigation, route}) {
     dispatch(scrapBoard(route.params.id));
   }
 
+  function onDelete(boardId) {
+    dispatch(deleteBoard(boardId)).then(() => {
+      Alert.alert('삭제되었습니다.');
+      navigation.goBack();
+    });
+  }
+
   return (
     <>
       <CustomSubHeader title="게시글" navigation={navigation} />
-      <ScrollView
-        style={styles.container}
-        onLayout={calVideoLength}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <></>
         ) : (
@@ -163,7 +182,20 @@ function DetailScreen({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {feed.createUser.nickname === currentUser.nickname ? null : (
+                {feed.createUser.nickname === currentUser.nickname ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      Alert.alert('게시글 삭제', '글을 삭제하시겠습니까?', [
+                        {text: '삭제', onPress: () => onDelete(feed.id)},
+                        {
+                          text: '취소',
+                          onPress: () => Alert.alert('', '취소되었습니다.'),
+                        },
+                      ]);
+                    }}>
+                    <Trash />
+                  </TouchableOpacity>
+                ) : (
                   <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
                     <MenuIcon width={16} height={16} />
                   </TouchableOpacity>
@@ -186,21 +218,32 @@ function DetailScreen({navigation, route}) {
               </View>
             </View>
 
-            <View style={{width: videoLength, height: videoLength}}>
+            <View
+              style={{
+                width: Dimensions.get('window').width,
+                height: Dimensions.get('window').width,
+              }}>
               <TouchableOpacity
                 style={styles.videoBox}
                 activeOpacity={1}
                 onPress={changePlay}>
                 <Video
+                  ref={ref => {
+                    this.player = ref;
+                  }}
                   source={{uri: feed.mediaPath}}
                   style={styles.backgroundVideo}
                   fullscreen={false}
                   resizeMode={'contain'}
-                  repeat={isRepeat}
+                  repeat={false}
                   controls={false}
                   paused={!isView}
                   muted={isMuted}
-                  onLoad={() => setIsRepeat(false)}
+                  onseek={() => null}
+                  onBuffer={res => {
+                    setIsBuffer(res.isBuffering);
+                  }}
+                  onProgress={res => countView(res)}
                   onEnd={changeFinished}
                 />
                 {/* 동영상 재생 버튼 */}
@@ -235,6 +278,18 @@ function DetailScreen({navigation, route}) {
                     <SoundBtn color="white" width={60} />
                   </TouchableOpacity>
                 )
+              ) : null}
+              {/* 로딩중 */}
+              {isBuffer ? (
+                <View
+                  style={{
+                    ...styles.background,
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}>
+                  <ActivityIndicator size="large" color="white" />
+                </View>
               ) : null}
               <View style={styles.solvedDate}>
                 <CameraIcon />
@@ -277,7 +332,7 @@ function DetailScreen({navigation, route}) {
               <View style={styles.iconText}>
                 <EyeIcon style={{marginRight: 5}} />
                 <Text style={styles.feedTextStyle}>
-                  {feed.view} 명이 감상했습니다.
+                  {viewCounts} 명이 감상했습니다.
                 </Text>
               </View>
             </View>
