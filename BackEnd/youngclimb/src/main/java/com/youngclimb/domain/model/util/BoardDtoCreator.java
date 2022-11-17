@@ -24,6 +24,7 @@ public class BoardDtoCreator {
     private final MemberRankExpRepository memberRankExpRepository;
     private final FollowRepository followRepository;
     private final BoardMediaRepository boardMediaRepository;
+    private final MemberProblemRepository memberProblemRepository;
 
     // 게시글 DTO 세팅
     public BoardDto startDto(Board board, Member member) {
@@ -97,6 +98,52 @@ public class BoardDtoCreator {
         userDto.setBoardNum(boardRepository.countByMemberAndIsDeleteNot(member, 1));
         userDto.setFollowingNum(followRepository.countByFollower(member));
         userDto.setFollowerNum(followRepository.countByFollowing(member));
+
+        MemberRankExp memberRankExp = memberRankExpRepository.findByMember(member).orElseThrow();
+        MemberProblem memberProblem = memberProblemRepository.findByMember(member).orElseThrow();
+
+
+        int problemLeft = 0;
+        switch (memberRankExp.getRank().getProblem()) {
+            case "V0":
+                problemLeft = Math.min(3, (memberProblem.getV0() + memberProblem.getV1() + memberProblem.getV2() + memberProblem.getV3() + memberProblem.getV4() + memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8()));
+                break;
+            case "V1":
+                problemLeft = Math.min(3, (memberProblem.getV1() + memberProblem.getV2() + memberProblem.getV3() + memberProblem.getV4() + memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8()));
+                break;
+            case "V3":
+                problemLeft = Math.min(3, (memberProblem.getV3() + memberProblem.getV4() + memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8()));
+                break;
+            case "V5":
+                problemLeft = Math.min(3, (memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8()));
+                break;
+            case "V6":
+                problemLeft = Math.min(3, (memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8()));
+                break;
+            case "V7":
+                problemLeft = Math.min(3, (memberProblem.getV7() + memberProblem.getV8()));
+                break;
+            default:
+                problemLeft = 0;
+                break;
+        }
+
+        long expLeft = memberRankExp.getRank().getQual() - memberRankExp.getMemberExp();
+
+        if (expLeft < 0) {
+            expLeft = 0;
+        }
+
+        Integer exp = (int) (memberRankExp.getMemberExp() * 100 / memberRankExp.getRank().getQual());
+
+        if (exp > 100) {
+            exp = 100;
+        }
+
+        userDto.setExp(exp);
+        userDto.setUpto(problemLeft);
+        userDto.setExpleft(expLeft);
+
         return userDto;
     }
 
