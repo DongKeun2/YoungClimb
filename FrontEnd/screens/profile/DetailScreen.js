@@ -10,6 +10,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -53,20 +54,13 @@ function DetailScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const [videoLength, setVideoLength] = useState(0);
-
   const [isMuted, setIsMuted] = useState(true);
   const [isView, setIsView] = useState(true);
   const [isFinished, setIsFinished] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
   const [isCounted, setIsCounted] = useState(false);
   const [viewCounts, setViewCounts] = useState(0);
 
-  const calVideoLength = e => {
-    const {width} = e.nativeEvent.layout;
-    setVideoLength(width);
-  };
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
@@ -74,8 +68,8 @@ function DetailScreen({navigation, route}) {
   const changePlay = () => {
     if (isFinished) {
       setIsView(true);
-      setIsRepeat(true);
       setIsCounted(false);
+      this.player.seek(0);
     } else {
       setIsView(!isView);
     }
@@ -84,11 +78,6 @@ function DetailScreen({navigation, route}) {
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
-  };
-
-  const onLoad = () => {
-    setIsRepeat(false);
-    setIsBuffer(false);
   };
 
   const countView = log => {
@@ -121,7 +110,6 @@ function DetailScreen({navigation, route}) {
     }
     setIsView(true);
     setIsFinished(false);
-    setIsRepeat(false);
     setViewCounts(feed.view);
   }, [dispatch, route, isFocused, feed.view]);
 
@@ -131,7 +119,6 @@ function DetailScreen({navigation, route}) {
         setIsMuted(true);
         setIsView(false);
         setIsFinished(false);
-        setIsRepeat(false);
       };
     }, []),
   );
@@ -154,10 +141,7 @@ function DetailScreen({navigation, route}) {
   return (
     <>
       <CustomSubHeader title="게시글" navigation={navigation} />
-      <ScrollView
-        style={styles.container}
-        onLayout={calVideoLength}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <></>
         ) : (
@@ -234,23 +218,30 @@ function DetailScreen({navigation, route}) {
               </View>
             </View>
 
-            <View style={{width: videoLength, height: videoLength}}>
+            <View
+              style={{
+                width: Dimensions.get('window').width,
+                height: Dimensions.get('window').width,
+              }}>
               <TouchableOpacity
                 style={styles.videoBox}
                 activeOpacity={1}
                 onPress={changePlay}>
                 <Video
+                  ref={ref => {
+                    this.player = ref;
+                  }}
                   source={{uri: feed.mediaPath}}
                   style={styles.backgroundVideo}
                   fullscreen={false}
                   resizeMode={'contain'}
-                  repeat={isRepeat}
+                  repeat={false}
                   controls={false}
                   paused={!isView}
                   muted={isMuted}
-                  onLoad={() => onLoad()}
-                  onBuffer={() => {
-                    setIsBuffer(true);
+                  onseek={() => null}
+                  onBuffer={res => {
+                    setIsBuffer(res.isBuffering);
                   }}
                   onProgress={res => countView(res)}
                   onEnd={changeFinished}
@@ -293,7 +284,7 @@ function DetailScreen({navigation, route}) {
                 <View
                   style={{
                     ...styles.background,
-                    backgroundColor: 'black',
+                    backgroundColor: 'rgba(0,0,0,0.6)',
                     display: 'flex',
                     justifyContent: 'center',
                   }}>

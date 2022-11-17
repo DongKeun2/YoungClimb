@@ -1,5 +1,5 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   Dimensions,
@@ -18,7 +18,6 @@ import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {fetchReels} from '../../utils/slices/PostSlice';
 
 function RandomScreen({navigation}) {
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [exitAttempt, setExitAttempt] = useState(false);
   const toastRef = useRef(null);
@@ -27,22 +26,38 @@ function RandomScreen({navigation}) {
   }, []);
 
   const [page, setPage] = useState(0);
+  const [boardNum, setBoardNum] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const onEndReached = () => {
-    if (!isLoading) {
+  const isFinish = useSelector(state => state.post.isFinish);
+
+  const getReels = () => {
+    if (boardNum > 3 || !isFinish) {
+      setBoardNum(0);
+      setIsLoading(false);
+      return;
+    }
+    if (!isLoading && isFinish) {
       setIsLoading(true);
-      setPage(page + 1);
       dispatch(fetchReels(page)).then(res => {
-        if (res.payload.nextPage && res.payload.boardDtos.length < 3) {
+        if (res.type === 'fetchReels/fulfilled') {
           setPage(page + 1);
-          dispatch(fetchReels(page)).then(res => {
-            if (res.type === 'fetchReels/fulfilled') {
+          if (boardNum + res.payload.boardDtos.length > 3) {
+            setBoardNum(0);
+            setIsLoading(false);
+            return;
+          } else {
+            setBoardNum(boardNum + res.payload.boardDtos.length);
+            if (res.payload.nextPage) {
+              return getReels();
+            } else {
+              setBoardNum(0);
               setIsLoading(false);
+              return;
             }
-          });
-        } else if (res.type === 'fetchReels/fulfilled') {
-          setIsLoading(false);
+          }
+        } else {
+          return;
         }
       });
     }
@@ -75,8 +90,8 @@ function RandomScreen({navigation}) {
   }, []);
 
   useEffect(() => {
-    dispatch(fetchReels(page));
-  }, [isFocused]);
+    getReels();
+  }, []);
 
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -117,7 +132,7 @@ function RandomScreen({navigation}) {
           viewabilityConfig={viewConfigRef.current}
           onViewableItemsChanged={onViewRef.current}
           keyExtractor={(item, index) => `${index}`}
-          onEndReached={onEndReached}
+          onEndReached={isFinish ? getReels : null}
           onEndReachedThreshold={0.2}
           renderItem={({item, index}) => (
             <ReelsItem
@@ -130,6 +145,9 @@ function RandomScreen({navigation}) {
           snapToInterval={viewHeight - bottomTabBarHeight}
           snapToAlignment="start"
           showsVerticalScrollIndicator={false}
+          initialNumToRender={2}
+          maxToRenderPerBatch={2}
+          windowSize={3}
         />
       </View>
       <Toast ref={toastRef} />

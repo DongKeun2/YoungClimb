@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {useFocusEffect, useRoute, useIsFocused} from '@react-navigation/native';
+import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 
 import {
@@ -20,7 +20,6 @@ import DeclareSheet from '../../components/DeclareSheet';
 import {fetchHomeFeed, fetchHomeFeedAdd} from '../../utils/slices/PostSlice';
 
 function HomeScreen({navigation, route}) {
-  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const [visablePostIndex, setVisablePostIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
@@ -28,51 +27,66 @@ function HomeScreen({navigation, route}) {
   const [closeSignal, setCloseSignal] = useState(0);
 
   const [page, setPage] = useState(0);
+  const [pageAdd, setPageAdd] = useState(0);
+  const [boardNum, setBoardNum] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [isFinished, setIsFinished] = useState(false);
 
   const isNext = useSelector(state => state.post.isNext);
+  const isFinish = useSelector(state => state.post.isFinish);
 
-  const onEndReached = () => {
-    if (!isLoading && !isFinished) {
+  const fetchFeeds = () => {
+    if (boardNum > 3 || !isFinish) {
+      setBoardNum(0);
+      setIsLoading(false);
+      return;
+    }
+    if (!isLoading && isFinish) {
       if (isNext) {
+        // 게시물 요청
         setIsLoading(true);
-        setPage(page + 1);
         dispatch(fetchHomeFeed(page)).then(res => {
-          if (res.payload.nextPage && res.payload.boardDtos.length < 3) {
+          if (res.type === 'fetchHomeFeed/fulfilled') {
             setPage(page + 1);
-            dispatch(fetchHomeFeed(page)).then(res => {
-              if (res.type === 'fetchHomeFeed/fulfilled') {
-                if (!res.payload.nextPage && page) {
-                  setPage(-1);
-                }
+            if (boardNum + res.payload.boardDtos.length > 3) {
+              setBoardNum(0);
+              setIsLoading(false);
+              return;
+            } else {
+              setBoardNum(boardNum + res.payload.boardDtos.length);
+              if (res.payload.nextPage) {
+                return fetchFeeds();
+              } else {
+                setBoardNum(0);
                 setIsLoading(false);
+                return;
               }
-            });
-          } else if (res.type === 'fetchHomeFeed/fulfilled') {
-            if (!res.payload.nextPage && page) {
-              setPage(-1);
             }
-            setIsLoading(false);
+          } else {
+            return;
           }
         });
       } else {
+        // 추가게시물 요청
         setIsLoading(true);
-        setPage(page + 1);
-        console.log(page, '추가');
-        dispatch(fetchHomeFeedAdd(page)).then(res => {
-          if (!res.payload.nextPage) {
-            setIsFinished(true);
-          }
-          if (res.payload.nextPage && res.payload.boardDtos.length < 3) {
-            setPage(page + 1);
-            dispatch(fetchHomeFeedAdd(page)).then(res => {
-              if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+        dispatch(fetchHomeFeedAdd(pageAdd)).then(res => {
+          if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+            setPageAdd(pageAdd + 1);
+            if (boardNum + res.payload.boardDtos.length > 3) {
+              setBoardNum(0);
+              setIsLoading(false);
+              return;
+            } else {
+              setBoardNum(boardNum + res.payload.boardDtos.length);
+              if (res.payload.nextPage) {
+                return fetchFeeds();
+              } else {
+                setBoardNum(0);
                 setIsLoading(false);
+                return;
               }
-            });
-          } else if (res.type === 'fetchHomeFeedAdd/fulfilled') {
-            setIsLoading(false);
+            }
+          } else {
+            return;
           }
         });
       }
@@ -120,6 +134,7 @@ function HomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
+    fetchFeeds();
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');
@@ -128,21 +143,6 @@ function HomeScreen({navigation, route}) {
       isBackHandler = false;
     };
   }, []);
-
-  useEffect(() => {
-    console.log('홈피드 접근');
-    dispatch(fetchHomeFeed(page)).then(res => {
-      if (res.payload.boardDtos.length < 2) {
-        dispatch(fetchHomeFeedAdd(page)).then(res => {
-          if (res.type === 'fetchHomeFeedAdd/fulfilled') {
-            setPage(page + 1);
-            setIsLoading(false);
-          }
-        });
-      }
-      setIsLoading(false);
-    });
-  }, [isFocused]);
 
   useFocusEffect(() => {
     const backHandler = BackHandler.addEventListener(
@@ -162,7 +162,10 @@ function HomeScreen({navigation, route}) {
         viewabilityConfig={viewConfigRef.current}
         onViewableItemsChanged={onViewRef.current}
         keyExtractor={(item, index) => `${index}`}
-        initialNumToRender={3}
+        initialNumToRender={4}
+        maxToRenderPerBatch={4}
+        windowSize={7}
+        removeClippedSubviews={true}
         renderItem={({item, index}) => (
           <HomeFeed
             feed={item}
@@ -173,10 +176,10 @@ function HomeScreen({navigation, route}) {
             setFocusedContent={setFocusedContent}
           />
         )}
-        onEndReached={onEndReached}
-        onEndReachedThreshold={0.2}
+        onEndReached={isFinish ? fetchFeeds : null}
+        onEndReachedThreshold={0.3}
         ListFooterComponent={
-          isLoading && (
+          isLoading ? (
             <View
               style={{
                 width: '100%',
@@ -185,7 +188,7 @@ function HomeScreen({navigation, route}) {
               }}>
               <ActivityIndicator size="large" color="#F34D7F" />
             </View>
-          )
+          ) : null
         }
       />
       <Toast ref={toastRef} />
