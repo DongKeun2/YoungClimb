@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -14,4 +16,8 @@ public class AdminInfo {
     long countMember;
     long countBoard;
     ReportInfo reportInfo;
+    List<ReportDto> beforeList;
+    List<ReportDto> recentList;
+    List<ReportDto> suspendedList;
+
 }
