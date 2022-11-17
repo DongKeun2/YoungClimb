@@ -36,6 +36,16 @@ public class AdminServiceImpl implements AdminService {
 
     // 신고 목록 조회
     public List<ReportDto> readReport(Integer flag) {
+        List<Report> reportDeleteList = new ArrayList<>();
+
+        reportDeleteList = reportRepository.findByFlagNot(1);
+        for (Report report : reportDeleteList) {
+            if (report.getBoard().getIsDelete() == 1) {
+                report.setFlag(1);
+                reportRepository.save(report);
+            }
+        }
+
         List<Report> reportList = new ArrayList<>();
 
         if(flag == 4) {
@@ -54,22 +64,15 @@ public class AdminServiceImpl implements AdminService {
         reasons.add("풀이를 완료하지 못한 문제를 완료로 표기했습니다");
 
         for (Report report : reportList) {
-            if (report.getFlag() != 1) {
-                if (report.getBoard().getIsDelete() == 1) {
-                    report.setFlag(1);
-                    reportRepository.save(report);
-                } else {
-                    ReportDto reportDto = ReportDto.builder()
-                            .reportId(report.getId())
-                            .boardId(report.getBoard().getBoardId())
-                            .memberNickname(report.getMember().getNickname())
-                            .treated(report.getFlag())
-                            .reportReason(reasons.get(report.getContent() - 1))
-                            .build();
+            ReportDto reportDto = ReportDto.builder()
+                    .reportId(report.getId())
+                    .boardId(report.getBoard().getBoardId())
+                    .memberNickname(report.getMember().getNickname())
+                    .treated(report.getFlag())
+                    .reportReason(reasons.get(report.getContent() - 1))
+                    .build();
 
-                    reportDtos.add(reportDto);
-                }
-            }
+            reportDtos.add(reportDto);
         }
 
         return reportDtos;

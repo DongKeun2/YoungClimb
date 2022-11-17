@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 
@@ -44,15 +45,15 @@ function SignupScreen({navigation}) {
   // 정보 입력 완료 시 다음 페이지 이동
   function goNextPage() {
     if (!isCheckNickname) {
-      alert('닉네임을 확인해주세요.');
+      Alert.alert('가입정보 확인', '닉네임을 확인해주세요.');
     } else if (!isCheckEmail) {
-      alert('이메일을 확인해주세요.');
+      Alert.alert('가입정보 확인', '이메일을 확인해주세요.');
     } else if (!isCheckTerms) {
-      alert('약관에 동의해주세요.');
+      Alert.alert('가입정보 확인', '약관에 동의해주세요.');
     } else if (passwordError) {
-      alert(passwordError);
+      Alert.alert('가입정보 확인', passwordError);
     } else if (signupForm.password.value !== signupForm.confirmPwd.value) {
-      alert('비밀번호 확인이 일치하지 않습니다.');
+      Alert.alert('가입정보 확인', '비밀번호 확인이 일치하지 않습니다.');
     } else {
       navigation.push('추가정보');
     }
@@ -95,7 +96,7 @@ function SignupScreen({navigation}) {
     if (chkEmail(data.email)) {
       dispatch(checkEmail(data));
     } else {
-      alert('이메일 형식이 올바르지 않습니다.');
+      Alert.alert('가입정보 확인', '이메일 형식이 올바르지 않습니다.');
     }
   }
   function onCheckNickname() {
@@ -103,7 +104,7 @@ function SignupScreen({navigation}) {
       const data = {nickname: signupForm.nickname.value};
       dispatch(checkNickname(data));
     } else {
-      alert('닉네임을 입력해주세요.');
+      Alert.alert('가입정보 확인', '닉네임을 입력해주세요.');
     }
   }
 

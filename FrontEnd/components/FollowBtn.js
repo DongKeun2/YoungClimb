@@ -7,13 +7,14 @@ import {
   followerFollow,
   followSubmit,
   profileFollow,
+  followingFollowAfter,
+  followerFollowAfter,
 } from '../utils/slices/ProfileSlice';
-import {getCurrentUser} from '../utils/Token';
 
 import followAddIcon from '../assets/image/profile/followA.png';
 import followDeleteIcon from '../assets/image/profile/followD.png';
 
-function FollowBtn({follow, nickname, type, idx}) {
+function FollowBtn({follow, nickname, type, idx, profileUser}) {
   const dispatch = useDispatch();
 
   const currentUser = useSelector(state => state.accounts.currentUser);
@@ -23,16 +24,14 @@ function FollowBtn({follow, nickname, type, idx}) {
         dispatch(profileFollow(res.payload));
       });
     } else if (type === 'following') {
-      console.log(nickname, '팔로잉 목록에서 팔로우 버튼 클릭', idx);
       dispatch(followSubmit(nickname)).then(res => {
+        dispatch(followingFollowAfter(profileUser));
         dispatch(followingFollow({idx: idx, follow: res.payload}));
-        console.log('팔로우 결과', res);
       });
     } else if (type === 'follower') {
-      console.log(nickname, '팔로워 목록에서 팔로우 버튼 클릭', idx);
       dispatch(followSubmit(nickname)).then(res => {
+        dispatch(followerFollowAfter(profileUser));
         dispatch(followerFollow({idx: idx, follow: res.payload}));
-        console.log('팔로우 결과', res);
       });
     }
   }

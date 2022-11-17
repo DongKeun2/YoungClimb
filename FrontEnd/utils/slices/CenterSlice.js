@@ -4,13 +4,10 @@ import api from '../api';
 
 const fetchCenterInfo = createAsyncThunk(
   'fetchCenterInfo',
-  async (nickname, {rejectWithValue}) => {
-    console.log('팔로우 정보 요청', nickname);
+  async (arg, {rejectWithValue}) => {
     try {
       const res = await axios.get(api.fetchCenter(), {});
-      console.log('센터 정보 성공', res.data);
-      console.log(res.data[0].wallList);
-      console.log(res.data[0].centerLevelList);
+      console.log('센터 정보 성공');
       return res.data;
     } catch (err) {
       console.log('센터 정보 실패');

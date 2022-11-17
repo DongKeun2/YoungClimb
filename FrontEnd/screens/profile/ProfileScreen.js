@@ -7,6 +7,9 @@ import {
   Image,
   ScrollView,
   BackHandler,
+  Dimensions,
+  TouchableHighlight,
+  Alert,
 } from 'react-native';
 import {useIsFocused, useFocusEffect, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -17,9 +20,10 @@ import UserAvatar from '../../components/UserAvatar';
 import ArticleCard from '../../components/ArticleCard';
 import FollowBtn from '../../components/FollowBtn';
 import RankInfo from '../../components/RankInfo';
+import ProfileLoading from '../../components/Loading/ProfileLoading';
 import {Toast} from '../../components/Toast';
 
-import {profile} from '../../utils/slices/ProfileSlice';
+import {deleteBoard, profile} from '../../utils/slices/ProfileSlice';
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
 import HoldIcon from '../../assets/image/hold/hold.svg';
@@ -27,6 +31,8 @@ import boardIcon from '../../assets/image/profile/board.png';
 import boardActiveIcon from '../../assets/image/profile/boardA.png';
 import bookmarkIcon from '../../assets/image/profile/bookmark.png';
 import bookmarkActiveIcon from '../../assets/image/profile/bookmarkA.png';
+
+const windowWidth = Dimensions.get('window').width;
 
 function ProfileScreen({navigation, route}) {
   const [exitAttempt, setExitAttempt] = useState(false);
@@ -37,7 +43,7 @@ function ProfileScreen({navigation, route}) {
   }, []);
 
   const backAction = () => {
-    if (routeName.name !== '메인프로필') {
+    if (routeName.name !== '메인 프로필') {
       navigation.goBack();
       return true;
     } else {
@@ -100,7 +106,9 @@ function ProfileScreen({navigation, route}) {
 
   return (
     <>
-      {isLoading ? null : (
+      {isLoading ? (
+        <ProfileLoading navigation={navigation} type={type} route={route} />
+      ) : (
         <>
           {route.params.initial ? (
             <CustomMainHeader type="프로필" navigation={navigation} />
@@ -162,7 +170,16 @@ function ProfileScreen({navigation, route}) {
                   <View style={styles.InfoContainer}>
                     <TouchableOpacity
                       style={styles.InfoBox}
-                      onPress={() => setIsRank(true)}>
+                      onPress={() => {
+                        if (currentUser.nickname === userInfo.nickname) {
+                          setIsRank(true);
+                        } else {
+                          Alert.alert(
+                            '열람 불가',
+                            '본인의 등급정보만 볼 수 있습니다.',
+                          );
+                        }
+                      }}>
                       <Text style={styles.text}>등급</Text>
                       <HoldIcon
                         width={20}
@@ -240,32 +257,53 @@ function ProfileScreen({navigation, route}) {
                   <CardList
                     navigation={navigation}
                     articles={type === 'board' ? boards : scraps}
+                    currentUser={currentUser}
                   />
                 </>
               )}
             </ScrollView>
           ) : null}
-          <Toast ref={toastRef} />
         </>
       )}
+      <Toast ref={toastRef} />
     </>
   );
 }
 
-function CardList({articles, navigation}) {
+function CardList({articles, navigation, currentUser}) {
+  const dispatch = useDispatch();
+
+  function onDelete(boardId) {
+    dispatch(deleteBoard(boardId)).then(() =>
+      dispatch(profile(currentUser.nickname)),
+    );
+    Alert.alert('삭제되었습니다.');
+  }
   return (
     <>
       <View style={styles.articleContainer}>
         {articles.map((article, i) => {
           return (
-            <TouchableOpacity
+            <TouchableHighlight
               key={i}
               style={styles.cardContainer}
+              underlayColor={'white'}
               onPress={() => {
                 navigation.navigate('게시글', {id: article.id});
+              }}
+              onLongPress={() => {
+                if (currentUser.nickname === article.createUser.nickname) {
+                  Alert.alert('게시글 삭제', '글을 삭제하시겠습니까?', [
+                    {text: '삭제', onPress: () => onDelete(article.id)},
+                    {
+                      text: '취소',
+                      onPress: () => Alert.alert('', '취소되었습니다.'),
+                    },
+                  ]);
+                }
               }}>
               <ArticleCard article={article} navigation={navigation} />
-            </TouchableOpacity>
+            </TouchableHighlight>
           );
         })}
       </View>
@@ -396,7 +434,7 @@ const styles = StyleSheet.create({
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '50%',
+    width: windowWidth / 2,
   },
 });
 

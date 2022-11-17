@@ -37,10 +37,6 @@ const MenuMain = (props) => {
         <FeatherPen/>
         <Text style={styles.fontBasic}>게시물 정보</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.flex}>
-        <Bookmark/>
-        <Text style={styles.fontBasic}>게시물 스크랩</Text>
-      </TouchableOpacity>
       <TouchableOpacity  
         style={{...styles.flex}}
         onPress={()=>navigation.navigate('표시이유')}
@@ -66,7 +62,7 @@ const styles = StyleSheet.create({
     paddingHorizontal:20,
     paddingVertical: 10,
     backgroundColor: 'white',
-    height:200,
+    height:160,
     width:'100%'
   },
   flex:{
