@@ -24,8 +24,13 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     List<Report> findByFlag(Integer flag);
 
-    List<Report> findByFlagNot(Integer flag);
+    List<Report> findTop5ByFlagOrderByIdAsc(Integer flag);
+
+    List<Report> findTop5ByOrderByIdDesc();
+
+    List<Report> findTop5ByFlagOrderByIdDesc(Integer flag);
 
     Long countByFlag(Integer flag);
+
 
 }
