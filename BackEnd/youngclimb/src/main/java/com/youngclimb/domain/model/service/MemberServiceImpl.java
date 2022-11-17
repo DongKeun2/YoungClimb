@@ -242,22 +242,22 @@ public class MemberServiceImpl implements MemberService {
         int problemLeft = 0;
         switch (memberRankExp.getRank().getProblem()) {
             case "V0":
-                problemLeft = (3 > memberProblem.getV0()) ? memberProblem.getV0() : 3;
+                problemLeft = (3 > (memberProblem.getV0() + memberProblem.getV1() + memberProblem.getV2() + memberProblem.getV3() + memberProblem.getV4() + memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8())) ? memberProblem.getV0() : 3;
                 break;
             case "V1":
-                problemLeft = (3 > memberProblem.getV1()) ? memberProblem.getV1() : 3;
+                problemLeft = (3 > (memberProblem.getV1() + memberProblem.getV2() + memberProblem.getV3() + memberProblem.getV4() + memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8())) ? memberProblem.getV1() : 3;
                 break;
             case "V3":
-                problemLeft = (3 > memberProblem.getV3()) ? memberProblem.getV3() : 3;
+                problemLeft = (3 > (memberProblem.getV3() + memberProblem.getV4() + memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8())) ? memberProblem.getV3() : 3;
                 break;
             case "V5":
-                problemLeft = (3 > memberProblem.getV5()) ? memberProblem.getV5() : 3;
+                problemLeft = (3 > (memberProblem.getV5() + memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8())) ? memberProblem.getV5() : 3;
                 break;
             case "V6":
-                problemLeft = (3 > memberProblem.getV6()) ? memberProblem.getV6() : 3;
+                problemLeft = (3 > (memberProblem.getV6() + memberProblem.getV7() + memberProblem.getV8())) ? memberProblem.getV6() : 3;
                 break;
             case "V7":
-                problemLeft = (3 > memberProblem.getV7()) ? memberProblem.getV7() : 3;
+                problemLeft = (3 > (memberProblem.getV7() + memberProblem.getV8())) ? memberProblem.getV7() : 3;
                 break;
             default:
                 problemLeft = 0;
