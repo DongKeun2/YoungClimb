@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 
@@ -47,7 +48,6 @@ function HomeFeed({
   const dispatch = useDispatch();
 
   const [contentHeight, setContentHeight] = useState(0);
-  const [videoLength, setVideoLength] = useState(0);
   const [isFullContent, setIsFullContent] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
@@ -57,7 +57,6 @@ function HomeFeed({
   const [scrapPress, setScrapPress] = useState(false);
   const [isView, setIsView] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
-  const [isRepeat, setIsRepeat] = useState(false);
   const [isBuffer, setIsBuffer] = useState(false);
   const [isCounted, setIsCounted] = useState(false);
   const [viewCounts, setViewCounts] = useState(0);
@@ -72,7 +71,6 @@ function HomeFeed({
   useEffect(() => {
     setIsView(false);
     setIsFinished(false);
-    setIsRepeat(false);
   }, [isViewable]);
 
   useFocusEffect(
@@ -81,7 +79,6 @@ function HomeFeed({
         setIsMuted(true);
         setIsView(false);
         setIsFinished(false);
-        setIsRepeat(false);
       };
     }, []),
   );
@@ -89,11 +86,6 @@ function HomeFeed({
   const onLayout = e => {
     const {height} = e.nativeEvent.layout;
     setContentHeight(height);
-  };
-
-  const calVideoLength = e => {
-    const {width} = e.nativeEvent.layout;
-    setVideoLength(width);
   };
 
   const viewFullContent = () => {
@@ -107,8 +99,8 @@ function HomeFeed({
   const changePlay = () => {
     if (isFinished) {
       setIsView(true);
-      setIsRepeat(true);
       setIsCounted(false);
+      this.player.seek(0);
     } else {
       setIsView(!isView);
     }
@@ -118,11 +110,6 @@ function HomeFeed({
   const changeFinished = () => {
     setIsView(false);
     setIsFinished(true);
-  };
-
-  const onLoad = () => {
-    setIsRepeat(false);
-    setIsBuffer(false);
   };
 
   const countView = log => {
@@ -169,7 +156,7 @@ function HomeFeed({
   };
 
   return (
-    <View style={styles.container} onLayout={calVideoLength}>
+    <View style={styles.container}>
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
         <View style={styles.headerTop}>
@@ -226,28 +213,34 @@ function HomeFeed({
         </View>
       </View>
       {/* 동영상 */}
-      <View style={{width: videoLength, height: videoLength}}>
+      <View
+        style={{
+          width: Dimensions.get('window').width,
+          height: Dimensions.get('window').width,
+        }}>
         <TouchableOpacity
           style={styles.videoBox}
           activeOpacity={1}
           onPress={changePlay}>
           <Video
+            ref={ref => {
+              this.player = ref;
+            }}
             source={{uri: feed.mediaPath}}
             style={styles.backgroundVideo}
             fullscreen={false}
             resizeMode={'contain'}
-            repeat={isRepeat}
+            repeat={false}
             controls={false}
             paused={!(isViewable && isView)}
             muted={isMuted}
-            onLoad={() => onLoad()}
             onProgress={res => {
               if (!isCounted) {
                 countView(res);
               }
             }}
-            onBuffer={() => {
-              setIsBuffer(true);
+            onBuffer={res => {
+              setIsBuffer(res.isBuffering);
             }}
             onEnd={changeFinished}
           />
@@ -286,7 +279,7 @@ function HomeFeed({
           <View
             style={{
               ...styles.background,
-              backgroundColor: 'black',
+              backgroundColor: 'rgba(0,0,0,0.6)',
               display: 'flex',
               justifyContent: 'center',
             }}>
