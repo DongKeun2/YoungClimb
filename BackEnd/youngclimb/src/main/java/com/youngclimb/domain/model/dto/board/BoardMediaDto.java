@@ -8,4 +8,5 @@ import lombok.Data;
 public class BoardMediaDto {
     private Long mediaId;
     private String mediaPath;
+    private String thumbnatilPath;
 }

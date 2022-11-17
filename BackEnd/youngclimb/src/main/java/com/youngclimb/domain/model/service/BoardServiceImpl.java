@@ -13,6 +13,10 @@ import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import com.youngclimb.domain.model.util.BoardDtoCreator;
 import lombok.RequiredArgsConstructor;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.common.io.NIOUtils;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,10 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -170,12 +177,63 @@ public class BoardServiceImpl implements BoardService {
     public String saveImage(MultipartFile file) {
         if (file != null) {
             String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
+//            ObjectMetadata objectMetadata = new ObjectMetadata();
+//            objectMetadata.setContentLength(file.getSize());
+//            objectMetadata.setContentType(file.getContentType());
             try (InputStream inputStream = file.getInputStream()) {
+
+                try {
+                    System.out.println("파일 변환");
+                File newFile = new File(file.getOriginalFilename());
+                newFile.createNewFile();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                fos.write(file.getBytes());
+                fos.close();
+
+//                    File tempFile = File.createTempFile(String.valueOf(file.getInputStream().hashCode()), ".mp4");
+//                    tempFile.deleteOnExit();
+//                    Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+//                file.transferTo(newFile);
+
+
+                    System.out.println("썸네일 생성");
+                    FrameGrab grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(newFile));
+
+                    if(newFile.exists()) {
+                        if(newFile.delete()) System.out.println("삭제되었습니다");
+                        else System.out.println("삭제 실패");
+                    }
+
+                    int start = 0;
+                    grab.seekToSecondPrecise(start);
+                    Picture picture = grab.getNativeFrame();
+//
+//                    //for JDK (jcodec-javase)
+                    BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    ImageIO.write(bufferedImage, "png", os);
+                    InputStream is = new ByteArrayInputStream(os.toByteArray());
+                    System.out.println("썸네일 생성완료");
+
+                    ObjectMetadata objectMetadata = new ObjectMetadata();
+                    objectMetadata.setContentLength(is.available());
+                    objectMetadata.setContentType("image/png");
+
+                    System.out.println("아마존 ec2에 등록");
+                    amazonS3.putObject(new PutObjectRequest(bucket + "/boardThumb", fileName, is, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+
+                } catch (Exception e) {
+                    System.out.println("썸네일 생성을 실패했습니다.");
+                    e.printStackTrace();
+                }
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(file.getSize());
+                objectMetadata.setContentType(file.getContentType());
                 amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
             return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
@@ -184,6 +242,7 @@ public class BoardServiceImpl implements BoardService {
         }
 
     }
+
     private String createFileName(String fileName) {
         return UUID.randomUUID().toString().concat(getFileExtension(fileName));
     }
@@ -256,7 +315,7 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByEmail(email).orElseThrow();
         Board board = boardRepository.findById(boardId).orElseThrow();
 
-        if(board.getMember().equals(member)) {
+        if (board.getMember().equals(member)) {
             board.updateContent(boardEdit.getContent());
             boardRepository.save(board);
         }
@@ -548,9 +607,9 @@ public class BoardServiceImpl implements BoardService {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
 
         // 코멘트가 자기 것인 경우
-        if(comment.getMember() == member) {
+        if (comment.getMember() == member) {
 
-        // 댓글 파트
+            // 댓글 파트
             // 댓글 좋아요 삭제
             commentLikeRepository.deleteByCommentAndMember(comment, member);
             // 댓글 삭제
