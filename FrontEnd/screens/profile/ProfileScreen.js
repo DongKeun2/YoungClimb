@@ -161,9 +161,9 @@ function ProfileScreen({navigation, route}) {
                 <RankInfo
                   setIsRank={setIsRank}
                   rank={currentUser.rank}
-                  exp={currentUser.exp}
-                  expleft={currentUser.expleft}
-                  upto={currentUser.upto}
+                  exp={userInfo.exp}
+                  expleft={userInfo.expleft}
+                  upto={userInfo.upto}
                 />
               ) : (
                 <>
