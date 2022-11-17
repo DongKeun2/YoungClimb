@@ -124,6 +124,53 @@
   margin-bottom: 3px;
 }
 
+.routeContainer {
+  height:100%;
+  width:100%;
+}
+
+.navbarContainer{
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:48px;
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding:0px 20px;
+  box-sizing: border-box;
+  box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
+}
+.navLogo{
+  height:90%;
+  margin-left: 10px;
+}
+
+.linkContainer{
+  display:flex;
+  flex-direction: row;
+  width:180px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activeClass{
+  text-decoration:none;
+  font-weight: 700;
+  color:#F34D7F;
+  font-size: 14px;
+} 
+
+.inactiveClass{
+  text-decoration:none;
+  font-weight: 500;
+  color:black;
+  cursor:pointer;
+  font-size: 14px;
+
+}
+
 .sharePage {
   display: flex;
   width: 100vw;
