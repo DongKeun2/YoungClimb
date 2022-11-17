@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, TouchableOpacity, StyleSheet} from 'react-native';
+import {WebView} from 'react-native-webview';
 
 import CustomSubHeader from '../../components/CustomSubHeader';
 
@@ -7,13 +7,9 @@ function ShareScreen({navigation}) {
   return (
     <>
       <CustomSubHeader title={'공유하기'} navigation={navigation} />
-      <Text style={styles.text}>공유하기 페이지</Text>
+      <WebView source={{uri: 'https://k7a701.p.ssafy.io/share'}} />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  text: {color: 'black'},
-});
 
 export default ShareScreen;
