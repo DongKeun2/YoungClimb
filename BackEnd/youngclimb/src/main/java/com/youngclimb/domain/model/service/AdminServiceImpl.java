@@ -166,6 +166,14 @@ public class AdminServiceImpl implements AdminService {
     public AdminInfo readAdminInfo() {
         AdminInfo adminInfo = new AdminInfo();
 
+        List<String> reasons = new ArrayList<>();
+        reasons.add("스팸");
+        reasons.add("혐오 발언 및 상징");
+        reasons.add("상품 판매 등 상업 활동");
+        reasons.add("실제 문제 난이도와 게시물상 난이도가 다릅니다");
+        reasons.add("풀이를 완료하지 못한 문제를 완료로 표기했습니다");
+
+
         // 일반 현황
         
         adminInfo.setCountCenter(centerRepository.count());
@@ -181,9 +189,9 @@ public class AdminServiceImpl implements AdminService {
         Long countCompleted = 0L;
         
         for(Report report : reportList) {
-            if(report.getFlag() == 0 ) countBefore ++;
-            if(report.getFlag() == 1 ) countCompleted ++;
-            if(report.getFlag() == 2 ) countIng ++;
+            if(report.getFlag() == 0 ) countBefore ++; // 미처리
+            if(report.getFlag() == 1 ) countCompleted ++; // 처리완료
+            if(report.getFlag() == 2 ) countIng ++; // 보류
         }
         
         
@@ -195,6 +203,56 @@ public class AdminServiceImpl implements AdminService {
                 .build();
 
         adminInfo.setReportInfo(reportInfo);
+
+        // 신고 목록들
+
+        // 미처리 목록 (전체)
+        List<Report> beforeList = reportRepository.findByFlag(0);
+        List<ReportDto> beforeDtoList = new ArrayList<>();
+        for(Report report : beforeList) {
+            ReportDto reportDto = ReportDto.builder()
+                    .reportId(report.getId())
+                    .memberNickname(report.getMember().getNickname())
+                    .reportReason(reasons.get(report.getContent() - 1))
+                    .treated(report.getFlag())
+                    .boardId(report.getBoard().getBoardId())
+                    .build();
+
+            beforeDtoList.add(reportDto);
+        }
+        adminInfo.setBeforeList(beforeDtoList);
+
+        // 보류 처리 목록 (5개)
+        List<Report> suspendedList = reportRepository.findTop5ByFlagOrderByIdAsc(2);
+        List<ReportDto> suspendedDtoList = new ArrayList<>();
+        for(Report report : suspendedList) {
+            ReportDto reportDto = ReportDto.builder()
+                    .reportId(report.getId())
+                    .memberNickname(report.getMember().getNickname())
+                    .reportReason(reasons.get(report.getContent() - 1))
+                    .treated(report.getFlag())
+                    .boardId(report.getBoard().getBoardId())
+                    .build();
+
+            suspendedDtoList.add(reportDto);
+        }
+        adminInfo.setSuspendedList(suspendedDtoList);
+
+        // 최근 신고 목록 (5개)
+        List<Report> recentList = reportRepository.findTop5ByOrderByIdDesc();
+        List<ReportDto> recentDtoList = new ArrayList<>();
+        for(Report report : recentList) {
+            ReportDto reportDto = ReportDto.builder()
+                    .reportId(report.getId())
+                    .memberNickname(report.getMember().getNickname())
+                    .reportReason(reasons.get(report.getContent() - 1))
+                    .treated(report.getFlag())
+                    .boardId(report.getBoard().getBoardId())
+                    .build();
+
+            recentDtoList.add(reportDto);
+        }
+        adminInfo.setRecentList(recentDtoList);
 
         return adminInfo;
     }
