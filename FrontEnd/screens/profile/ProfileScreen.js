@@ -160,10 +160,10 @@ function ProfileScreen({navigation, route}) {
                 // 랭크 정보 로그인 한 회원의 rank로 수정해야함.
                 <RankInfo
                   setIsRank={setIsRank}
-                  rank={currentUser.rank}
-                  exp={currentUser.exp}
-                  expleft={currentUser.expleft}
-                  upto={currentUser.upto}
+                  rank={userInfo.rank}
+                  exp={userInfo.exp}
+                  expleft={userInfo.expleft}
+                  upto={userInfo.upto}
                 />
               ) : (
                 <>
