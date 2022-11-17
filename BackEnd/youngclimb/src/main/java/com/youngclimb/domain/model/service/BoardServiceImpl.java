@@ -243,9 +243,9 @@ public class BoardServiceImpl implements BoardService {
 
 
 
-        for(int i = 0; i<ranks.size()-1; i++) {
+        for(int i = 1; i<ranks.size(); i++) {
             if ((memberProblem.findSolvedProblem(ranks.get(i).getProblem()) >= 3) && (ranks.get(i).getQual() <= memberExp.getMemberExp())) {
-                memberExp.setRank(ranks.get(i+1));
+                memberExp.setRank(ranks.get(i-1));
                 break;
             }
         }
