@@ -239,7 +239,9 @@ public class BoardServiceImpl implements BoardService {
 
         // 랭크 업데이트
         List<Rank> ranks = rankRepository.findAll();
-        ranks.sort((o1, o2) -> (int) (o1.getQual() - o2.getQual()));
+        ranks.sort((o1, o2) -> (int) (o2.getQual() - o1.getQual()));
+
+
 
         for(int i = 0; i<ranks.size()-1; i++) {
             if ((memberProblem.findSolvedProblem(ranks.get(i).getProblem()) >= 3) && (ranks.get(i).getQual() <= memberExp.getMemberExp())) {
