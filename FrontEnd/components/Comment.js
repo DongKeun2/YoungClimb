@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
+import {useDispatch} from 'react-redux';
 
 import UserAvatar from './UserAvatar';
 import Recomment from './Recomment';
@@ -11,20 +12,50 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
+import {
+  commentLikeSubmit,
+  changeCommentIdForRe,
+  changeNicknameForRe,
+  changeIsFocusedInput,
+} from '../utils/slices/PostSlice';
+
 function Comment({comment, navigation}) {
+  const dispatch = useDispatch();
+
   const [isViewRecomment, setIsViewRecomment] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [like, setLike] = useState(0);
+  const [likePress, setLikePress] = useState(false);
+
+  useEffect(() => {
+    setIsLiked(comment.isLiked);
+    setLike(comment.commentLikeNum);
+  }, [comment.isLiked, comment.commentLikeNum]);
 
   const viewRecomment = () => {
     setIsViewRecomment(true);
   };
 
+  const readyReComment = (id, nickname) => {
+    dispatch(changeCommentIdForRe(id));
+    dispatch(changeNicknameForRe(nickname));
+    dispatch(changeIsFocusedInput(true));
+  };
+
+  const commentLike = id => {
+    setLikePress(true);
+    dispatch(commentLikeSubmit(id))
+      .then(() => {
+        isLiked ? setLike(like - 1) : setLike(like + 1);
+        setIsLiked(!isLiked);
+        setLikePress(false);
+      })
+      .catch(() => setLikePress(false));
+  };
+
   return (
     <View style={styles.commentContainer}>
-      <UserAvatar
-        source={{uri: comment.user.image}}
-        rank={comment.user.rank}
-        size={32}
-      />
+      <UserAvatar source={{uri: comment.user.image}} size={32} />
       <View style={styles.commentInfo}>
         <View style={{...styles.commentMain, marginBottom: 3}}>
           <View style={{...styles.iconText, alignItems: 'center'}}>
@@ -48,9 +79,11 @@ function Comment({comment, navigation}) {
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
             {comment.createdAt}
           </Text>
-          <Text style={{fontSize: 12, color: '#a7a7a7', marginLeft: 8}}>
-            답글 달기
-          </Text>
+          <TouchableOpacity
+            style={{paddingHorizontal: 8}}
+            onPress={() => readyReComment(comment.id, comment.user.nickname)}>
+            <Text style={{fontSize: 12, color: '#a7a7a7'}}>답글 달기</Text>
+          </TouchableOpacity>
         </View>
         <View style={{marginTop: 3}}>
           {!isViewRecomment && comment.reComment.length ? (
@@ -61,26 +94,19 @@ function Comment({comment, navigation}) {
             </Text>
           ) : isViewRecomment && comment.reComment.length ? (
             comment.reComment.map((recomment, idx) => {
-              return (
-                <Recomment
-                  key={idx}
-                  recomment={recomment}
-                  navigation={navigation}
-                />
-              );
+              return <Recomment key={idx} recomment={recomment} />;
             })
           ) : null}
         </View>
       </View>
-      {comment.isLiked ? (
-        <TouchableOpacity onPress={() => null}>
-          <FillHeart />
+      <View style={styles.likeGroup}>
+        <TouchableOpacity
+          onPress={() => commentLike(comment.id)}
+          disabled={likePress}>
+          {isLiked ? <FillHeart /> : <EmptyHeart />}
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity onPress={() => null}>
-          <EmptyHeart />
-        </TouchableOpacity>
-      )}
+        <Text>{like}</Text>
+      </View>
     </View>
   );
 }
@@ -114,6 +140,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  likeGroup: {
+    display: 'flex',
+    alignItems: 'center',
+  }
 });
 
 export default Comment;

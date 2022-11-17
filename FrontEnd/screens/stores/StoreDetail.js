@@ -30,7 +30,7 @@ export default function StoreDetail({route, navigation}){
 		phoneNumber:'',
 	address: '',
 	centerNumber: 0,
-	imageURL:'',
+	img:'',
 	centerLevelList:[],
 	centerEventList: [{
 		date: '', 
@@ -50,6 +50,7 @@ centerPriceList: [{
 	})
 	const [isTimeToggleOpen, setIsTimeToggleOpen] = useState(false)
 	const [isPriceToggleOpen, setIsPriceToggleOpen] = useState(false)
+	const [isLoading, setIsLoading] = useState(true)
 	const [todayTimeInfo, setTodayTimeInfo] = useState('')
 	const [noData, setNoData] = useState(false)
 	const date = new Date()
@@ -71,6 +72,7 @@ centerPriceList: [{
 			axios.get(api.center(route.params.Id), {cancelToken: source.token})
 			.then(res=>{
 				setDetailInfo(res.data)
+				setIsLoading(false)
 			})
 			.catch(err=>{
 				console.log(err)
@@ -94,10 +96,35 @@ centerPriceList: [{
   return(
 		<>
 			<CustomSubHeader
-			  title={'상세 정보'} // 상단 헤더 제목 (헤더의 왼쪽에 위치)
+				title={'상세 정보'} // 상단 헤더 제목 (헤더의 왼쪽에 위치)
 				navigation={navigation} // 헤더에서 이동 필요할 때 navigation={navigation} 작성해서 상속해주기
-			/>
-				{	noData ? 
+				/>
+		{isLoading ? <>
+			<View style={{height:250, width:'100%', backgroundColor:'#A2A2A2'}}></View>
+			<View style={styles.mainContainer}>
+			<View style={styles.infoFlex}>
+					<Text style={styles.subTitle}>전화번호</Text>
+					<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
+					<View style={{height:10, width:50, backgroundColor:'#C2C2C2'}}></View>
+				</View>
+				<View style={styles.infoFlex}>
+					<Text style={styles.subTitle}>운영시간</Text>
+					<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
+					<View style={{height:10, width:50, backgroundColor:'#C2C2C2'}}></View>
+				</View>
+				<View style={styles.infoFlex}>
+					<Text style={styles.subTitle}>가격정보</Text>
+					<View style={{width:27, alignItems:'center'}}><Text style={{color:'black', fontSize:12.5}}>|</Text></View>
+					<View style={{height:10, width:50, backgroundColor:'#C2C2C2'}}></View>
+				</View>
+				<Text style={{...styles.subTitle, marginTop:10, marginBottom:5}}>난이도</Text>
+				<View style={{width:'100%', height:25, backgroundColor:'#C2C2C2'}}></View>
+				<View style={{height:15, borderBottomColor:'#929292',borderBottomWidth:0.2}}></View>
+				<View style={{height:300, width:'100%', backgroundColor:'#A2A2A2'}}></View>
+			</View>
+		</> : 
+
+				noData ? 
 				<View style={{alignItems:'center', height:'100%', width:'100%'}}><Text>지점 정보가 존재하지 않습니다.</Text></View>
 				:
 
@@ -262,7 +289,7 @@ centerPriceList: [{
 
 					<View style={{height:50, width:'100%'}}></View>
 				</ScrollView>
-				}
+		}
 		</>
 	)
 }

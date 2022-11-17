@@ -7,6 +7,7 @@ import {
   BackHandler,
   Image,
   TextInput,
+  Alert,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -30,6 +31,7 @@ import Checked from '../assets/image/main/checked.svg';
 import UnChecked from '../assets/image/main/unchecked.svg';
 import searchInputIcon from '../assets/image/profile/searchIcon.png';
 import HoldIcon from '../assets/image/hold/hold.svg';
+import SearchUserLoading from '../components/Loading/SearchUserLoading';
 
 function SearchScreen({navigation}) {
   const [type, setType] = useState('board');
@@ -120,6 +122,7 @@ function BoardTab({navigation}) {
   const dispatch = useDispatch();
 
   const centerInfo = useSelector(state => state.center.centerInfo);
+  const currentUser = useSelector(state => state.accounts.currentUser);
 
   const [isSimilar, setIsSimilar] = useState(false);
   const [center, setCenter] = useState('');
@@ -131,6 +134,12 @@ function BoardTab({navigation}) {
   function onSubmitSearch() {
     if (!center) {
       return alert('지점을 선택해주세요');
+    } else if (isSimilar && !currentUser.height && !currentUser.wingspan) {
+      setIsSimilar(false);
+      Alert.alert(
+        '이용 불가',
+        '비슷한 체형의 글을 검색하려면 프로필 수정을 해주세요.',
+      );
     } else {
       const data = {
         center,
@@ -156,6 +165,18 @@ function BoardTab({navigation}) {
     setWall('');
     setLevel('');
     setHoldColor('');
+  }
+
+  function onCheckSimilar() {
+    if (!currentUser.height && !currentUser.wingspan) {
+      setIsSimilar(false);
+      Alert.alert(
+        '이용 불가',
+        '비슷한 체형의 글을 검색하려면 프로필 수정을 해주세요.',
+      );
+    } else {
+      setIsSimilar(!isSimilar);
+    }
   }
 
   return (
@@ -298,22 +319,19 @@ function BoardTab({navigation}) {
         {isSimilar ? (
           <TouchableOpacity
             onPress={() => {
-              setIsSimilar(false);
+              onCheckSimilar;
             }}>
             <Checked width={20} height={20} />
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
             onPress={() => {
-              setIsSimilar(true);
+              onCheckSimilar;
             }}>
             <UnChecked width={20} height={20} />
           </TouchableOpacity>
         )}
-        <TouchableOpacity
-          onPress={() => {
-            setIsSimilar(!isSimilar);
-          }}>
+        <TouchableOpacity onPress={onCheckSimilar}>
           <Text style={styles.checkText}>
             &nbsp; 나와 체형이 비슷한 사람의 결과만 보기
           </Text>
@@ -343,7 +361,6 @@ function UserTab({navigation}) {
 
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(undefined);
-  const [first, setFirst] = useState(true);
   const [result, setResult] = useState('');
 
   const starUsers = useSelector(state => state.search.starUsers);
@@ -353,19 +370,16 @@ function UserTab({navigation}) {
     () =>
       debounce(async (result, waitingTime = 300) => {
         setResult('');
-        setLoading(true);
         if (keyword) {
           await new Promise(resolve => setTimeout(resolve, waitingTime));
 
           const data = {keyword};
           dispatch(searchUser(data)).then(() => {
             setResult(keyword);
-            setFirst(true);
             setLoading(false);
           });
         } else {
           setResult('');
-          setFirst(true);
           setLoading(false);
         }
       }, 500),
@@ -373,8 +387,6 @@ function UserTab({navigation}) {
   );
 
   useEffect(() => {
-    console.log(keyword);
-
     mockApiCall(keyword); // call the debounced function
 
     return () => {
@@ -391,6 +403,7 @@ function UserTab({navigation}) {
           placeholderTextColor={'#ADADAD'}
           value={keyword}
           onChangeText={value => {
+            setLoading(true);
             setKeyword(value);
           }}
         />
@@ -399,9 +412,10 @@ function UserTab({navigation}) {
 
       <View style={styles.searchUserResultBox}>
         {loading ? (
-          <View>
+          <>
             <Text style={styles.searchText}>검색 중</Text>
-          </View>
+            <SearchUserLoading />
+          </>
         ) : keyword && result ? (
           users?.length ? (
             <View>

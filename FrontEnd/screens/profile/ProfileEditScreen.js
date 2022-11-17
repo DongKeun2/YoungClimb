@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {launchImageLibrary} from 'react-native-image-picker';
@@ -19,14 +20,12 @@ import Input from '../../components/Input';
 import {
   changeEditForm,
   profileEdit,
-  logout,
   saveImage,
 } from '../../utils/slices/AccountsSlice';
 import {changeUploadImg, checkNickname} from '../../utils/slices/ProfileSlice';
 
 import Camera from '../../assets/image/main/camera.svg';
 import checkIcon from '../../assets/image/main/done.png';
-import {useIsFocused} from '@react-navigation/native';
 
 function ProfileEditScreen({navigation}) {
   const dispatch = useDispatch();
@@ -42,7 +41,6 @@ function ProfileEditScreen({navigation}) {
     if (name === 'nickname') {
       setIsCheckNickname(false);
     }
-    console.log(name, value);
     dispatch(changeEditForm({name, value}));
   }
 
@@ -57,7 +55,18 @@ function ProfileEditScreen({navigation}) {
         }
       });
     } else {
-      alert('닉네임을 입력해주세요.');
+      Alert.alert('프로필 수정', '닉네임을 입력해주세요.');
+    }
+  }
+
+  function goWingspan() {
+    if (editForm.height.value) {
+      navigation.navigate('윙스팬', {
+        height: editForm.height.value,
+        type: 'edit',
+      });
+    } else {
+      Alert.alert('프로필 수정', '윙스팬 측정을 위해 키를 먼저 입력해주세요.');
     }
   }
 
@@ -77,10 +86,7 @@ function ProfileEditScreen({navigation}) {
         setIsChange(true);
       },
     );
-    console.log('프로필 사진 변경');
   };
-
-  const isFocused = useIsFocused();
   useEffect(() => {
     setIsChange(false);
     dispatch(changeUploadImg(null));
@@ -111,11 +117,10 @@ function ProfileEditScreen({navigation}) {
     dispatch(
       changeEditForm({name: 'intro', value: currentUser.intro, reset: true}),
     );
-    console.log('프로필 설정 입장');
-  }, [dispatch, currentUser, isFocused]);
+  }, [dispatch, currentUser]);
 
   function reset() {
-    alert('초기화');
+    Alert.alert('프로필 수정', '변경사항이 초기화되었습니다.');
 
     dispatch(changeUploadImg(null));
     setIsChange(false);
@@ -153,7 +158,7 @@ function ProfileEditScreen({navigation}) {
   // 서브헤더 우측 완료버튼 이벤트
   function onSubmitEdit() {
     if (!isCheckNickname) {
-      alert('닉네임을 확인해주세요.');
+      Alert.alert('프로필 수정', '닉네임을 확인해주세요.');
       return;
     }
     const match = /\.(\w+)$/.exec(imageUri?.assets[0]?.fileName ?? '');
@@ -175,23 +180,32 @@ function ProfileEditScreen({navigation}) {
     const data = {
       nickname: editForm.nickname.value,
       intro: editForm.intro.value,
-      heigh: editForm.height.value,
+      height: editForm.height.value,
       shoeSize: editForm.shoeSize.value,
       wingspan: editForm.wingspan.value,
       image: currentUser.image,
     };
 
-    console.log(data);
-    console.log('사진여부', isPhoto);
     if (isPhoto) {
       dispatch(saveImage(formData)).then(res => {
-        console.log('사진 저장 결과', res.payload);
-        dispatch(profileEdit({...data, image: res.payload}));
+        dispatch(profileEdit({...data, image: res.payload})).then(res => {
+          navigation.navigate('메인 프로필', {
+            nickname: res.payload.user.nickname,
+          });
+        });
       });
     } else if (isChange) {
-      dispatch(profileEdit({...data, image: ''}));
+      dispatch(profileEdit({...data, image: ''})).then(res => {
+        navigation.navigate('메인 프로필', {
+          nickname: res.payload.user.nickname,
+        });
+      });
     } else {
-      dispatch(profileEdit(data));
+      dispatch(profileEdit(data)).then(res => {
+        navigation.navigate('메인 프로필', {
+          nickname: res.payload.user.nickname,
+        });
+      });
     }
   }
 
@@ -309,24 +323,13 @@ function ProfileEditScreen({navigation}) {
                 type={editForm.wingspan.type}
                 onChangeText={value => updateInput('wingspan', value)}
               />
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate('윙스팬', {
-                    height: editForm.height.value,
-                    type: 'edit',
-                  })
-                }>
+              <TouchableOpacity onPress={goWingspan}>
                 <Camera style={styles.cameraIcon} width={30} height={30} />
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity style={styles.logout} onPress={reset}>
+          <TouchableOpacity style={styles.reset} onPress={reset}>
             <Text style={styles.link}>변경사항 초기화</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.logout}
-            onPress={() => dispatch(logout())}>
-            <Text style={styles.link}>로그아웃</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -443,8 +446,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     color: 'black',
   },
-  logout: {
+  reset: {
     marginTop: 20,
+    marginBottom: 100,
   },
   inputForm: {
     width: '80%',

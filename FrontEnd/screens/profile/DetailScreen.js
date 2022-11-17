@@ -1,4 +1,6 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   View,
@@ -6,6 +8,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
@@ -20,7 +25,6 @@ import Comment from '../../components/Comment';
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 import {fetchDetail, likeBoard, scrapBoard} from '../../utils/slices/PostSlice';
 
-import avatar from '../../assets/image/initial/background.png';
 import MenuIcon from '../../assets/image/feed/menuIcon.svg';
 import CameraIcon from '../../assets/image/feed/whiteCamera.svg';
 import EmptyHeart from '../../assets/image/feed/emptyHeart.svg';
@@ -29,9 +33,20 @@ import EmptyScrap from '../../assets/image/feed/emptyScrap.svg';
 import FillScrap from '../../assets/image/feed/fillScrap.svg';
 import EyeIcon from '../../assets/image/feed/eye.svg';
 import HoldIcon from '../../assets/image/hold/hold.svg';
+import PlayBtn from '../../assets/image/videoBtn/playBtn.svg';
+import RefreshBtn from '../../assets/image/videoBtn/refreshBtn.svg';
+import MuteBtn from '../../assets/image/videoBtn/muteBtn.svg';
+import SoundBtn from '../../assets/image/videoBtn/soundBtn.svg';
+import Trash from '../../assets/image/feed/trash.svg';
+
+import CommentInput from '../../components/CommentInput';
+import {deleteBoard} from '../../utils/slices/ProfileSlice';
+import {viewCount} from '../../utils/slices/PostSlice';
 
 function DetailScreen({navigation, route}) {
   const dispatch = useDispatch();
+
+  const currentUser = useSelector(state => state.accounts.currentUser);
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,23 +54,43 @@ function DetailScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const [videoLength, setVideoLength] = useState(0);
-  const [contentHeight, setContentHeight] = useState(0);
-  const [isFullContent, setIsFullContent] = useState(false);
-  const viewFullContent = () => {
-    setIsFullContent(true);
-  };
   const [isMuted, setIsMuted] = useState(true);
-  const calVideoLength = e => {
-    const {width} = e.nativeEvent.layout;
-    setVideoLength(width);
-  };
+  const [isView, setIsView] = useState(true);
+  const [isFinished, setIsFinished] = useState(false);
+  const [isBuffer, setIsBuffer] = useState(false);
+  const [isCounted, setIsCounted] = useState(false);
+  const [viewCounts, setViewCounts] = useState(0);
+
   const changeMuted = () => {
     setIsMuted(!isMuted);
   };
-  const onLayout = e => {
-    const {height} = e.nativeEvent.layout;
-    setContentHeight(height);
+
+  const changePlay = () => {
+    if (isFinished) {
+      setIsView(true);
+      setIsCounted(false);
+      this.player.seek(0);
+    } else {
+      setIsView(!isView);
+    }
+  };
+
+  const changeFinished = () => {
+    setIsView(false);
+    setIsFinished(true);
+  };
+
+  const countView = log => {
+    if (!isCounted) {
+      if (log.currentTime / log.seekableDuration > 0.1) {
+        setIsCounted(true);
+        dispatch(viewCount(route.params.id)).then(res => {
+          if (res.type === 'viewCount/fulfilled') {
+            setViewCounts(viewCounts + 1);
+          }
+        });
+      }
+    }
   };
 
   const openMenu = feed => {
@@ -65,13 +100,28 @@ function DetailScreen({navigation, route}) {
 
   const feed = useSelector(state => state.post.boardInfo);
   const comments = useSelector(state => state.post.commentInfo);
+
   const isFocused = useIsFocused();
+
   useEffect(() => {
     setIsLoading(true);
     if (isFocused) {
       dispatch(fetchDetail(route.params.id)).then(() => setIsLoading(false));
     }
-  }, [dispatch, isFocused]);
+    setIsView(true);
+    setIsFinished(false);
+    setViewCounts(feed.view);
+  }, [dispatch, route, isFocused, feed.view]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      return () => {
+        setIsMuted(true);
+        setIsView(false);
+        setIsFinished(false);
+      };
+    }, []),
+  );
 
   function onClickHeart() {
     dispatch(likeBoard(route.params.id));
@@ -81,13 +131,17 @@ function DetailScreen({navigation, route}) {
     dispatch(scrapBoard(route.params.id));
   }
 
+  function onDelete(boardId) {
+    dispatch(deleteBoard(boardId)).then(() => {
+      Alert.alert('삭제되었습니다.');
+      navigation.goBack();
+    });
+  }
+
   return (
     <>
       <CustomSubHeader title="게시글" navigation={navigation} />
-      <ScrollView
-        style={styles.container}
-        onLayout={calVideoLength}
-        showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <></>
         ) : (
@@ -101,23 +155,26 @@ function DetailScreen({navigation, route}) {
                       nickname: feed.createUser.nickname,
                     });
                   }}
+                  activeOpacity={1}
                   style={styles.iconText}>
-                  <UserAvatar source={avatar} size={36} />
+                  <UserAvatar source={{uri: feed.createUser.image}} size={36} />
                   <View style={styles.headerTextGroup}>
                     <View style={{...styles.iconText, alignItems: 'center'}}>
                       <Text
-                        style={{
-                          ...styles.feedTextStyle,
-                          fontSize: 16,
-                          fontWeight: '600',
-                          marginRight: 5,
-                        }}>
-                        {feed.createUser.nickname}
+                        style={[
+                          styles.feedTextStyle,
+                          {
+                            fontSize: 16,
+                            fontWeight: '600',
+                            marginRight: 5,
+                          },
+                        ]}>
+                        {feed.createUser?.nickname}
                       </Text>
                       <HoldIcon
                         width={18}
                         height={18}
-                        color={YCLevelColorDict[feed.createUser.rank]}
+                        color={YCLevelColorDict[feed.createUser?.rank]}
                       />
                     </View>
                     <Text style={{...styles.feedTextStyle, fontSize: 12}}>
@@ -125,9 +182,24 @@ function DetailScreen({navigation, route}) {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
-                  <MenuIcon width={16} height={16} />
-                </TouchableOpacity>
+                {feed.createUser.nickname === currentUser.nickname ? (
+                  <TouchableOpacity
+                    onPress={() => {
+                      Alert.alert('게시글 삭제', '글을 삭제하시겠습니까?', [
+                        {text: '삭제', onPress: () => onDelete(feed.id)},
+                        {
+                          text: '취소',
+                          onPress: () => Alert.alert('', '취소되었습니다.'),
+                        },
+                      ]);
+                    }}>
+                    <Trash />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
+                    <MenuIcon width={16} height={16} />
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={styles.wallInfo}>
                 <Text style={{...styles.feedTextStyle, marginRight: 8}}>
@@ -146,22 +218,79 @@ function DetailScreen({navigation, route}) {
               </View>
             </View>
 
-            <View style={{width: videoLength, height: videoLength}}>
+            <View
+              style={{
+                width: Dimensions.get('window').width,
+                height: Dimensions.get('window').width,
+              }}>
               <TouchableOpacity
                 style={styles.videoBox}
                 activeOpacity={1}
-                onPress={changeMuted}>
+                onPress={changePlay}>
                 <Video
+                  ref={ref => {
+                    this.player = ref;
+                  }}
                   source={{uri: feed.mediaPath}}
                   style={styles.backgroundVideo}
                   fullscreen={false}
                   resizeMode={'contain'}
-                  repeat={true}
+                  repeat={false}
                   controls={false}
-                  paused={false}
+                  paused={!isView}
                   muted={isMuted}
+                  onseek={() => null}
+                  onBuffer={res => {
+                    setIsBuffer(res.isBuffering);
+                  }}
+                  onProgress={res => countView(res)}
+                  onEnd={changeFinished}
                 />
+                {/* 동영상 재생 버튼 */}
+                {!isView ? (
+                  <View
+                    style={{
+                      ...styles.videoBox,
+                      backgroundColor: 'rgba(0,0,0,0.6)',
+                    }}>
+                    {isFinished ? (
+                      <RefreshBtn color="white" width={70} height={120} />
+                    ) : (
+                      <PlayBtn color="white" width={70} height={120} />
+                    )}
+                  </View>
+                ) : null}
               </TouchableOpacity>
+              {/* 음소거 버튼 */}
+              {isView ? (
+                isMuted ? (
+                  <TouchableOpacity
+                    style={styles.muteIcon}
+                    activeOpacity={1}
+                    onPress={changeMuted}>
+                    <MuteBtn color="white" width={60} />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.muteIcon}
+                    activeOpacity={1}
+                    onPress={changeMuted}>
+                    <SoundBtn color="white" width={60} />
+                  </TouchableOpacity>
+                )
+              ) : null}
+              {/* 로딩중 */}
+              {isBuffer ? (
+                <View
+                  style={{
+                    ...styles.background,
+                    backgroundColor: 'rgba(0,0,0,0.6)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}>
+                  <ActivityIndicator size="large" color="white" />
+                </View>
+              ) : null}
               <View style={styles.solvedDate}>
                 <CameraIcon />
                 <Text
@@ -190,28 +319,26 @@ function DetailScreen({navigation, route}) {
                     {feed.like} 명이 좋아합니다.
                   </Text>
                 </View>
-                <TouchableOpacity onPress={onClickScrap}>
-                  {feed.isScrap ? (
-                    <FillScrap style={{marginRight: 5}} />
-                  ) : (
-                    <EmptyScrap style={{marginRight: 5}} />
-                  )}
-                </TouchableOpacity>
+                {feed.createUser.nickname === currentUser.nickname ? null : (
+                  <TouchableOpacity onPress={onClickScrap}>
+                    {feed.isScrap ? (
+                      <FillScrap style={{marginRight: 5}} />
+                    ) : (
+                      <EmptyScrap style={{marginRight: 5}} />
+                    )}
+                  </TouchableOpacity>
+                )}
               </View>
               <View style={styles.iconText}>
                 <EyeIcon style={{marginRight: 5}} />
                 <Text style={styles.feedTextStyle}>
-                  {feed.view} 명이 감상했습니다.
+                  {viewCounts} 명이 감상했습니다.
                 </Text>
               </View>
             </View>
 
             <View style={styles.contentSummary}>
-              <View
-                onLayout={onLayout}
-                style={{position: 'absolute', top: 0, opacity: 0}}>
-                <Text style={styles.contentPreview}>{feed.content}</Text>
-              </View>
+              <Text style={styles.contentPreview}>{feed.content}</Text>
             </View>
             {comments.length ? (
               comments?.map((comment, idx) => {
@@ -229,6 +356,8 @@ function DetailScreen({navigation, route}) {
           </>
         )}
       </ScrollView>
+
+      <CommentInput boardId={route.params.id} navigation={navigation} />
       {modalVisible ? (
         <TouchableOpacity
           style={{...styles.background}}
@@ -253,6 +382,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+    marginBottom: 50,
   },
   feedHeader: {
     margin: 8,
@@ -345,6 +475,16 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   text: {color: 'black', marginHorizontal: 10},
+  muteIcon: {
+    position: 'absolute',
+    bottom: 25,
+    right: 0,
+    width: 50,
+    height: 50,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default DetailScreen;

@@ -8,6 +8,7 @@ import SearchSlice from './slices/SearchSlice';
 
 import PostSlice from './slices/PostSlice';
 import CenterSlice from './slices/CenterSlice';
+import notificationSlice from './slices/notificationSlice';
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     search: SearchSlice,
     post: PostSlice,
     center: CenterSlice,
+    notification: notificationSlice
   },
 });
 

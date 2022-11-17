@@ -1,28 +1,54 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable no-undef */ // for Platform.OS
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import {
+  View,
+  SafeAreaView,
+  Dimensions,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  PermissionsAndroid,
+} from 'react-native';
 import Video from 'react-native-video';
 import {launchImageLibrary} from 'react-native-image-picker';
 import CustomSubHeader from '../../components/CustomSubHeader';
 
-import {
-  changeUploadVideo,
-  changeUploadVideoUri,
-} from '../../utils/slices/PostSlice';
+import {changeUploadVideo} from '../../utils/slices/PostSlice';
 
 import gallery from '../../assets/image/main/whiteGallery.png';
+import { AsyncAlert, checkPermission, requestSinglePermission } from '../../utils/permissions';
 
 function ChoiceVideoScreen({navigation}) {
   const dispatch = useDispatch();
+  const [permissionTrial, setPermissionTrial] = useState(1)
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
-  const uploadVideoUri = useSelector(state => state.post.uploadVideoUri);
+
+  useEffect(()=>{
+    checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((res)=>{
+      const granted = res
+      console.log(res)
+      if (!granted&&permissionTrial===1){
+        const message = {title:'권한 거부된 요청 (저장공간)', content:'서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.'}
+        requestSinglePermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,message).then(
+          setPermissionTrial(2)
+        ) 
+      } else if (!granted){
+          navigation.goBack()
+      } else if (granted === 'never'){
+        AsyncAlert(
+          '권한 요청 거부된 요청',
+          '서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.',
+          Linking.openSettings,
+        );
+      }
+    })
+  },[permissionTrial])
 
   useEffect(() => {
     dispatch(changeUploadVideo(null));
-    dispatch(changeUploadVideoUri(null));
   }, []);
 
   const onVideoGallery = () => {
@@ -31,56 +57,111 @@ function ChoiceVideoScreen({navigation}) {
         mediaType: 'video',
         maxWidth: 512,
         maxHeight: 512,
-        includeBase64: Platform.OS === 'android',
+        includeBase64: false,
+        videoQuality: 'low',
+        includeExtra: true,
       },
       res => {
         if (res.didCancel) {
           return;
         }
-        console.log(res.assets[0].uri);
-        let uri = 'file://' + res.assets[0].uri.substring(9);
-        dispatch(changeUploadVideo(res));
-        dispatch(changeUploadVideoUri(res.assets[0].uri));
+        if (res.assets[0].fileSize > 45000000) {
+          alert('파일 크기가 너무 큽니다. 다른 영상을 선택해주세요.');
+          return;
+        } else {
+          dispatch(changeUploadVideo(res));
+        }
       },
     );
   };
 
   return (
-    <View>
+    <SafeAreaView style={styles.container}>
       <CustomSubHeader
         title="영상 선택"
         rightTitle="다음"
         navigation={navigation}
         isVideo={true}
       />
-      {uploadVideo && uploadVideoUri ? (
-        <View style={styles.videoBox}>
-          <Video
-            source={{uri: uploadVideoUri}}
-            style={styles.backgroundVideo}
-            fullscreen={false}
-            resizeMode={'contain'}
-            repeat={false}
-            controls={false}
-            muted={true}
-            paused={false}
-          />
-        </View>
+      {uploadVideo ? (
+        <>
+          <TouchableOpacity
+            onPress={onVideoGallery}
+            style={styles.videoBox}
+            activeOpacity={1}>
+            <Video
+              source={{uri: uploadVideo.assets[0].uri}}
+              style={styles.backgroundVideo}
+              fullscreen={false}
+              resizeMode={'contain'}
+              repeat={false}
+              controls={false}
+              muted={true}
+              paused={false}
+            />
+          </TouchableOpacity>
+          <View style={styles.metaBox}>
+            <Text style={styles.metaHeader}>업로드한 동영상 정보</Text>
+            <View style={styles.metaInfoBox}>
+              <Text style={styles.btnText}>
+                Time :{' '}
+                {uploadVideo.assets[0].timestamp.substring(0, 3) === '202'
+                  ? uploadVideo.assets[0].timestamp.substring(0, 10)
+                  : '오래 전'}
+              </Text>
+              <Text style={styles.btnText}>
+                Type : {uploadVideo.assets[0].type}
+              </Text>
+              <Text style={styles.btnText}>
+                Duration : {uploadVideo.assets[0].duration} 초
+              </Text>
+              <Text style={styles.btnText}>
+                Size : {uploadVideo.assets[0].width} X{' '}
+                {uploadVideo.assets[0].height}
+              </Text>
+            </View>
+            <TouchableOpacity onPress={onVideoGallery} style={styles.cameraBtn}>
+              <Text style={styles.btnText}>다시 선택하기</Text>
+            </TouchableOpacity>
+          </View>
+        </>
       ) : (
-        <Text style={{color: 'black', fontSize: 50}}>업로드 해줘</Text>
+        <TouchableOpacity
+          onPress={onVideoGallery}
+          style={styles.blackBox}
+          activeOpacity={1}>
+          <Text style={styles.text}>업로드할 동영상을 선택해주세요</Text>
+          <View style={styles.flexBox}>
+            <Image source={gallery} />
+            <Text style={{...styles.btnText, marginLeft: 5, marginBottom: 2}}>
+              갤러리
+            </Text>
+          </View>
+        </TouchableOpacity>
       )}
-      <TouchableOpacity onPress={onVideoGallery} style={styles.cameraBtn}>
-        <Image source={gallery} />
-        <Text style={styles.btnText}>갤러리</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: 'white',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  blackBox: {
+    width: Dimensions.get('window').width,
+    height: '100%',
+    backgroundColor: 'black',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   videoBox: {
-    width: 300,
-    height: 300,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').width,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -100,14 +181,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
-    width: '40%',
     height: 40,
     backgroundColor: '#EF3F8F',
     margin: 5,
     marginVertical: 15,
+    paddingHorizontal: 30,
+  },
+  text: {
+    fontSize: 24,
+    color: 'white',
+    marginBottom: 2,
   },
   btnText: {
     color: 'white',
+  },
+  flexBox: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: 'white',
+  },
+  metaBox: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: 'black',
+  },
+  metaHeader: {
+    color: 'white',
+    fontSize: 18,
+    marginVertical: 30,
+  },
+  metaInfoBox: {
+    marginBottom: 30,
   },
 });
 
