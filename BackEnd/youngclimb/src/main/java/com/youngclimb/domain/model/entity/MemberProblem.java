@@ -168,23 +168,23 @@ public class MemberProblem {
     public Integer findSolvedProblem(String rank) {
         switch (rank) {
             case "VB":
-                return this.vB;
+                return this.vB + this.v0 + this.v1 + this.v2 + this.v3 + this.v4 + this.v5 + this.v6 + this.v7 + this.v8;
             case "V0":
-                return this.v0;
+                return this.v0 + this.v1 + this.v2 + this.v3 + this.v4 + this.v5 + this.v6 + this.v7 + this.v8;
             case "V1":
-                return this.v1;
+                return this.v1 + this.v2 + this.v3 + this.v4 + this.v5 + this.v6 + this.v7 + this.v8;
             case "V2":
-                return this.v2;
+                return this.v2 + this.v3 + this.v4 + this.v5 + this.v6 + this.v7 + this.v8;
             case "V3":
-                return this.v3;
+                return this.v3 + this.v4 + this.v5 + this.v6 + this.v7 + this.v8;
             case "V4":
-                return this.v4;
+                return this.v4 + this.v5 + this.v6 + this.v7 + this.v8;
             case "V5":
-                return this.v5;
+                return this.v5 + this.v6 + this.v7 + this.v8;
             case "V6":
-                return this.v6;
+                return this.v6 + this.v7 + this.v8;
             case "V7":
-                return this.v7;
+                return this.v7 + this.v8;
             case "V8":
                 return this.v8;
             default:
