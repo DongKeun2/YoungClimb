@@ -241,12 +241,20 @@ public class BoardServiceImpl implements BoardService {
         List<Rank> ranks = rankRepository.findAll();
         ranks.sort((o1, o2) -> (int) (o1.getQual() - o2.getQual()));
 
-        for (Rank tmp : ranks) {
-            if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
-                memberExp.setRank(tmp);
+        for(int i = 0; i<ranks.size()-1; i++) {
+            if ((memberProblem.findSolvedProblem(ranks.get(i).getProblem()) >= 3) && (ranks.get(i).getQual() <= memberExp.getMemberExp())) {
+                memberExp.setRank(ranks.get(i+1));
                 break;
             }
         }
+
+
+//        for (Rank tmp : ranks) {
+//            if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
+//                memberExp.setRank(tmp);
+//                break;
+//            }
+//        }
         memberRankExpRepository.save(memberExp);
     }
 
