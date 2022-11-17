@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
   mainFont:{
     fontSize:14,
     fontWeight:'600',
-    marginLeft: 20
+    marginLeft: 20,
+    color:'#000'
   }
 })

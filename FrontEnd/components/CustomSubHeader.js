@@ -1,10 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
-import React from 'react';
-import {useSelector} from 'react-redux';
+import React, {useRef, useCallback, useEffect} from 'react';
 import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
 import BackIcon from '../assets/image/header/backIcon.svg';
 import NextIcon from '../assets/image/header/nextIcon.svg';
 import CloseIcon from '../assets/image/header/closeIcon.svg';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ToastNotice } from './ToastNotice';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { changeNewNoti } from '../utils/slices/notificationSlice';
+import messaging from '@react-native-firebase/messaging';
+
 
 function CustomSubHeader({
   title, // 상단 헤더 제목 (헤더의 왼쪽에 위치)
@@ -16,9 +23,27 @@ function CustomSubHeader({
   request, // 프로필 관련 서브 헤더에서 요청하는 api 함수 입력
 }) {
   const uploadVideo = useSelector(state => state.post.uploadVideo);
+  const dispatch=useDispatch()
+  const toastNoticesubRef = useRef(null);
+  const onMsgIncome = useCallback(async remoteMessage => {
+    await toastNoticesubRef.current.show(remoteMessage.notification.body);
+  });
+
+  useEffect(()=>{
+    messaging().onMessage(async remoteMessage => {
+      try{
+        onMsgIncome(remoteMessage)
+        await AsyncStorage.setItem('newNoti','true')
+        dispatch(changeNewNoti(true))
+        return remoteMessage
+      }catch{err=>console.log(err)}
+    })
+
+  },[toastNoticesubRef])
 
   return isVideo ? (
     <View style={styles.headerbox}>
+      <ToastNotice ref={toastNoticesubRef} />
       <TouchableOpacity
         style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
@@ -45,6 +70,7 @@ function CustomSubHeader({
     </View>
   ) : isProfile ? (
     <View style={styles.headerbox}>
+      <ToastNotice ref={toastNoticesubRef} />
       <TouchableOpacity
         style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
@@ -60,7 +86,7 @@ function CustomSubHeader({
           onPress={() => {
             request ? request() : null;
           }}>
-          <Text style={{...styles.textStyle, color: '#F34D7F', marginRight: 5}}>
+          <Text style={{...styles.textStyle, color: '#F34D7F', marginRight: 20}}>
             {rightTitle}
           </Text>
         </TouchableOpacity>
@@ -68,6 +94,7 @@ function CustomSubHeader({
     </View>
   ) : (
     <View style={styles.header}>
+      <ToastNotice ref={toastNoticesubRef} />
       <TouchableOpacity
         style={styles.container}
         onPress={() => (navigation ? navigation.goBack() : null)}>
@@ -96,8 +123,10 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     backgroundColor: 'white',
+    position:'relative'
   },
   header: {
+    position:'relative',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',

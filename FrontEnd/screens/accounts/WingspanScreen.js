@@ -1,6 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import {StyleSheet, View, Text, Image} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 
 import logo from '../../assets/image/main/wingspan.png';
 import CustomButton from '../../components/CustomBtn';
@@ -14,6 +21,8 @@ import {
 
 function WingSpanScreen({navigation, route}) {
   const dispatch = useDispatch();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const imageUri = useSelector(
     state => state.accounts.uploadImg?.assets[0].uri,
@@ -29,10 +38,9 @@ function WingSpanScreen({navigation, route}) {
   }
 
   function onSubmitWingspan() {
-    console.log('버튼 눌림');
+    setIsLoading(true);
     const match = /\.(\w+)$/.exec(imageName ?? '');
     const type = match ? `image/${match[1]}` : 'image';
-    console.log('이미지', imageUri);
     const formdata = new FormData();
     formdata.append('image', {
       uri: imageUri,
@@ -43,36 +51,28 @@ function WingSpanScreen({navigation, route}) {
       height,
     };
     formdata.append('data', JSON.stringify(data));
-    // formdata.append('height', `${height}`);
-    // formdata.append('enctype', 'multipart/form-data');
-    // const data = {
-    //   image: formdata,
-    //   height,
-    // };
-    // console.log(data);
-    // console.log(formdata._parts[0][1]);
-    // console.log(formdata);
+
     dispatch(wingspan(formdata)).then(res => {
       if (res.type === 'wingspan/rejected') {
-        console.log('윙스팬 측정 실패함 ㅠㅠ');
+        setIsLoading(false);
+        Alert.alert('측정 실패', '올바른 사진을 업로드해주세요.');
       } else {
-        console.log('측정 결과', res.payload.wingspan);
         if (route.params.type === 'signup') {
-          console.log('회원가입에서 보냄');
           dispatch(
             changeSignupForm({
               name: 'wingspan',
-              value: String(res.payload.wingspan),
+              value: String(res.payload.wingspan.toFixed(0)),
             }),
           );
         } else if (route.params.type === 'edit') {
           dispatch(
             changeEditForm({
               name: 'wingspan',
-              value: String(res.payload.wingspan),
+              value: String(res.payload.wingspan.toFixed(0)),
             }),
           );
         }
+        setIsLoading(false);
         onBeforePage();
       }
     });
@@ -106,6 +106,11 @@ function WingSpanScreen({navigation, route}) {
           onPress={onSubmitWingspan}
         />
       </View>
+      {isLoading ? (
+        <View style={styles.loadingBackGround}>
+          <ActivityIndicator size="large" color="white" />
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -113,7 +118,6 @@ function WingSpanScreen({navigation, route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
@@ -152,6 +156,15 @@ const styles = StyleSheet.create({
     width: '80%',
     justifyContent: 'space-between',
     marginVertical: 20,
+  },
+  loadingBackGround: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.8)',
   },
 });
 

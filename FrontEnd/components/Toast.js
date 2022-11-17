@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
         transform:[{translateX:-170}]
     },
     message: {
-        color: "rgb(255, 255, 255)"
+        color: "rgb(255, 255, 255)",
+        textAlign:'center'
     }
 });

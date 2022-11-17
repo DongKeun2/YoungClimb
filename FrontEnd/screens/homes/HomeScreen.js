@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState, useRef, useCallback, useEffect} from 'react';
 import {useFocusEffect, useRoute} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
@@ -8,6 +9,7 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import CustomMainHeader from '../../components/CustomMainHeader';
 import HomeFeed from '../../components/HomeFeed';
@@ -15,7 +17,7 @@ import HomeFeed from '../../components/HomeFeed';
 import {Toast} from '../../components/Toast';
 import DeclareSheet from '../../components/DeclareSheet';
 
-import {fetchHomeFeed} from '../../utils/slices/PostSlice';
+import {fetchHomeFeed, fetchHomeFeedAdd} from '../../utils/slices/PostSlice';
 
 function HomeScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -24,7 +26,74 @@ function HomeScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const boards = useSelector(state => state.post.boards);
+  const [page, setPage] = useState(0);
+  const [pageAdd, setPageAdd] = useState(0);
+  const [boardNum, setBoardNum] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isNext = useSelector(state => state.post.isNext);
+  const isFinish = useSelector(state => state.post.isFinish);
+
+  const fetchFeeds = () => {
+    if (boardNum > 3 || !isFinish) {
+      setBoardNum(0);
+      setIsLoading(false);
+      return;
+    }
+    if (!isLoading && isFinish) {
+      if (isNext) {
+        // 게시물 요청
+        setIsLoading(true);
+        dispatch(fetchHomeFeed(page)).then(res => {
+          if (res.type === 'fetchHomeFeed/fulfilled') {
+            setPage(page + 1);
+            if (boardNum + res.payload.boardDtos.length > 3) {
+              setBoardNum(0);
+              setIsLoading(false);
+              return;
+            } else {
+              setBoardNum(boardNum + res.payload.boardDtos.length);
+              if (res.payload.nextPage) {
+                return fetchFeeds();
+              } else {
+                setBoardNum(0);
+                setIsLoading(false);
+                return;
+              }
+            }
+          } else {
+            return;
+          }
+        });
+      } else {
+        // 추가게시물 요청
+        setIsLoading(true);
+        dispatch(fetchHomeFeedAdd(pageAdd)).then(res => {
+          if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+            setPageAdd(pageAdd + 1);
+            if (boardNum + res.payload.boardDtos.length > 3) {
+              setBoardNum(0);
+              setIsLoading(false);
+              return;
+            } else {
+              setBoardNum(boardNum + res.payload.boardDtos.length);
+              if (res.payload.nextPage) {
+                return fetchFeeds();
+              } else {
+                setBoardNum(0);
+                setIsLoading(false);
+                return;
+              }
+            }
+          } else {
+            return;
+          }
+        });
+      }
+    }
+  };
+
+  const boards = useSelector(state => state.post.boardArray);
 
   const onViewRef = useRef(({viewableItems}) => {
     if (viewableItems && viewableItems[0]) {
@@ -65,7 +134,7 @@ function HomeScreen({navigation, route}) {
   };
 
   useEffect(() => {
-    dispatch(fetchHomeFeed(1));
+    fetchFeeds();
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');
@@ -93,7 +162,10 @@ function HomeScreen({navigation, route}) {
         viewabilityConfig={viewConfigRef.current}
         onViewableItemsChanged={onViewRef.current}
         keyExtractor={(item, index) => `${index}`}
-        initialNumToRender={3}
+        initialNumToRender={4}
+        maxToRenderPerBatch={4}
+        windowSize={7}
+        removeClippedSubviews={true}
         renderItem={({item, index}) => (
           <HomeFeed
             feed={item}
@@ -104,6 +176,20 @@ function HomeScreen({navigation, route}) {
             setFocusedContent={setFocusedContent}
           />
         )}
+        onEndReached={isFinish ? fetchFeeds : null}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={
+          isLoading ? (
+            <View
+              style={{
+                width: '100%',
+                paddingVertical: 15,
+                backgroundColor: 'white',
+              }}>
+              <ActivityIndicator size="large" color="#F34D7F" />
+            </View>
+          ) : null
+        }
       />
       <Toast ref={toastRef} />
       {modalVisible ? (

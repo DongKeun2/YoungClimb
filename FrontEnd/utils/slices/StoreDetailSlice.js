@@ -1,13 +1,13 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../api';
-import getConfig from '../headers';
 
 const storeDetail = createAsyncThunk(
   'storeDetail',
   async (id, {rejectWithValue}) => {
     try {
-      const res = await axios.get(api.center(id),getConfig());
+      const res = await axios.get(api.center(id), {});
+      console.log(res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -16,28 +16,34 @@ const storeDetail = createAsyncThunk(
 );
 
 const initialState = {
-  detailInfo: [{
-		name: '',
-		phoneNumber:'',
-	address: '',
-	centerNumber: 0,
-	imageURL:'',
-	centerLevelList:[],
-	event: [{
-		date: '', 
-		content: '' 
-}],
-	centerTimeList: [],
-	centerPriceList: [{
-		name: '', 
-		price: ''
-}],
-	latitude:0,
-	longitude:0,
-	}],
+  detailInfo: [
+    {
+      name: '',
+      phoneNumber: '',
+      address: '',
+      centerNumber: 0,
+      imageURL: '',
+      centerLevelList: [],
+      event: [
+        {
+          date: '',
+          content: '',
+        },
+      ],
+      centerTimeList: [],
+      centerPriceList: [
+        {
+          name: '',
+          price: '',
+        },
+      ],
+      latitude: 0,
+      longitude: 0,
+    },
+  ],
   isTimeToggleOpen: false,
   isPriceToggleOpen: false,
-}
+};
 
 export const StoreDetailSlice = createSlice({
   name: 'storeDetail',
@@ -58,6 +64,6 @@ export const StoreDetailSlice = createSlice({
 });
 
 export {storeDetail};
-export const {setIsTimeToggleOpen, setIsPriceToggleOpen} = StoreDetailSlice.actions;
+export const {setIsTimeToggleOpen, setIsPriceToggleOpen} =
+  StoreDetailSlice.actions;
 export default StoreDetailSlice.reducer;
-

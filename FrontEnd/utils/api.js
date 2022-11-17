@@ -19,18 +19,29 @@ const CENTERS_URL = '/center';
 const SEARCH_URL = '/search';
 const EDIT_URL = '/edit';
 const SAVE_URL = '/save';
+const DELETE_URL = '/delete';
 
 const BOARD_URL = '/board';
 const HOME_URL = '/home';
+const ADD_URL = '/add';
 const LIKE_URL = '/like';
 const SCRAP_URL = '/scrap';
+const COMMENT_URL = '/comment';
+const VIEW_URL = '/view';
 
 const REELS_URL = '/reels';
 
 const REPORT_URL = '/report';
 const IMAGE_URL = '/image';
 
+const REISSUE_URL = '/reIssue';
+
+const FCMTOKEN_URL = '/fcmtoken';
+const NOTICE_URL = '/notice';
+
 const api = {
+  refresh: () => API_BASE_URL + USER_URL + REISSUE_URL,
+
   fetchCenter: () => API_BASE_URL + CENTERS_URL,
 
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
@@ -46,6 +57,8 @@ const api = {
 
   follow: nickname => API_BASE_URL + USER_URL + `/${nickname}` + FOLLOW_URL,
 
+  deleteBoard: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + DELETE_URL,
+
   wingspan: () => WINGSPAN_URL,
 
   centers: () => API_BASE_URL + CENTERS_URL,
@@ -56,14 +69,29 @@ const api = {
 
   homeFeed: pageNumber =>
     API_BASE_URL + BOARD_URL + HOME_URL + `?page=${pageNumber}`,
+  homeFeedAdd: pageNumber =>
+    API_BASE_URL + BOARD_URL + HOME_URL + ADD_URL + `?page=${pageNumber}`,
   feedComment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}`,
+  videoToUrl: () => API_BASE_URL + BOARD_URL + SAVE_URL + IMAGE_URL,
   postAdd: () => API_BASE_URL + BOARD_URL,
   feedLike: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + LIKE_URL,
   feedScrap: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + SCRAP_URL,
+  viewCount: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + VIEW_URL,
+
+  comment: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL,
+  commentLike: commentId =>
+    API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
+  recomment: (boardId, commentId) =>
+    API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL + `/${commentId}`,
 
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
   report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
+
+  fcmtokensave: () => API_BASE_URL + FCMTOKEN_URL + '/save',
+  fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + '/delete',
+
+  noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL,
 };
 
 export default api;
