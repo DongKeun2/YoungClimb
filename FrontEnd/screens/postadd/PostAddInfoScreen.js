@@ -99,7 +99,8 @@ function PostAddInfoScreen({navigation}) {
             holdColor: holdColor,
             solvedDate: solvedDate,
             content: content,
-            mediaPath: res.payload,
+            mediaPath: res.payload.mediaPath,
+            thumbnatilPath: res.payload.thumbnatilPath,
           };
           console.log(data);
           dispatch(postAdd(data)).then(res => {
