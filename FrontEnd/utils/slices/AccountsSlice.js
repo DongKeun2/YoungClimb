@@ -183,57 +183,59 @@ const wingspan = createAsyncThunk(
   },
 );
 
+const signupForm = {
+  email: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  nickname: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  password: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  confirmPwd: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  gender: {
+    value: 'M',
+    type: 'radio',
+  },
+  height: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  shoeSize: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  wingspan: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+};
+
 const initialState = {
   loginState: false,
   currentUser: {},
-  signupForm: {
-    email: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    nickname: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    password: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    confirmPwd: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    gender: {
-      value: 'M',
-      type: 'radio',
-    },
-    height: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    shoeSize: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    wingspan: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-  },
+  signupForm: signupForm,
   editForm: {
     nickname: {
       value: '',
@@ -330,6 +332,7 @@ export const AccountsSlice = createSlice({
       state.loginState = false;
     },
     [signup.fulfilled]: (state, action) => {
+      state.signupForm = signupForm;
       state.currentUser = action.payload.user;
     },
     [checkEmail.fulfilled]: (state, action) => {
