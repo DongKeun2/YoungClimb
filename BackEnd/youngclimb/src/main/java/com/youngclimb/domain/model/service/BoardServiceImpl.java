@@ -174,59 +174,10 @@ public class BoardServiceImpl implements BoardService {
 
     // 동영상 저장
     @Override
-    public String saveImage(MultipartFile file) {
+    public BoardMediaDto saveImage(MultipartFile file) throws InterruptedException {
         if (file != null) {
             String fileName = createFileName(file.getOriginalFilename());
-//            ObjectMetadata objectMetadata = new ObjectMetadata();
-//            objectMetadata.setContentLength(file.getSize());
-//            objectMetadata.setContentType(file.getContentType());
             try (InputStream inputStream = file.getInputStream()) {
-
-                try {
-                    System.out.println("파일 변환");
-                File newFile = new File(file.getOriginalFilename());
-                newFile.createNewFile();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                fos.write(file.getBytes());
-                fos.close();
-
-//                    File tempFile = File.createTempFile(String.valueOf(file.getInputStream().hashCode()), ".mp4");
-//                    tempFile.deleteOnExit();
-//                    Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-//                file.transferTo(newFile);
-
-
-                    System.out.println("썸네일 생성");
-                    FrameGrab grab = FrameGrab.createFrameGrab(NIOUtils.readableChannel(newFile));
-
-                    if(newFile.exists()) {
-                        if(newFile.delete()) System.out.println("삭제되었습니다");
-                        else System.out.println("삭제 실패");
-                    }
-
-                    int start = 0;
-                    grab.seekToSecondPrecise(start);
-                    Picture picture = grab.getNativeFrame();
-//
-//                    //for JDK (jcodec-javase)
-                    BufferedImage bufferedImage = AWTUtil.toBufferedImage(picture);
-                    ByteArrayOutputStream os = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage, "png", os);
-                    InputStream is = new ByteArrayInputStream(os.toByteArray());
-                    System.out.println("썸네일 생성완료");
-
-                    ObjectMetadata objectMetadata = new ObjectMetadata();
-                    objectMetadata.setContentLength(is.available());
-                    objectMetadata.setContentType("image/png");
-
-                    System.out.println("아마존 ec2에 등록");
-                    amazonS3.putObject(new PutObjectRequest(bucket + "/boardThumb", fileName, is, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
-
-                } catch (Exception e) {
-                    System.out.println("썸네일 생성을 실패했습니다.");
-                    e.printStackTrace();
-                }
                 ObjectMetadata objectMetadata = new ObjectMetadata();
                 objectMetadata.setContentLength(file.getSize());
                 objectMetadata.setContentType(file.getContentType());
@@ -236,7 +187,12 @@ public class BoardServiceImpl implements BoardService {
                 e.printStackTrace();
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
-            return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
+            BoardMediaDto boardMediaDto = new BoardMediaDto();
+            boardMediaDto.setMediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString());
+            Thread.sleep(5200);
+            boardMediaDto.setThumbnatilPath(amazonS3.getUrl(bucket + "/boardThumb", fileName).toString());
+
+            return boardMediaDto;
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
         }
@@ -244,7 +200,8 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private String createFileName(String fileName) {
-        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+//        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+        return UUID.randomUUID().toString().concat(fileName);
     }
 
     private String getFileExtension(String fileName) {
@@ -280,6 +237,7 @@ public class BoardServiceImpl implements BoardService {
         BoardMedia boardMedia = BoardMedia.builder()
                 .board(board)
                 .mediaPath(boardCreate.getMediaPath())
+                .thumbnailPath(boardCreate.getThumbnailPath())
                 .build();
         boardMediaRepository.save(boardMedia);
 
@@ -309,13 +267,6 @@ public class BoardServiceImpl implements BoardService {
             }
         }
 
-
-//        for (Rank tmp : ranks) {
-//            if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
-//                memberExp.setRank(tmp);
-//                break;
-//            }
-//        }
         memberRankExpRepository.save(memberExp);
     }
 

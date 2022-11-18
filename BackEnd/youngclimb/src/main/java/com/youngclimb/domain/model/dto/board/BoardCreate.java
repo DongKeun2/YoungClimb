@@ -13,6 +13,7 @@ public class BoardCreate {
     Integer centerId;
     Integer centerLevelId;
     String mediaPath;
+    String thumbnailPath;
     Integer wallId;
     String level;
     String holdColor;

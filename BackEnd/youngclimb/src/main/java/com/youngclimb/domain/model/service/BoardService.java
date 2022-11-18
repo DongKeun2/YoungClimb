@@ -5,8 +5,6 @@ import com.youngclimb.domain.model.dto.member.MemberDto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
-// userid 혹은 email을 받는 친구들은 모두 @currentUser로 바꿀 예정
-// 일단 login 될 때까지만 임시로 사용
 public interface BoardService {
     // 전체 게시글 조회
     public MainPageDto readRecentBoard(String userId, Pageable pageable);
@@ -18,7 +16,7 @@ public interface BoardService {
     public Long updateView(Long boardId);
 
     // 이미지 저장
-    public String saveImage(MultipartFile file);
+    public BoardMediaDto saveImage(MultipartFile file) throws InterruptedException;
 
     // 게시물 작성
     public void writeBoard(String email, BoardCreate boardCreate);
