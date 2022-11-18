@@ -223,7 +223,7 @@ function PostAddInfoScreen({navigation}) {
                         : '해당 지점 선택 불가'
                       : '지점을 먼저 선택해주세요'
                   }
-                  value=""
+                  value={0}
                 />
                 {center
                   ? centerInfo[center - 1]?.wallList.map((item, idx) => (
