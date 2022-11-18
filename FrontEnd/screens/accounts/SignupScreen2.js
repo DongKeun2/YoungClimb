@@ -150,7 +150,7 @@ function SecondPage({navigation}) {
         </View>
       </View>
       <TouchableOpacity onPress={goBeforePage} style={styles.before}>
-        <BackIcon style={{marginLeft: 5, marginRight: 5}} />
+        <BackIcon style={{marginRight: 5}} />
         <Text style={styles.beforeText}>이전</Text>
       </TouchableOpacity>
     </View>
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    width: '80%',
+    marginTop: 30,
+    width: '85%',
     // marginTop: 20,
     // color: 'black',
   },

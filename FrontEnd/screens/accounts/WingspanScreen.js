@@ -100,7 +100,7 @@ function WingSpanScreen({navigation, route}) {
           onPress={onBeforePage}
         />
         <CustomButton
-          buttonColor="#F34D7F"
+          buttonColor="#EF3F8F"
           title="확인"
           width="40%"
           onPress={onSubmitWingspan}
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     width: 350,
-    height: 350,
+    height: 400,
     borderColor: 'black',
     borderRadius: 10,
   },
@@ -145,17 +145,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     color: 'black',
+    fontSize: 18,
+    fontWeight: '700',
   },
   content: {
     textAlign: 'center',
     color: 'black',
+    marginBottom: 10,
   },
   btnGroup: {
     display: 'flex',
     flexDirection: 'row',
     width: '80%',
     justifyContent: 'space-between',
-    marginVertical: 20,
+    marginTop: 50,
   },
   loadingBackGround: {
     position: 'absolute',

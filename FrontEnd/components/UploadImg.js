@@ -112,6 +112,7 @@ const styles = StyleSheet.create({
   btnGroup: {
     display: 'flex',
     flexDirection: 'row',
+    marginTop: 10,
   },
   cameraBtn: {
     display: 'flex',

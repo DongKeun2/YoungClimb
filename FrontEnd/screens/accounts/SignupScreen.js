@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {
   StyleSheet,
@@ -24,6 +25,7 @@ import logo from '../../assets/image/main/signup.png';
 import checkIcon from '../../assets/image/main/done.png';
 import Checked from '../../assets/image/main/checked.svg';
 import UnChecked from '../../assets/image/main/unchecked.svg';
+import BackIcon from '../../assets/image/header/backIcon.svg';
 import NextIcon from '../../assets/image/header/nextIcon.svg';
 
 const windowHeight = Dimensions.get('window').height;
@@ -218,13 +220,15 @@ function SignupScreen({navigation}) {
           </TouchableOpacity>
         )}
         <TouchableOpacity onPress={() => navigation.navigate('약관')}>
-          <Text style={styles.link}>&nbsp; 약관</Text>
+          <Text style={styles.text}>&nbsp; 약관 동의</Text>
         </TouchableOpacity>
-        <Text style={styles.text}>&nbsp; 동의</Text>
       </View>
       <View style={styles.linkGroup}>
-        <TouchableOpacity onPress={() => navigation.navigate('로그인')}>
-          <Text style={styles.link}>로그인</Text>
+        <TouchableOpacity
+          style={styles.next}
+          onPress={() => navigation.goBack()}>
+          <BackIcon style={{marginLeft: 5, marginRight: 5}} />
+          <Text style={styles.nextText}>이전</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.next} onPress={goNextPage}>
           <Text style={styles.nextText}>다음</Text>
@@ -309,7 +313,9 @@ const styles = StyleSheet.create({
   termsGroup: {
     display: 'flex',
     flexDirection: 'row',
-    margin: 10,
+    marginHorizontal: 10,
+    marginTop: 25,
+    marginBottom: 5,
   },
   checkBoxBorder: {
     borderWidth: 1,
@@ -324,9 +330,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '80%',
-  },
-  link: {
-    color: '#F34D7F',
+    marginTop: 80,
   },
   next: {
     display: 'flex',

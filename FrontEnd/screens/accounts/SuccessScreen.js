@@ -119,15 +119,24 @@ function SuccessScreen({navigation}) {
             />
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={SelectProfile}>
-          <Text style={styles.link}>프로필 사진 선택</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => {
-            setImageUri(undefined);
-          }}>
-          <Text style={styles.link}>프로필 사진 제거</Text>
-        </TouchableOpacity>
+        {imageUri ? (
+          <>
+            <TouchableOpacity style={{marginTop: 15, marginBottom: 3}} onPress={SelectProfile}>
+              <Text style={styles.link}>프로필 다시 선택</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setImageUri(undefined);
+              }}>
+              <Text style={styles.link}>프로필 사진 제거</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity style={{marginTop: 10}} onPress={SelectProfile}>
+            <Text style={styles.link}>프로필 사진 선택</Text>
+          </TouchableOpacity>
+        )}
+
         <TextInput
           style={styles.input}
           placeholder="소개를 작성해주세요 :)"
@@ -173,8 +182,9 @@ const styles = StyleSheet.create({
     height: '10%',
   },
   title: {
-    fontSize: 20,
+    fontSize: 22,
     color: '#F34D7F',
+    fontWeight: '700',
   },
   InputBox: {
     width: '100%',
@@ -188,7 +198,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ADADAD',
     fontSize: 17,
-    padding: 7,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
     marginVertical: '10%',
     borderRadius: 5,
     height: 74,
@@ -210,6 +221,7 @@ const styles = StyleSheet.create({
   },
   link: {
     color: '#F34D7F',
+    fontWeight: '600',
   },
 });
 
