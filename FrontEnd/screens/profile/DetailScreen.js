@@ -337,9 +337,11 @@ function DetailScreen({navigation, route}) {
               </View>
             </View>
 
-            <View style={styles.contentSummary}>
+            {feed.content ? (
               <Text style={styles.contentPreview}>{feed.content}</Text>
-            </View>
+            ) : (
+              <View style={{height: 0}} />
+            )}
             {comments.length ? (
               comments?.map((comment, idx) => {
                 return (
