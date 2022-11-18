@@ -726,11 +726,11 @@ public class MemberServiceImpl implements MemberService {
             objectMetadata.setContentLength(file.getSize());
             objectMetadata.setContentType(file.getContentType());
             try (InputStream inputStream = file.getInputStream()) {
-                amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+                amazonS3.putObject(new PutObjectRequest(bucket + "/userProfile", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
             } catch (IOException e) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
-            return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
+            return amazonS3.getUrl(bucket + "/userProfile", fileName).toString();
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
         }
