@@ -20,6 +20,17 @@ public class FirebaseServiceImpl implements FirebaseService {
 
     private final MemberRepository memberRepository;
 
+    // Token 여부
+    public Boolean isToken(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+
+        System.out.println(member.getFcmToken());
+
+        Boolean isToken = (member.getFcmToken()!=null);
+
+        return  isToken;
+    }
+
 
     // Token 저장
     public void saveFcmToken(String email, String token) {
