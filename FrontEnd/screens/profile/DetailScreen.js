@@ -351,7 +351,15 @@ function DetailScreen({navigation, route}) {
                 );
               })
             ) : (
-              <Text style={styles.text}>댓글이 없습니다.</Text>
+              <Text
+                style={{
+                  ...styles.text,
+                  marginTop: 5,
+                  color: '#777777',
+                  fontSize: 13,
+                }}>
+                댓글이 없습니다.
+              </Text>
             )}
           </>
         )}

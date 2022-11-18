@@ -193,16 +193,37 @@ function PostAddInfoScreen({navigation}) {
             <Text style={styles.text}>구역</Text>
             <View style={styles.pickerItem}>
               <Picker
-                mode="dropdown"
-                dropdownIconColor={center ? 'black' : '#a7a7a7'}
+                dropdownIconColor={
+                  center
+                    ? centerInfo[center - 1]?.wallList.length
+                      ? 'black'
+                      : '#a7a7a7'
+                    : '#a7a7a7'
+                }
                 selectedValue={wall}
-                enabled={center ? true : false}
-                style={wall ? styles.picker : styles.nonePick}
-                onValueChange={(value, idx) => setWall(value)}>
+                enabled={
+                  center && centerInfo[center - 1]?.wallList.length
+                    ? true
+                    : false
+                }
+                style={
+                  wall && centerInfo[center - 1]?.wallList.length
+                    ? styles.picker
+                    : styles.nonePick
+                }
+                onValueChange={(value, idx) => {
+                  setWall(value);
+                }}>
                 <Picker.Item
                   style={styles.pickerPlaceHold}
-                  label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
-                  value=""
+                  label={
+                    center
+                      ? centerInfo[center - 1]?.wallList.length
+                        ? '선택 없음'
+                        : '해당 지점 선택 불가'
+                      : '지점을 먼저 선택해주세요'
+                  }
+                  value={0}
                 />
                 {center
                   ? centerInfo[center - 1]?.wallList.map((item, idx) => (
@@ -224,7 +245,6 @@ function PostAddInfoScreen({navigation}) {
             </Text>
             <View style={styles.pickerItem}>
               <Picker
-                mode="dropdown"
                 dropdownIconColor={center ? 'black' : '#a7a7a7'}
                 selectedValue={level}
                 enabled={center ? true : false}
@@ -241,7 +261,7 @@ function PostAddInfoScreen({navigation}) {
                       <Picker.Item
                         key={idx}
                         style={styles.pickerLabel}
-                        label={item.color}
+                        label={`${item.color} (${item.levelRank})`}
                         value={item.id}
                       />
                     ))
@@ -256,7 +276,6 @@ function PostAddInfoScreen({navigation}) {
             </Text>
             <View style={styles.pickerItem}>
               <Picker
-                mode="dropdown"
                 dropdownIconColor={center ? 'black' : '#a7a7a7'}
                 selectedValue={holdColor}
                 enabled={center ? true : false}
