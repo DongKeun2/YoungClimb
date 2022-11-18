@@ -35,7 +35,7 @@ public class BoardMedia {
         return BoardMediaDto.builder()
                 .mediaId(id)
                 .mediaPath(mediaPath)
-                .thumbnatilPath(thumbnailPath)
+                .thumbnailPath(thumbnailPath)
                 .build();
     }
 
