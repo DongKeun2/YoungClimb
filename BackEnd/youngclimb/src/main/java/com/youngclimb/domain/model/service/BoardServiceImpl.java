@@ -13,6 +13,10 @@ import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import com.youngclimb.domain.model.util.BoardDtoCreator;
 import lombok.RequiredArgsConstructor;
+import org.jcodec.api.FrameGrab;
+import org.jcodec.common.io.NIOUtils;
+import org.jcodec.common.model.Picture;
+import org.jcodec.scale.AWTUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -23,10 +27,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.io.InputStream;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -167,25 +174,34 @@ public class BoardServiceImpl implements BoardService {
 
     // 동영상 저장
     @Override
-    public String saveImage(MultipartFile file) {
+    public BoardMediaDto saveImage(MultipartFile file) throws InterruptedException {
         if (file != null) {
             String fileName = createFileName(file.getOriginalFilename());
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(file.getSize());
-            objectMetadata.setContentType(file.getContentType());
             try (InputStream inputStream = file.getInputStream()) {
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(file.getSize());
+                objectMetadata.setContentType(file.getContentType());
                 amazonS3.putObject(new PutObjectRequest(bucket + "/boardImg", fileName, inputStream, objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead));
+
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
-            return amazonS3.getUrl(bucket + "/boardImg", fileName).toString();
+            BoardMediaDto boardMediaDto = new BoardMediaDto();
+            boardMediaDto.setMediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString());
+            Thread.sleep(5200);
+            boardMediaDto.setThumbnatilPath(amazonS3.getUrl(bucket + "/boardThumb", fileName).toString());
+
+            return boardMediaDto;
         } else {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일이 없습니다.");
         }
 
     }
+
     private String createFileName(String fileName) {
-        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+//        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+        return UUID.randomUUID().toString().concat(fileName);
     }
 
     private String getFileExtension(String fileName) {
@@ -221,6 +237,7 @@ public class BoardServiceImpl implements BoardService {
         BoardMedia boardMedia = BoardMedia.builder()
                 .board(board)
                 .mediaPath(boardCreate.getMediaPath())
+                .thumbnailPath(boardCreate.getThumbnailPath())
                 .build();
         boardMediaRepository.save(boardMedia);
 
@@ -250,13 +267,6 @@ public class BoardServiceImpl implements BoardService {
             }
         }
 
-
-//        for (Rank tmp : ranks) {
-//            if ((memberProblem.findSolvedProblem(tmp.getProblem()) >= 3) && (tmp.getQual() <= memberExp.getMemberExp())) {
-//                memberExp.setRank(tmp);
-//                break;
-//            }
-//        }
         memberRankExpRepository.save(memberExp);
     }
 
@@ -266,7 +276,7 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByEmail(email).orElseThrow();
         Board board = boardRepository.findById(boardId).orElseThrow();
 
-        if(board.getMember().equals(member)) {
+        if (board.getMember().equals(member)) {
             board.updateContent(boardEdit.getContent());
             boardRepository.save(board);
         }
@@ -558,9 +568,9 @@ public class BoardServiceImpl implements BoardService {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
 
         // 코멘트가 자기 것인 경우
-        if(comment.getMember() == member) {
+        if (comment.getMember() == member) {
 
-        // 댓글 파트
+            // 댓글 파트
             // 댓글 좋아요 삭제
             commentLikeRepository.deleteByCommentAndMember(comment, member);
             // 댓글 삭제
