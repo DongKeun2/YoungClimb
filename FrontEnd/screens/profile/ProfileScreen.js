@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
   },
   horizonLine: {
     borderColor: 'black',
-    borderWidth: 0.2,
+    borderBottomWidth: 0.2,
     width: '100%',
     height: 0,
   },
