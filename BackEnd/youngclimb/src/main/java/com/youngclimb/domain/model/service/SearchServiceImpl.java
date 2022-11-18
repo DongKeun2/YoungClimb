@@ -150,63 +150,16 @@ public class SearchServiceImpl implements SearchService {
         for (Category category : categories) {
             Board board = category.getBoard();
 
+            if (board.getIsDelete() != 0) continue;
+
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
             boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
 
-            // 게시글 DTO 세팅
-//            BoardDto boardDto = BoardDto.builder()
-//                    .id(category.getBoard().getBoardId())
-//                    .solvedDate(category.getBoard().getSolvedDate())
-//                    .content(category.getBoard().getContent())
-//                    .like(boardLikeRepository.countByBoard(category.getBoard()))
-//                    .view(boardScrapRepository.countByBoard(category.getBoard()))
-//                    .isLiked(boardLikeRepository.existsByBoardAndMember(category.getBoard(), member))
-//                    .isScrap(boardScrapRepository.existsByBoardAndMember(category.getBoard(), member))
-//                    .commentNum(commentRepository.countByBoard(category.getBoard()))
-//                    .build();
-
-            // 작성 유저 정보 세팅
-//            Member writer = category.getBoard().getMember();
-//            CreateMember createUser = CreateMember.builder()
-//                    .nickname(writer.getNickname())
-//                    .image(writer.getMemberProfileImg())
-//                    .rank(memberRankExpRepository.findByMember(writer).orElseThrow().getRank().getName())
-//                    .isFollow(followRepository.existsByFollowerMemberIdAndFollowingMemberId(writer.getMemberId(), member.getMemberId()))
-//                    .build();
-//
-//            boardDto.setCreateUser(createUser);
-//
-//            LocalDateTime createdTime = category.getBoard().getCreatedDateTime();
-//
-//            // 작성날짜 세팅
-//            String timeText = createdTime.getYear() + "년 " + createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
-//            Long minus = ChronoUnit.MINUTES.between(createdTime, LocalDateTime.now());
-//            if (minus <= 10) {
-//                timeText = "방금 전";
-//            } else if (minus <= 60) {
-//                timeText = minus + "분 전";
-//            } else if (minus <= 1440) {
-//                timeText = ChronoUnit.HOURS.between(createdTime, LocalDateTime.now()) + "시간 전";
-//            } else if (ChronoUnit.YEARS.between(createdTime, LocalDateTime.now()) > 1) {
-//                timeText = createdTime.getMonth().getValue() + "월 " + createdTime.getDayOfMonth() + "일";
-//            }
-//
-//            boardDto.setCreatedAt(timeText);
 
             // 게시글 미디어 path 세팅
             BoardMedia boardMedia = boardMediaRepository.findByBoard(category.getBoard()).orElseThrow();
             boardDto.setMediaPath(boardMedia.getMediaPath());
 
-            // 카테고리 정보 세팅
-//            Category category = categoryRepository.findByBoard(category.getBoard()).orElseThrow();
-//            boardDto.setCenterId(category.getCenter().getId());
-//            boardDto.setCenterName(category.getCenter().getName());
-//            boardDto.setCenterLevelId(category.getCenterlevel().getId());
-//            boardDto.setCenterLevelColor(category.getCenterlevel().getColor());
-//            boardDto.setWallId(category.getWall().getId());
-//            boardDto.setWallName(category.getWall().getName());
-//            boardDto.setDifficulty(category.getDifficulty());
-//            boardDto.setHoldColor(category.getHoldcolor());
 
             boardDtos.add(boardDto);
         }
