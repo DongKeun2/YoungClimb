@@ -29,7 +29,6 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
 
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   try {
-    // await axios.post(api.fcmtokendelete(), {}, await getConfig());
     const res = await axiosTemp.post(api.logout(), {}, await getConfig());
     removeAccessToken();
     removeRefreshToken();
@@ -42,6 +41,36 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
     return rejectWithValue(err.response.data);
   }
 });
+
+const fcmSave = createAsyncThunk('fcmSave', async (data, {rejectWithValue}) => {
+  try {
+    console.log('보내나?', data);
+    const res = await axiosTemp.post(
+      api.fcmtokensave(),
+      data,
+      await getConfig(),
+    );
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
+
+const fcmRemove = createAsyncThunk(
+  'fcmRemove',
+  async (arg, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.post(
+        api.fcmtokendelete(),
+        {},
+        await getConfig(),
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
 
 const checkEmail = createAsyncThunk(
   'checkEmail',
@@ -349,6 +378,8 @@ export {
   checkNickname,
   profileEdit,
   saveImage,
+  fcmSave,
+  fcmRemove,
 };
 
 export const {
