@@ -100,7 +100,7 @@ function PostAddInfoScreen({navigation}) {
             solvedDate: solvedDate,
             content: content,
             mediaPath: res.payload.mediaPath,
-            thumbnatilPath: res.payload.thumbnatilPath,
+            thumbnailPath: res.payload.thumbnailPath,
           };
           console.log(data);
           dispatch(postAdd(data)).then(res => {
