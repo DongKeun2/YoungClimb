@@ -239,7 +239,7 @@ public class AdminServiceImpl implements AdminService {
         adminInfo.setSuspendedList(suspendedDtoList);
 
         // 최근 신고 목록 (5개)
-        List<Report> recentList = reportRepository.findTop5ByOrderByIdDesc();
+        List<Report> recentList = reportRepository.findTop5ByFlagOrderByIdDesc(0);
         List<ReportDto> recentDtoList = new ArrayList<>();
         for(Report report : recentList) {
             ReportDto reportDto = ReportDto.builder()
