@@ -190,7 +190,7 @@ public class BoardServiceImpl implements BoardService {
             BoardMediaDto boardMediaDto = new BoardMediaDto();
             boardMediaDto.setMediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString());
             Thread.sleep(5200);
-            boardMediaDto.setThumbnailPath(amazonS3.getUrl(bucket + "/boardThumb", fileName).toString());
+            boardMediaDto.setThumbnailPath(amazonS3.getUrl(bucket + "/boardThumb", getFileExtension(fileName).concat(".png")).toString());
 
             return boardMediaDto;
         } else {
