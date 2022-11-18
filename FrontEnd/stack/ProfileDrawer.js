@@ -10,7 +10,7 @@ import ServiceTermsScreen from '../screens/profile/ServiceTermsScreen';
 import CustomDrawer from '../components/CustomDrawer';
 
 import Edit from '../assets/image/drawer/profileEdit.svg';
-import Share from '../assets/image/drawer/share.svg';
+// import Share from '../assets/image/drawer/share.svg';
 import Setting from '../assets/image/drawer/appSetting.svg';
 import Info from '../assets/image/drawer/appInfo.svg';
 
@@ -48,13 +48,13 @@ const ProfileDrawer = () => {
         component={ProfileEditScreen}
         options={{drawerIcon: () => <Edit width={20} height={20} />}}
       />
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="공유하기"
         component={ShareScreen}
         options={{
           drawerIcon: () => <Share width={20} height={20} marginLeft={-2} />,
         }}
-      />
+      /> */}
       <Drawer.Screen
         name="앱 설정"
         component={AppSettings}
