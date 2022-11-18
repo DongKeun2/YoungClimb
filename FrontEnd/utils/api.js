@@ -92,6 +92,7 @@ const api = {
   fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + '/delete',
 
   noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL,
+  fetchIsNotice: () => API_BASE_URL + FCMTOKEN_URL,
 };
 
 export default api;

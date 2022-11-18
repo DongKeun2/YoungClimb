@@ -7,10 +7,8 @@ const fetchCenterInfo = createAsyncThunk(
   async (arg, {rejectWithValue}) => {
     try {
       const res = await axios.get(api.fetchCenter(), {});
-      console.log('센터 정보 성공');
       return res.data;
     } catch (err) {
-      console.log('센터 정보 실패');
       return rejectWithValue(err.response.data);
     }
   },
