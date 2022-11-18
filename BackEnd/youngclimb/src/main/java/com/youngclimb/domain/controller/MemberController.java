@@ -189,7 +189,7 @@ public class MemberController {
     @PostMapping("/save/image")
     public ResponseEntity<?> saveImage(@RequestPart(name = "file", required = false) MultipartFile file) throws Exception {
         try {
-            return new ResponseEntity<>(boardService.saveImage(file), HttpStatus.OK);
+            return new ResponseEntity<>(memberService.saveImage(file), HttpStatus.OK);
 
         } catch (Exception e) {
             return exceptionHandling(e);

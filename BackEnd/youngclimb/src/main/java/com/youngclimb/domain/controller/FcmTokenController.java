@@ -18,6 +18,18 @@ public class FcmTokenController {
 
     private final FirebaseService firebaseService;
 
+    // 토큰 여부
+    @ApiOperation(value = "isToken : 토큰 여부")
+    @GetMapping
+    public ResponseEntity<?> isToken(@CurrentUser UserPrincipal principal) {
+        try {
+
+            return new ResponseEntity<>(firebaseService.isToken(principal.getUsername()), HttpStatus.OK);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
     // 토큰 저장
     @ApiOperation(value = "saveFcmToken : 토큰 저장")
     @PostMapping("/save")

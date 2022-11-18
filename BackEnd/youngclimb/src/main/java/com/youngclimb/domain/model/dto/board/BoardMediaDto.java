@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class BoardMediaDto {
     private Long mediaId;
     private String mediaPath;
-    private String thumbnatilPath;
+    private String thumbnailPath;
 }
