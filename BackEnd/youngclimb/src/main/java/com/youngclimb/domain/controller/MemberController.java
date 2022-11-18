@@ -90,7 +90,6 @@ public class MemberController {
     public ResponseEntity<?> addProfile(@RequestBody MemberProfile memberProfile, @CurrentUser UserPrincipal principal) throws Exception {
 
         try {
-            ;
             return new ResponseEntity<LoginResDto>(memberService.addProfile(principal.getUsername(), memberProfile), HttpStatus.OK);
         } catch (Exception e) {
             return exceptionHandling(e);
@@ -198,16 +197,6 @@ public class MemberController {
     }
 
 
-
-    // 토큰 재발급
-//    @PostMapping("/reissue")
-//    public ResponseEntity<TokenDto> reissue(@RequestHeader("RefreshToken") String refreshToken) {
-//        try {
-//            return ResponseEntity.ok(memberService.reissue(refreshToken));
-//        } catch (Exception e) {
-//            return exceptionHandling(e);
-//        }
-//    }
 
 
     // 예외처리

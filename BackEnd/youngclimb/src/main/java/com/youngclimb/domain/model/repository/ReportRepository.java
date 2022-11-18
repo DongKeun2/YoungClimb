@@ -18,7 +18,6 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     Optional<Report> findByBoardAndMember(Board board, Member member);
 
-    List<Report> findAllByBoard(Board board);
 
     Long countByBoard(Board board);
 
@@ -30,9 +29,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     List<Report> findTop5ByFlagOrderByIdDesc(Integer flag);
 
-    Long countByFlag(Integer flag);
-
-     List<Report> findByFlagNot(Integer flag);
+    List<Report> findByFlagNot(Integer flag);
 
 
 }
