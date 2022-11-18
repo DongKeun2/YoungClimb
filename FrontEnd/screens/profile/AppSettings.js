@@ -14,7 +14,6 @@ function AppSettings({navigation}) {
     if (isNotice) {
       dispatch(fcmRemove());
     } else {
-      console.log('켬');
       getFcmToken().then(res => {
         const data = {
           fcmToken: res,

@@ -44,7 +44,6 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
 
 const fcmSave = createAsyncThunk('fcmSave', async (data, {rejectWithValue}) => {
   try {
-    console.log('보내나?', data);
     const res = await axiosTemp.post(
       api.fcmtokensave(),
       data,
