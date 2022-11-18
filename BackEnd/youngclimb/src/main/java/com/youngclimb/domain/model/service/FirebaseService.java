@@ -10,6 +10,8 @@ import javax.transaction.Transactional;
 
 public interface FirebaseService {
 
+    public Boolean isToken(String email);
+
     public void saveFcmToken(String email, String token);
 
     public void deleteFcmToken(String email);
