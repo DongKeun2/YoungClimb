@@ -28,10 +28,14 @@ public class BoardMedia {
     @Column(name = "media_path")
     private String mediaPath;
 
+    @Column(name="thumbnail_path")
+    private String thumbnailPath;
+
     public BoardMediaDto toMediaDto() {
         return BoardMediaDto.builder()
                 .mediaId(id)
                 .mediaPath(mediaPath)
+                .thumbnatilPath(thumbnailPath)
                 .build();
     }
 

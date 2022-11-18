@@ -61,7 +61,7 @@ public class BoardController {
     }
 
     // 동영상 저장
-    @ApiOperation(value = "saveImage: 이미지 저장하기")
+    @ApiOperation(value = "saveImage: 동영상 저장하기")
     @PostMapping("/save/image")
     public ResponseEntity<?> saveImage(
             @RequestPart(name = "file", required = false) MultipartFile file

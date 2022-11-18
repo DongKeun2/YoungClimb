@@ -22,6 +22,7 @@ public class BoardDto {
     Integer centerLevelId;
     String centerLevelColor;
     String mediaPath;
+    String thumbnailPath;
     Integer wallId;
     String wallName;
     String difficulty;

@@ -38,6 +38,7 @@ public class BoardDtoCreator {
         // 게시글 미디어 path 세팅
         BoardMedia boardMedia = boardMediaRepository.findByBoard(board).orElseThrow();
         boardDto.setMediaPath(boardMedia.getMediaPath());
+        boardDto.setThumbnailPath(boardMedia.getThumbnailPath());
 
         // 카테고리 정보 세팅
         Category category = categoryRepository.findByBoard(board).orElseThrow();
