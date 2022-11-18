@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -42,6 +42,7 @@ import Trash from '../../assets/image/feed/trash.svg';
 import CommentInput from '../../components/CommentInput';
 import {deleteBoard} from '../../utils/slices/ProfileSlice';
 import {viewCount} from '../../utils/slices/PostSlice';
+import DetailLoading from '../../components/Loading/DetailLoading';
 
 function DetailScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -69,7 +70,6 @@ function DetailScreen({navigation, route}) {
     if (isFinished) {
       setIsView(true);
       setIsCounted(false);
-      this.player.seek(0);
     } else {
       setIsView(!isView);
     }
@@ -106,15 +106,17 @@ function DetailScreen({navigation, route}) {
   useEffect(() => {
     setIsLoading(true);
     if (isFocused) {
-      dispatch(fetchDetail(route.params.id)).then(() => setIsLoading(false));
+      dispatch(fetchDetail(route.params.id)).then(() => {
+        setIsLoading(false);
+        setIsView(true);
+        setIsFinished(false);
+        setViewCounts(feed.view);
+      });
     }
-    setIsView(true);
-    setIsFinished(false);
-    setViewCounts(feed.view);
-  }, [dispatch, route, isFocused, feed.view]);
+  }, [dispatch, isFocused, feed.view]);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       return () => {
         setIsMuted(true);
         setIsView(false);
@@ -143,7 +145,7 @@ function DetailScreen({navigation, route}) {
       <CustomSubHeader title="게시글" navigation={navigation} />
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {isLoading ? (
-          <></>
+          <DetailLoading />
         ) : (
           <>
             <View style={styles.contentContainer}>
@@ -234,9 +236,6 @@ function DetailScreen({navigation, route}) {
                   activeOpacity={1}
                   onPress={changePlay}>
                   <Video
-                    ref={ref => {
-                      this.player = ref;
-                    }}
                     source={{uri: feed.mediaPath}}
                     style={styles.backgroundVideo}
                     fullscreen={false}

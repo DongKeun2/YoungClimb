@@ -72,6 +72,7 @@ function AppInfo({navigation}) {
                   </Text>
                   <Text />
                   <TouchableOpacity
+                    style={styles.link}
                     onPress={() => {
                       navigation.push('이용약관');
                     }}>

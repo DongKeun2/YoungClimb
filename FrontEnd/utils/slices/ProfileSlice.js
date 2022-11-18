@@ -97,6 +97,18 @@ const deleteBoard = createAsyncThunk(
   },
 );
 
+const fetchIsNotice = createAsyncThunk(
+  'fetchIsNotice',
+  async (arg, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.get(api.fetchIsNotice(), await getConfig());
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
 const initialState = {
   profileInfo: {},
   followInfo: {
@@ -169,6 +181,7 @@ export {
   deleteBoard,
   followingFollowAfter,
   followerFollowAfter,
+  fetchIsNotice,
 };
 
 export const {changeUploadImg, profileFollow, followingFollow, followerFollow} =

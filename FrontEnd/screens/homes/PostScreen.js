@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   ScrollView,
@@ -22,13 +22,18 @@ import HoldIcon from '../../assets/image/hold/hold.svg';
 import {YCLevelColorDict} from '../../assets/info/ColorInfo';
 
 import {fetchFeedComment} from '../../utils/slices/PostSlice';
+import PostLoading from '../../components/Loading/PostLoading';
 
 function PostScreen({navigation, route}) {
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    dispatch(fetchFeedComment(route.params.boardId));
-  }, []);
+    dispatch(fetchFeedComment(route.params.boardId)).then(() => {
+      setIsLoading(false);
+    });
+  }, [dispatch, route]);
 
   const board = useSelector(state => state.post.boardInfoComment.boardDto);
   const comments = useSelector(
@@ -38,7 +43,9 @@ function PostScreen({navigation, route}) {
   return (
     <SafeAreaView style={styles.container}>
       <CustomSubHeader title="댓글" navigation={navigation} />
-      {board ? (
+      {isLoading ? (
+        <PostLoading />
+      ) : board ? (
         <>
           <ScrollView
             style={{marginBottom: 50}}
