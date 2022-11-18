@@ -99,7 +99,8 @@ function PostAddInfoScreen({navigation}) {
             holdColor: holdColor,
             solvedDate: solvedDate,
             content: content,
-            mediaPath: res.payload,
+            mediaPath: res.payload.mediaPath,
+            thumbnailPath: res.payload.thumbnailPath,
           };
           console.log(data);
           dispatch(postAdd(data)).then(res => {
@@ -128,7 +129,7 @@ function PostAddInfoScreen({navigation}) {
           {/* <KeyboardAwareScrollView
         style={styles.selectContainer}
         showsVerticalScrollIndicator={false}> */}
-          <View style={styles.box}>
+          {/* <View style={styles.box}>
             <Text style={styles.text}>
               지점<Text style={{color: '#F34D7F'}}> *</Text>
             </Text>
@@ -166,26 +167,33 @@ function PostAddInfoScreen({navigation}) {
                 }
                 emptyResultTextStyle={{color: 'black'}}
               />
-              {/* <Picker
-              mode="dropdown"
-              dropdownIconColor="black"
-              selectedValue={center}
-              style={center ? styles.picker : styles.nonePick}
-              onValueChange={(value, idx) => onChangeCenter(value)}>
-              <Picker.Item
-                style={styles.pickerPlaceHold}
-                label="선택 없음"
-                value="" 1
-              />
-              {centerInfo.map((item, id) => (
+            </View>
+          </View> */}
+          <View style={styles.box}>
+            <Text style={styles.text}>
+              지점<Text style={{color: '#F34D7F'}}> *</Text>
+            </Text>
+            <View style={styles.pickerItem}>
+              <Picker
+                dropdownIconRippleColor="#F34D7F" // 드롭다운 버튼 클릭시 테두리 색깔
+                dropdownIconColor="black"
+                selectedValue={center}
+                style={center ? styles.picker : styles.nonePick}
+                onValueChange={(value, idx) => onChangeCenter(value)}>
                 <Picker.Item
-                  key={id}
-                  style={styles.pickerLabel}
-                  label={item.name}
-                  value={item.id}
+                  style={styles.pickerPlaceHold}
+                  label="선택 없음"
+                  value=""
                 />
-              ))}
-            </Picker> */}
+                {centerInfo?.map((item, idx) => (
+                  <Picker.Item
+                    key={idx}
+                    style={styles.pickerLabel}
+                    label={item.name}
+                    value={item.id}
+                  />
+                ))}
+              </Picker>
             </View>
           </View>
 

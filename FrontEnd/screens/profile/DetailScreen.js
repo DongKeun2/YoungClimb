@@ -148,218 +148,217 @@ function DetailScreen({navigation, route}) {
           <DetailLoading />
         ) : (
           <>
-            <View style={styles.feedHeader}>
-              <View style={styles.headerTop}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.push('서브프로필', {
-                      initial: false,
-                      nickname: feed.createUser.nickname,
-                    });
-                  }}
-                  activeOpacity={1}
-                  style={styles.iconText}>
-                  <UserAvatar source={{uri: feed.createUser.image}} size={36} />
-                  <View style={styles.headerTextGroup}>
-                    <View style={{...styles.iconText, alignItems: 'center'}}>
-                      <Text
-                        style={[
-                          styles.feedTextStyle,
-                          {
-                            fontSize: 16,
-                            fontWeight: '600',
-                            marginRight: 5,
-                          },
-                        ]}>
-                        {feed.createUser?.nickname}
-                      </Text>
-                      <HoldIcon
-                        width={18}
-                        height={18}
-                        color={YCLevelColorDict[feed.createUser?.rank]}
-                      />
-                    </View>
-                    <Text style={{...styles.feedTextStyle, fontSize: 12}}>
-                      {feed.createdAt}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-                {feed.createUser.nickname === currentUser.nickname ? (
+            <View style={styles.contentContainer}>
+              <View style={styles.feedHeader}>
+                <View style={styles.headerTop}>
                   <TouchableOpacity
                     onPress={() => {
-                      Alert.alert('게시글 삭제', '글을 삭제하시겠습니까?', [
-                        {text: '삭제', onPress: () => onDelete(feed.id)},
-                        {
-                          text: '취소',
-                          onPress: () => Alert.alert('', '취소되었습니다.'),
-                        },
-                      ]);
-                    }}>
-                    <Trash />
+                      navigation.push('서브프로필', {
+                        initial: false,
+                        nickname: feed.createUser.nickname,
+                      });
+                    }}
+                    activeOpacity={1}
+                    style={styles.iconText}>
+                    <UserAvatar
+                      source={{uri: feed.createUser.image}}
+                      size={36}
+                    />
+                    <View style={styles.headerTextGroup}>
+                      <View style={{...styles.iconText, alignItems: 'center'}}>
+                        <Text
+                          style={[
+                            styles.feedTextStyle,
+                            {
+                              fontSize: 16,
+                              fontWeight: '600',
+                              marginRight: 5,
+                            },
+                          ]}>
+                          {feed.createUser?.nickname}
+                        </Text>
+                        <HoldIcon
+                          width={18}
+                          height={18}
+                          color={YCLevelColorDict[feed.createUser?.rank]}
+                        />
+                      </View>
+                      <Text style={{...styles.feedTextStyle, fontSize: 12}}>
+                        {feed.createdAt}
+                      </Text>
+                    </View>
                   </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
-                    <MenuIcon width={16} height={16} />
-                  </TouchableOpacity>
-                )}
-              </View>
-              <View style={styles.wallInfo}>
-                <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                  {feed.centerName}
-                </Text>
-                {feed.wallName ? (
+                  {feed.createUser.nickname === currentUser.nickname ? (
+                    <TouchableOpacity
+                      onPress={() => {
+                        Alert.alert('게시글 삭제', '글을 삭제하시겠습니까?', [
+                          {text: '삭제', onPress: () => onDelete(feed.id)},
+                          {
+                            text: '취소',
+                            onPress: () => Alert.alert('', '취소되었습니다.'),
+                          },
+                        ]);
+                      }}>
+                      <Trash />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      hitSlop={10}
+                      onPress={() => openMenu(feed)}>
+                      <MenuIcon width={16} height={16} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <View style={styles.wallInfo}>
                   <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                    {feed.wallName}
+                    {feed.centerName}
                   </Text>
-                ) : null}
-                <Text style={{...styles.feedTextStyle, marginRight: 3}}>
-                  {feed.difficulty}
-                </Text>
-                <LevelLabel color={feed.centerLevelColor} />
-                <HoldLabel color={feed.holdColor} />
+                  {feed.wallName ? (
+                    <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                      {feed.wallName}
+                    </Text>
+                  ) : null}
+                  <Text style={{...styles.feedTextStyle, marginRight: 3}}>
+                    {feed.difficulty}
+                  </Text>
+                  <LevelLabel color={feed.centerLevelColor} />
+                  <HoldLabel color={feed.holdColor} />
+                </View>
               </View>
-            </View>
 
-            <View
-              style={{
-                width: Dimensions.get('window').width,
-                height: Dimensions.get('window').width,
-              }}>
-              <TouchableOpacity
-                style={styles.videoBox}
-                activeOpacity={1}
-                onPress={changePlay}>
-                <Video
-                  source={{uri: feed.mediaPath}}
-                  style={styles.backgroundVideo}
-                  fullscreen={false}
-                  resizeMode={'contain'}
-                  repeat={false}
-                  controls={false}
-                  paused={!isView}
-                  muted={isMuted}
-                  onseek={() => null}
-                  onBuffer={res => {
-                    setIsBuffer(res.isBuffering);
-                  }}
-                  onProgress={res => countView(res)}
-                  onEnd={changeFinished}
-                />
-                {/* 동영상 재생 버튼 */}
-                {!isView ? (
+              <View
+                style={{
+                  width: Dimensions.get('window').width,
+                  height: Dimensions.get('window').width,
+                }}>
+                <TouchableOpacity
+                  style={styles.videoBox}
+                  activeOpacity={1}
+                  onPress={changePlay}>
+                  <Video
+                    source={{uri: feed.mediaPath}}
+                    style={styles.backgroundVideo}
+                    fullscreen={false}
+                    resizeMode={'contain'}
+                    repeat={false}
+                    controls={false}
+                    paused={!isView}
+                    muted={isMuted}
+                    onseek={() => null}
+                    onBuffer={res => {
+                      setIsBuffer(res.isBuffering);
+                    }}
+                    onProgress={res => countView(res)}
+                    onEnd={changeFinished}
+                  />
+                  {/* 동영상 재생 버튼 */}
+                  {!isView ? (
+                    <View
+                      style={{
+                        ...styles.videoBox,
+                        backgroundColor: 'rgba(0,0,0,0.6)',
+                      }}>
+                      {isFinished ? (
+                        <RefreshBtn color="white" width={70} height={120} />
+                      ) : (
+                        <PlayBtn color="white" width={70} height={120} />
+                      )}
+                    </View>
+                  ) : null}
+                </TouchableOpacity>
+                {/* 음소거 버튼 */}
+                {isView ? (
+                  isMuted ? (
+                    <TouchableOpacity
+                      style={styles.muteIcon}
+                      activeOpacity={1}
+                      onPress={changeMuted}>
+                      <MuteBtn color="white" width={60} />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.muteIcon}
+                      activeOpacity={1}
+                      onPress={changeMuted}>
+                      <SoundBtn color="white" width={60} />
+                    </TouchableOpacity>
+                  )
+                ) : null}
+                {/* 로딩중 */}
+                {isBuffer ? (
                   <View
                     style={{
-                      ...styles.videoBox,
+                      ...styles.background,
                       backgroundColor: 'rgba(0,0,0,0.6)',
+                      display: 'flex',
+                      justifyContent: 'center',
                     }}>
-                    {isFinished ? (
-                      <RefreshBtn color="white" width={70} height={120} />
-                    ) : (
-                      <PlayBtn color="white" width={70} height={120} />
-                    )}
+                    <ActivityIndicator size="large" color="white" />
                   </View>
                 ) : null}
-              </TouchableOpacity>
-              {/* 음소거 버튼 */}
-              {isView ? (
-                isMuted ? (
-                  <TouchableOpacity
-                    style={styles.muteIcon}
-                    activeOpacity={1}
-                    onPress={changeMuted}>
-                    <MuteBtn color="white" width={60} />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.muteIcon}
-                    activeOpacity={1}
-                    onPress={changeMuted}>
-                    <SoundBtn color="white" width={60} />
-                  </TouchableOpacity>
-                )
-              ) : null}
-              {/* 로딩중 */}
-              {isBuffer ? (
-                <View
-                  style={{
-                    ...styles.background,
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                  }}>
-                  <ActivityIndicator size="large" color="white" />
-                </View>
-              ) : null}
-              <View style={styles.solvedDate}>
-                <CameraIcon />
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 12,
-                    marginLeft: 3,
-                    marginTop: 1,
-                  }}>
-                  {feed.solvedDate}
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.popularInfo}>
-              <View style={styles.likeGroup}>
-                <View style={styles.iconText}>
-                  <TouchableOpacity onPress={onClickHeart}>
-                    {feed.isLiked ? (
-                      <FillHeart style={{marginRight: 5}} />
-                    ) : (
-                      <EmptyHeart style={{marginRight: 5}} />
-                    )}
-                  </TouchableOpacity>
-                  <Text style={styles.feedTextStyle}>
-                    {feed.like} 명이 좋아합니다.
+                <View style={styles.solvedDate}>
+                  <CameraIcon />
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 12,
+                      marginLeft: 3,
+                      marginTop: 1,
+                    }}>
+                    {feed.solvedDate}
                   </Text>
                 </View>
-                {feed.createUser.nickname === currentUser.nickname ? null : (
-                  <TouchableOpacity onPress={onClickScrap}>
-                    {feed.isScrap ? (
-                      <FillScrap style={{marginRight: 5}} />
-                    ) : (
-                      <EmptyScrap style={{marginRight: 5}} />
-                    )}
-                  </TouchableOpacity>
-                )}
               </View>
-              <View style={styles.iconText}>
-                <EyeIcon style={{marginRight: 5}} />
-                <Text style={styles.feedTextStyle}>
-                  {viewCounts} 명이 감상했습니다.
-                </Text>
-              </View>
-            </View>
 
-            <View style={styles.contentSummary}>
-              <Text style={styles.contentPreview}>{feed.content}</Text>
+              <View style={styles.popularInfo}>
+                <View style={styles.likeGroup}>
+                  <View style={styles.iconText}>
+                    <TouchableOpacity onPress={onClickHeart}>
+                      {feed.isLiked ? (
+                        <FillHeart style={{marginRight: 5}} />
+                      ) : (
+                        <EmptyHeart style={{marginRight: 5}} />
+                      )}
+                    </TouchableOpacity>
+                    <Text style={styles.feedTextStyle}>
+                      {feed.like} 명이 좋아합니다.
+                    </Text>
+                  </View>
+                  {feed.createUser.nickname === currentUser.nickname ? null : (
+                    <TouchableOpacity onPress={onClickScrap}>
+                      {feed.isScrap ? (
+                        <FillScrap style={{marginRight: 5}} />
+                      ) : (
+                        <EmptyScrap style={{marginRight: 5}} />
+                      )}
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <View style={styles.iconText}>
+                  <EyeIcon style={{marginRight: 5}} />
+                  <Text style={styles.feedTextStyle}>
+                    {viewCounts} 명이 감상했습니다.
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.contentSummary}>
+                {feed.content ? (
+                  <Text style={styles.contentPreview}>{feed.content}</Text>
+                ) : null}
+              </View>
             </View>
-            {comments.length ? (
-              comments?.map((comment, idx) => {
-                return (
-                  <Comment
-                    key={idx}
-                    comment={comment}
-                    navigation={navigation}
-                  />
-                );
-              })
-            ) : (
-              <Text
-                style={{
-                  ...styles.text,
-                  marginTop: 5,
-                  color: '#777777',
-                  fontSize: 13,
-                }}>
-                댓글이 없습니다.
-              </Text>
-            )}
+            {comments.length
+              ? comments?.map((comment, idx) => {
+                  return (
+                    <Comment
+                      key={idx}
+                      comment={comment}
+                      navigation={navigation}
+                    />
+                  );
+                })
+              : null}
           </>
         )}
       </ScrollView>
@@ -454,8 +453,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   contentSummary: {
-    marginVertical: 3,
-    marginHorizontal: 10,
+    width: '100%',
+    paddingTop: 3,
+    paddingBottom: 8,
+    paddingHorizontal: 10,
   },
   contentPreview: {
     color: 'black',
@@ -491,6 +492,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  contentContainer: {
+    borderBottomWidth: 0.2,
+    borderColor: 'black',
   },
 });
 
