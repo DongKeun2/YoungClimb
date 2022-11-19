@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  Alert,
   ActivityIndicator,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -72,13 +72,13 @@ function PostAddInfoScreen({navigation}) {
 
   function onPostAdd() {
     if (!center) {
-      return alert('지점을 선택해주세요');
+      return Alert.alert('', '지점을 선택해주세요');
     } else if (!level) {
-      return alert('난이도를 선택해주세요');
+      return Alert.alert('', '난이도를 선택해주세요');
     } else if (!holdColor) {
-      return alert('홀드 색상을 선택해주세요');
+      return Alert.alert('', '홀드 색상을 선택해주세요');
     } else if (!solvedDate) {
-      return alert('풀이 날짜를 선택해주세요');
+      return Alert.alert('', '풀이 날짜를 선택해주세요');
     } else {
       setIsLoading(true);
       let formData = new FormData();
@@ -99,22 +99,23 @@ function PostAddInfoScreen({navigation}) {
             holdColor: holdColor,
             solvedDate: solvedDate,
             content: content,
-            mediaPath: res.payload,
+            mediaPath: res.payload.mediaPath,
+            thumbnailPath: res.payload.thumbnailPath,
           };
           console.log(data);
           dispatch(postAdd(data)).then(res => {
             if (res.type === 'postAdd/fulfilled') {
               setIsLoading(false);
-              alert('성공적으로 생성되었습니다');
+              Alert.alert('게시글 생성', '성공적으로 생성되었습니다');
               navigation.popToTop();
             } else {
               setIsLoading(false);
-              alert('다시 시도해주세요');
+              Alert.alert('생성 실패', '다시 시도해주세요');
             }
           });
         } else {
           setIsLoading(false);
-          alert('다시 시도해주세요');
+          Alert.alert('생성 실패', '다시 시도해주세요');
         }
       });
     }
@@ -128,7 +129,7 @@ function PostAddInfoScreen({navigation}) {
           {/* <KeyboardAwareScrollView
         style={styles.selectContainer}
         showsVerticalScrollIndicator={false}> */}
-          <View style={styles.box}>
+          {/* <View style={styles.box}>
             <Text style={styles.text}>
               지점<Text style={{color: '#F34D7F'}}> *</Text>
             </Text>
@@ -166,26 +167,33 @@ function PostAddInfoScreen({navigation}) {
                 }
                 emptyResultTextStyle={{color: 'black'}}
               />
-              {/* <Picker
-              mode="dropdown"
-              dropdownIconColor="black"
-              selectedValue={center}
-              style={center ? styles.picker : styles.nonePick}
-              onValueChange={(value, idx) => onChangeCenter(value)}>
-              <Picker.Item
-                style={styles.pickerPlaceHold}
-                label="선택 없음"
-                value="" 1
-              />
-              {centerInfo.map((item, id) => (
+            </View>
+          </View> */}
+          <View style={styles.box}>
+            <Text style={styles.text}>
+              지점<Text style={{color: '#F34D7F'}}> *</Text>
+            </Text>
+            <View style={styles.pickerItem}>
+              <Picker
+                dropdownIconRippleColor="#F34D7F" // 드롭다운 버튼 클릭시 테두리 색깔
+                dropdownIconColor="black"
+                selectedValue={center}
+                style={center ? styles.picker : styles.nonePick}
+                onValueChange={(value, idx) => onChangeCenter(value)}>
                 <Picker.Item
-                  key={id}
-                  style={styles.pickerLabel}
-                  label={item.name}
-                  value={item.id}
+                  style={styles.pickerPlaceHold}
+                  label="선택 없음"
+                  value=""
                 />
-              ))}
-            </Picker> */}
+                {centerInfo?.map((item, idx) => (
+                  <Picker.Item
+                    key={idx}
+                    style={styles.pickerLabel}
+                    label={item.name}
+                    value={item.id}
+                  />
+                ))}
+              </Picker>
             </View>
           </View>
 
@@ -193,16 +201,37 @@ function PostAddInfoScreen({navigation}) {
             <Text style={styles.text}>구역</Text>
             <View style={styles.pickerItem}>
               <Picker
-                mode="dropdown"
-                dropdownIconColor={center ? 'black' : '#a7a7a7'}
+                dropdownIconColor={
+                  center
+                    ? centerInfo[center - 1]?.wallList.length
+                      ? 'black'
+                      : '#a7a7a7'
+                    : '#a7a7a7'
+                }
                 selectedValue={wall}
-                enabled={center ? true : false}
-                style={wall ? styles.picker : styles.nonePick}
-                onValueChange={(value, idx) => setWall(value)}>
+                enabled={
+                  center && centerInfo[center - 1]?.wallList.length
+                    ? true
+                    : false
+                }
+                style={
+                  wall && centerInfo[center - 1]?.wallList.length
+                    ? styles.picker
+                    : styles.nonePick
+                }
+                onValueChange={(value, idx) => {
+                  setWall(value);
+                }}>
                 <Picker.Item
                   style={styles.pickerPlaceHold}
-                  label={center ? '선택 없음' : '지점을 먼저 선택해주세요'}
-                  value=""
+                  label={
+                    center
+                      ? centerInfo[center - 1]?.wallList.length
+                        ? '선택 없음'
+                        : '해당 지점 선택 불가'
+                      : '지점을 먼저 선택해주세요'
+                  }
+                  value={0}
                 />
                 {center
                   ? centerInfo[center - 1]?.wallList.map((item, idx) => (
@@ -224,7 +253,6 @@ function PostAddInfoScreen({navigation}) {
             </Text>
             <View style={styles.pickerItem}>
               <Picker
-                mode="dropdown"
                 dropdownIconColor={center ? 'black' : '#a7a7a7'}
                 selectedValue={level}
                 enabled={center ? true : false}
@@ -241,7 +269,7 @@ function PostAddInfoScreen({navigation}) {
                       <Picker.Item
                         key={idx}
                         style={styles.pickerLabel}
-                        label={item.color}
+                        label={`${item.color} (${item.levelRank})`}
                         value={item.id}
                       />
                     ))
@@ -256,7 +284,6 @@ function PostAddInfoScreen({navigation}) {
             </Text>
             <View style={styles.pickerItem}>
               <Picker
-                mode="dropdown"
                 dropdownIconColor={center ? 'black' : '#a7a7a7'}
                 selectedValue={holdColor}
                 enabled={center ? true : false}

@@ -26,17 +26,17 @@ function HomeScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
-  const [page, setPage] = useState(0);
-  const [pageAdd, setPageAdd] = useState(0);
-  const [boardNum, setBoardNum] = useState(0);
+  const pageRef = useRef(0);
+  const pageAddRef = useRef(0);
+  const boardNumRef = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const isNext = useSelector(state => state.post.isNext);
   const isFinish = useSelector(state => state.post.isFinish);
 
   const fetchFeeds = () => {
-    if (boardNum > 3 || !isFinish) {
-      setBoardNum(0);
+    if (boardNumRef.current > 3 || !isFinish) {
+      boardNumRef.current = 0;
       setIsLoading(false);
       return;
     }
@@ -44,19 +44,20 @@ function HomeScreen({navigation, route}) {
       if (isNext) {
         // 게시물 요청
         setIsLoading(true);
-        dispatch(fetchHomeFeed(page)).then(res => {
+        dispatch(fetchHomeFeed(pageRef.current)).then(res => {
           if (res.type === 'fetchHomeFeed/fulfilled') {
-            setPage(page + 1);
-            if (boardNum + res.payload.boardDtos.length > 3) {
-              setBoardNum(0);
+            pageRef.current = pageRef.current + 1;
+            if (boardNumRef.current + res.payload.boardDtos.length > 3) {
+              boardNumRef.current = 0;
               setIsLoading(false);
               return;
             } else {
-              setBoardNum(boardNum + res.payload.boardDtos.length);
+              boardNumRef.current =
+                boardNumRef.current + res.payload.boardDtos.length;
               if (res.payload.nextPage) {
                 return fetchFeeds();
               } else {
-                setBoardNum(0);
+                boardNumRef.current = 0;
                 setIsLoading(false);
                 return;
               }
@@ -68,19 +69,20 @@ function HomeScreen({navigation, route}) {
       } else {
         // 추가게시물 요청
         setIsLoading(true);
-        dispatch(fetchHomeFeedAdd(pageAdd)).then(res => {
+        dispatch(fetchHomeFeedAdd(pageAddRef.current)).then(res => {
           if (res.type === 'fetchHomeFeedAdd/fulfilled') {
-            setPageAdd(pageAdd + 1);
-            if (boardNum + res.payload.boardDtos.length > 3) {
-              setBoardNum(0);
+            pageAddRef.current = pageAddRef.current + 1;
+            if (boardNumRef.current + res.payload.boardDtos.length > 3) {
+              boardNumRef.current = 0;
               setIsLoading(false);
               return;
             } else {
-              setBoardNum(boardNum + res.payload.boardDtos.length);
+              boardNumRef.current =
+                boardNumRef.current + res.payload.boardDtos.length;
               if (res.payload.nextPage) {
                 return fetchFeeds();
               } else {
-                setBoardNum(0);
+                boardNumRef.current = 0;
                 setIsLoading(false);
                 return;
               }

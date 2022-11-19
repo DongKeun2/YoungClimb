@@ -29,7 +29,6 @@ const login = createAsyncThunk('login', async (data, {rejectWithValue}) => {
 
 const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
   try {
-    // await axios.post(api.fcmtokendelete(), {}, await getConfig());
     const res = await axiosTemp.post(api.logout(), {}, await getConfig());
     removeAccessToken();
     removeRefreshToken();
@@ -42,6 +41,35 @@ const logout = createAsyncThunk('logout', async (arg, {rejectWithValue}) => {
     return rejectWithValue(err.response.data);
   }
 });
+
+const fcmSave = createAsyncThunk('fcmSave', async (data, {rejectWithValue}) => {
+  try {
+    const res = await axiosTemp.post(
+      api.fcmtokensave(),
+      data,
+      await getConfig(),
+    );
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
+
+const fcmRemove = createAsyncThunk(
+  'fcmRemove',
+  async (arg, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.post(
+        api.fcmtokendelete(),
+        {},
+        await getConfig(),
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
 
 const checkEmail = createAsyncThunk(
   'checkEmail',
@@ -155,57 +183,59 @@ const wingspan = createAsyncThunk(
   },
 );
 
+const signupForm = {
+  email: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  nickname: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  password: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  confirmPwd: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  gender: {
+    value: 'M',
+    type: 'radio',
+  },
+  height: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  shoeSize: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+  wingspan: {
+    value: '',
+    type: 'textInput',
+    rules: {},
+    valid: false,
+  },
+};
+
 const initialState = {
   loginState: false,
   currentUser: {},
-  signupForm: {
-    email: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    nickname: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    password: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    confirmPwd: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    gender: {
-      value: 'M',
-      type: 'radio',
-    },
-    height: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    shoeSize: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-    wingspan: {
-      value: '',
-      type: 'textInput',
-      rules: {},
-      valid: false,
-    },
-  },
+  signupForm: signupForm,
   editForm: {
     nickname: {
       value: '',
@@ -302,6 +332,7 @@ export const AccountsSlice = createSlice({
       state.loginState = false;
     },
     [signup.fulfilled]: (state, action) => {
+      state.signupForm = signupForm;
       state.currentUser = action.payload.user;
     },
     [checkEmail.fulfilled]: (state, action) => {
@@ -349,6 +380,8 @@ export {
   checkNickname,
   profileEdit,
   saveImage,
+  fcmSave,
+  fcmRemove,
 };
 
 export const {

@@ -99,10 +99,10 @@ const Main = () => {
         <div className='subtitle'>CLIMBER COMMUNITY</div>
         <div className='flexTextBox subtitle'>
           <div>누적 다운로드 </div>
-          <animated.div>{numberCount.number.to(x => x.toFixed(0))}</animated.div>
-          <div> 건</div>
+          <animated.div className='marginLeft'>{numberCount.number.to(x => x.toFixed(0))}</animated.div>
+          <div className='marginLeft'>건</div>
         </div>
-        <Link to="/MyLocation.png" target="_blank" download>Download</Link>
+        <Link to="/MyLocation.png" target="_blank" download className='textDecoNone'><div className='downloadBtn'><div>Download</div></div></Link>
       </div>
 
     </div>

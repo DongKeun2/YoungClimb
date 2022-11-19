@@ -25,33 +25,34 @@ function RandomScreen({navigation}) {
     toastRef.current.show('앱을 종료하려면 뒤로가기를 한번 더 눌러주세요');
   }, []);
 
-  const [page, setPage] = useState(0);
-  const [boardNum, setBoardNum] = useState(0);
+  const pageRef = useRef(0);
+  const boardNumRef = useRef(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const isFinish = useSelector(state => state.post.isFinish);
 
   const getReels = () => {
-    if (boardNum > 3 || !isFinish) {
-      setBoardNum(0);
+    if (boardNumRef.current > 3 || !isFinish) {
+      boardNumRef.current = 0;
       setIsLoading(false);
       return;
     }
     if (!isLoading && isFinish) {
       setIsLoading(true);
-      dispatch(fetchReels(page)).then(res => {
+      dispatch(fetchReels(pageRef.current)).then(res => {
         if (res.type === 'fetchReels/fulfilled') {
-          setPage(page + 1);
-          if (boardNum + res.payload.boardDtos.length > 3) {
-            setBoardNum(0);
+          pageRef.current = pageRef.current + 1;
+          if (boardNumRef.current + res.payload.boardDtos.length > 3) {
+            boardNumRef.current = 0;
             setIsLoading(false);
             return;
           } else {
-            setBoardNum(boardNum + res.payload.boardDtos.length);
+            boardNumRef.current =
+              boardNumRef.current + res.payload.boardDtos.length;
             if (res.payload.nextPage) {
               return getReels();
             } else {
-              setBoardNum(0);
+              boardNumRef.current = 0;
               setIsLoading(false);
               return;
             }

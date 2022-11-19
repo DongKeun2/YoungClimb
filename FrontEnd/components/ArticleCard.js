@@ -4,6 +4,7 @@ import {
   Text,
   View,
   TouchableOpacity,
+  Image,
   Dimensions,
 } from 'react-native';
 import HoldLabel from './HoldLabel';
@@ -31,7 +32,15 @@ function ArticleCard({article, type}) {
         </View>
       ) : null}
       <View style={styles.videoBox}>
-        <Video
+        <Image
+          style={styles.video}
+          source={{
+            uri: article.thumbnailPath
+              ? article.thumbnailPath
+              : article.createUser.image,
+          }}
+        />
+        {/* <Video
           source={{uri: article.mediaPath}}
           style={styles.video}
           fullscreen={false}
@@ -40,7 +49,7 @@ function ArticleCard({article, type}) {
           controls={false}
           paused={true}
           muted={true}
-        />
+        /> */}
       </View>
       <View style={styles.InfoBox}>
         <View style={styles.cardInfo}>

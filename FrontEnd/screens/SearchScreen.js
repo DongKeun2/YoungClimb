@@ -188,7 +188,6 @@ function BoardTab({navigation}) {
           </Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
               dropdownIconRippleColor="#F34D7F" // 드롭다운 버튼 클릭시 테두리 색깔
               dropdownIconColor="black"
               selectedValue={center}
@@ -215,8 +214,13 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>구역</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
-              dropdownIconColor={center ? 'black' : '#a7a7a7'}
+              dropdownIconColor={
+                center
+                  ? centerInfo[center - 1]?.wallList.length
+                    ? 'black'
+                    : '#a7a7a7'
+                  : '#a7a7a7'
+              }
               selectedValue={wall}
               enabled={
                 center && centerInfo[center - 1]?.wallList.length ? true : false
@@ -259,7 +263,6 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>난이도</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={level}
               enabled={center ? true : false}
@@ -288,7 +291,6 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>홀드 색상</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={holdColor}
               enabled={center ? true : false}

@@ -159,7 +159,7 @@ function HomeFeed({
     <View style={styles.container}>
       {/* 피드 상단 헤더 */}
       <View style={styles.feedHeader}>
-        <View style={styles.headerTop}>
+        <View style={{...styles.iconText, justifyContent: 'space-between'}}>
           <TouchableOpacity
             onPress={() => {
               navigation.push('서브프로필', {
@@ -168,7 +168,7 @@ function HomeFeed({
               });
             }}
             activeOpacity={1}
-            style={styles.iconText}>
+            style={{...styles.iconText, marginLeft: 12, marginTop: 5}}>
             <UserAvatar source={{uri: feed.createUser.image}} size={36} />
             <View style={styles.headerTextGroup}>
               <View style={{...styles.iconText, alignItems: 'center'}}>
@@ -192,7 +192,10 @@ function HomeFeed({
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity hitSlop={10} onPress={() => openMenu(feed)}>
+          <TouchableOpacity
+            style={{paddingHorizontal: 13, paddingVertical: 5, height: 30}}
+            hitSlop={10}
+            onPress={() => openMenu(feed)}>
             <MenuIcon width={16} height={16} />
           </TouchableOpacity>
         </View>
@@ -416,9 +419,6 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     paddingVertical: 3,
   },
-  feedHeader: {
-    margin: 8,
-  },
   headerTop: {
     display: 'flex',
     flexDirection: 'row',
@@ -442,7 +442,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: 5,
-    marginLeft: 5,
+    marginLeft: 15,
+    marginBottom: 10,
   },
   videoBox: {
     flex: 1,
