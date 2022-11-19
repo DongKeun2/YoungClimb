@@ -34,7 +34,6 @@ const AdminLogin = () => {
       alert('로그인 정보를 모두 입력해주세요')
     } else{
       axios.post(api.login(), user).then((res)=>{
-        console.log(res)
         setRefreshToken(res.data.refreshToken)
         dispatch(SET_TOKEN(res.data.accessToken))
         // dispatch(fetchCurrentUser(res.data.))

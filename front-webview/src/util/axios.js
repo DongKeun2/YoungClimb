@@ -21,7 +21,7 @@ axiosTemp.interceptors.response.use(
     return config;
   },
   async error => {
-    console.log('에러', error);
+    // console.log('에러', error);
     const {
       config,
       response: {status},
@@ -37,7 +37,7 @@ axiosTemp.interceptors.response.use(
             headers: {Authorization: 'Bearer ' + (await getRefreshToken())},
           },
         );
-        console.log('리프레쉬 요청 성공', res.data);
+        // console.log('리프레쉬 요청 성공', res.data);
         // 헤더에 토큰 고정
         axiosTemp.defaults.headers.common.Authorization = `Bearer ${res.data.accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
