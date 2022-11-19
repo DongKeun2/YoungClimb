@@ -38,9 +38,15 @@
 
 .infoDiv {
   position: absolute;
-  left: 7%;
+  left: 8%;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.adminBox{
+  margin:auto;
+  width:80%;
+  height: 100vh;
 }
 
 .title {
@@ -55,6 +61,8 @@
   font-family: "LeferiPoint-BlackObliqueA";
   font-size: 1.2vw;
   color: #f34d7f;
+  margin-top: 5px;
+  margin-left: 2px;
 }
 
 .flexTextBox {
@@ -130,15 +138,12 @@
 }
 
 .navbarContainer{
+  background-color: white;
   position: fixed;
   top:0;
   left:0;
   width:100%;
   height:48px;
-  display:flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding:0px 20px;
   box-sizing: border-box;
   box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
 }
@@ -147,10 +152,19 @@
   margin-left: 10px;
 }
 
+.navInnerContainer{
+  width:80%;
+  margin:auto;
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
 .linkContainer{
   display:flex;
   flex-direction: row;
-  width:180px;
+  width:120px;
   justify-content: space-between;
   align-items: center;
 }
@@ -209,4 +223,56 @@
   filter: saturate(0.2) opacity(0.5);
   -webkit-filter: saturate(0.2) opacity(0.5);
   cursor: not-allowed;
+}
+
+.homeMainDiv{
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding:35px 0px;
+  height:92%;
+  width:100%;
+}
+
+.height100{
+  height:100%
+}
+
+.height90{
+  height:90%
+}
+
+.flex{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.marginLeft{
+  margin-left: 5px;
+}
+
+.downloadBtn{
+  cursor:pointer;
+  color:white;
+  background-color: #F34D7F;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.2vw;
+  width: 100%;
+  text-decoration: none;
+  margin-top: 3.5vw;
+  height:3.2vw;
+  border-radius: 5px;
+}
+
+.downloadBtn:hover{
+  background-color: #E34D78;
+}
+
+.textDecoNone{
+  text-decoration: none;
 }

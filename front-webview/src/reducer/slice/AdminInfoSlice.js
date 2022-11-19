@@ -11,11 +11,14 @@ export const AdminInfoSlice = createSlice({
       countBefore: 0,
       countIng: 0,
       countCompleted: 0
-    }
+    },
+    beforeList:[],
+    suspendedList:[],
+    recentList:[]
   },
   reducers: {
       set_adminInfo: (state, action) => {
-          state = action.payload;
+          return action.payload;
       },
 
   }

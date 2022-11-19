@@ -31,7 +31,7 @@ const AdminLogin = () => {
   //  3. 유저정보 저장
   const login = () => {
     if (!user.email||!user.password){
-      alert('다 입력')
+      alert('로그인 정보를 모두 입력해주세요')
     } else{
       axios.post(api.login(), user).then((res)=>{
         console.log(res)
@@ -39,7 +39,9 @@ const AdminLogin = () => {
         dispatch(SET_TOKEN(res.data.accessToken))
         // dispatch(fetchCurrentUser(res.data.))
         navigate('/admin', { replace: true })
-      }).catch((err)=>{console.log(err)})
+      }).catch((err)=>{
+        alert(err.response.data)
+        })
     }
   }
   

@@ -4,6 +4,14 @@ import { setRefreshToken, getRefreshToken, removeRefreshToken } from '../reducer
 import { SET_TOKEN, DELETE_TOKEN } from '../reducer/slice/TokenSlice';
 import {useDispatch} from 'react-redux'
 
+const SetToken = (token) =>{
+  useDispatch(SET_TOKEN(token))
+}
+const DelToken = () =>{
+  useDispatch(DELETE_TOKEN())
+}
+
+
 const axiosTemp = Axios.create({
   timeout: 10000,
 });
@@ -21,7 +29,6 @@ axiosTemp.interceptors.response.use(
 
     if (status === 401) {
       const originalRequest = config;
-      console.log('기존 config', config.headers.Authorization);
       try {
         const res = await Axios.post(
           api.refresh(),
@@ -34,14 +41,15 @@ axiosTemp.interceptors.response.use(
         // 헤더에 토큰 고정
         axiosTemp.defaults.headers.common.Authorization = `Bearer ${res.data.accessToken}`;
         originalRequest.headers.Authorization = `Bearer ${res.data.accessToken}`;
+        
 
-        useDispatch(SET_TOKEN(res.data.accessToken))
+        SetToken(res.data.accessToken)
         setRefreshToken(res.data.refreshToken);
         // 401로 요청 실패했던 요청 새로운 accessToken으로 재요청
         console.log('새로운 config', originalRequest);
         return axiosTemp(originalRequest);
       } catch (err) {
-        useDispatch(DELETE_TOKEN())
+        DelToken()
         removeRefreshToken();
         // removeCurrentUser();
       }

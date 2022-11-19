@@ -8,7 +8,6 @@ export const TokenSlice = createSlice({
     },
     reducers: {
         SET_TOKEN: (state, action) => {
-            console.log(action.payload)
             state.authenticated = true;
             state.accessToken = action.payload;
         },
