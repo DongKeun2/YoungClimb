@@ -113,7 +113,7 @@ const Main = () => {
             <animated.div className='marginLeft'>{numberCount.number.to(x => x.toFixed(0))}</animated.div>
             <div className='marginLeft'>건</div>
           </div>
-          <div className='downloadBtnMob' onClick={()=>alert('apk 준비중입니다 :)')}><div>Download</div></div>
+          <div className='downloadBtnMob' onClick={()=>alert('apk 준비중입니다 :)')}><div>ANDROID 앱 다운로드</div></div>
           {/* <Link to="/MyLocation.png" target="_blank" download className='textDecoNone'><div className='downloadBtnMob'><div>Download</div></div></Link> */}
         </div>
       </div>  
@@ -137,7 +137,7 @@ const Main = () => {
           <animated.div className='marginLeft'>{numberCount.number.to(x => x.toFixed(0))}</animated.div>
           <div className='marginLeft'>건</div>
         </div>
-        <div className='downloadBtn' onClick={()=>alert('apk 준비중입니다 :)')}><div>Download</div></div>
+        <div className='downloadBtn' onClick={()=>alert('apk 준비중입니다 :)')}><div>ANDROID 앱 다운로드</div></div>
         {/* <Link to="/MyLocation.png" target="_blank" download className='textDecoNone'><div className='downloadBtn'><div>Download</div></div></Link> */}
       </div>
 
