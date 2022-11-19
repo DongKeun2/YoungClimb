@@ -207,7 +207,7 @@ public class AdminServiceImpl implements AdminService {
         // 신고 목록들
 
         // 미처리 목록 (전체)
-        List<Report> beforeList = reportRepository.findByFlag(0);
+        List<Report> beforeList = reportRepository.findByFlagNot(1);
         List<ReportDto> beforeDtoList = new ArrayList<>();
         for(Report report : beforeList) {
             ReportDto reportDto = ReportDto.builder()
