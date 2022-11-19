@@ -16,9 +16,13 @@ const MainBoard = () => {
         {/* 최근신고 */}
         <div className='halfBoard'>
           <div className='boardTitle'>최근 신고</div>
-          {recentList.map((item,idx)=>{
-            return <ReportItem item={item} key={`recent`+idx}/>
-          })}
+          {recentList.length ? 
+            recentList.map((item,idx)=>{
+              return <ReportItem item={item} key={`recent`+idx}/>
+            })
+            :
+            <div style={{textAlign:'center'}}>접수된 신고가 없습니다.</div>
+        }
         </div>
         {/* 보류신고 */}
         <div className='halfBoard'>
@@ -28,15 +32,19 @@ const MainBoard = () => {
               return <ReportItem item={item} key={`suspend`+idx}/>
             })
           :
-          <div>보류 된 신고가 없습니다.</div>}
+          <div style={{textAlign:'center'}}>보류 된 신고가 없습니다.</div>}
         </div>
       </div>
       {/* 미처리 신고 */}
       <div className='fullBoard'>
         <div className='height100 width100 overFlowScroll'>
-          {beforeList.map((item,idx)=>{
+          {beforeList.length?
+          beforeList.map((item,idx)=>{
               return <ReportItemSmall item={item} key={`all`+idx}/>
-            })}
+            })
+          :
+          <div style={{textAlign:'center'}}>접수된 신고가 없습니다.</div>
+          }
         </div>
       </div>
     </div>
