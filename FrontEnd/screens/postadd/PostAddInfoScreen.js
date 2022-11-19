@@ -7,7 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
+  Alert,
   ActivityIndicator,
 } from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
@@ -72,13 +72,13 @@ function PostAddInfoScreen({navigation}) {
 
   function onPostAdd() {
     if (!center) {
-      return alert('지점을 선택해주세요');
+      return Alert.alert('', '지점을 선택해주세요');
     } else if (!level) {
-      return alert('난이도를 선택해주세요');
+      return Alert.alert('', '난이도를 선택해주세요');
     } else if (!holdColor) {
-      return alert('홀드 색상을 선택해주세요');
+      return Alert.alert('', '홀드 색상을 선택해주세요');
     } else if (!solvedDate) {
-      return alert('풀이 날짜를 선택해주세요');
+      return Alert.alert('', '풀이 날짜를 선택해주세요');
     } else {
       setIsLoading(true);
       let formData = new FormData();
@@ -106,16 +106,16 @@ function PostAddInfoScreen({navigation}) {
           dispatch(postAdd(data)).then(res => {
             if (res.type === 'postAdd/fulfilled') {
               setIsLoading(false);
-              alert('성공적으로 생성되었습니다');
+              Alert.alert('게시글 생성', '성공적으로 생성되었습니다');
               navigation.popToTop();
             } else {
               setIsLoading(false);
-              alert('다시 시도해주세요');
+              Alert.alert('생성 실패', '다시 시도해주세요');
             }
           });
         } else {
           setIsLoading(false);
-          alert('다시 시도해주세요');
+          Alert.alert('생성 실패', '다시 시도해주세요');
         }
       });
     }
