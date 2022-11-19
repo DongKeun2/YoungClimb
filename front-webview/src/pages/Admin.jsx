@@ -40,12 +40,12 @@ const Admin = () => {
                 <AdminLogin/>
               }
             />
-            <Route
+            {/* <Route
               path="reportList"
               element={
                 <AdminReportList/>
               }            
-            />
+            /> */}
             <Route
               path="reportDetail/:reportId"
               element={
