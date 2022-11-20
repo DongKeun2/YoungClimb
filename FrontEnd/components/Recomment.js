@@ -1,6 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Text, StyleSheet, View} from 'react-native';
+import {TouchableOpacity, Text, StyleSheet, View, Alert} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 
 import UserAvatar from './UserAvatar';
 
@@ -8,9 +9,40 @@ import HoldIcon from '../assets/image/hold/hold.svg';
 
 import {YCLevelColorDict} from '../assets/info/ColorInfo';
 
-function Recomment({recomment}) {
+import {
+  fetchFeedComment,
+  fetchDetail,
+  deleteComment,
+} from '../utils/slices/PostSlice';
+
+function Recomment({recomment, boardId}) {
+  const dispatch = useDispatch();
+
+  const currentUser = useSelector(state => state.accounts.currentUser);
+
+  const commentDelete = commentId => {
+    dispatch(deleteComment(commentId)).then(() => {
+      dispatch(fetchFeedComment(boardId));
+      dispatch(fetchDetail(boardId));
+    });
+    Alert.alert('삭제되었습니다.');
+  };
+
   return (
-    <View style={styles.recommentContainer}>
+    <TouchableOpacity
+      activeOpacity={1}
+      onLongPress={() => {
+        if (currentUser.nickname === recomment.user.nickname) {
+          Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
+            {text: '삭제', onPress: () => commentDelete(recomment.id)},
+            {
+              text: '취소',
+              onPress: () => Alert.alert('', '취소되었습니다.'),
+            },
+          ]);
+        }
+      }}
+      style={styles.recommentContainer}>
       <UserAvatar source={{uri: recomment.user.image}} size={32} />
       <View style={styles.recommentInfo}>
         <View style={styles.recommentMain}>
@@ -37,7 +69,7 @@ function Recomment({recomment}) {
           </Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

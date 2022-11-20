@@ -83,13 +83,15 @@ const api = {
     API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + LIKE_URL,
   recomment: (boardId, commentId) =>
     API_BASE_URL + BOARD_URL + `/${boardId}` + COMMENT_URL + `/${commentId}`,
+  commentDelete: commentId =>
+    API_BASE_URL + BOARD_URL + COMMENT_URL + `/${commentId}` + DELETE_URL,
 
   reels: pageNumber => API_BASE_URL + REELS_URL + `?page=${pageNumber}`,
 
   report: boardId => API_BASE_URL + BOARD_URL + `/${boardId}` + REPORT_URL,
 
-  fcmtokensave: () => API_BASE_URL + FCMTOKEN_URL + '/save',
-  fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + '/delete',
+  fcmtokensave: () => API_BASE_URL + FCMTOKEN_URL + SAVE_URL,
+  fcmtokendelete: () => API_BASE_URL + FCMTOKEN_URL + DELETE_URL,
 
   noticeList: () => API_BASE_URL + USER_URL + NOTICE_URL,
   fetchIsNotice: () => API_BASE_URL + FCMTOKEN_URL,

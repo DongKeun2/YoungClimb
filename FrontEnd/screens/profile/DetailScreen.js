@@ -353,6 +353,7 @@ function DetailScreen({navigation, route}) {
                   return (
                     <Comment
                       key={idx}
+                      boardId={feed.id}
                       comment={comment}
                       navigation={navigation}
                     />
