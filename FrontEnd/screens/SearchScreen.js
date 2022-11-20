@@ -341,7 +341,7 @@ function BoardTab({navigation}) {
         )}
         <TouchableOpacity onPress={onCheckSimilar}>
           <Text style={styles.checkText}>
-            &nbsp; 나와 체형이 비슷한 사람의 결과만 보기
+            &nbsp; 나와 체형이 비슷한 사람의 결과 우선 보기
           </Text>
         </TouchableOpacity>
       </View>
