@@ -58,6 +58,7 @@ public class SearchServiceImpl implements SearchService {
 
             for (Member similarMember : similarMembers) {
                 if (Objects.equals(similarMember.getMemberId(), user.getMemberId())) continue;
+                if (followRepository.existsByFollowerAndFollowing(user, similarMember)) continue;
                 MemberPic memberPic = MemberPic.builder()
                         .nickname(similarMember.getNickname())
                         .image(similarMember.getMemberProfileImg())
