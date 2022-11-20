@@ -231,8 +231,14 @@ function BoardTab({navigation}) {
                   : styles.nonePick
               }
               onValueChange={(value, idx) => {
-                setWallName(centerInfo[center - 1].wallList[idx - 1].name);
-                setWall(value);
+                console.log(value, idx);
+                if (idx === 0 || value === '') {
+                  setWallName('');
+                  setWall('');
+                } else {
+                  setWallName(centerInfo[center - 1].wallList[idx - 1].name);
+                  setWall(value);
+                }
               }}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
@@ -335,7 +341,7 @@ function BoardTab({navigation}) {
         )}
         <TouchableOpacity onPress={onCheckSimilar}>
           <Text style={styles.checkText}>
-            &nbsp; 나와 체형이 비슷한 사람의 결과만 보기
+            &nbsp; 나와 체형이 비슷한 사람의 결과 우선 보기
           </Text>
         </TouchableOpacity>
       </View>
