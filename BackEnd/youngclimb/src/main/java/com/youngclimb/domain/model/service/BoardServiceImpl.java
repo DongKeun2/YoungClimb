@@ -567,8 +567,8 @@ public class BoardServiceImpl implements BoardService {
         Member member = memberRepository.findByEmail(email).orElseThrow();
         Comment comment = commentRepository.findById(commentId).orElseThrow();
 
-        // 코멘트가 자기 것인 경우
-        if (comment.getMember() == member) {
+        // 코멘트가 자기 것인 경우 혹은 본인이 쓴 게시글인 경우
+        if (comment.getMember() == member || comment.getBoard().getMember() == member ) {
 
             // 댓글 파트
             // 댓글 좋아요 삭제
