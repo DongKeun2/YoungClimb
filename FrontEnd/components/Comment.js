@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState, useEffect} from 'react';
-import {TouchableOpacity, Text, StyleSheet, View} from 'react-native';
-import {useDispatch} from 'react-redux';
+import {TouchableOpacity, Text, StyleSheet, View, Alert} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 
 import UserAvatar from './UserAvatar';
 import Recomment from './Recomment';
@@ -17,15 +17,20 @@ import {
   changeCommentIdForRe,
   changeNicknameForRe,
   changeIsFocusedInput,
+  fetchFeedComment,
+  fetchDetail,
+  deleteComment,
 } from '../utils/slices/PostSlice';
 
-function Comment({comment, navigation}) {
+function Comment({comment, boardId, navigation}) {
   const dispatch = useDispatch();
 
   const [isViewRecomment, setIsViewRecomment] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [like, setLike] = useState(0);
   const [likePress, setLikePress] = useState(false);
+
+  const currentUser = useSelector(state => state.accounts.currentUser);
 
   useEffect(() => {
     setIsLiked(comment.isLiked);
@@ -53,11 +58,32 @@ function Comment({comment, navigation}) {
       .catch(() => setLikePress(false));
   };
 
+  const commentDelete = commentId => {
+    dispatch(deleteComment(commentId)).then(() => {
+      dispatch(fetchFeedComment(boardId));
+      dispatch(fetchDetail(boardId));
+    });
+    Alert.alert('삭제되었습니다.');
+  };
+
   return (
     <View style={styles.commentContainer}>
       <UserAvatar source={{uri: comment.user.image}} size={32} />
       <View style={styles.commentInfo}>
-        <View style={{...styles.commentMain, marginBottom: 3}}>
+        <TouchableOpacity
+          activeOpacity={1}
+          onLongPress={() => {
+            if (currentUser.nickname === comment.user.nickname) {
+              Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
+                {text: '삭제', onPress: () => commentDelete(comment.id)},
+                {
+                  text: '취소',
+                  onPress: () => Alert.alert('', '취소되었습니다.'),
+                },
+              ]);
+            }
+          }}
+          style={{...styles.commentMain, marginBottom: 3}}>
           <View style={{...styles.iconText, alignItems: 'center'}}>
             <Text
               style={{
@@ -74,8 +100,21 @@ function Comment({comment, navigation}) {
             />
           </View>
           <Text style={styles.commentTextStyle}>{comment.content}</Text>
-        </View>
-        <View style={styles.commentSub}>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={1}
+          onLongPress={() => {
+            if (currentUser.nickname === comment.user.nickname) {
+              Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
+                {text: '삭제', onPress: () => commentDelete(comment.id)},
+                {
+                  text: '취소',
+                  onPress: () => Alert.alert('', '취소되었습니다.'),
+                },
+              ]);
+            }
+          }}
+          style={styles.commentSub}>
           <Text style={{fontSize: 12, color: '#a7a7a7'}}>
             {comment.createdAt}
           </Text>
@@ -84,7 +123,7 @@ function Comment({comment, navigation}) {
             onPress={() => readyReComment(comment.id, comment.user.nickname)}>
             <Text style={{fontSize: 12, color: '#a7a7a7'}}>답글 달기</Text>
           </TouchableOpacity>
-        </View>
+        </TouchableOpacity>
         <View style={{marginTop: 3}}>
           {!isViewRecomment && comment.reComment.length ? (
             <Text
@@ -94,7 +133,9 @@ function Comment({comment, navigation}) {
             </Text>
           ) : isViewRecomment && comment.reComment.length ? (
             comment.reComment.map((recomment, idx) => {
-              return <Recomment key={idx} recomment={recomment} />;
+              return (
+                <Recomment key={idx} recomment={recomment} boardId={boardId} />
+              );
             })
           ) : null}
         </View>
@@ -143,7 +184,7 @@ const styles = StyleSheet.create({
   likeGroup: {
     display: 'flex',
     alignItems: 'center',
-  }
+  },
 });
 
 export default Comment;

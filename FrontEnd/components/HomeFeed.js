@@ -209,7 +209,7 @@ function HomeFeed({
             </Text>
           ) : null}
           <Text style={{...styles.feedTextStyle, marginRight: 3}}>
-            {feed.difficulty}
+            {'[' + feed.difficulty + ']'}
           </Text>
           <LevelLabel color={feed.centerLevelColor} />
           <HoldLabel color={feed.holdColor} />
