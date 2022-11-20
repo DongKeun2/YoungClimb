@@ -94,7 +94,7 @@ function Walls(props) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(()=>{
-    setTimeout(()=>{setIsLoading(false)}, 1500)
+    setTimeout(()=>{setIsLoading(false)}, 1000)
   },[])
 
   if (centerId==='1' && wallId==='0'){

@@ -15,7 +15,6 @@ const Admin = () => {
   const isAuthenticated = useSelector(state=>state.authToken.authenticated)
   const navigate = useNavigate()
   useEffect(()=>{
-    console.log(location)
     if(isAuthenticated){
       navigate('/admin')
     }
@@ -41,12 +40,12 @@ const Admin = () => {
                 <AdminLogin/>
               }
             />
-            <Route
+            {/* <Route
               path="reportList"
               element={
                 <AdminReportList/>
               }            
-            />
+            /> */}
             <Route
               path="reportDetail/:reportId"
               element={

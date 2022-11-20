@@ -1,14 +1,25 @@
 import React, {useRef, useState, useEffect} from 'react'
 import { useNavigate,Link } from 'react-router-dom'
-import { useSpring, useChain, useSpringRef, animated } from '@react-spring/web';
+import { useSpring, animated } from '@react-spring/web';
 import phone from '../assets/img/GalaxyS21.png'
 import '../App.css'
 
 const Main = () => {
-  const navigate = useNavigate()
-  const onToWall = (centerId,wallId)=>{
-    navigate(`/3dwall/${centerId}/${wallId}`)
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640 ? true:false)
+  const handleResize = () => {
+    if (window.innerWidth < 640) {
+      setIsMobile(true)
+    } else {
+      setIsMobile(false)
+    }
   }
+
+  useEffect(()=>{
+    window.addEventListener("resize", handleResize)
+  }, 
+  [isMobile]
+  )
+
 
   const [number, setNumber] = useState(0);
   const [open, setOpen] = useState(false);
@@ -86,6 +97,30 @@ const Main = () => {
 
 
   return (
+    <>
+    {isMobile ? 
+    <div
+    className='outer'
+    ref={outerDivRef}
+      >
+      <div className='fullVH mobFlex'>
+        <img src={phone} className='phoneMob'/>
+        <div className='infoDivMob'>
+          <div className='titleMob'>YOUNG CLIMB</div>
+          <div className='subtitleMob'>CLIMBER COMMUNITY</div>
+          <div className='flexTextBoxMob subtitleMob'>
+            <div>누적 다운로드 </div>
+            <animated.div className='marginLeft'>{numberCount.number.to(x => x.toFixed(0))}</animated.div>
+            <div className='marginLeft'>건</div>
+          </div>
+          <div className='downloadBtnMob' onClick={()=>alert('apk 준비중입니다 :)')}><div>ANDROID 앱 다운로드</div></div>
+          {/* <Link to="/MyLocation.png" target="_blank" download className='textDecoNone'><div className='downloadBtnMob'><div>Download</div></div></Link> */}
+        </div>
+      </div>  
+      </div>
+    :
+    
+    
     <div
       className='outer'
       ref={outerDivRef}
@@ -102,12 +137,15 @@ const Main = () => {
           <animated.div className='marginLeft'>{numberCount.number.to(x => x.toFixed(0))}</animated.div>
           <div className='marginLeft'>건</div>
         </div>
-        <Link to="/MyLocation.png" target="_blank" download className='textDecoNone'><div className='downloadBtn'><div>Download</div></div></Link>
+        <div className='downloadBtn' onClick={()=>alert('apk 준비중입니다 :)')}><div>ANDROID 앱 다운로드</div></div>
+        {/* <Link to="/MyLocation.png" target="_blank" download className='textDecoNone'><div className='downloadBtn'><div>Download</div></div></Link> */}
       </div>
 
     </div>
 
     </div>
+    }
+    </>
 
     // <div>Main
     //   <button onClick={()=>onToWall()}>to Wall</button>
