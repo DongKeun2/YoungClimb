@@ -276,8 +276,6 @@ const viewCount = createAsyncThunk(
 const initialState = {
   boards: {},
   boardArray: [],
-  isNext: true,
-  isFinish: true,
   boardInfoComment: {},
   boardInfo: {},
   commentInfo: {},
@@ -293,6 +291,9 @@ export const PostSlice = createSlice({
   name: 'post',
   initialState,
   reducers: {
+    changeBoardArray: (state, action) => {
+      state.boardArray = action.payload;
+    },
     changeUploadVideo: (state, action) => {
       state.uploadVideo = action.payload;
     },
@@ -323,12 +324,10 @@ export const PostSlice = createSlice({
     [fetchHomeFeed.fulfilled]: (state, action) => {
       state.boards = action.payload;
       state.boardArray = [...state.boardArray, ...action.payload.boardDtos];
-      state.isNext = action.payload.nextPage;
     },
     [fetchHomeFeedAdd.fulfilled]: (state, action) => {
       state.boards = action.payload;
       state.boardArray = [...state.boardArray, ...action.payload.boardDtos];
-      state.isFinish = action.payload.nextPage;
     },
     [fetchFeedComment.fulfilled]: (state, action) => {
       state.boardInfoComment = action.payload;
@@ -367,6 +366,7 @@ export {
 };
 
 export const {
+  changeBoardArray,
   changeUploadVideo,
   changeCommentIdForRe,
   changeNicknameForRe,
