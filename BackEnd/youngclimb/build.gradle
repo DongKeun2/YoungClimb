@@ -1,7 +1,7 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.4'
-	id 'io.spring.dependency-management' version '1.0.14.RELEASE'
-	id 'java'
+    id 'org.springframework.boot' version '2.7.4'
+    id 'io.spring.dependency-management' version '1.0.14.RELEASE'
+    id 'java'
 }
 
 group = 'com.youngclimb'
@@ -9,26 +9,56 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'mysql:mysql-connector-java'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+//	swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+//	redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+// firebase sdk
+    implementation 'com.google.firebase:firebase-admin:6.8.1'
+// okhttp
+    implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+	
+// 비디오 썸네일 추출 관련 라이브러리	
+    // https://mvnrepository.com/artifact/org.imgscalr/imgscalr-lib
+    implementation 'org.imgscalr:imgscalr-lib:4.2'
+// https://mvnrepository.com/artifact/org.jcodec/jcodec
+    implementation 'org.jcodec:jcodec:0.2.5'
+// https://mvnrepository.com/artifact/org.jcodec/jcodec-javase
+    implementation 'org.jcodec:jcodec-javase:0.2.5'
+
+
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
