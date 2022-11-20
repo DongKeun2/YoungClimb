@@ -231,8 +231,14 @@ function BoardTab({navigation}) {
                   : styles.nonePick
               }
               onValueChange={(value, idx) => {
-                setWallName(centerInfo[center - 1].wallList[idx - 1].name);
-                setWall(value);
+                console.log(value, idx);
+                if (idx === 0 || value === '') {
+                  setWallName('');
+                  setWall('');
+                } else {
+                  setWallName(centerInfo[center - 1].wallList[idx - 1].name);
+                  setWall(value);
+                }
               }}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
