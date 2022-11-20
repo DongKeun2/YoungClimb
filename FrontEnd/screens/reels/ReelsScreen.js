@@ -12,6 +12,7 @@ import {
 
 import {Toast} from '../../components/Toast';
 import ReelsItem from '../../components/ReelsItem';
+import ReelsLoading from '../../components/Loading/ReelsLoading';
 
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
@@ -25,25 +26,29 @@ function RandomScreen({navigation}) {
     toastRef.current.show('앱을 종료하려면 뒤로가기를 한번 더 눌러주세요');
   }, []);
 
+  const [isRendering, setIsRendering] = useState(true);
+
   const pageRef = useRef(0);
   const boardNumRef = useRef(0);
+  const finishRef = useRef(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const isFinish = useSelector(state => state.post.isFinish);
-
   const getReels = () => {
-    if (boardNumRef.current > 3 || !isFinish) {
+    if (boardNumRef.current > 3 || !finishRef.current) {
       boardNumRef.current = 0;
+      setIsRendering(false);
       setIsLoading(false);
       return;
     }
-    if (!isLoading && isFinish) {
+    if (!isLoading && finishRef.current) {
       setIsLoading(true);
       dispatch(fetchReels(pageRef.current)).then(res => {
         if (res.type === 'fetchReels/fulfilled') {
+          finishRef.current = res.payload.nextPage;
           pageRef.current = pageRef.current + 1;
           if (boardNumRef.current + res.payload.boardDtos.length > 3) {
             boardNumRef.current = 0;
+            setIsRendering(false);
             setIsLoading(false);
             return;
           } else {
@@ -53,6 +58,7 @@ function RandomScreen({navigation}) {
               return getReels();
             } else {
               boardNumRef.current = 0;
+              setIsRendering(false);
               setIsLoading(false);
               return;
             }
@@ -81,6 +87,7 @@ function RandomScreen({navigation}) {
   };
 
   useEffect(() => {
+    getReels();
     let isBackHandler = true;
     if (isBackHandler) {
       BackHandler.removeEventListener('hardwareBackPress');
@@ -88,10 +95,6 @@ function RandomScreen({navigation}) {
     return () => {
       isBackHandler = false;
     };
-  }, []);
-
-  useEffect(() => {
-    getReels();
   }, []);
 
   useFocusEffect(() => {
@@ -123,7 +126,9 @@ function RandomScreen({navigation}) {
   });
   const viewConfigRef = useRef({viewAreaCoveragePercentThreshold: 50});
 
-  return (
+  return isRendering ? (
+    <ReelsLoading />
+  ) : (
     <>
       <View style={styles.container}>
         <FlatList
@@ -133,7 +138,7 @@ function RandomScreen({navigation}) {
           viewabilityConfig={viewConfigRef.current}
           onViewableItemsChanged={onViewRef.current}
           keyExtractor={(item, index) => `${index}`}
-          onEndReached={isFinish ? getReels : null}
+          onEndReached={finishRef.current ? getReels : null}
           onEndReachedThreshold={0.2}
           renderItem={({item, index}) => (
             <ReelsItem
