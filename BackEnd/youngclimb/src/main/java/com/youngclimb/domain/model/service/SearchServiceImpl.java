@@ -145,7 +145,7 @@ public class SearchServiceImpl implements SearchService {
             categories.sort(new Comparator<Category>() {
                 @Override
                 public int compare(Category o1, Category o2) {
-                    return abs(member.getWingheight() - o2.getBoard().getMember().getWingheight()) - abs(member.getWingheight() - o1.getBoard().getMember().getWingheight());
+                    return abs(member.getWingheight() - o1.getBoard().getMember().getWingheight()) - abs(member.getWingheight() - o2.getBoard().getMember().getWingheight());
                 }
             });
         }
@@ -154,6 +154,7 @@ public class SearchServiceImpl implements SearchService {
             Board board = category.getBoard();
 
             if (board.getIsDelete() != 0) continue;
+            if (Objects.equals(board.getMember().getMemberId(), member.getMemberId())) continue;
 
             BoardDto boardDto = boardDtoCreator.startDto(board, member);
             boardDto.setCreateUser(boardDtoCreator.toCreateUser(board, member));
