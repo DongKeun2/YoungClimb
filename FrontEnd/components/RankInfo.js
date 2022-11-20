@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, FlatList} from 'react-native';
 
@@ -10,7 +11,7 @@ import {YCLevelColorDict, holdColorDict} from '../assets/info/ColorInfo';
 // rank가 V1 이런 식으로 들어오는 상태
 function RankInfo({setIsRank, exp, expleft, rank, upto}) {
   const levels = ['빨강', '주황', '노랑', '초록', '파랑', '남색', '보라'];
-
+  const problems = ['V0', 'V1', 'V3', 'V5', 'V6', 'V7', 'V8'];
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -43,14 +44,19 @@ function RankInfo({setIsRank, exp, expleft, rank, upto}) {
           />
         </View>
       </View>
-      <View style={styles.textBox}>
-        <Text style={styles.text}>
-          다음 등급으로 올라가려면 Y{parseInt(rank[1], 10) + 1} 난도 {3 - upto}
-          문제를 더 문제를 더 풀어야합니다.
+      {rank === 'Y7' ? (
+        <Text style={{...styles.text, fontSize: 12}}>
+          이미 최고 등급입니다!
         </Text>
-        <Text style={styles.text}>다음 등급까지 {expleft}xp 남았습니다.</Text>
-      </View>
-
+      ) : (
+        <View style={styles.textBox}>
+          <Text style={styles.text}>다음 등급까지 {expleft}xp 남았습니다.</Text>
+          <Text style={styles.text}>
+            다음 등급으로 올라가려면 {problems[parseInt(rank[1]) - 1]} 난이도
+            이상의 문제를 {3 - upto}개 더 풀어야 합니다.
+          </Text>
+        </View>
+      )}
       <View style={styles.horizonLine} />
 
       <Text style={styles.title}>YC 등급표</Text>
@@ -71,12 +77,20 @@ function RankInfo({setIsRank, exp, expleft, rank, upto}) {
           })}
         </View>
       </View>
-      <Text style={styles.description}>
-        Young Climb은 자체 등급을 통해 개인 성장을 측정합니다! 풀이 문제의
-        난이도에 따라 경험치를 획득할 수 있습니다. 상위 단계로 올라가기 위해서는
-        일정치 이상의 경험치가 필요하며, 상위 난도의 문제를 3개 이상
-        풀어야합니다.
-      </Text>
+      <View style={styles.descriptionBox}>
+        <Text style={styles.description}>
+          Young Climb은 자체 등급을 통해 개인 성장을 측정합니다!
+        </Text>
+        <Text style={styles.description}>
+          풀이 문제의 난이도에 따라 경험치를 획득할 수 있습니다.
+        </Text>
+        <Text style={styles.description}>
+          상위 단계로 올라가기 위해서는 일정 수치 이상의 경험치가 필요하며,
+        </Text>
+        <Text style={styles.description}>
+          상위 난도의 문제를 3개 이상 풀어야 합니다.
+        </Text>
+      </View>
     </View>
   );
 }
@@ -181,9 +195,11 @@ const styles = StyleSheet.create({
     height: 25,
     width: `${100 / 7 - 0.2}%`,
   },
-  description: {
+  descriptionBox: {
     marginTop: 15,
     width: '80%',
+  },
+  description: {
     fontSize: 12,
     color: 'black',
   },

@@ -40,8 +40,10 @@ function AppInfo({navigation}) {
               </TouchableOpacity>
               {isVersion ? (
                 <View style={styles.detailBox}>
-                  <Text style={styles.text}>2022.11.16 v1.0.3</Text>
-                  <Text style={styles.text}>2022.11.15 release v1.0.0</Text>
+                  <Text style={styles.text}>2022.11.18 v1.5</Text>
+                  <Text style={styles.text}>2022.11.17 v1.4</Text>
+                  <Text style={styles.text}>2022.11.16 v1.3</Text>
+                  <Text style={styles.text}>2022.11.15 release v1.0</Text>
                 </View>
               ) : null}
             </View>
@@ -72,6 +74,7 @@ function AppInfo({navigation}) {
                   </Text>
                   <Text />
                   <TouchableOpacity
+                    style={styles.link}
                     onPress={() => {
                       navigation.push('이용약관');
                     }}>

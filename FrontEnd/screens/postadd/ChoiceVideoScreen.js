@@ -18,34 +18,45 @@ import CustomSubHeader from '../../components/CustomSubHeader';
 import {changeUploadVideo} from '../../utils/slices/PostSlice';
 
 import gallery from '../../assets/image/main/whiteGallery.png';
-import { AsyncAlert, checkPermission, requestSinglePermission } from '../../utils/permissions';
+import {
+  AsyncAlert,
+  checkPermission,
+  requestSinglePermission,
+} from '../../utils/permissions';
 
 function ChoiceVideoScreen({navigation}) {
   const dispatch = useDispatch();
-  const [permissionTrial, setPermissionTrial] = useState(1)
+  const [permissionTrial, setPermissionTrial] = useState(1);
 
   const uploadVideo = useSelector(state => state.post.uploadVideo);
 
-  useEffect(()=>{
-    checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then((res)=>{
-      const granted = res
-      console.log(res)
-      if (!granted&&permissionTrial===1){
-        const message = {title:'권한 거부된 요청 (저장공간)', content:'서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.'}
-        requestSinglePermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,message).then(
-          setPermissionTrial(2)
-        ) 
-      } else if (!granted){
-          navigation.goBack()
-      } else if (granted === 'never'){
-        AsyncAlert(
-          '권한 요청 거부된 요청',
-          '서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.',
-          Linking.openSettings,
-        );
-      }
-    })
-  },[permissionTrial])
+  useEffect(() => {
+    checkPermission(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE).then(
+      res => {
+        const granted = res;
+        console.log(res);
+        if (!granted && permissionTrial === 1) {
+          const message = {
+            title: '권한 거부된 요청 (저장공간)',
+            content:
+              '서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.',
+          };
+          requestSinglePermission(
+            PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+            message,
+          ).then(setPermissionTrial(2));
+        } else if (!granted) {
+          navigation.goBack();
+        } else if (granted === 'never') {
+          AsyncAlert(
+            '권한 요청 거부된 요청',
+            '서비스 이용을 위한 권한 요청이 거부되어 설정에서 권한 설정 후 앱 사용바랍니다.',
+            Linking.openSettings,
+          );
+        }
+      },
+    );
+  }, [permissionTrial]);
 
   useEffect(() => {
     dispatch(changeUploadVideo(null));
@@ -120,9 +131,20 @@ function ChoiceVideoScreen({navigation}) {
                 {uploadVideo.assets[0].height}
               </Text>
             </View>
-            <TouchableOpacity onPress={onVideoGallery} style={styles.cameraBtn}>
-              <Text style={styles.btnText}>다시 선택하기</Text>
-            </TouchableOpacity>
+            <View style={{display: 'flex'}}>
+              <TouchableOpacity
+                onPress={onVideoGallery}
+                style={styles.uploadBtn}>
+                <Text style={styles.btnText}>다시 선택하기</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation ? navigation.navigate('정보 입력') : null
+                }
+                style={styles.uploadBtn}>
+                <Text style={styles.btnText}>내용 입력 하러 가기</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </>
       ) : (
@@ -174,18 +196,18 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
   },
-  cameraBtn: {
+  uploadBtn: {
     display: 'flex',
-    flexDirection: 'row',
-    elevation: 8,
-    alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    alignItems: 'center',
+    width: 150,
     height: 40,
-    backgroundColor: '#EF3F8F',
     margin: 5,
-    marginVertical: 15,
-    paddingHorizontal: 30,
+    marginBottom: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+    borderColor: 'white',
   },
   text: {
     fontSize: 24,
@@ -219,7 +241,7 @@ const styles = StyleSheet.create({
     marginVertical: 30,
   },
   metaInfoBox: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
 });
 

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static java.lang.Math.abs;
+
 @Service
 @RequiredArgsConstructor
 public class SearchServiceImpl implements SearchService {
@@ -142,7 +144,7 @@ public class SearchServiceImpl implements SearchService {
             categories.sort(new Comparator<Category>() {
                 @Override
                 public int compare(Category o1, Category o2) {
-                    return (member.getWingheight() - o2.getBoard().getMember().getWingheight()) - (member.getWingheight() - o1.getBoard().getMember().getWingheight());
+                    return abs(member.getWingheight() - o2.getBoard().getMember().getWingheight()) - abs(member.getWingheight() - o1.getBoard().getMember().getWingheight());
                 }
             });
         }

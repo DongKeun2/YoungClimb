@@ -188,7 +188,6 @@ function BoardTab({navigation}) {
           </Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
               dropdownIconRippleColor="#F34D7F" // 드롭다운 버튼 클릭시 테두리 색깔
               dropdownIconColor="black"
               selectedValue={center}
@@ -215,8 +214,13 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>구역</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
-              dropdownIconColor={center ? 'black' : '#a7a7a7'}
+              dropdownIconColor={
+                center
+                  ? centerInfo[center - 1]?.wallList.length
+                    ? 'black'
+                    : '#a7a7a7'
+                  : '#a7a7a7'
+              }
               selectedValue={wall}
               enabled={
                 center && centerInfo[center - 1]?.wallList.length ? true : false
@@ -227,8 +231,14 @@ function BoardTab({navigation}) {
                   : styles.nonePick
               }
               onValueChange={(value, idx) => {
-                setWallName(centerInfo[center - 1].wallList[idx - 1].name);
-                setWall(value);
+                console.log(value, idx);
+                if (idx === 0 || value === '') {
+                  setWallName('');
+                  setWall('');
+                } else {
+                  setWallName(centerInfo[center - 1].wallList[idx - 1].name);
+                  setWall(value);
+                }
               }}>
               <Picker.Item
                 style={styles.pickerPlaceHold}
@@ -259,7 +269,6 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>난이도</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={level}
               enabled={center ? true : false}
@@ -288,7 +297,6 @@ function BoardTab({navigation}) {
           <Text style={styles.text}>홀드 색상</Text>
           <View style={styles.pickerItem}>
             <Picker
-              // mode="dropdown"
               dropdownIconColor={center ? 'black' : '#a7a7a7'}
               selectedValue={holdColor}
               enabled={center ? true : false}
@@ -333,7 +341,7 @@ function BoardTab({navigation}) {
         )}
         <TouchableOpacity onPress={onCheckSimilar}>
           <Text style={styles.checkText}>
-            &nbsp; 나와 체형이 비슷한 사람의 결과만 보기
+            &nbsp; 나와 체형이 비슷한 사람의 결과 우선 보기
           </Text>
         </TouchableOpacity>
       </View>

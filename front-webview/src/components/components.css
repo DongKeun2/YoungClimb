@@ -1,0 +1,271 @@
+.overviewBox{
+  min-width: 160px;
+  max-width: 170px;
+  width:12%;
+  height:270px;
+  padding:20px 25px;
+  background-color: #f34d7f;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
+
+}
+
+.overviewTitle{
+  font-family: "LeferiPoint-BlackObliqueA";
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  margin-top:5px;
+}
+
+.overviewContentBox{
+  padding:5px 15px
+}
+
+.marginTop10{
+  margin-top: 15px;
+}
+
+.overviewContent{
+  margin:5px;
+  font-size: 13.5px;
+  color:white;
+  font-weight: 600;
+}
+
+.marginleft10{
+  margin-left: 5px;
+}
+
+.mainBoardContainer{
+  box-sizing: border-box;
+  min-width: 750px;
+  min-height: 600px;
+  width:85%;
+  height:100%;
+  padding:30px;
+  background-color: whitesmoke;
+  margin-left: 20px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  display: flex;
+  justify-content: space-between;
+  /* box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px; */
+}
+
+.width50{
+  width:50%;
+}
+
+.width30{
+  width:30%;
+}
+.width35{
+  width:35%;
+}
+
+.width60{
+  width:60%;
+}
+
+.width70{
+  width:70%;
+}
+
+.width100{
+  width:100%;
+}
+
+.paddingDetail{
+  box-sizing: border-box;
+  padding:50px 0px;
+}
+
+.halfs{
+  width:42%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.halfBoard{
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+  border-radius: 5px;
+  width:100%;
+  height: 48%;
+  background-color: white;
+  box-sizing: border-box;
+}
+
+.fullBoard{
+  box-sizing: border-box;
+  width:55%;
+  background-color: white;
+  height:100%;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+}
+
+.reportHandleBox{
+  box-sizing: border-box;
+  background-color: whitesmoke;
+  padding:3% 3.5%;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 550px;
+  min-width: 350px;
+}
+
+.boxSize{
+  box-sizing: border-box;
+}
+
+.reportHandleTitle{
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.reportContentBox{
+  padding:10px;
+  margin-bottom: 20px;
+}
+.reportContent{
+  margin: 5px 0px;
+  font-size: 14px;
+}
+
+.handleBtn{
+  padding:10px 0px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.postpone{
+  background-color: gray;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.textCenter{
+  text-align: center;
+}
+
+.delete{
+  background-color:#f34d7f;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.pass{
+  background-color: #5072A7;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.reportItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height:18.5%;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 100%;
+  padding: 10px 20px;;
+  box-sizing: border-box;
+}
+.reportItemS {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height:52px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 100%;
+  padding: 10px 20px;;
+  box-sizing: border-box;
+}
+
+
+
+.reportItem :hover{
+  cursor:pointer;
+}
+
+.reportItemS :hover{
+  cursor:pointer;
+}
+
+.reportItemTitle{
+  font-weight: 700;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.reportTag{
+  height:90%;
+  width:60px;
+  color:white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  padding:5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.reportItemContent{
+  font-size: 13px;
+}
+
+.blueBg{
+  background-color: #5072A7 ;
+}
+
+.pinkBg{
+  background-color: #f34d7f;
+}
+
+.grayBg{
+  background-color: grey;
+}
+
+.overFlowScroll{
+  overflow-y: scroll;
+}
+
+.overFlowScroll::-webkit-scrollbar {
+  width: 5px;  /* 스크롤바의 너비 */
+}
+
+.overFlowScroll::-webkit-scrollbar-thumb {
+  height: 20%; /* 스크롤바의 길이 */
+  background: #f34d7f; /* 스크롤바의 색상 */
+  
+  border-radius: 10px;
+}
+
+.overFlowScroll::-webkit-scrollbar-track {
+  background: rgba(219, 71, 130, 0.1);  
+}
+
+.policy{
+  font-size: 13px;
+}
+
+.boardTitle{
+  color:#f34d7f;
+  font-weight: 600;
+  height:22px;
+  font-size: 14px;
+  padding-left: 7px;
+  padding-top: 2px;
+  box-sizing: border-box;
+}

@@ -63,6 +63,7 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
 
   useFocusEffect(
     React.useCallback(() => {
+      setIsFinished(false);
       return () => {
         setIsMuted(true);
         setIsFinished(false);

@@ -3,9 +3,9 @@ import 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect} from 'react';
 
-import {Platform, PermissionsAndroid, Linking, Alert} from 'react-native';
+import {PermissionsAndroid, Linking} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -49,12 +49,8 @@ import {
   checkMultiplePermissions,
 } from '../utils/permissions.js';
 
-import {handleInitialFCM, onRefreshFCMToken} from '../utils/fcm/fcmGetToken';
+import {handleInitialFCM} from '../utils/fcm/fcmGetToken';
 import {changeNewNoti} from '../utils/slices/notificationSlice';
-import axios from 'axios';
-import axiosTemp from '../utils/axios';
-import api from '../utils/api';
-import getConfig from '../utils/headers';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -71,9 +67,6 @@ export default function YoungClimb() {
       return remoteMessage;
     });
 
-    AsyncStorage.getItem('notiSet').then(res => {
-      console.log(res);
-    });
     // AsyncStorage.removeItem('notiSet')
     const permissionList = [
       PermissionsAndroid.PERMISSIONS.CAMERA,
