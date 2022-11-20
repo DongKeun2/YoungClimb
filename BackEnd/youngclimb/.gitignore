@@ -39,3 +39,4 @@ out/
 ### 계정 ###
 application-aws.properties
 application-db.properties
+serviceAccountKey.json
