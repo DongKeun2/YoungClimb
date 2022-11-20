@@ -13,11 +13,16 @@ import {
 } from 'react-native';
 import CustomMainHeader from '../../components/CustomMainHeader';
 import HomeFeed from '../../components/HomeFeed';
+import DetailLoading from '../../components/Loading/DetailLoading';
 
 import {Toast} from '../../components/Toast';
 import DeclareSheet from '../../components/DeclareSheet';
 
-import {fetchHomeFeed, fetchHomeFeedAdd} from '../../utils/slices/PostSlice';
+import {
+  changeBoardArray,
+  fetchHomeFeed,
+  fetchHomeFeedAdd,
+} from '../../utils/slices/PostSlice';
 
 function HomeScreen({navigation, route}) {
   const dispatch = useDispatch();
@@ -26,29 +31,54 @@ function HomeScreen({navigation, route}) {
   const [focusedContent, setFocusedContent] = useState(null);
   const [closeSignal, setCloseSignal] = useState(0);
 
+  const [isRendering, setIsRendering] = useState(true);
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const getRefreshData = async () => {
+    setRefreshing(true);
+    pageRef.current = 0;
+    pageAddRef.current = 0;
+    boardNumRef.current = 0;
+    nextRef.current = true;
+    finishRef.current = true;
+    await fetchFeeds();
+    setRefreshing(false);
+  };
+
+  const onRefresh = () => {
+    if (!refreshing) {
+      setIsRendering(true);
+      dispatch(changeBoardArray([]));
+      getRefreshData();
+    }
+  };
+
   const pageRef = useRef(0);
   const pageAddRef = useRef(0);
   const boardNumRef = useRef(0);
+  const nextRef = useRef(true);
+  const finishRef = useRef(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const isNext = useSelector(state => state.post.isNext);
-  const isFinish = useSelector(state => state.post.isFinish);
-
   const fetchFeeds = () => {
-    if (boardNumRef.current > 3 || !isFinish) {
+    if (boardNumRef.current > 3 || !finishRef.current) {
       boardNumRef.current = 0;
+      setIsRendering(false);
       setIsLoading(false);
       return;
     }
-    if (!isLoading && isFinish) {
-      if (isNext) {
+    if (!isLoading && finishRef.current) {
+      if (nextRef.current) {
         // 게시물 요청
         setIsLoading(true);
         dispatch(fetchHomeFeed(pageRef.current)).then(res => {
           if (res.type === 'fetchHomeFeed/fulfilled') {
+            nextRef.current = res.payload.nextPage;
             pageRef.current = pageRef.current + 1;
             if (boardNumRef.current + res.payload.boardDtos.length > 3) {
               boardNumRef.current = 0;
+              setIsRendering(false);
               setIsLoading(false);
               return;
             } else {
@@ -58,6 +88,7 @@ function HomeScreen({navigation, route}) {
                 return fetchFeeds();
               } else {
                 boardNumRef.current = 0;
+                setIsRendering(false);
                 setIsLoading(false);
                 return;
               }
@@ -71,9 +102,11 @@ function HomeScreen({navigation, route}) {
         setIsLoading(true);
         dispatch(fetchHomeFeedAdd(pageAddRef.current)).then(res => {
           if (res.type === 'fetchHomeFeedAdd/fulfilled') {
+            finishRef.current = res.payload.nextPage;
             pageAddRef.current = pageAddRef.current + 1;
             if (boardNumRef.current + res.payload.boardDtos.length > 3) {
               boardNumRef.current = 0;
+              setIsRendering(false);
               setIsLoading(false);
               return;
             } else {
@@ -83,6 +116,7 @@ function HomeScreen({navigation, route}) {
                 return fetchFeeds();
               } else {
                 boardNumRef.current = 0;
+                setIsRendering(false);
                 setIsLoading(false);
                 return;
               }
@@ -159,57 +193,68 @@ function HomeScreen({navigation, route}) {
   return (
     <View style={{height: '100%', position: 'relative'}}>
       <CustomMainHeader type="홈" navigation={navigation} />
-      <FlatList
-        data={boards}
-        viewabilityConfig={viewConfigRef.current}
-        onViewableItemsChanged={onViewRef.current}
-        keyExtractor={(item, index) => `${index}`}
-        initialNumToRender={4}
-        maxToRenderPerBatch={4}
-        windowSize={7}
-        removeClippedSubviews={true}
-        renderItem={({item, index}) => (
-          <HomeFeed
-            feed={item}
-            isRecommend={false}
-            navigation={navigation}
-            isViewable={index === visablePostIndex}
-            setModalVisible={setModalVisible}
-            setFocusedContent={setFocusedContent}
-          />
-        )}
-        onEndReached={isFinish ? fetchFeeds : null}
-        onEndReachedThreshold={0.3}
-        ListFooterComponent={
-          isLoading ? (
-            <View
-              style={{
-                width: '100%',
-                paddingVertical: 15,
-                backgroundColor: 'white',
-              }}>
-              <ActivityIndicator size="large" color="#F34D7F" />
-            </View>
-          ) : null
-        }
-      />
-      <Toast ref={toastRef} />
-      {modalVisible ? (
-        <TouchableOpacity
-          style={{...styles.background}}
-          onPress={() => setCloseSignal(closeSignal + 1)}
-        />
+      {isRendering ? (
+        <View style={{height: '100%', backgroundColor: 'white'}}>
+          <DetailLoading />
+          <DetailLoading />
+        </View>
       ) : (
-        <></>
+        <>
+          <FlatList
+            data={boards}
+            viewabilityConfig={viewConfigRef.current}
+            onViewableItemsChanged={onViewRef.current}
+            keyExtractor={(item, index) => `${index}`}
+            initialNumToRender={4}
+            maxToRenderPerBatch={4}
+            windowSize={7}
+            removeClippedSubviews={true}
+            renderItem={({item, index}) => (
+              <HomeFeed
+                feed={item}
+                isRecommend={false}
+                navigation={navigation}
+                isViewable={index === visablePostIndex}
+                setModalVisible={setModalVisible}
+                setFocusedContent={setFocusedContent}
+              />
+            )}
+            onEndReached={finishRef.current ? fetchFeeds : null}
+            onEndReachedThreshold={0.3}
+            ListFooterComponent={
+              isLoading ? (
+                <View
+                  style={{
+                    width: '100%',
+                    paddingVertical: 15,
+                    backgroundColor: 'white',
+                  }}>
+                  <ActivityIndicator size="large" color="#F34D7F" />
+                </View>
+              ) : null
+            }
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+          />
+          <Toast ref={toastRef} />
+          {modalVisible ? (
+            <TouchableOpacity
+              style={{...styles.background}}
+              onPress={() => setCloseSignal(closeSignal + 1)}
+            />
+          ) : (
+            <></>
+          )}
+          <DeclareSheet
+            navigation={navigation}
+            route={route}
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            focusedContent={focusedContent}
+            closeSignal={closeSignal}
+          />
+        </>
       )}
-      <DeclareSheet
-        navigation={navigation}
-        route={route}
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        focusedContent={focusedContent}
-        closeSignal={closeSignal}
-      />
     </View>
   );
 }
