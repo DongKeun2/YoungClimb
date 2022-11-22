@@ -2,6 +2,7 @@ import NavBar from "../../components/NavBar";
 import OverviewBox from "../../components/OverviewBox";
 
 import "../../App.css";
+import CenterBoard from "../../components/CenterBoard";
 
 function AdminStore() {
   return (
@@ -9,6 +10,7 @@ function AdminStore() {
       <NavBar />
       <div className="homeMainDiv">
         <OverviewBox />
+        <CenterBoard></CenterBoard>
       </div>
     </div>
   );

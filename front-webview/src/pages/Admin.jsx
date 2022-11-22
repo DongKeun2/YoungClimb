@@ -35,7 +35,7 @@ const Admin = () => {
     <div className="adminBox">
       <Routes>
         <Route path="login" element={<AdminLogin />} />
-        <Route exact="true" path="report" element={<AdminHome />} />
+        <Route path="report" element={<AdminHome />} />
         {/* <Route
               path="reportList"
               element={
@@ -44,7 +44,7 @@ const Admin = () => {
             /> */}
         <Route path="reportDetail/:reportId" element={<AdminReportDetail />} />
         <Route path="center" element={<AdminStore />}></Route>
-        <Route exact="false" path="" element={<AdminHome />} />
+        <Route path="*" element={<AdminHome />} />
       </Routes>
     </div>
   );
