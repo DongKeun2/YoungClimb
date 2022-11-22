@@ -12,10 +12,8 @@ const fetchHomeFeed = createAsyncThunk(
         api.homeFeed(pageNumber),
         await getConfig(),
       );
-      console.log(pageNumber, '홈피드 요청 성공', res.data.boardDtos.length);
       return res.data;
     } catch (err) {
-      console.log('홈피드 요청 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -29,14 +27,8 @@ const fetchHomeFeedAdd = createAsyncThunk(
         api.homeFeedAdd(pageNumber),
         await getConfig(),
       );
-      console.log(
-        pageNumber,
-        '홈피드 추가 요청 성공',
-        res.data.boardDtos.length,
-      );
       return res.data;
     } catch (err) {
-      console.log('홈피드 추가 요청 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -50,10 +42,8 @@ const fetchFeedComment = createAsyncThunk(
         api.feedComment(boardId),
         await getConfig(),
       );
-      console.log('댓글 요청 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('댓글 요청 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -62,10 +52,8 @@ const fetchFeedComment = createAsyncThunk(
 const postAdd = createAsyncThunk('postAdd', async (data, {rejectWithValue}) => {
   try {
     const res = await axiosTemp.post(api.postAdd(), data, await getConfig());
-    console.log('게시글 성공');
     return res.data;
   } catch (err) {
-    console.log('게시글 실패', err);
     return rejectWithValue(err.response.data);
   }
 });
@@ -79,7 +67,6 @@ const feedLikeSubmit = createAsyncThunk(
         {},
         await getConfig(),
       );
-      console.log('좋아요 성공', res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -96,7 +83,6 @@ const feedScrapSubmit = createAsyncThunk(
         {},
         await getConfig(),
       );
-      console.log('스크랩 성공', res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -107,13 +93,11 @@ const feedScrapSubmit = createAsyncThunk(
 const fetchDetail = createAsyncThunk(
   'fetchDetail',
   async (boardId, {rejectWithValue}) => {
-    console.log('게시글 상세 요청 보냄');
     try {
       const res = await axiosTemp.get(
         api.feedComment(boardId),
         await getConfig(),
       );
-      console.log('게시물 정보', res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -145,7 +129,6 @@ const likeBoard = createAsyncThunk(
         {},
         await getConfig(),
       );
-      console.log('좋아요 성공', res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -162,7 +145,6 @@ const scrapBoard = createAsyncThunk(
         {},
         await getConfig(),
       );
-      console.log('스크랩 성공', res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -180,10 +162,8 @@ const getVideoPath = createAsyncThunk(
           Authorization: await getHeader(),
         },
       });
-      console.log('비디오 uri 가져오기', res.data);
       return res.data;
     } catch (err) {
-      console.log('동영상 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -194,10 +174,8 @@ const fetchReels = createAsyncThunk(
   async (pageNumber, {rejectWithValue}) => {
     try {
       const res = await axiosTemp.get(api.reels(pageNumber), await getConfig());
-      console.log(pageNumber, '릴스 요청 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('릴스 요청 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -212,10 +190,8 @@ const commentAdd = createAsyncThunk(
         data.comment,
         await getConfig(),
       );
-      console.log('댓글 성공');
       return res.data;
     } catch (err) {
-      console.log('댓글 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -230,10 +206,8 @@ const commentLikeSubmit = createAsyncThunk(
         {},
         await getConfig(),
       );
-      console.log('댓글 좋아요 성공', res.data);
       return res.data;
     } catch (err) {
-      console.log('댓글 좋아요 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -248,10 +222,8 @@ const recommentAdd = createAsyncThunk(
         data.comment,
         await getConfig(),
       );
-      console.log('대댓글 성공');
       return res.data;
     } catch (err) {
-      console.log('대댓글 실패', err);
       return rejectWithValue(err.response.data);
     }
   },
@@ -282,7 +254,6 @@ const viewCount = createAsyncThunk(
         {},
         await getConfig(),
       );
-      console.log('조회수 증가 성공', res.data);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response.data);
@@ -325,12 +296,6 @@ export const PostSlice = createSlice({
     },
   },
   extraReducers: {
-    [postAdd.fulfilled]: state => {
-      console.log('성공');
-    },
-    [postAdd.rejected]: state => {
-      console.log('실패');
-    },
     [fetchDetail.fulfilled]: (state, action) => {
       state.boardInfo = action.payload.boardDto;
       state.commentInfo = action.payload.commentDtos;
