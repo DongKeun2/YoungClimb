@@ -29,7 +29,11 @@ const fetchHomeFeedAdd = createAsyncThunk(
         api.homeFeedAdd(pageNumber),
         await getConfig(),
       );
-      console.log(pageNumber, '홈피드 추가 요청 성공', res.data.boardDtos.length);
+      console.log(
+        pageNumber,
+        '홈피드 추가 요청 성공',
+        res.data.boardDtos.length,
+      );
       return res.data;
     } catch (err) {
       console.log('홈피드 추가 요청 실패', err);
@@ -189,11 +193,8 @@ const fetchReels = createAsyncThunk(
   'fetchReels',
   async (pageNumber, {rejectWithValue}) => {
     try {
-      const res = await axiosTemp.get(
-        api.homeFeed(pageNumber),
-        await getConfig(),
-      );
-      console.log(pageNumber, '릴스 요청 성공', res.data.boardDtos.length);
+      const res = await axiosTemp.get(api.reels(pageNumber), await getConfig());
+      console.log(pageNumber, '릴스 요청 성공', res.data);
       return res.data;
     } catch (err) {
       console.log('릴스 요청 실패', err);
@@ -271,7 +272,6 @@ const deleteComment = createAsyncThunk(
     }
   },
 );
-
 
 const viewCount = createAsyncThunk(
   'viewCount',
