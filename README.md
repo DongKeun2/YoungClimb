@@ -48,11 +48,12 @@
 
 ### 영상 게시물 작성 기능
 
-![ezgif.com-gif-maker (2).gif](imgs/ezgif.com-gif-maker_(2).gif)
+<div>
+ <img width="30%" height="auto" alt="동영상업로드" src="imgs/ezgif.com-gif-maker_(2).gif" />
+ <img width="30%" height="auto" alt="게시글작성" src="imgs/%25EA%25B2%258C%25EC%258B%259C%25EA%25B8%2580%25EC%259E%2591%25EC%2584%25B1.gif" />
+ <img width="30%" height="auto" alt="게시글업로드" src="imgs/%25EA%25B2%258C%25EC%258B%259C%25EA%25B8%2580%25EC%2597%2585%25EB%25A1%259C%25EB%2593%259C.gif" />
+</div>
 
-![게시글작성.gif](imgs/%25EA%25B2%258C%25EC%258B%259C%25EA%25B8%2580%25EC%259E%2591%25EC%2584%25B1.gif)
-
-![게시글업로드.gif](imgs/%25EA%25B2%258C%25EC%258B%259C%25EA%25B8%2580%25EC%2597%2585%25EB%25A1%259C%25EB%2593%259C.gif)
 
 - 메인과 프로필에서 영상을 업로드 할 수 있습니다.
 - 갤러리에서 비디오를 선택할 수 있습니다.
@@ -64,11 +65,11 @@
 
 ### 유저 추천 기능, 유저 검색 및 팔로우 기능
 
-![추천유저.jpg](imgs/%25EC%25B6%2594%25EC%25B2%259C%25EC%259C%25A0%25EC%25A0%2580.jpg)
-
-![유저검색.gif](imgs/%25EC%259C%25A0%25EC%25A0%2580%25EA%25B2%2580%25EC%2583%2589.gif)
-
-![팔로우.gif](imgs/%25ED%258C%2594%25EB%25A1%259C%25EC%259A%25B0.gif)
+<div>
+ <img width="30%" height="auto" alt="추천유저" src="imgs/%25EC%25B6%2594%25EC%25B2%259C%25EC%259C%25A0%25EC%25A0%2580.jpg" />
+ <img width="30%" height="auto" alt="유저검색" src="imgs/%25EC%259C%25A0%25EC%25A0%2580%25EA%25B2%2580%25EC%2583%2589.gif" />
+ <img width="30%" height="auto" alt="팔로우" src="imgs/%25ED%258C%2594%25EB%25A1%259C%25EC%259A%25B0.gif" />
+</div>
 
 - 검색 탭에서 유저 검색을 들어갑니다.
 - 검색어가 없을 경우 영클라임에서 추천해주는 유저 리스트를 보여줍니다.
@@ -79,11 +80,11 @@
 
 ### 영상 스크랩 , 게시물 및 댓글 좋아요, 댓글 및 대댓글 작성, 조회수 기능
 
-![스크랩.gif](imgs/%25EC%258A%25A4%25ED%2581%25AC%25EB%259E%25A9.gif)
-
-![좋아요.gif](imgs/%25EC%25A2%258B%25EC%2595%2584%25EC%259A%2594.gif)
-
-![대댓글.gif](imgs/%25EB%258C%2580%25EB%258C%2593%25EA%25B8%2580.gif)
+<div>
+ <img width="30%" height="auto" alt="스크랩" src="imgs/%25EC%258A%25A4%25ED%2581%25AC%25EB%259E%25A9.gif" />
+ <img width="30%" height="auto" alt="좋아요" src="imgs/%25EC%25A2%258B%25EC%2595%2584%25EC%259A%2594.gif" />
+ <img width="30%" height="auto" alt="대댓글" src="imgs/%25EB%258C%2580%25EB%258C%2593%25EA%25B8%2580.gif" />
+</div>
 
 - 게시글 스크랩 및 좋아요 그리고 댓글은 메인, 릴스, 게시글 상세에서 가능합니다.
 - 프로필 및 게시글 검색에서 게시글 상세로 이동 가능합니다.
@@ -95,20 +96,21 @@
 
 ### 유저 맞춤 릴스 제공
 
-![ezgif.com-gif-maker.gif](imgs/ezgif.com-gif-maker.gif)
-
-![ezgif.com-gif-maker (1).gif](imgs/ezgif.com-gif-maker_(1).gif)
+<div>
+ <img width="30%" height="auto" alt="릴스1" src="imgs/ezgif.com-gif-maker.gif" />
+ <img width="30%" height="auto" alt="릴스2" src="imgs/ezgif.com-gif-maker_(1).gif" />
+</div>
 
 - 유저와 비슷한 신체조건을 가진 사람 중 실력이 높은 사람들의 영상을 제공합니다.
 - 또한 조회수 100 이상의 인기 영상도 추가로 제시됩니다.
 
 ### 현재 위치 기반 주변 클라이밍장 정보 제공,
 
-![주변지점.gif](imgs/%25EC%25A3%25BC%25EB%25B3%2580%25EC%25A7%2580%25EC%25A0%2590.gif)
-
-![지도지점.gif](imgs/%25EC%25A7%2580%25EB%258F%2584%25EC%25A7%2580%25EC%25A0%2590.gif)
-
-![위치초기화.gif](imgs/%25EC%259C%2584%25EC%25B9%2598%25EC%25B4%2588%25EA%25B8%25B0%25ED%2599%2594.gif)
+<div>
+ <img width="30%" height="auto" alt="주변지점" src="imgs/%25EC%25A3%25BC%25EB%25B3%2580%25EC%25A7%2580%25EC%25A0%2590.gif" />
+ <img width="30%" height="auto" alt="지도지점" src="imgs/%25EC%25A7%2580%25EB%258F%2584%25EC%25A7%2580%25EC%25A0%2590.gif" />
+ <img width="30%" height="auto" alt="위치초기화" src="imgs/%25EC%259C%2584%25EC%25B9%2598%25EC%25B4%2588%25EA%25B8%25B0%25ED%2599%2594.gif" />
+</div>
 
 - 현재 위치를 중심으로 가까운 클라이밍장 정보를 나타냅니다.
     - 지도에서 지점을 클릭하면 지점 상세 정보로 이동합니다.
@@ -119,11 +121,11 @@
 
 ### 클라이밍장 상세 정보 및 3D 벽 이미지 제공
 
-![지점상세.gif](imgs/%25EC%25A7%2580%25EC%25A0%2590%25EC%2583%2581%25EC%2584%25B8.gif)
-
-[3d.mp4](imgs/3d.mp4)
-
-![전화번호-연결.gif](imgs/%25EC%25A0%2584%25ED%2599%2594%25EB%25B2%2588%25ED%2598%25B8-%25EC%2597%25B0%25EA%25B2%25B0.gif)
+<div>
+ <img width="30%" height="auto" alt="지점상세" src="imgs/%25EC%25A7%2580%25EC%25A0%2590%25EC%2583%2581%25EC%2584%25B8.gif" />
+ <img width="30%" height="auto" alt="3d" src="imgs/3d.gif" />
+ <img width="30%" height="auto" alt="전화번호연결" src="imgs/%25EC%25A0%2584%25ED%2599%2594%25EB%25B2%2588%25ED%2598%25B8-%25EC%2597%25B0%25EA%25B2%25B0.gif" />
+</div>
 
 - 각 지점별 상세정보를 제공합니다.
     - 상세 정보에는 전화번호, 운영시간, 가격 정보, 난이도, 주소가 포함됩니다.
@@ -135,9 +137,10 @@
 
 ### 윙스팬 측정 기능
 
-![윙스팬측정.gif](imgs/%25EC%259C%2599%25EC%258A%25A4%25ED%258C%25AC%25EC%25B8%25A1%25EC%25A0%2595.gif)
-
-![프로필윙스팬.gif](imgs/%25ED%2594%2584%25EB%25A1%259C%25ED%2595%2584%25EC%259C%2599%25EC%258A%25A4%25ED%258C%25AC.gif)
+<div>
+ <img width="30%" height="auto" alt="윙스팬측정" src="imgs/%25EC%259C%2599%25EC%258A%25A4%25ED%258C%25AC%25EC%25B8%25A1%25EC%25A0%2595.gif" />
+ <img width="30%" height="auto" alt="프로필윙스팬" src="imgs/%25ED%2594%2584%25EB%25A1%259C%25ED%2595%2584%25EC%259C%2599%25EC%258A%25A4%25ED%258C%25AC.gif" />
+</div>
 
 - OpenCV 활용하여 유저 윙스팬을 측정합니다.
 - 키를 입력한 뒤 예시 사진과 같이 팔을 양쪽으로 쭉 핀 사진을 업로드 합니다.
@@ -147,11 +150,11 @@
 
 ### 다양한 필터를 통한 영상 검색 기능
 
-![검색.gif](imgs/%25EA%25B2%2580%25EC%2583%2589.gif)
-
-![우선보기.gif](imgs/%25EC%259A%25B0%25EC%2584%25A0%25EB%25B3%25B4%25EA%25B8%25B0.gif)
-
-![검색필터.gif](imgs/%25EA%25B2%2580%25EC%2583%2589%25ED%2595%2584%25ED%2584%25B0.gif)
+<div>
+ <img width="30%" height="auto" alt="검색" src="imgs/%25EA%25B2%2580%25EC%2583%2589.gif" />
+ <img width="30%" height="auto" alt="우선보기" src="imgs/%25EC%259A%25B0%25EC%2584%25A0%25EB%25B3%25B4%25EA%25B8%25B0.gif" />
+ <img width="30%" height="auto" alt="검색필터" src="imgs/%25EA%25B2%2580%25EC%2583%2589%25ED%2595%2584%25ED%2584%25B0.gif" />
+</div>
 
 - 다양한 필터를 통해 원하는 문제 풀이 영상을 검색할 수 있습니다.
 - 지점을 선택해야 구역, 난이도, 홀드 색상을 선택 가능합니다.
@@ -160,11 +163,11 @@
 
 ### 푸시 알림 및 인앱 메시지 기능
 
-![ezgif.com-gif-maker (5).gif](imgs/ezgif.com-gif-maker_(5).gif)
-
-![ezgif.com-gif-maker (3).gif](imgs/ezgif.com-gif-maker_(3).gif)
-
-![ezgif.com-gif-maker (4).gif](imgs/ezgif.com-gif-maker_(4).gif)
+<div>
+ <img width="30%" height="auto" alt="푸시알림" src="imgs/ezgif.com-gif-maker_(5).gif" />
+ <img width="30%" height="auto" alt="인앱메시지" src="imgs/ezgif.com-gif-maker_(3).gif" />
+ <img width="30%" height="auto" alt="알림탭" src="imgs/ezgif.com-gif-maker_(4).gif" />
+</div>
 
 - 게시물/댓글 좋아요, 댓글 작성, 팔로우 알림 기능
 
