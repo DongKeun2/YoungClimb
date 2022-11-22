@@ -91,18 +91,24 @@ function PostScreen({navigation, route}) {
                   </TouchableOpacity>
                 </View>
                 <View style={styles.wallInfo}>
-                  <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                    {board.centerName}
-                  </Text>
                   {board.wallName ? (
-                    <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                      {board.wallName}
+                    <>
+                      <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                        {board.centerName}
+                      </Text>
+                      <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                        {board.wallName}
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={{...styles.feedTextStyle}}>
+                      {board.centerName}
                     </Text>
-                  ) : null}
-                  <Text style={{...styles.feedTextStyle, marginRight: 3}}>
-                    {board.difficulty}
-                  </Text>
-                  <LevelLabel color={board.centerLevelColor} />
+                  )}
+                  <LevelLabel
+                    color={board.centerLevelColor}
+                    difficulty={board.difficulty}
+                  />
                   <HoldLabel color={board.holdColor} />
                 </View>
               </View>
@@ -117,7 +123,7 @@ function PostScreen({navigation, route}) {
               return (
                 <Comment
                   key={idx}
-                  boardId={board.id}
+                  board={board}
                   comment={comment}
                   navigation={navigation}
                 />

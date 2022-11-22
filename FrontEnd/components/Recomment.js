@@ -15,15 +15,15 @@ import {
   deleteComment,
 } from '../utils/slices/PostSlice';
 
-function Recomment({recomment, boardId}) {
+function Recomment({recomment, board}) {
   const dispatch = useDispatch();
 
   const currentUser = useSelector(state => state.accounts.currentUser);
 
   const commentDelete = commentId => {
     dispatch(deleteComment(commentId)).then(() => {
-      dispatch(fetchFeedComment(boardId));
-      dispatch(fetchDetail(boardId));
+      dispatch(fetchFeedComment(board.id));
+      dispatch(fetchDetail(board.id));
     });
     Alert.alert('삭제되었습니다.');
   };
@@ -32,7 +32,10 @@ function Recomment({recomment, boardId}) {
     <TouchableOpacity
       activeOpacity={1}
       onLongPress={() => {
-        if (currentUser.nickname === recomment.user.nickname) {
+        if (
+          currentUser.nickname === recomment.user.nickname ||
+          currentUser.nickname === board.createUser.nickname
+        ) {
           Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
             {text: '삭제', onPress: () => commentDelete(recomment.id)},
             {

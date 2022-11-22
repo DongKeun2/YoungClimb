@@ -125,7 +125,8 @@ const styles = StyleSheet.create({
   image: {
     width: 200,
     height: 200,
-    backgroundColor: 'gray',
+    backgroundColor: 'white',
+    resizeMode: 'contain',
   },
   btnGroup: {
     display: 'flex',

@@ -210,18 +210,24 @@ function DetailScreen({navigation, route}) {
                   )}
                 </View>
                 <View style={styles.wallInfo}>
-                  <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                    {feed.centerName}
-                  </Text>
                   {feed.wallName ? (
-                    <Text style={{...styles.feedTextStyle, marginRight: 8}}>
-                      {feed.wallName}
+                    <>
+                      <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                        {feed.centerName}
+                      </Text>
+                      <Text style={{...styles.feedTextStyle, marginRight: 8}}>
+                        {feed.wallName}
+                      </Text>
+                    </>
+                  ) : (
+                    <Text style={{...styles.feedTextStyle}}>
+                      {feed.centerName}
                     </Text>
-                  ) : null}
-                  <Text style={{...styles.feedTextStyle, marginRight: 3}}>
-                    {feed.difficulty}
-                  </Text>
-                  <LevelLabel color={feed.centerLevelColor} />
+                  )}
+                  <LevelLabel
+                    color={feed.centerLevelColor}
+                    difficulty={feed.difficulty}
+                  />
                   <HoldLabel color={feed.holdColor} />
                 </View>
               </View>
@@ -353,7 +359,7 @@ function DetailScreen({navigation, route}) {
                   return (
                     <Comment
                       key={idx}
-                      boardId={feed.id}
+                      board={feed}
                       comment={comment}
                       navigation={navigation}
                     />

@@ -3,7 +3,7 @@ import {StyleSheet, View, Text} from 'react-native';
 
 import {levelColorDict} from '../assets/info/ColorInfo';
 
-function LevelLabel({color}) {
+function LevelLabel({color, difficulty}) {
   return (
     <View style={styles.labelContainer}>
       <View style={[styles.label, {backgroundColor: levelColorDict[color]}]}>
@@ -13,7 +13,7 @@ function LevelLabel({color}) {
               ? [styles.font, {color: 'black'}]
               : [styles.font, {color: 'white'}]
           }>
-          Lv. {color}
+          Lv. {color} {'(' + difficulty + ')'}
         </Text>
       </View>
     </View>

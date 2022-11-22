@@ -22,7 +22,12 @@ function SearchResultScreen({navigation, route}) {
         <Text style={styles.text}>
           {center} {wallName}
         </Text>
-        {level ? <LevelLabel color={level} /> : null}
+        {level ? (
+          <LevelLabel
+            color={level}
+            difficulty={levelColorInfo[route.params.level - 1]?.levelRank}
+          />
+        ) : null}
         {holdColor ? <HoldLabel color={holdColor} /> : null}
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={styles.container}>

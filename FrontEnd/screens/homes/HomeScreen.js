@@ -84,13 +84,13 @@ function HomeScreen({navigation, route}) {
             } else {
               boardNumRef.current =
                 boardNumRef.current + res.payload.boardDtos.length;
-              if (res.payload.nextPage) {
+              if (nextRef.current) {
                 return fetchFeeds();
               } else {
                 boardNumRef.current = 0;
                 setIsRendering(false);
                 setIsLoading(false);
-                return;
+                return fetchFeeds();
               }
             }
           } else {

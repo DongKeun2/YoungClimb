@@ -209,18 +209,22 @@ function ReelsItem({item, navigation, isViewable, viewHeight}) {
           </TouchableOpacity>
         </View>
         <View style={styles.wallInfo}>
-          <Text style={{...styles.reelsTextStyle, marginRight: 8}}>
-            {item.centerName}
-          </Text>
           {item.wallName ? (
-            <Text style={{...styles.reelsTextStyle, marginRight: 8}}>
-              {item.wallName}
-            </Text>
-          ) : null}
-          <Text style={{...styles.reelsTextStyle, marginRight: 3}}>
-            {item.difficulty}
-          </Text>
-          <LevelLabel color={item.centerLevelColor} />
+            <>
+              <Text style={{...styles.reelsTextStyle, marginRight: 8}}>
+                {item.centerName}
+              </Text>
+              <Text style={{...styles.reelsTextStyle, marginRight: 8}}>
+                {item.wallName}
+              </Text>
+            </>
+          ) : (
+            <Text style={{...styles.reelsTextStyle}}>{item.centerName}</Text>
+          )}
+          <LevelLabel
+            color={item.centerLevelColor}
+            difficulty={item.difficulty}
+          />
           <HoldLabel color={item.holdColor} />
         </View>
       </View>

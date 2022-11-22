@@ -22,7 +22,7 @@ import {
   deleteComment,
 } from '../utils/slices/PostSlice';
 
-function Comment({comment, boardId, navigation}) {
+function Comment({comment, board}) {
   const dispatch = useDispatch();
 
   const [isViewRecomment, setIsViewRecomment] = useState(false);
@@ -60,8 +60,8 @@ function Comment({comment, boardId, navigation}) {
 
   const commentDelete = commentId => {
     dispatch(deleteComment(commentId)).then(() => {
-      dispatch(fetchFeedComment(boardId));
-      dispatch(fetchDetail(boardId));
+      dispatch(fetchFeedComment(board.id));
+      dispatch(fetchDetail(board.id));
     });
     Alert.alert('삭제되었습니다.');
   };
@@ -73,7 +73,10 @@ function Comment({comment, boardId, navigation}) {
         <TouchableOpacity
           activeOpacity={1}
           onLongPress={() => {
-            if (currentUser.nickname === comment.user.nickname) {
+            if (
+              currentUser.nickname === comment.user.nickname ||
+              currentUser.nickname === board.createUser.nickname
+            ) {
               Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
                 {text: '삭제', onPress: () => commentDelete(comment.id)},
                 {
@@ -104,7 +107,10 @@ function Comment({comment, boardId, navigation}) {
         <TouchableOpacity
           activeOpacity={1}
           onLongPress={() => {
-            if (currentUser.nickname === comment.user.nickname) {
+            if (
+              currentUser.nickname === comment.user.nickname ||
+              currentUser.nickname === board.createUser.nickname
+            ) {
               Alert.alert('댓글 삭제', '댓글을 삭제하시겠습니까?', [
                 {text: '삭제', onPress: () => commentDelete(comment.id)},
                 {
@@ -134,7 +140,7 @@ function Comment({comment, boardId, navigation}) {
           ) : isViewRecomment && comment.reComment.length ? (
             comment.reComment.map((recomment, idx) => {
               return (
-                <Recomment key={idx} recomment={recomment} boardId={boardId} />
+                <Recomment key={idx} recomment={recomment} board={board} />
               );
             })
           ) : null}
