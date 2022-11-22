@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   },
   createUserInfo: {
     padding: 3,
+    marginBottom: 5,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
