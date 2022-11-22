@@ -52,14 +52,16 @@ function ArticleCard({article, type}) {
         /> */}
       </View>
       <View style={styles.InfoBox}>
-        <View style={styles.cardInfo}>
+        <View style={{...styles.cardInfo, marginBottom: 2}}>
           <Text style={styles.text}>
             {article.centerName} {article.wallName}
           </Text>
         </View>
         <View style={styles.cardInfo}>
-          <Text style={styles.text}>[{article.difficulty}]</Text>
-          <LevelLabel color={article.centerLevelColor} />
+          <LevelLabel
+            color={article.centerLevelColor}
+            difficulty={article.difficulty}
+          />
           <HoldLabel color={article.holdColor} />
         </View>
       </View>
@@ -93,10 +95,11 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
+    marginLeft: 5,
   },
   name: {
     color: 'black',
-    marginLeft: 5,
+    marginHorizontal: 5,
   },
   createUserInfo: {
     padding: 3,
