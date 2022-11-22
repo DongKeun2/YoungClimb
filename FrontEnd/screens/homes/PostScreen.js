@@ -117,7 +117,7 @@ function PostScreen({navigation, route}) {
               return (
                 <Comment
                   key={idx}
-                  boardId={board.id}
+                  board={board}
                   comment={comment}
                   navigation={navigation}
                 />
