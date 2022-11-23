@@ -43,9 +43,17 @@ function ViewMap({ setFocusCenter, centerTotalInfo }) {
             width: '100%',
             height: '99%',
           }}
-          defaultCenter={{ lat: 37.5013, lng: 127.0397 }}
+          defaultCenter={{ lat: 37.4975, lng: 127.032 }}
+          zoom="15"
         >
-          <Marker position={{ lat: 37.5013, lng: 127.0397 }} title="역삼역" />
+          {centerTotalInfo.map(item => {
+            return (
+              <Marker
+                position={{ lat: item.latitude, lng: item.longitude }}
+                title={item.name}
+              />
+            )
+          })}
         </NaverMap>
       </RenderAfterNavermapsLoaded>
     </div>
