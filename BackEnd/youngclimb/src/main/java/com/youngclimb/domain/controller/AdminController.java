@@ -108,6 +108,39 @@ public class AdminController {
         }
     }
 
+    // 지점위치 / 게시글 수
+    @ApiOperation(value = "center: 지점위치/ 게시글 수")
+    @GetMapping("/center")
+    public ResponseEntity<?> adminCenter() throws Exception {
+        try {
+            return new ResponseEntity<>(adminService.adminCenter(), HttpStatus.OK);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 관리자용 지점 상세정보
+    @ApiOperation(value = "관리자용 지점 상세정보")
+    @GetMapping("/center/{centerId}")
+    public ResponseEntity<?> adminInfo(@PathVariable int centerId) throws Exception {
+        try {
+            return new ResponseEntity<>(adminService.adminCenterDetail(centerId), HttpStatus.OK);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
+    // 관리자용 유저 정보
+    @ApiOperation(value = "관리자용 유저 정보")
+    @GetMapping("/user")
+    public ResponseEntity<?> adminUser() throws Exception {
+        try {
+            return new ResponseEntity<>(adminService.adminUser(), HttpStatus.OK);
+        } catch (Exception e) {
+            return exceptionHandling(e);
+        }
+    }
+
 
 
     // 예외 처리
