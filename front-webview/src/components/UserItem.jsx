@@ -1,6 +1,6 @@
 import React from "react";
 
-import "./components.css";
+import "./userItem.css";
 
 const UserItem = (props) => {
   const { item } = props;
@@ -13,18 +13,25 @@ const UserItem = (props) => {
           <span className="userItemContent">{item.nickname}</span>
         </div>
         <div>
+          <span className="userItemContent">{item.followingNum}</span>
+          <span className="userItemContent">{item.followerNum}</span>
+          <span className="userItemContent">{item.createBoardNum}</span>
+          <span className="userItemContent">{item.scrapNum}</span>
+          <span className="userItemContent">{item.createCommentNum}</span>
+          <span className="userItemContent">{item.createRecommentNum}</span>
           <span className="userItemContent">{item.rank}</span>
           <span className="userItemContent">{item.exp}</span>
           <span className="userItemContent">{item.createdAt}</span>
-          <span className="userItemContent">{item.lastLogin}</span>
-          <span className="userItemContent">{item.state}</span>
+          <span className="userItemLastLogin">
+            {item.lastLogin?.split("T")[0]}
+          </span>
         </div>
       </div>
       <div
         onClick={() => {
           alert("해치웠습니다.");
         }}
-        className={`userTag pinkBg`}
+        className={`userTag`}
       >
         해치우기
       </div>

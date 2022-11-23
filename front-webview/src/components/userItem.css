@@ -1,0 +1,91 @@
+.scrollBox {
+  height: 86%;
+}
+
+.userBoard {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: white;
+  height: 100%;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+}
+
+.userItemHeaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 52px;
+  background-color: #f34d7f;
+  /* opacity: 0.9; */
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  box-sizing: border-box;
+}
+
+.userItemHeaderBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.userHeaderItem {
+  font-size: 13px;
+  width: 70px;
+}
+
+.userItemContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.userItemBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.userItemTitle {
+  font-weight: 700;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.userItemRank {
+  font-size: 13px;
+  margin-right: 25px;
+}
+
+.userTag {
+  background-color: #f34d7f;
+  height: 90%;
+  width: 60px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.userItemContent {
+  width: 200px;
+  font-size: 13px;
+  margin-right: 20px;
+}
