@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import {useSelector, useDispatch} from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import NavBar from '../../components/NavBar'
 import OverviewBox from '../../components/OverviewBox'
 import MainBoard from '../../components/MainBoard'
@@ -11,24 +11,28 @@ import { set_adminInfo } from '../../reducer/slice/AdminInfoSlice'
 import '../../App.css'
 
 const AdminHome = () => {
-  const dispatch=useDispatch()
-  const accessToken = useSelector(state=>state.authToken.accessToken)
-  useEffect(()=>{
-    if(accessToken){
-      axiosTemp.get(api.adminInfo(),{headers:{Authorization: `Bearer ${accessToken}`}})
-      .then((res)=>{
-        console.log(res)
-        dispatch(set_adminInfo(res.data))
-      })
-      .catch((err)=>{console.log(err)})
+  const dispatch = useDispatch()
+  const accessToken = useSelector(state => state.authToken.accessToken)
+  useEffect(() => {
+    if (accessToken) {
+      axiosTemp
+        .get(api.adminInfo(), {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        })
+        .then(res => {
+          dispatch(set_adminInfo(res.data))
+        })
+        .catch(err => {
+          console.log(err)
+        })
     }
-  },[])
+  }, [])
   return (
-    <div className='height100'>
-      <NavBar/>
-      <div className='homeMainDiv'>
-        <OverviewBox/>
-        <MainBoard/>
+    <div className="height100">
+      <NavBar />
+      <div className="homeMainDiv">
+        <OverviewBox />
+        <MainBoard />
       </div>
     </div>
   )

@@ -1,31 +1,31 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
-import axiosTemp from "../util/axios";
-import api from "../util/api";
-import { setUserListInfo } from "../reducer/slice/AdminInfoSlice";
-import UserItem from "./UserItem";
-import "./components.css";
-import "./userItem.css";
+import axiosTemp from '../util/axios'
+import api from '../util/api'
+import { setUserListInfo } from '../reducer/slice/AdminInfoSlice'
+import UserItem from './UserItem'
+import './components.css'
+import './userItem.css'
 
 const UserBoard = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
-  const userItem = useSelector((state) => state.adminInfo.userListInfo);
+  const userItem = useSelector(state => state.adminInfo.userListInfo)
 
-  const accessToken = useSelector((state) => state.authToken.accessToken);
+  const accessToken = useSelector(state => state.authToken.accessToken)
   useEffect(() => {
     axiosTemp
       .get(api.fetchUserListInfo(), {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
-      .then((res) => {
-        dispatch(setUserListInfo(res.data));
+      .then(res => {
+        dispatch(setUserListInfo(res.data))
       })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+      .catch(err => {
+        console.log(err)
+      })
+  }, [])
   return (
     <div className="mainBoardContainer">
       <div className="userBoard">
@@ -52,17 +52,17 @@ const UserBoard = () => {
           <div className={`userHeaderItem`}>관리</div>
         </div>
         <div className="scrollBox width100 overFlowScroll">
-          {userItem.length ? (
-            userItem.map((item) => {
-              return <UserItem item={item} key={item.id} />;
+          {userItem?.length ? (
+            userItem.map(item => {
+              return <UserItem item={item} key={item.id} />
             })
           ) : (
-            <div style={{ textAlign: "center" }}>회원이 없습니다.</div>
+            <div style={{ textAlign: 'center' }}>회원이 없습니다.</div>
           )}
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserBoard;
+export default UserBoard

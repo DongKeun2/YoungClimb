@@ -1,59 +1,54 @@
-import React from "react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import React from 'react'
+import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
-import phone from "../../assets/img/GalaxyS21.png";
-import "./login.css";
-import axios from "axios";
-import api from "../../util/api";
-import { SET_TOKEN } from "../../reducer/slice/TokenSlice";
-import { setRefreshToken } from "../../reducer/slice/Cookie";
-import {
-  fetchCurrentUser,
-  changeIsLoggedIn,
-} from "../../reducer/slice/UserSlice";
+import './login.css'
+import api from '../../util/api'
+import { SET_TOKEN } from '../../reducer/slice/TokenSlice'
+import { setRefreshToken } from '../../reducer/slice/Cookie'
+
+import phone from '../../assets/img/GalaxyS21.png'
 
 const AdminLogin = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const [user, setUser] = useState({ email: "", password: "" });
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [user, setUser] = useState({ email: '', password: '' })
 
-  const onChange = (event) => {
-    const { name, value } = event.target;
+  const onChange = event => {
+    const { name, value } = event.target
     setUser({
       ...user,
       [name]: value,
-    });
-  };
+    })
+  }
 
   // 로그인 시에
   //  1. 리프레시토큰 저장
   //  2. access토큰 저장
-  //  3. 유저정보 저장
   const login = () => {
     if (!user.email || !user.password) {
-      alert("로그인 정보를 모두 입력해주세요");
+      alert('로그인 정보를 모두 입력해주세요')
     } else {
       axios
         .post(api.login(), user)
-        .then((res) => {
-          setRefreshToken(res.data.refreshToken);
-          dispatch(SET_TOKEN(res.data.accessToken));
-          // dispatch(fetchCurrentUser(res.data.))
-          navigate("/admin/report", { replace: true });
+        .then(res => {
+          setRefreshToken(res.data.refreshToken)
+          dispatch(SET_TOKEN(res.data.accessToken))
+          navigate('/admin/report', { replace: true })
         })
-        .catch((err) => {
-          alert(err.response.data);
-        });
+        .catch(err => {
+          alert(err.response.data)
+        })
     }
-  };
+  }
 
-  const handleEnter = (e) => {
-    if (e.key === "Enter") {
-      login();
+  const handleEnter = e => {
+    if (e.key === 'Enter') {
+      login()
     }
-  };
+  }
 
   return (
     <div className="height100">
@@ -95,7 +90,7 @@ const AdminLogin = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminLogin;
+export default AdminLogin
