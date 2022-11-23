@@ -326,3 +326,33 @@
   font-size: 13px;
   margin-right: 20px;
 }
+
+.mapTitleTab {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 52px;
+  width: 100%;
+}
+
+.activeTab {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f34d7f;
+  font-size: larger;
+  color: white;
+  cursor: pointer;
+}
+
+.deactiveTab {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #c4c4c4;
+  font-size: medium;
+  color: white;
+  cursor: pointer;
+}

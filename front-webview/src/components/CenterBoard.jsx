@@ -11,6 +11,20 @@ const CenterBoard = () => {
     <div className="mainBoardContainer">
       <div className="storeBoard">
         <div className="height100 width100">
+          <div className="mapTitleTab">
+            <div
+              onClick={() => setType("map")}
+              className={type === "map" ? "activeTab" : "deactiveTab"}
+            >
+              지점 지도로 보기
+            </div>
+            <div
+              onClick={() => setType("list")}
+              className={type === "list" ? "activeTab" : "deactiveTab"}
+            >
+              지점 리스트로 보기
+            </div>
+          </div>
           <StoreInfo type={type}></StoreInfo>
         </div>
       </div>
