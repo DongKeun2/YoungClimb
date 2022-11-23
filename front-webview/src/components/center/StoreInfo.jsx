@@ -1,4 +1,5 @@
 import React from 'react'
+import { useEffect } from 'react'
 
 import { RenderAfterNavermapsLoaded, NaverMap, Marker } from 'react-naver-maps'
 
@@ -8,13 +9,20 @@ import './store.css'
 function StoreInfo({ type, focusCenter, setFocusCenter, centerTotalInfo }) {
   return (
     <>
-      {type === 'map' ? (
+      <div
+        style={
+          type === 'map'
+            ? { width: '100%', height: '100%' }
+            : { width: '100%', height: '100%', display: 'none' }
+        }
+      >
         <ViewMap
           focusCenter={focusCenter}
           setFocusCenter={setFocusCenter}
           centerTotalInfo={centerTotalInfo}
         ></ViewMap>
-      ) : (
+      </div>
+      {type === 'map' ? null : (
         <ViewList
           focusCenter={focusCenter}
           setFocusCenter={setFocusCenter}
@@ -25,7 +33,7 @@ function StoreInfo({ type, focusCenter, setFocusCenter, centerTotalInfo }) {
   )
 }
 
-function ViewMap({ setFocusCenter, centerTotalInfo }) {
+function ViewMap({ focusCenter, setFocusCenter, centerTotalInfo }) {
   return (
     <div
       style={{
@@ -49,8 +57,13 @@ function ViewMap({ setFocusCenter, centerTotalInfo }) {
           {centerTotalInfo.map(item => {
             return (
               <Marker
+                key={item.id}
                 position={{ lat: item.latitude, lng: item.longitude }}
                 title={item.name}
+                onClick={() => {
+                  console.log(focusCenter)
+                  setFocusCenter(item.id)
+                }}
               />
             )
           })}
