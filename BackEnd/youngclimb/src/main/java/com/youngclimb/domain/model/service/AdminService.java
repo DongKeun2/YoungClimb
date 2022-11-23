@@ -30,6 +30,8 @@ public interface AdminService {
 
     // 관리자 지점 정보 상세
     public List<AdminUserDto> adminUser();
+    // 관리자 유저 삭제
+    public void adminDeleteUser(Long userId);
 
     // 관리자 유저 정보
 }
