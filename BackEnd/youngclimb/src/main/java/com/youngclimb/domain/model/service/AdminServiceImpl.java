@@ -1,5 +1,6 @@
 package com.youngclimb.domain.model.service;
 
+import com.mysql.cj.log.Log;
 import com.youngclimb.domain.model.dto.report.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -309,6 +310,13 @@ public class AdminServiceImpl implements AdminService {
         }
 
         return userDtos;
+    }
+
+    // 관리자 유저 삭제
+    @Override
+    public void adminDeleteUser(Long userId) {
+        Member member = memberRepository.findByMemberId(userId).orElseThrow();
+        memberRepository.delete(member);
     }
 
     @Override
