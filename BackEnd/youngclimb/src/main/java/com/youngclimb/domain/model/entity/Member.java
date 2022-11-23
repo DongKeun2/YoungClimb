@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Builder
@@ -64,6 +65,10 @@ public class Member {
     // FCM토큰
     @Column(name = "member_fcm_token")
     private String fcmToken;
+
+    @Column(name = "member_last_active")
+    private LocalDateTime lastActive;
+
     // 프로필 이미지
 //    @OneToOne(mappedBy = "member")
 //    private MemberProfileImg memberProfileImg;
@@ -141,6 +146,11 @@ public class Member {
             this.memberProfileImg = memberProfile.image;
 
         return this;
+    }
+
+    // 최종 활동 기록 업데이트
+    public void updateLastActive() {
+        this.lastActive = LocalDateTime.now();
     }
 
 }

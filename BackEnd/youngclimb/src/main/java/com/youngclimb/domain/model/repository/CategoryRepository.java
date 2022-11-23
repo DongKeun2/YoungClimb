@@ -2,6 +2,7 @@ package com.youngclimb.domain.model.repository;
 
 import com.youngclimb.domain.model.entity.Board;
 import com.youngclimb.domain.model.entity.Category;
+import com.youngclimb.domain.model.entity.Center;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findAllByCenterIdAndCenterlevelIdAndHoldcolor(Integer centerId, Integer levelId, String holdColor);
     List<Category> findAllByCenterIdAndCenterlevelIdAndHoldcolorAndWallId(Integer centerId, Integer levelId, String holdColor, Integer wallId);
 
-
+    Long countByCenter(Center center);
 
 
 }

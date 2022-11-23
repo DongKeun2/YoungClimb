@@ -133,16 +133,16 @@ function ChoiceVideoScreen({navigation}) {
             </View>
             <View style={{display: 'flex'}}>
               <TouchableOpacity
-                onPress={onVideoGallery}
-                style={styles.uploadBtn}>
-                <Text style={styles.btnText}>다시 선택하기</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
                 onPress={() =>
                   navigation ? navigation.navigate('정보 입력') : null
                 }
-                style={styles.uploadBtn}>
+                style={{...styles.uploadBtn, backgroundColor: '#F34D7F'}}>
                 <Text style={styles.btnText}>내용 입력 하러 가기</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onVideoGallery}
+                style={{...styles.uploadBtn, backgroundColor: '#B4B4B4'}}>
+                <Text style={styles.btnText}>다시 선택하기</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -200,14 +200,12 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 150,
-    height: 40,
+    width: 136,
+    height: 36,
     margin: 5,
     marginBottom: 8,
     paddingHorizontal: 10,
-    borderWidth: 1,
     borderRadius: 10,
-    borderColor: 'white',
   },
   text: {
     fontSize: 24,
@@ -216,6 +214,7 @@ const styles = StyleSheet.create({
   },
   btnText: {
     color: 'white',
+    fontWeight: '600',
   },
   flexBox: {
     display: 'flex',
@@ -237,11 +236,12 @@ const styles = StyleSheet.create({
   },
   metaHeader: {
     color: 'white',
-    fontSize: 18,
-    marginVertical: 30,
+    fontSize: 20,
+    fontWeight: '700',
+    marginVertical: 25,
   },
   metaInfoBox: {
-    marginBottom: 20,
+    marginBottom: 30,
   },
 });
 

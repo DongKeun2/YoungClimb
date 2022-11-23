@@ -115,7 +115,12 @@ function PostScreen({navigation, route}) {
             </View>
             {comments?.map((comment, idx) => {
               return (
-                <Comment key={idx} comment={comment} navigation={navigation} />
+                <Comment
+                  key={idx}
+                  boardId={board.id}
+                  comment={comment}
+                  navigation={navigation}
+                />
               );
             })}
           </ScrollView>

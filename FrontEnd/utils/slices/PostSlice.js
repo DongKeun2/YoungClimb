@@ -256,6 +256,23 @@ const recommentAdd = createAsyncThunk(
   },
 );
 
+const deleteComment = createAsyncThunk(
+  'deleteComment',
+  async (commentId, {rejectWithValue}) => {
+    try {
+      const res = await axiosTemp.post(
+        api.commentDelete(commentId),
+        {},
+        await getConfig(),
+      );
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response.data);
+    }
+  },
+);
+
+
 const viewCount = createAsyncThunk(
   'viewCount',
   async (boardId, {rejectWithValue}) => {
@@ -362,6 +379,7 @@ export {
   commentLikeSubmit,
   commentAdd,
   recommentAdd,
+  deleteComment,
   viewCount,
 };
 

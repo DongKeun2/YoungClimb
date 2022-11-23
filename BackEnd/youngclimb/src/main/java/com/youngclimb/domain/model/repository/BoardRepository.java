@@ -25,5 +25,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Long countByIsDeleteNot(Integer flag);
 
+    Long countByMember(Member member);
+
     Slice<Board> findByMemberInOrBoardViewGreaterThan(List<Member> memberList, Long views, Pageable pageable);
 }
