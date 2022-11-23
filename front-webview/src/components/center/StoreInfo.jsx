@@ -1,75 +1,96 @@
-import React from "react";
+import React from 'react'
 
-import { RenderAfterNavermapsLoaded, NaverMap, Marker } from "react-naver-maps";
+import { RenderAfterNavermapsLoaded, NaverMap, Marker } from 'react-naver-maps'
 
-import "./store.css";
+import '../components.css'
+import './store.css'
 
-function StoreInfo({ type, setFocusCenter }) {
+function StoreInfo({ type, focusCenter, setFocusCenter, centerTotalInfo }) {
   return (
     <>
-      {type === "map" ? (
-        <ViewMap setFocusCenter={setFocusCenter}></ViewMap>
+      {type === 'map' ? (
+        <ViewMap
+          focusCenter={focusCenter}
+          setFocusCenter={setFocusCenter}
+          centerTotalInfo={centerTotalInfo}
+        ></ViewMap>
       ) : (
-        <ViewList setFocusCenter={setFocusCenter}></ViewList>
+        <ViewList
+          focusCenter={focusCenter}
+          setFocusCenter={setFocusCenter}
+          centerTotalInfo={centerTotalInfo}
+        ></ViewList>
       )}
     </>
-  );
+  )
 }
 
-function ViewMap({ setFocusCenter }) {
+function ViewMap({ setFocusCenter, centerTotalInfo }) {
   return (
     <div
       style={{
-        width: "100%",
-        height: "92%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        width: '100%',
+        height: '90%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
       }}
     >
-      <RenderAfterNavermapsLoaded
-        ncpClientId="ldd4putzij"
-        error={<p>Maps Load Error</p>}
-        loading={<p>Maps Loading...</p>}
-      >
+      <RenderAfterNavermapsLoaded ncpClientId="ldd4putzij">
         <NaverMap
-          mapDivId={"maps-getting-started-controlled"} // default: react-naver-map
+          mapDivId={'maps-getting-started-controlled'} // default: react-naver-map
           style={{
-            width: "100%",
-            height: "99%",
+            width: '100%',
+            height: '99%',
           }}
-          defaultCenter={{ lat: 37.3595704, lng: 127.105399 }}
-          defaultZoom={10}
+          defaultCenter={{ lat: 37.5013, lng: 127.0397 }}
         >
-          <Marker position={{ lat: 37.5013, lng: 127.0397 }} />
+          <Marker position={{ lat: 37.5013, lng: 127.0397 }} title="역삼역" />
         </NaverMap>
       </RenderAfterNavermapsLoaded>
     </div>
-  );
+  )
 }
 
-function ViewList({ setFocusCenter }) {
+function ViewList({ setFocusCenter, focusCenter, centerTotalInfo }) {
   return (
-    <div>
-      <div className="height100 width100 overFlowScroll">
-        <div className="userItemContainer">
-          <div className="userItemBox">
-            <div>
-              <span className="userItemTitle">ID</span>
-              <span className="userItemContent">센터이름</span>
-            </div>
-            <div>
-              <span className="userItemContent">호호</span>
-              <span className="userItemContent">ㅎㅎ</span>
-            </div>
-          </div>
-          <div onClick={() => setFocusCenter(1)} className={`userTag grayBg`}>
-            상세보기
-          </div>
+    <div className="storeListContainer width100 overFlowScroll">
+      {centerTotalInfo?.length ? (
+        centerTotalInfo.map(item => {
+          return (
+            <StoreListItem
+              item={item}
+              key={item.id}
+              focusCenter={focusCenter}
+              setFocusCenter={setFocusCenter}
+            />
+          )
+        })
+      ) : (
+        <div style={{ textAlign: 'center' }}>지점 정보가 없습니다.</div>
+      )}
+    </div>
+  )
+}
+
+function StoreListItem({ item, focusCenter, setFocusCenter }) {
+  return (
+    <div
+      className={
+        focusCenter === item.id ? 'activeStoreItem' : 'storeItemContainer'
+      }
+    >
+      <div className="storeItemBox " onClick={() => setFocusCenter(item.id)}>
+        <div>
+          <span className="storeItemTitle">{item.id}</span>
+          <span className="storeItemContent">{item.name}</span>
         </div>
       </div>
+      <div onClick={() => setFocusCenter(item.id)} className={`storeTag`}>
+        상세보기
+      </div>
     </div>
-  );
+  )
 }
 
-export default StoreInfo;
+export default StoreInfo

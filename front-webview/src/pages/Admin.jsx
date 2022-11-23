@@ -12,10 +12,10 @@ import { useEffect } from 'react'
 import AdminUser from './admin/AdminUser'
 
 const Admin = () => {
-  const location = useLocation()
   const isAuthenticated = useSelector(state => state.authToken.authenticated)
   const navigate = useNavigate()
   useEffect(() => {
+    console.log(window.location.pathname, '어드민 렌더링')
     if (isAuthenticated) {
       navigate('/admin/report')
     }
