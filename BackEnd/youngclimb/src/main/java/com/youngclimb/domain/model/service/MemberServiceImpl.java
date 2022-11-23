@@ -106,6 +106,7 @@ public class MemberServiceImpl implements MemberService {
                 .wingheight(memberWingHeight)
                 .role(UserRole.USER)
                 .fcmToken(joinMember.getFcmToekn())
+                .lastActive(LocalDateTime.now())
                 .build();
         if (member == null) System.out.println("멤버 빌드 실패");
         memberRepository.save(member);
@@ -334,6 +335,10 @@ public class MemberServiceImpl implements MemberService {
                 .refreshToken(redisService.getValues("RT "+email))
                 .build();
 
+        Member member = memberRepository.findByEmail(email).orElseThrow();
+        member.updateLastActive();
+        memberRepository.save(member);
+
         System.out.println("액세스 토큰이 재발급 되었습니다");
         return tokenDto;
     }
@@ -353,6 +358,7 @@ public class MemberServiceImpl implements MemberService {
 //        }
 
         loginMember.setFcmToken(member.getFcmToken());
+        loginMember.updateLastActive();
         memberRepository.save(loginMember);
 
         MemberRankExp memberRankExp = memberRankExpRepository.findByMember(loginMember).orElseThrow();

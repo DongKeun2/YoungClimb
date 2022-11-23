@@ -1,9 +1,6 @@
 package com.youngclimb.domain.model.service;
 
-import com.youngclimb.domain.model.dto.report.AdminInfo;
-import com.youngclimb.domain.model.dto.report.ReportDetailDto;
-import com.youngclimb.domain.model.dto.report.ReportDto;
-import com.youngclimb.domain.model.dto.report.ReportInfo;
+import com.youngclimb.domain.model.dto.report.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -30,7 +29,13 @@ public class AdminServiceImpl implements AdminService {
     private final MemberProblemRepository memberProblemRepository;
     private final CategoryRepository categoryRepository;
     private final RankRepository rankRepository;
+    private final CommentRepository commentRepository;
+
+    private final FollowRepository followRepository;
+
     private final CenterLevelRepository centerLevelRepository;
+
+    private final BoardScrapRepository boardScrapRepository;
 
     private final CenterRepository centerRepository;
 
@@ -256,6 +261,93 @@ public class AdminServiceImpl implements AdminService {
 
         return adminInfo;
     }
+
+    @Override
+    public List<AdminCenterDto> adminCenter() {
+        List<AdminCenterDto> centerDtos = new ArrayList<>();
+        List<Center> centers = centerRepository.findAll();
+
+        for (Center center : centers) {
+            AdminCenterDto adminCenterDto = new AdminCenterDto();
+
+            adminCenterDto.setId(center.getId());
+            adminCenterDto.setName(center.getName());
+            adminCenterDto.setLongitude(center.getLongitude());
+            adminCenterDto.setLatitude(center.getLatitude());
+            adminCenterDto.setAddress(center.getAddress());
+            adminCenterDto.setBoardNum(categoryRepository.countByCenter(center));
+
+            centerDtos.add(adminCenterDto);
+        }
+
+        return centerDtos;
+    }
+
+
+    @Override
+    public List<AdminUserDto> adminUser() {
+        List<AdminUserDto> userDtos = new ArrayList<>();
+        List<Member> members = memberRepository.findAll();
+
+        for(Member member : members) {
+            AdminUserDto adminUserDto = new AdminUserDto();
+
+            adminUserDto.setId(member.getEmail());
+            adminUserDto.setNickname(member.getNickname());
+            adminUserDto.setRank(memberRankExpRepository.findByMember(member).get().getRank().getName());
+            adminUserDto.setExp(memberRankExpRepository.findByMember(member).get().getMemberExp());
+            adminUserDto.setCreatedAt(member.getJoinDate());
+            adminUserDto.setCreateBoardNum(boardRepository.countByMember(member));
+            adminUserDto.setCreateCommentNum(commentRepository.countByMemberAndParentId(member, 0L));
+            adminUserDto.setCreateRecommentNum(commentRepository.countByMemberAndParentIdNot(member, 0L));
+            adminUserDto.setFollowingNum(followRepository.countByFollower(member));
+            adminUserDto.setFollowerNum(followRepository.countByFollowing(member));
+            adminUserDto.setScrapNum(boardScrapRepository.countByMember(member));
+            adminUserDto.setLastLogin(member.getLastActive());
+
+            userDtos.add(adminUserDto);
+        }
+
+        return userDtos;
+    }
+
+    @Override
+    public AdminCenterDetail adminCenterDetail(Integer centerId) {
+        Center center = centerRepository.findById(centerId).orElseThrow();
+        List<Category> categories = categoryRepository.findAllByCenterId(centerId);
+        List<CenterLevel> centerLevels = centerLevelRepository.findByCenterId(centerId);
+
+        Map<String, Integer> map = new HashMap<>();
+        List<CenterBoardDetail> centerBoardDetails = new ArrayList<>();
+        for(CenterLevel centerLevel : centerLevels) {
+            map.put(centerLevel.getColor(), 0);}
+
+        for(Category category : categories) {
+            System.out.print(category.getCenterlevel().getColor());
+            System.out.println(map.get(category.getCenterlevel().getColor()));
+            map.replace(category.getCenterlevel().getColor(), map.get(category.getCenterlevel().getColor()) + 1);
+        }
+
+        for(CenterLevel centerLevel : centerLevels) {
+            CenterBoardDetail centerBoardDetail = new CenterBoardDetail();
+            centerBoardDetail.setLevelId(centerLevel.getId());
+            centerBoardDetail.setColor(centerLevel.getColor());
+            centerBoardDetail.setLevel(centerLevel.getLevel().getRank());
+            centerBoardDetail.setBoardNum(map.get(centerLevel.getColor()));
+
+            centerBoardDetails.add(centerBoardDetail);
+        }
+
+
+
+        AdminCenterDetail adminCenterDetail = new AdminCenterDetail();
+        adminCenterDetail.setCenterId(center.getId());
+        adminCenterDetail.setCenterName(center.getName());
+        adminCenterDetail.setCenterBoardDetailList(centerBoardDetails);
+
+        return adminCenterDetail;
+    }
+
 
 
 }
