@@ -292,7 +292,7 @@ public class AdminServiceImpl implements AdminService {
         for(Member member : members) {
             AdminUserDto adminUserDto = new AdminUserDto();
 
-            adminUserDto.setId(member.getEmail());
+            adminUserDto.setId(member.getMemberId());
             adminUserDto.setNickname(member.getNickname());
             adminUserDto.setRank(memberRankExpRepository.findByMember(member).get().getRank().getName());
             adminUserDto.setExp(memberRankExpRepository.findByMember(member).get().getMemberExp());
