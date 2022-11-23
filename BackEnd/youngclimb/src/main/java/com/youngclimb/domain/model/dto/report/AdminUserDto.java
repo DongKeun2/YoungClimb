@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class AdminUserDto {
-    String id;
+    Long id;
     String nickname;
     String rank;
     Long exp;
