@@ -11,6 +11,8 @@ import java.util.List;
 public interface BoardScrapRepository extends JpaRepository<BoardScrap, Long> {
     Long countByBoard(Board board);
 
+    Long countByMember(Member member);
+
     List<BoardScrap> findByMember(Member member, Sort sort);
 
     Boolean existsByBoardAndMember(Board board, Member member);

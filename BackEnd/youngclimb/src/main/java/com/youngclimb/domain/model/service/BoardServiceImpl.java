@@ -13,10 +13,6 @@ import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
 import com.youngclimb.domain.model.util.BoardDtoCreator;
 import lombok.RequiredArgsConstructor;
-import org.jcodec.api.FrameGrab;
-import org.jcodec.common.io.NIOUtils;
-import org.jcodec.common.model.Picture;
-import org.jcodec.scale.AWTUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -27,9 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +37,9 @@ public class BoardServiceImpl implements BoardService {
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${cloud.aws.cloudfront.domain}")
+    private String domain;
 
     private final MemberRepository memberRepository;
     private final BoardRepository boardRepository;
@@ -188,7 +186,8 @@ public class BoardServiceImpl implements BoardService {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다.");
             }
             BoardMediaDto boardMediaDto = new BoardMediaDto();
-            boardMediaDto.setMediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString());
+//            boardMediaDto.setMediaPath(amazonS3.getUrl(bucket + "/boardImg", fileName).toString());
+            boardMediaDto.setMediaPath(domain + fileName);
             Thread.sleep(5200);
             boardMediaDto.setThumbnailPath(amazonS3.getUrl(bucket + "/boardThumb", getFileExtension(fileName).concat(".png")).toString());
 
