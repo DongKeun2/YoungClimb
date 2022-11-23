@@ -1,9 +1,30 @@
-import React from "react";
+import React from 'react'
+import { useSelector } from 'react-redux'
+import api from '../util/api'
+import axiosTemp from '../util/axios'
 
-import "./userItem.css";
+import './userItem.css'
 
-const UserItem = (props) => {
-  const { item } = props;
+const UserItem = props => {
+  const { item } = props
+
+  const accessToken = useSelector(state => state.authToken.accessToken)
+  function deleteUser(userId) {
+    axiosTemp
+      .post(
+        api.deleteUser(userId),
+        {},
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      )
+      .then(res => {
+        alert('유저 정보가 삭제되었습니다.')
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   return (
     <div className="userItemContainer">
@@ -23,20 +44,15 @@ const UserItem = (props) => {
           <span className="userItemContent">{item.exp}</span>
           <span className="userItemContent">{item.createdAt}</span>
           <span className="userItemLastLogin">
-            {item.lastLogin?.split("T")[0]}
+            {item.lastLogin?.split('T')[0]}
           </span>
         </div>
       </div>
-      <div
-        onClick={() => {
-          alert("해치웠습니다.");
-        }}
-        className={`userTag`}
-      >
-        해치우기
+      <div className="userTag" onClick={() => deleteUser(item.id)}>
+        탈퇴
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default UserItem;
+export default UserItem

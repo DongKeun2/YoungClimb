@@ -26,6 +26,7 @@ const UserBoard = () => {
         console.log(err)
       })
   }, [])
+
   return (
     <div className="mainBoardContainer">
       <div className="userBoard">
