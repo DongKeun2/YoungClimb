@@ -20,7 +20,14 @@ const UserItem = (props) => {
           <span className="userItemContent">{item.state}</span>
         </div>
       </div>
-      <div className={`userTag pinkBg`}>해치우기</div>
+      <div
+        onClick={() => {
+          alert("해치웠습니다.");
+        }}
+        className={`userTag pinkBg`}
+      >
+        해치우기
+      </div>
     </div>
   );
 };

@@ -102,6 +102,22 @@ const UserBoard = () => {
       <div className="userBoard">
         <div className="boardTitle">회원 정보</div>
         <div className="height100 width100 overFlowScroll">
+          <div className="userItemHeaderContainer">
+            <div className="userItemBox">
+              <div>
+                <span className="userItemTitle">유저 ID</span>
+                <span className="userItemContent">닉네임</span>
+              </div>
+              <div>
+                <span className="userItemContent">등급</span>
+                <span className="userItemContent">경험치</span>
+                <span className="userItemContent">생성 일자</span>
+                <span className="userItemContent">최근 로그인</span>
+                <span className="userItemContent">상태</span>
+              </div>
+            </div>
+            <div className={`userHeaderItem`}>관리</div>
+          </div>
           {userItem.length ? (
             userItem.map((item) => {
               return <UserItem item={item} key={item.id} />;

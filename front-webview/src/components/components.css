@@ -294,6 +294,24 @@
   box-sizing: border-box;
 }
 
+.userItemHeaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 52px;
+  background-color: #f34d7f;
+  /* opacity: 0.9; */
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  box-sizing: border-box;
+}
+
+.userHeaderItem {
+  font-size: 13px;
+  width: 70px;
+}
+
 .userItemBox {
   display: flex;
   align-items: center;
@@ -320,11 +338,17 @@
   padding: 5px;
   box-sizing: border-box;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .userItemContent {
   font-size: 13px;
   margin-right: 20px;
+}
+
+.userItemRank {
+  font-size: 13px;
+  margin-right: 25px;
 }
 
 .mapTitleTab {
