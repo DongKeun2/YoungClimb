@@ -38,6 +38,14 @@ const NavBar = () => {
           </Link>
           <div className="linkContainer">
             <NavLink
+              to="/admin/user"
+              className={({ isActive }) =>
+                isActive ? "activeClass" : "inactiveClass"
+              }
+            >
+              회원
+            </NavLink>
+            <NavLink
               to="/admin/center"
               className={({ isActive }) =>
                 isActive ? "activeClass" : "inactiveClass"

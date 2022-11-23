@@ -190,7 +190,7 @@
 .linkContainer {
   display: flex;
   flex-direction: row;
-  width: 150px;
+  width: 200px;
   justify-content: space-between;
   align-items: center;
 }

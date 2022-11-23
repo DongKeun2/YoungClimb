@@ -16,6 +16,7 @@ import AdminStore from "./admin/AdminStore";
 
 import "../App.css";
 import { useEffect } from "react";
+import AdminUser from "./admin/AdminUser";
 
 const Admin = () => {
   const location = useLocation();
@@ -44,6 +45,7 @@ const Admin = () => {
             /> */}
         <Route path="reportDetail/:reportId" element={<AdminReportDetail />} />
         <Route path="center" element={<AdminStore />}></Route>
+        <Route path="user" element={<AdminUser />}></Route>
         <Route path="*" element={<AdminHome />} />
       </Routes>
     </div>
