@@ -1,31 +1,33 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend,
-// } from 'chart.js'
-// import { Chart } from 'react-chartjs-2'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineController,
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
 
 import api from '../../util/api'
 import axiosTemp from '../../util/axios'
 import { setCenterInfo } from '../../reducer/slice/AdminInfoSlice'
 import './store.css'
 
-// ChartJS.register(
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend
-// )
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineController
+)
 
 function DetailChart({ focusCenter, setFocusCenter }) {
   const dispatch = useDispatch()
@@ -85,7 +87,7 @@ function DetailChart({ focusCenter, setFocusCenter }) {
       </div>
 
       <div className="detailChartBox">
-        {/* <Chart type="line" datasetIdKey="id" data={data} /> */}
+        <Chart type="line" datasetIdKey="id" data={data} />
       </div>
     </div>
   )
