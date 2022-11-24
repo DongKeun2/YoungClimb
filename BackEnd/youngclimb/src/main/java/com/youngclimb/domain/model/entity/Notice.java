@@ -22,11 +22,11 @@ public class Notice {
     private Long id;
     // 알림 받는 회원 번호
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "to_member_id")
+    @JoinColumn(name = "to_member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member toMember;
     // 알림 보내는 회원 번호
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "from_member_id")
+    @JoinColumn(name = "from_member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member fromMember;
     // 글 번호
     @ManyToOne(fetch = FetchType.EAGER)
