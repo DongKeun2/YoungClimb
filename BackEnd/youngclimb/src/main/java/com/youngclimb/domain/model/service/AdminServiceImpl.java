@@ -298,7 +298,7 @@ public class AdminServiceImpl implements AdminService {
             adminUserDto.setRank(memberRankExpRepository.findByMember(member).get().getRank().getName());
             adminUserDto.setExp(memberRankExpRepository.findByMember(member).get().getMemberExp());
             adminUserDto.setCreatedAt(member.getJoinDate());
-            adminUserDto.setCreateBoardNum(boardRepository.countByMember(member));
+            adminUserDto.setCreateBoardNum(boardRepository.countByMemberAndIsDeleteNot(member, 1));
             adminUserDto.setCreateCommentNum(commentRepository.countByMemberAndParentId(member, 0L));
             adminUserDto.setCreateRecommentNum(commentRepository.countByMemberAndParentIdNot(member, 0L));
             adminUserDto.setFollowingNum(followRepository.countByFollower(member));
