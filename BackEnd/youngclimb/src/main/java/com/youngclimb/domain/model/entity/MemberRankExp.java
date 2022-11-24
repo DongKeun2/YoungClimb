@@ -20,7 +20,7 @@ public class MemberRankExp {
     private Long id;
      // 회원번호
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
     // 등급 이름
     @OneToOne(fetch = FetchType.EAGER)

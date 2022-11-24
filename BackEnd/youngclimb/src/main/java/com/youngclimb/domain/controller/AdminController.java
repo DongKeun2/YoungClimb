@@ -143,7 +143,7 @@ public class AdminController {
 
     // 관리자용 유저 삭제
     @ApiOperation(value = "관리자용 유저 삭제")
-    @PostMapping("/user/{userID}/delete")
+    @PostMapping("/user/{userId}/delete")
     public ResponseEntity<?> adminDeleteUser(@PathVariable Long userId) throws Exception {
         try {
             adminService.adminDeleteUser(userId);

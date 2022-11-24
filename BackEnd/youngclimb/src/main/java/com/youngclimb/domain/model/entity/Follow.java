@@ -20,10 +20,10 @@ public class Follow {
     private Long id;
     // 팔로우 id
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "follower_id")
+    @JoinColumn(name = "follower_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member follower;
     // 팔로잉 id
     @ManyToOne
-    @JoinColumn(name = "following_id")
+    @JoinColumn(name = "following_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member following;
 }
