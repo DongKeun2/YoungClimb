@@ -1,4 +1,4 @@
-FROM node:16.16.0 as build-stage
+FROM node:8.5.5 as build-stage
 # 작업 폴더를 만들고 npm 설치
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
