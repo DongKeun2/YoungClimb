@@ -6,7 +6,7 @@ import MainBoard from '../../components/MainBoard'
 
 import axiosTemp from '../../util/axios'
 import api from '../../util/api'
-import { set_adminInfo } from '../../reducer/slice/AdminInfoSlice'
+import { setAdminInfo } from '../../reducer/slice/AdminInfoSlice'
 
 import '../../App.css'
 
@@ -22,7 +22,7 @@ const AdminHome = () => {
         })
         .then(res => {
           console.log('어드민 정보 요청 성공', res.data)
-          dispatch(set_adminInfo(res.data))
+          dispatch(setAdminInfo(res.data))
         })
         .catch(err => {
           console.log(err)

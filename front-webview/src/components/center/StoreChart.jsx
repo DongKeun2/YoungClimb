@@ -24,7 +24,7 @@ import './store.css'
 function StoreChart({ centerTotalInfo }) {
   function getTopCenterList() {
     const topCenterList = centerTotalInfo?.slice()
-    topCenterList.sort((a, b) => b.boardNum - a.boardNum)
+    topCenterList?.sort((a, b) => b.boardNum - a.boardNum)
     return topCenterList
   }
 
