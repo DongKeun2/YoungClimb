@@ -7,9 +7,9 @@ import {
   Title,
   Tooltip,
   Legend,
-} from "chart.js";
-import { Chart } from "react-chartjs-2";
-import "./store.css";
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
+import './store.css'
 
 ChartJS.register(
   CategoryScale,
@@ -19,31 +19,55 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-);
+)
 
-const data = {
-  labels: ["Jun", "Jul", "Aug"],
-  datasets: [
-    {
-      id: 1,
-      label: "인생",
-      data: [5, 6, 7],
-    },
-    {
-      id: 2,
-      label: "역전",
-      data: [3, 2, 1],
-    },
-  ],
-};
+function StoreChart({ centerTotalInfo }) {
+  function getTopCenterList() {
+    const topCenterList = centerTotalInfo.slice()
+    topCenterList.sort((a, b) => b.boardNum - a.boardNum)
+    return topCenterList
+  }
 
-function StoreChart() {
+  function getLabel() {
+    const temp = getTopCenterList()
+    const labelList = temp?.slice(0, 5)?.map(item => item.name)
+    return labelList
+  }
+
+  function getData() {
+    const temp = getTopCenterList()
+    const dataList = temp?.slice(0, 5)?.map(item => item.boardNum)
+    return dataList
+  }
+
+  const data = {
+    labels: getLabel(),
+    datasets: [
+      {
+        id: 1,
+        label: '게시글 수',
+        min: 0,
+        max: 100,
+        borderColor: '#36A2EB',
+        backgroundColor: '#9BD0F5',
+        data: getData(),
+      },
+    ],
+  }
+
   return (
     <div className="centerContainer">
-      <div className="chartTitle">차트</div>
-      <Chart type="line" datasetIdKey="id" data={data} />
+      <div className="detailCenterBox">
+        <div className="detailCenterName">전체 지점</div>
+      </div>
+      <div className="detailCenterBox">
+        전체 지점 중 게시물 수 상위 5개 지점의 그래프를 나타냅니다.
+      </div>
+      <div className="totalChartBox">
+        <Chart type="line" datasetIdKey="id" data={data} />
+      </div>
     </div>
-  );
+  )
 }
 
-export default StoreChart;
+export default StoreChart

@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react'
 
 import StoreInfo from './center/StoreInfo'
 import StoreChart from './center/StoreChart'
-import './components.css'
 import DetailChart from './center/DetailChart'
 import { useDispatch, useSelector } from 'react-redux'
 import axiosTemp from '../util/axios'
 import api from '../util/api'
 import { setCenterTotalInfo } from '../reducer/slice/AdminInfoSlice'
+import './components.css'
 
 const CenterBoard = () => {
   const [type, setType] = useState('map')
@@ -57,9 +57,12 @@ const CenterBoard = () => {
         </div>
       </div>
       <div className="storeBoard">
-        <div className="height100 width100">
+        <div className="width100 height100">
           {focusCenter ? (
-            <DetailChart focusCenter={focusCenter}></DetailChart>
+            <DetailChart
+              focusCenter={focusCenter}
+              setFocusCenter={setFocusCenter}
+            ></DetailChart>
           ) : (
             <StoreChart centerTotalInfo={centerTotalInfo}></StoreChart>
           )}

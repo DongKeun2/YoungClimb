@@ -33,7 +33,7 @@ function StoreInfo({ type, focusCenter, setFocusCenter, centerTotalInfo }) {
   )
 }
 
-function ViewMap({ focusCenter, setFocusCenter, centerTotalInfo }) {
+function ViewMap({ setFocusCenter, centerTotalInfo }) {
   return (
     <div
       style={{
@@ -52,7 +52,7 @@ function ViewMap({ focusCenter, setFocusCenter, centerTotalInfo }) {
             height: '99%',
           }}
           defaultCenter={{ lat: 37.4975, lng: 127.032 }}
-          zoom="15"
+          zoom={15}
         >
           {centerTotalInfo.map(item => {
             return (
@@ -61,7 +61,6 @@ function ViewMap({ focusCenter, setFocusCenter, centerTotalInfo }) {
                 position={{ lat: item.latitude, lng: item.longitude }}
                 title={item.name}
                 onClick={() => {
-                  console.log(focusCenter)
                   setFocusCenter(item.id)
                 }}
               />

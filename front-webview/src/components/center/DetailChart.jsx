@@ -1,11 +1,33 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCenterInfo } from '../../reducer/slice/AdminInfoSlice'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
+
 import api from '../../util/api'
 import axiosTemp from '../../util/axios'
+import { setCenterInfo } from '../../reducer/slice/AdminInfoSlice'
 import './store.css'
 
-function DetailChart({ focusCenter }) {
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
+function DetailChart({ focusCenter, setFocusCenter }) {
   const dispatch = useDispatch()
   const accessToken = useSelector(state => state.authToken.accessToken)
 
@@ -24,15 +46,49 @@ function DetailChart({ focusCenter }) {
       })
   }, [focusCenter])
 
+  function getLabel() {
+    const labelList = centerInfo?.centerBoardDetailList?.map(item => item.color)
+    console.log(labelList)
+    return labelList
+  }
+
+  function getData() {
+    const dataList = centerInfo?.centerBoardDetailList?.map(
+      item => item.boardNum
+    )
+    console.log(dataList)
+    return dataList
+  }
+
+  const data = {
+    labels: getLabel(),
+    datasets: [
+      {
+        id: 1,
+        label: '게시글 수',
+        min: 0,
+        max: 100,
+        borderColor: '#36A2EB',
+        backgroundColor: '#9BD0F5',
+        data: getData(),
+      },
+    ],
+  }
+
   return (
     <div className="centerContainer">
-      <div className="centerBox">
-        센터 정보
-        <div>{centerInfo?.centerId}</div>
-        <div>{centerInfo?.centerName}</div>
+      <div className="detailBackBox">
+        <div className="detailBack" onClick={() => setFocusCenter(0)}>
+          지점 나가기
+        </div>
+      </div>
+      <div className="detailCenterBox">
+        <div className="detailCenterName">{centerInfo?.centerName}</div>
       </div>
 
-      <div className="chartBox">차트</div>
+      <div className="detailChartBox">
+        <Chart type="line" datasetIdKey="id" data={data} />
+      </div>
     </div>
   )
 }

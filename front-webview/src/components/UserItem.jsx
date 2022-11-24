@@ -9,43 +9,56 @@ const UserItem = props => {
   const { item } = props
 
   const accessToken = useSelector(state => state.authToken.accessToken)
+
   function deleteUser(userId) {
-    axiosTemp
-      .post(
-        api.deleteUser(userId),
-        {},
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      )
-      .then(res => {
-        alert('유저 정보가 삭제되었습니다.')
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    if (window.confirm('삭제하시겠습니까?')) {
+      axiosTemp
+        .post(
+          api.deleteUser(userId),
+          {},
+          {
+            headers: { Authorization: `Bearer ${accessToken}` },
+          }
+        )
+        .then(res => {
+          alert('삭제되었습니다.')
+        })
+        .catch(err => {
+          alert('다시 시도해주세요.')
+        })
+    } else {
+      alert('취소되었습니다.')
+    }
   }
 
   return (
     <div className="userItemContainer">
       <div className="userItemBox">
-        <div>
-          <span className="userItemTitle">[{item.id}]</span>
-          <span className="userItemContent">{item.nickname}</span>
+        <div className="userTitleBox">
+          <div className="userItemTitle">[{item.id}]</div>
+          <div className="userItemContent userNickname">{item.nickname}</div>
         </div>
-        <div>
-          <span className="userItemContent">{item.followingNum}</span>
-          <span className="userItemContent">{item.followerNum}</span>
-          <span className="userItemContent">{item.createBoardNum}</span>
-          <span className="userItemContent">{item.scrapNum}</span>
-          <span className="userItemContent">{item.createCommentNum}</span>
-          <span className="userItemContent">{item.createRecommentNum}</span>
-          <span className="userItemContent">{item.rank}</span>
-          <span className="userItemContent">{item.exp}</span>
-          <span className="userItemContent">{item.createdAt}</span>
-          <span className="userItemLastLogin">
+        <div className="userItemUnit">
+          <div className="userItemContent userFollowing">
+            {item.followingNum}
+          </div>
+          <div className="userItemContent userFollower">{item.followerNum}</div>
+          <div className="userItemContent userBoardNum">
+            {item.createBoardNum}
+          </div>
+          <div className="userItemContent userScrapNum">{item.scrapNum}</div>
+          <div className="userItemContent userComment">
+            {item.createCommentNum}
+          </div>
+          <div className="userItemContent userRecomment">
+            {item.createRecommentNum}
+          </div>
+          <div className="userItemContent userRank">{item.rank}</div>
+          <div className="userItemContent userExp">{item.exp}</div>
+          <div className="userItemContent userCreatedAt">{item.createdAt}</div>
+          <div className="userItemContent userLastLogin">
             {item.lastLogin?.split('T')[0]}
-          </span>
+          </div>
         </div>
       </div>
       <div className="userTag" onClick={() => deleteUser(item.id)}>

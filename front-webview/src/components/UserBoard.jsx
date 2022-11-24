@@ -34,20 +34,22 @@ const UserBoard = () => {
         <div className="userItemHeaderContainer">
           <div className="userItemHeaderBox">
             <div>
-              <span className="userItemTitle">유저 ID</span>
-              <span className="userItemContent">닉네임</span>
+              <span className="userItemTitleId">ID</span>
+              <span className="userItemTitleContent">닉네임</span>
             </div>
             <div>
-              <span className="userItemContent">팔로잉</span>
-              <span className="userItemContent">팔로워</span>
-              <span className="userItemContent">게시글</span>
-              <span className="userItemContent">스크랩</span>
-              <span className="userItemContent">댓글</span>
-              <span className="userItemContent">대댓글</span>
-              <span className="userItemContent">등급</span>
-              <span className="userItemContent">경험치</span>
-              <span className="userItemContent">생성 일자</span>
-              <span className="userItemContent">최근 로그인</span>
+              <span className="userItemTitleContent">팔로잉</span>
+              <span className="userItemTitleContent">팔로워</span>
+              <span className="userItemTitleContent">게시글</span>
+              <span className="userItemTitleContent">스크랩</span>
+              <span className="userItemTitleContent">댓글</span>
+              <span className="userItemTitleContent">대댓글</span>
+              <span className="userItemTitleContent">등급</span>
+              <span className="userItemTitleContent userItemTitleExp">
+                경험치
+              </span>
+              <span className="userItemTitleContent">생성 일자</span>
+              <span className="userItemTitleContent">최근 로그인</span>
             </div>
           </div>
           <div className={`userHeaderItem`}>관리</div>
