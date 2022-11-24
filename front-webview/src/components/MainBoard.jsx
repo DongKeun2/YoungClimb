@@ -38,8 +38,8 @@ const MainBoard = () => {
       {/* 미처리 신고 */}
       <div className="fullBoard">
         <div className="height100 width100 overFlowScroll">
-          {beforeList.length ? (
-            beforeList.map((item, idx) => {
+          {beforeList?.length ? (
+            beforeList?.map((item, idx) => {
               return <ReportItemSmall item={item} key={`all` + idx} />
             })
           ) : (
