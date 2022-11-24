@@ -28,10 +28,7 @@ const CenterBoard = () => {
       .then(res => {
         dispatch(setCenterTotalInfo(res.data))
         if (location?.state) {
-          console.log(location.state)
           setFocusCenter(location.state)
-        } else {
-          console.log(location)
         }
       })
       .catch(err => {

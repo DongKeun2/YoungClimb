@@ -16,7 +16,6 @@ const Admin = () => {
   const isAuthenticated = useSelector(state => state.authToken.authenticated)
   const navigate = useNavigate()
   useEffect(() => {
-    console.log(window.location.pathname, '어드민 렌더링')
     if (isAuthenticated) {
       navigate('/admin/report')
     }

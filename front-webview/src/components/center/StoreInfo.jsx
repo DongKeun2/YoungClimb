@@ -7,9 +7,6 @@ import '../components.css'
 import './store.css'
 
 function StoreInfo({ type, focusCenter, setFocusCenter, centerTotalInfo }) {
-  useEffect(() => {
-    console.log(focusCenter)
-  }, [focusCenter])
   return (
     <>
       <div
