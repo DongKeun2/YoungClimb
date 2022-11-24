@@ -1,10 +1,11 @@
-FROM node:8.5.5 as build-stage
+FROM node:16.16.0 as build-stage
 # 작업 폴더를 만들고 npm 설치
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
-RUN npm i --force
+RUN npm install -g npm@8.5.5
+RUN npm install
 
 # 소스를 작업폴더로 복사하고 빌드
 COPY . .
