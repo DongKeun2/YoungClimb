@@ -54,7 +54,7 @@ function ViewMap({ setFocusCenter, centerTotalInfo }) {
           defaultCenter={{ lat: 37.4975, lng: 127.032 }}
           zoom={15}
         >
-          {centerTotalInfo.map(item => {
+          {centerTotalInfo?.map(item => {
             return (
               <Marker
                 key={item.id}
@@ -76,7 +76,7 @@ function ViewList({ setFocusCenter, focusCenter, centerTotalInfo }) {
   return (
     <div className="storeListContainer width100 overFlowScroll">
       {centerTotalInfo?.length ? (
-        centerTotalInfo.map(item => {
+        centerTotalInfo?.map(item => {
           return (
             <StoreListItem
               item={item}

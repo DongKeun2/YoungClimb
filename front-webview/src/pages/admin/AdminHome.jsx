@@ -21,7 +21,7 @@ const AdminHome = () => {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
         .then(res => {
-          console.log('어드민 정보 요청 성공')
+          console.log('어드민 정보 요청 성공', res.data)
           dispatch(set_adminInfo(res.data))
         })
         .catch(err => {
