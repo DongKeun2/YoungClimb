@@ -56,7 +56,7 @@ const CenterBoard = () => {
           ></StoreInfo>
         </div>
       </div>
-      <div className="storeBoard">
+      {/* <div className="storeBoard">
         <div className="width100 height100">
           {focusCenter ? (
             <DetailChart
@@ -67,7 +67,7 @@ const CenterBoard = () => {
             <StoreChart centerTotalInfo={centerTotalInfo}></StoreChart>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

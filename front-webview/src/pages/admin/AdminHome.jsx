@@ -15,11 +15,13 @@ const AdminHome = () => {
   const accessToken = useSelector(state => state.authToken.accessToken)
   useEffect(() => {
     if (accessToken) {
+      console.log('어드민 정보 요청')
       axiosTemp
         .get(api.adminInfo(), {
           headers: { Authorization: `Bearer ${accessToken}` },
         })
         .then(res => {
+          console.log('어드민 정보 요청 성공')
           dispatch(set_adminInfo(res.data))
         })
         .catch(err => {
