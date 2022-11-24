@@ -1,0 +1,168 @@
+.scrollBox {
+  height: 86%;
+}
+
+.userBoard {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: white;
+  height: 100%;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 2px 0px;
+}
+
+.userItemHeaderContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 52px;
+  background-color: #f34d7f;
+  /* opacity: 0.9; */
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  box-sizing: border-box;
+}
+
+.userItemHeaderBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.userHeaderItem {
+  font-size: 13px;
+  width: 70px;
+}
+
+.userItemTitleExp {
+  padding-left: 1vw;
+  padding-right: 2vw;
+}
+
+.userItemContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 100%;
+  padding: 10px 10px;
+  box-sizing: border-box;
+}
+
+.userItemBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 10px 10px 5px;
+  box-sizing: border-box;
+}
+
+.userItemUnit {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.userTitleBox {
+  display: flex;
+}
+
+.userItemTitleId {
+  font-weight: 700;
+  margin-right: 10px;
+  font-size: 12px;
+}
+
+.userItemTitleContent {
+  font-size: 12px;
+  margin-right: 0.8vw;
+}
+
+.userItemTitle {
+  font-weight: 700;
+  margin-right: 10px;
+  font-size: 12px;
+}
+
+.userItemRank {
+  font-size: 12px;
+  margin-right: 25px;
+}
+
+.userItemLastLogin {
+  font-size: 12px;
+}
+
+.userTag {
+  background-color: #f34d7f;
+  height: 90%;
+  width: 60px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.userItemContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.userNickname {
+  display: flex;
+  justify-content: flex-start;
+  width: 200px;
+}
+.userFollowing {
+  width: 50px;
+}
+
+.userFollower {
+  width: 50px;
+}
+
+.userBoardNum {
+  width: 50px;
+}
+
+.userScrapNum {
+  width: 50px;
+}
+
+.userComment {
+  width: 30px;
+}
+
+.userRecomment {
+  width: 50px;
+}
+
+.userRank {
+  width: 30px;
+}
+
+.userExp {
+  width: 90px;
+}
+
+.userCreatedAt {
+  width: 80px;
+}
+
+.userLastLogin {
+  width: 80px;
+}

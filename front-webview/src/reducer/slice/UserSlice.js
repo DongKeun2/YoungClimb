@@ -1,23 +1,22 @@
-import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-
+import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-  userInfo:{},
-  isLoggedIn: false
+  userInfo: {},
+  isLoggedIn: false,
 }
 
 export const UserSlice = createSlice({
-  name:'user',
+  name: 'user',
   initialState,
-  reducers : {
+  reducers: {
     fetchCurrentUser: (state, action) => {
       state.userInfo = action.payload
     },
-    changeIsLoggedIn: (state,action) =>{
+    changeIsLoggedIn: (state, action) => {
       state.isLoggedIn = state.payload
-    }
-  }
+    },
+  },
 })
 
-export const {fetchCurrentUser, changeIsLoggedIn} = UserSlice.actions
+export const { fetchCurrentUser, changeIsLoggedIn } = UserSlice.actions
 export default UserSlice.reducer

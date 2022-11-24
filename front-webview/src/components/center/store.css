@@ -1,0 +1,114 @@
+.centerContainer {
+  width: 100%;
+  height: 100%;
+  background-color: 'gray';
+}
+
+.chartBox {
+  width: 90vw;
+  max-width: 900px;
+}
+
+.storeListContainer {
+  padding-top: 1%;
+  height: 89%;
+}
+
+.activeStoreItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  background-color: #f34d7f;
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.storeItemContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+.storeItemBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.storeItemTitle {
+  font-weight: 700;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.storeTag {
+  background-color: grey;
+  height: 90%;
+  width: 60px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.detailBackBox {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.detailBack {
+  padding: 10px;
+  background-color: grey;
+  width: 70px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.detailCenterBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  height: 10%;
+}
+
+.detailCenterName {
+  text-align: center;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.detailChartBox {
+  height: 70%;
+}
+
+.totalChartBox {
+  height: 40%;
+}
