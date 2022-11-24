@@ -10,6 +10,7 @@ import AdminStore from './admin/AdminStore'
 import '../App.css'
 import { useEffect } from 'react'
 import AdminUser from './admin/AdminUser'
+import AdminStoreManage from './admin/AdminStoreManage'
 
 const Admin = () => {
   const isAuthenticated = useSelector(state => state.authToken.authenticated)
@@ -38,6 +39,10 @@ const Admin = () => {
             /> */}
         <Route path="reportDetail/:reportId" element={<AdminReportDetail />} />
         <Route path="center" element={<AdminStore />}></Route>
+        <Route
+          path="center/:centerId/:centerName"
+          element={<AdminStoreManage />}
+        ></Route>
         <Route path="user" element={<AdminUser />}></Route>
         <Route path="*" element={<AdminHome />} />
       </Routes>

@@ -8,9 +8,12 @@ import axiosTemp from '../util/axios'
 import api from '../util/api'
 import { setCenterTotalInfo } from '../reducer/slice/AdminInfoSlice'
 import './components.css'
+import { useLocation } from 'react-router-dom'
 
 const CenterBoard = () => {
+  const location = useLocation()
   const [type, setType] = useState('map')
+
   const [focusCenter, setFocusCenter] = useState(0)
 
   const centerTotalInfo = useSelector(state => state.adminInfo.centerTotalInfo)
@@ -24,11 +27,17 @@ const CenterBoard = () => {
       })
       .then(res => {
         dispatch(setCenterTotalInfo(res.data))
+        if (location?.state) {
+          console.log(location.state)
+          setFocusCenter(location.state)
+        } else {
+          console.log(location)
+        }
       })
       .catch(err => {
         console.log(err)
       })
-  }, [dispatch])
+  }, [])
 
   return (
     <div className="mainBoardContainer">
