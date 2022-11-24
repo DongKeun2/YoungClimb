@@ -5,7 +5,7 @@ WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
 RUN npm install -g npm@8.5.5
-RUN npm install
+RUN npm i --force
 
 # 소스를 작업폴더로 복사하고 빌드
 COPY . .
