@@ -112,3 +112,38 @@
 .totalChartBox {
   height: 40%;
 }
+
+.detailLinkBox {
+  display: flex;
+  padding: 0 10px;
+  justify-content: flex-end;
+}
+
+.storeManageTitleBox {
+  width: 100%;
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.storeManageTitle {
+  font-size: 30px;
+}
+
+.storeManageBackBtn {
+  padding: 10px;
+  background-color: grey;
+  width: 70px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 3px;
+  padding: 5px;
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
+}

@@ -1,25 +1,27 @@
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend,
-// } from 'chart.js'
-// import { Chart } from 'react-chartjs-2'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineController,
+} from 'chart.js'
+import { Chart } from 'react-chartjs-2'
 import './store.css'
 
-// ChartJS.register(
-//   CategoryScale,
-//   LinearScale,
-//   PointElement,
-//   LineElement,
-//   Title,
-//   Tooltip,
-//   Legend
-// )
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  LineController
+)
 
 function StoreChart({ centerTotalInfo }) {
   function getTopCenterList() {
@@ -66,7 +68,7 @@ function StoreChart({ centerTotalInfo }) {
         전체 지점 중 게시물 수 상위 5개 지점의 그래프를 나타냅니다.
       </div>
       <div className="totalChartBox">
-        {/* <Chart type="line" datasetIdKey="id" data={data} /> */}
+        <Chart type="line" datasetIdKey="id" data={data} />
       </div>
     </div>
   )

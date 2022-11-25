@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Chart as ChartJS,
@@ -88,6 +89,13 @@ function DetailChart({ focusCenter, setFocusCenter }) {
 
       <div className="detailChartBox">
         <Chart type="line" datasetIdKey="id" data={data} />
+      </div>
+      <div className="detailLinkBox">
+        <Link
+          to={`/admin/center/${centerInfo?.centerId}/${centerInfo?.centerName}`}
+        >
+          <div>상세보기</div>
+        </Link>
       </div>
     </div>
   )
