@@ -1,5 +1,6 @@
 package com.youngclimb.domain.model.dto.report;
 
+import com.youngclimb.domain.model.dto.LevelboardCount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,9 @@ public class AdminInfo {
     long countCenter;
     long countMember;
     long countBoard;
+
+    List<LevelboardCount> levelboardCounts;
+
     ReportInfo reportInfo;
     List<ReportDto> beforeList;
     List<ReportDto> recentList;

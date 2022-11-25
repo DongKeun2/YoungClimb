@@ -1,6 +1,7 @@
 package com.youngclimb.domain.model.service;
 
 import com.mysql.cj.log.Log;
+import com.youngclimb.domain.model.dto.LevelboardCount;
 import com.youngclimb.domain.model.dto.report.*;
 import com.youngclimb.domain.model.entity.*;
 import com.youngclimb.domain.model.repository.*;
@@ -9,10 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Transactional
@@ -185,6 +183,20 @@ public class AdminServiceImpl implements AdminService {
         adminInfo.setCountCenter(centerRepository.count());
         adminInfo.setCountMember(memberRepository.count());
         adminInfo.setCountBoard(boardRepository.countByIsDeleteNot(1));
+
+        // 난이도별 게시물 현황
+        List<LevelboardCount> levelboardCounts = new ArrayList<>();
+        List<String> levels = Arrays.asList("VB", "V1","V2","V3","V4","V5","V6","V7","V8","V9");
+        for(String level : levels) {
+            LevelboardCount levelboardCount = new LevelboardCount();
+
+            levelboardCount.setName(level);
+            levelboardCount.setCount(categoryRepository.countByDifficulty(level));
+
+            levelboardCounts.add(levelboardCount);
+        }
+
+        adminInfo.setLevelboardCounts(levelboardCounts);
 
         // 신고 현황
         

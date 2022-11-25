@@ -24,5 +24,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     Long countByCenter(Center center);
 
+    Long countByDifficulty(String level);
+
 
 }
