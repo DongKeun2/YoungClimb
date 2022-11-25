@@ -110,7 +110,11 @@
 }
 
 .totalChartBox {
-  height: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 35%;
+  width: 100%;
 }
 
 .detailLinkBox {
@@ -146,4 +150,17 @@
   box-sizing: border-box;
   white-space: nowrap;
   cursor: pointer;
+}
+
+.totalCenterBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  height: 5%;
+}
+
+.totalDescription {
+  padding: 0;
+  font-size: 15px;
 }

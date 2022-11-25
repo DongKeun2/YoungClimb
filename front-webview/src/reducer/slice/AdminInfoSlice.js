@@ -22,6 +22,7 @@ export const AdminInfoSlice = createSlice({
   },
   reducers: {
     setAdminInfo: (state, action) => {
+      console.log(action.payload)
       state.countCenter = action.payload.countCenter
       state.countMember = action.payload.countMember
       state.countBoard = action.payload.countBoard
@@ -30,7 +31,7 @@ export const AdminInfoSlice = createSlice({
       state.reportInfo = action.payload.reportInfo
       state.suspendedList = action.payload.suspendedList
       state.beforeList = action.payload.beforeList
-      state.levelBoardCount = action.payload.levelBoardCount
+      state.levelBoardCount = action.payload.levelboardCount
     },
     setCenterTotalInfo: (state, action) => {
       console.log('전체 저장직전 데이터', action.payload)
