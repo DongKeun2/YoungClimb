@@ -1,5 +1,4 @@
 import React from 'react'
-import { useEffect } from 'react'
 
 import { RenderAfterNavermapsLoaded, NaverMap, Marker } from 'react-naver-maps'
 

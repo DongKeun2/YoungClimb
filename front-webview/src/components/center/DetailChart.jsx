@@ -11,8 +11,10 @@ import {
   Tooltip,
   Legend,
   LineController,
+  BarController,
+  BarElement,
 } from 'chart.js'
-import { Chart } from 'react-chartjs-2'
+import { Bar, Chart } from 'react-chartjs-2'
 
 import api from '../../util/api'
 import axiosTemp from '../../util/axios'
@@ -24,11 +26,33 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
-  LineController
+  LineController,
+  BarController
 )
+
+const levelColorDict = {
+  빨강: '#F24E4E',
+  주황: '#F0A242',
+  노랑: '#F8E437',
+  초록: '#55A74D',
+  파랑: '#485FB2',
+  남색: '#2A3C7A',
+  보라: '#711492',
+  흰색: '#FAFAFA',
+  갈색: '#8F7A5A',
+  검정: '#262626',
+  핑크: '#EF6790',
+  회색: '#A4A4A4',
+  하늘: '#ACD4F1',
+  예시: {
+    backgroundColor: '#3B4BA0',
+    fontColor: 'white',
+  },
+}
 
 function DetailChart({ focusCenter, setFocusCenter }) {
   const dispatch = useDispatch()
@@ -61,6 +85,13 @@ function DetailChart({ focusCenter, setFocusCenter }) {
     return dataList
   }
 
+  function getBG() {
+    const backColorList = centerInfo?.centerBoardDetailList?.map(
+      item => levelColorDict[item.color]
+    )
+    return backColorList
+  }
+
   const data = {
     labels: getLabel(),
     datasets: [
@@ -69,8 +100,8 @@ function DetailChart({ focusCenter, setFocusCenter }) {
         label: '게시글 수',
         min: 0,
         max: 100,
-        borderColor: '#36A2EB',
-        backgroundColor: '#9BD0F5',
+        borderColor: 'black',
+        backgroundColor: getBG(),
         data: getData(),
       },
     ],
@@ -88,7 +119,18 @@ function DetailChart({ focusCenter, setFocusCenter }) {
       </div>
 
       <div className="detailChartBox">
-        <Chart type="line" datasetIdKey="id" data={data} />
+        <Chart
+          type="bar"
+          datasetIdKey="id"
+          data={data}
+          options={{
+            plugins: {
+              legend: {
+                display: false,
+              },
+            },
+          }}
+        />
       </div>
       <div className="detailLinkBox">
         <Link
