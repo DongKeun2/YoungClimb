@@ -87,7 +87,6 @@ function StoreChart({ centerTotalInfo }) {
   }
 
   function getTopLevelList() {
-    console.log(levelBoardCount)
     const topLevelList = levelBoardCount?.slice()
     topLevelList?.sort((a, b) => b.count - a.count)
     return topLevelList
