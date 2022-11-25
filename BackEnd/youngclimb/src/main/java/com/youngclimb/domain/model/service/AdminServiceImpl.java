@@ -196,7 +196,7 @@ public class AdminServiceImpl implements AdminService {
             levelboardCounts.add(levelboardCount);
         }
 
-        adminInfo.setLevelboardCounts(levelboardCounts);
+        adminInfo.setLevelboardCount(levelboardCounts);
 
         // 신고 현황
         

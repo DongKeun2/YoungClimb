@@ -17,7 +17,7 @@ public class AdminInfo {
     long countMember;
     long countBoard;
 
-    List<LevelboardCount> levelboardCounts;
+    List<LevelboardCount> levelboardCount;
 
     ReportInfo reportInfo;
     List<ReportDto> beforeList;
